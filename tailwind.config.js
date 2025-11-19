@@ -10,6 +10,9 @@ export default {
   ],
   theme: {
     extend: {
+      height: {
+        'screen-dvh': '100dvh', // The fix
+      },
       fontFamily: {
         heading: ['var(--font-heading)', 'serif'],
         body: ['var(--font-body)', 'sans-serif'],
@@ -36,9 +39,15 @@ export default {
 
       // 4. Animations: For Marquee Block
       keyframes: {
+        // Normal (Left): Moves from 0 to -50%
         marquee: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
+        },
+        // Reverse (Right): Moves from -50% to 0
+        'marquee-reverse': {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' },
         },
         'fade-up': {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
@@ -46,8 +55,9 @@ export default {
         }
       },
       animation: {
-        // Usage: animate-marquee
+        // We remove the specific duration here so we can control speed via inline styles
         marquee: 'marquee linear infinite',
+        'marquee-reverse': 'marquee-reverse linear infinite',
         'fade-up': 'fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
 

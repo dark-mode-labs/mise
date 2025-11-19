@@ -43,14 +43,22 @@
 {% endcapture %}
 
 {% comment %} --- GRADIENT LOGIC --- {% endcomment %}
-{% capture overlay_style %}
-  {% if s.enable_gradient %}
-    background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%);
-  {% else %}
-    background-color: {{ s.overlay_color }};
-  {% endif %}
-  opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
-{% endcapture %}
+{% if s.overlay_color != blank %}
+  {% capture overlay_style %}
+    {% if s.enable_gradient %}
+      background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%);
+    {% else %}
+      background-color: {{ s.overlay_color }};
+    {% endif %}
+    opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+  {% endcapture %}
+{% endif %}
+
+{% comment %} --- 3. ANIMATION LOGIC --- {% endcomment %}
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
 
 <section
   class="section-hero w-full overflow-hidden color-{{ s.color_scheme }} {{ container_layout }} {{ s.height }}"
@@ -65,13 +73,14 @@
         src_mobile: s.mobile_image,
         video: s.video_url,
         fit: 'cover',
+        loading: 'eager',
         placeholder: 'lifestyle-2'
       %}
       {% comment %} Gradient only on Overlay Mode {% endcomment %}
       {% if s.layout_mode == 'overlay' %}
         <div
           class="absolute inset-0 pointer-events-none"
-          style="background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%); opacity: {{ s.overlay_opacity | divided_by: 100.0 }};"
+          style="{{ overlay_style }}"
         ></div>
       {% endif %}
     </div>
@@ -84,12 +93,13 @@
           src_mobile: s.mobile_image_2,
           video: s.video_url_2,
           fit: 'cover',
+          loading: 'eager',
           placeholder: 'lifestyle-1'
         %}
         {% if s.layout_mode == 'overlay' %}
           <div
             class="absolute inset-0 pointer-events-none"
-            style="background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%); opacity: {{ s.overlay_opacity | divided_by: 100.0 }};"
+            style="{{ overlay_style }}"
           ></div>
         {% endif %}
       </div>
@@ -98,7 +108,7 @@
 
   {% comment %} 2. CONTENT LAYER {% endcomment %}
   <div
-    class="{{ content_container_class }} {{ s.align_x }} {{ s.align_y }} px-6 lg:px-12 gap-6 transition-all"
+    class="{{ content_container_class }} {{ s.align_x }} {{ s.align_y }} px-6 lg:px-12 gap-6 transition-all {{ animation_class }}"
     style="padding-bottom: {{ s.marquee_clearance }}px;"
   >
     {% content_for 'blocks' %}
@@ -144,7 +154,7 @@
         { "value": "h-[75vh]", "label": "Standard (75% Screen)" },
         { "value": "h-screen", "label": "Immersive (Full Screen)" }
       ],
-      "default": "h-[75vh]"
+      "default": "h-auto py-24"
     },
     {
       "type": "header",
@@ -162,6 +172,7 @@
       "type": "header",
       "content": "Overlay & Contrast"
     },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
     {
       "type": "checkbox",
       "id": "enable_gradient",

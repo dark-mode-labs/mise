@@ -1,27 +1,38 @@
 {% comment %}
-  Props:
-  - items: (array of strings) or (string) comma separated
-  - speed: (integer) seconds (default: 15)
-  - direction: (string) 'left' or 'right'
+  Props: 
+  - items (comma string)
+  - speed (int)
+  - direction ('left' | 'right') - Default: 'left'
 {% endcomment %}
 
-<div class="w-full overflow-hidden whitespace-nowrap py-3 border-y border-current/10">
-  <div class="inline-block animate-marquee" style="animation-duration: {{ speed | default: 15 }}s;">
-    {% comment %} Duplicate list 4 times to ensure seamless loop on wide screens {% endcomment %}
+{% assign dir = direction | default: 'left' %}
+{% assign anim_class = 'animate-marquee' %}
+
+{% if dir == 'right' %}
+  {% assign anim_class = 'animate-marquee-reverse' %}
+{% endif %}
+
+<div class="w-full overflow-hidden py-3">
+  
+  {% comment %} 
+    Container uses 'w-max' and 'flex' to ensure continuous flow.
+    The animation class is swapped based on direction.
+  {% endcomment %}
+  <div class="flex w-max gap-12 {{ anim_class }}" 
+       style="animation-duration: {{ speed | default: 15 }}s;">
+    
+    {% comment %} Render Loop (2 Sets) {% endcomment %}
     {% for i in (1..4) %}
-      {% assign list = items | split: ',' %}
-      {% for item in list %}
-        <span class="mx-6 text-sm font-bold uppercase tracking-widest">{{ item }}</span>
-        <span class="opacity-25 mx-2">•</span>
-      {% endfor %}
+      <div class="flex gap-12 shrink-0">
+        {% assign list = items | split: ',' %}
+        {% for item in list %}
+          <div class="flex items-center gap-4">
+            <span class="text-sm font-bold uppercase tracking-widest whitespace-nowrap">{{ item }}</span>
+            <span class="opacity-25">•</span>
+          </div>
+        {% endfor %}
+      </div>
     {% endfor %}
+    
   </div>
 </div>
-
-{% stylesheet %}
-  @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-  .animate-marquee { animation: marquee linear infinite; }
-{% endstylesheet %}

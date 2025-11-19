@@ -9,19 +9,23 @@
   {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
 {% endunless %}
 
+{% capture rendered_marquee %}
+  {% render 'marquee', items: block.settings.text_list, speed: block.settings.speed, direction: block.settings.direction %}
+{% endcapture %}
+
 {% if block.settings.pin_bottom %}
   {% comment %} MODE A: PINNED TO BOTTOM {% endcomment %}
-  <div class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-body text-body"
+  <div class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-body text-body no-stagger"
        style="opacity: {{ block.settings.opacity | divided_by: 100.0 }};">
-    {% render 'marquee', items: block.settings.text_list, speed: block.settings.speed %}
+    {{ rendered_marquee }}
   </div>
 
 {% else %}
   {% comment %} MODE B: INLINE (FLOW CONTENT) {% endcomment %}
-  <div class="w-screen relative left-[calc(-50vw+50%)] my-4 z-base">
+  <div class="w-screen relative left-[calc(-50vw+50%)] my-4 z-base no-stagger">
     <div class="border-y border-std {{ scheme_class }} bg-body text-body" 
          style="opacity: {{ block.settings.opacity | divided_by: 100.0 }};">
-      {% render 'marquee', items: block.settings.text_list, speed: block.settings.speed %}
+      {{ rendered_marquee }}
     </div>
   </div>
 {% endif %}
@@ -56,6 +60,16 @@
       "id": "text_list",
       "label": "Items",
       "default": "Fresh Pasta, Live Music"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
     },
     {
       "type": "range",
