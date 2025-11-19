@@ -1,14 +1,14 @@
-{% assign text_color = 'var(--color-text)' %}
-{% unless block.settings.inherit_color %}
-  {% assign text_color = block.settings.custom_color %}
-{% endunless %}
+{% capture style_override %}
+  {% unless block.settings.inherit_color_scheme %}
+    style="--color-text: {{ block.settings.custom_color }};"
+  {% endunless %}
+{% endcapture %}
 
-<div class="w-full max-w-prose">
+<div class="w-full max-w-prose" {{ style_override }}>
   {% render 'typography', 
      text: block.settings.content, 
      tag: 'div', 
-     display_size: block.settings.display_size, 
-     color: text_color 
+     display_size: block.settings.display_size
   %}
 </div>
 
@@ -38,8 +38,8 @@
     },
     {
       "type": "checkbox",
-      "id": "inherit_color",
-      "label": "Inherit Text Color",
+      "id": "inherit_color_scheme",
+      "label": "Inherit Color Scheme",
       "default": true
     },
     {

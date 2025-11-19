@@ -1,0 +1,162 @@
+{% assign s = section.settings %}
+
+{% comment %} --- LAYOUT LOGIC --- {% endcomment %}
+{% capture layout_class %}
+  flex flex-col gap-10 lg:gap-20
+  {% if s.desktop_layout == 'image_right' %}lg:flex-row-reverse{% else %}lg:flex-row{% endif %}
+{% endcapture %}
+
+{% comment %} MOBILE STACKING ORDER {% endcomment %}
+{% if s.mobile_layout == 'text_first' %}
+  {% assign layout_class = layout_class | append: ' flex-col-reverse' %}
+{% endif %}
+
+{% comment %} --- ANIMATION LOGIC --- {% endcomment %}
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+<section class="section-feature w-full py-20 lg:py-32 px-6 lg:px-12 color-{{ s.color_scheme }}">
+  <div class="container mx-auto {{ layout_class }} items-center">
+    {% comment %} COLUMN 1: MEDIA {% endcomment %}
+    <div class="w-full lg:w-1/2 relative">
+      <div
+        class="rounded-lg overflow-hidden shadow-lg"
+        style="border-radius: {{ s.media_radius }}px;"
+      >
+        {% render 'media', src: s.image, fit: 'cover', ratio: s.media_aspect_ratio, placeholder: 'lifestyle-1' %}
+      </div>
+    </div>
+
+    {% comment %} COLUMN 2: CONTENT {% endcomment %}
+    <div class="w-full lg:w-1/2 flex flex-col {{ s.text_align }} {{ animation_class }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image with Text",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop Position",
+      "options": [
+        { "value": "image_left", "label": "Image Left" },
+        { "value": "image_right", "label": "Image Right" }
+      ],
+      "default": "image_left"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Stacking",
+      "options": [
+        { "value": "image_first", "label": "Image First" },
+        { "value": "text_first", "label": "Text First" }
+      ],
+      "default": "image_first"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "items-start text-left", "label": "Left" },
+        { "value": "items-center text-center", "label": "Center" },
+        { "value": "items-end text-right", "label": "Right" }
+      ],
+      "default": "items-start text-left"
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Feature Image"
+    },
+    {
+      "type": "select",
+      "id": "media_aspect_ratio",
+      "label": "Aspect Ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "auto", "label": "Natural" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "range",
+      "id": "media_radius",
+      "label": "Corner Radius",
+      "min": 0,
+      "max": 40,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Visuals"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animation",
+      "label": "Enable Entry Animation",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }],
+  "presets": [
+    {
+      "name": "Feature (Chef Profile)",
+      "settings": {
+        "desktop_layout": "image_left",
+        "media_aspect_ratio": "portrait",
+        "color_scheme": "scheme-1",
+        "enable_animation": true
+      },
+      "blocks": {
+        "chef_heading": {
+          "type": "heading",
+          "settings": {
+            "text": "Our Philosophy",
+            "tag": "h2",
+            "display_size": "h2"
+          }
+        },
+        "chef_bio": {
+          "type": "text",
+          "settings": {
+            "content": "We believe in honest food, sourced from farmers we know by name. Every plate tells a story of the season.",
+            "display_size": "body"
+          }
+        },
+        "chef_cta": {
+          "type": "button",
+          "settings": {
+            "label": "Read Our Story",
+            "style": "link"
+          }
+        }
+      },
+      "block_order": ["chef_heading", "chef_bio", "chef_cta"]
+    }
+  ]
+}
+{% endschema %}

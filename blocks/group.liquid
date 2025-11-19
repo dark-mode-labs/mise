@@ -5,7 +5,7 @@
 {% endcomment %}
 
 {% assign scheme_class = '' %}
-{% unless block.settings.inherit_scheme %}
+{% unless block.settings.inherit_color_scheme %}
   {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
 {% endunless %}
 
@@ -44,7 +44,7 @@
     },
     {
       "type": "checkbox",
-      "id": "inherit_scheme",
+      "id": "inherit_color_scheme",
       "label": "Inherit Color Scheme",
       "default": false
     },

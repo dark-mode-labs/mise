@@ -8,7 +8,7 @@
 {% endcomment %}
 
 {% assign tag_el = tag | default: 'p' %}
-{% assign text_color = color | default: 'inherit' %}
+{% assign text_color = color | default: 'var(--color-text)' %}
 {% assign size_class = 'text-base' %}
 {% comment %} Map "display_size" names to your Tailwind/CSS utility classes {% endcomment %}
 {% case display_size %}
