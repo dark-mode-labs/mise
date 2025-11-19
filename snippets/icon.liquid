@@ -4,29 +4,29 @@
   - size: (integer) pixel width (Default: 24)
 {% endcomment %}
 
-{% assign icon_size = size | default: 24 %}
+{% assign icon_classes = class | default: 'w-6 h-6' %}
 {% liquid
-    assign svg = '<circle cx="12" cy="12" r="10"></circle>'
-    case name
-        when 'arrow-right'
-            assign svg = '<path d="M5 12h14M12 5l7 7-7 7"/>'
-        when 'menu'
-            assign svg = '<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>'
-        when 'star'
-            assign svg = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>'
-    endcase
- %}
+  assign svg = '<circle cx="12" cy="12" r="10"></circle>'
+  case name
+    when 'arrow-right'
+      assign svg = '<path d="M5 12h14M12 5l7 7-7 7"/>'
+    when 'menu'
+      assign svg = '<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>'
+    when 'star'
+      assign svg = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>'
+    when 'chevron-down'
+      assign svg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7"/>'
+  endcase
+%}
 
-<svg 
-  width="{{ icon_size }}" 
-  height="{{ icon_size }}" 
-  viewBox="0 0 24 24" 
-  fill="none" 
-  stroke="currentColor" 
-  stroke-width="2" 
-  stroke-linecap="round" 
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
   stroke-linejoin="round"
-  class="icon icon-{{ name }}"
+  class="icon icon-{{ name }} {{ icon_classes }}"
 >
   {{ svg }}
 </svg>

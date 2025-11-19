@@ -1,0 +1,69 @@
+{% comment %}
+  BLOCK: SCROLL INDICATOR
+  - Anchors to bottom-center of the relative parent.
+  - Uses Tailwind 'animate-bounce'.
+{% endcomment %}
+
+<div
+  class="absolute left-1/2 -translate-x-1/2 z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80"
+  style="
+    bottom: {{ block.settings.bottom_offset }}px;
+    color: {% if block.settings.inherit_color %}inherit{% else %}{{ block.settings.custom_color }}{% endif %};
+  "
+  onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });"
+>
+  {% if block.settings.label != blank %}
+    <span class="text-[10px] uppercase tracking-[0.2em] font-bold mb-1">{{ block.settings.label }}</span>
+  {% endif %}
+
+  {% render 'icon', name: 'chevron-down', class: 'animate-bounce w-6 h-6' %}
+</div>
+
+{% schema %}
+{
+  "name": "Scroll Indicator",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "bottom_offset",
+      "label": "Bottom Offset",
+      "info": "Lift up to clear marquees.",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Scroll"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color",
+      "label": "Inherit Text Color",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "custom_color",
+      "label": "Custom Color",
+      "default": "#ffffff"
+    }
+  ]
+}
+{% endschema %}
