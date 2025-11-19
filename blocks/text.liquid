@@ -7,7 +7,7 @@
   {% render 'typography', 
      text: block.settings.content, 
      tag: 'div', 
-     size: block.settings.size, 
+     display_size: block.settings.display_size, 
      color: text_color 
   %}
 </div>
@@ -28,7 +28,7 @@
     },
     {
       "type": "select",
-      "id": "size",
+      "id": "display_size",
       "label": "Size",
       "default": "body",
       "options": [
