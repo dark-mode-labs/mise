@@ -1,25 +1,37 @@
+{% comment %}
+  LOGIC:
+  - Sizing: We toggle between 'w-full' (Fill) and 'w-max max-w-full' (Fit).
+  - Glass: If enabled, we lower the bg opacity slightly and add backdrop-blur.
+{% endcomment %}
+
 {% assign scheme_class = '' %}
 {% unless block.settings.inherit_scheme %}
   {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
 {% endunless %}
 
-<div class="group-block {{ scheme_class }} flex flex-col relative z-10 overflow-hidden transition-all bg-body"
-     style="
-       border-radius: {{ block.settings.border_radius }}px;
-       padding: {{ block.settings.padding }}px;
-       gap: {{ block.settings.gap }}px;
-       align-items: {{ block.settings.align_items }};
-       text-align: {{ block.settings.text_align }};
-       {% if block.settings.shadow %}box-shadow: 0 4px 20px rgba(0,0,0,0.1);{% endif %}
-       opacity: {{ block.settings.opacity | divided_by: 100.0 }};
-     ">
+{% capture width_class %}
+  {% if block.settings.width_mode == 'fit' %}w-fit max-w-full mx-auto
+  {% elsif block.settings.width_mode == 'fixed' %}w-full max-w-[{{ block.settings.fixed_width }}px] mx-auto
+  {% else %}w-full{% endif %}
+{% endcapture %}
 
-  {% comment %} 
-     If inherited, vars cascade from parent. 
-     If overridden, vars are reset by the 'color-scheme-x' class above.
-  {% endcomment %}
+{% capture glass_class %}
+  {% if block.settings.enable_glass %}backdrop-blur-md bg-opacity-80 border border-white/10{% endif %}
+{% endcapture %}
+
+<div
+  class="group-block relative z-content {{ width_class }} flex flex-col overflow-hidden transition-all {{ scheme_class }} {{ glass_class }} bg-body text-body"
+  style="
+    border-radius: {{ block.settings.border_radius }}px;
+    padding: {{ block.settings.padding }}px;
+    gap: {{ block.settings.gap }}px;
+    align-items: {{ block.settings.align_items }};
+    text-align: {{ block.settings.text_align }};
+    {% if block.settings.shadow %}box-shadow: 0 8px 32px rgba(0,0,0,0.15);{% endif %}
+    opacity: {{ block.settings.opacity | divided_by: 100.0 }};
+  "
+>
   {% content_for 'blocks' %}
-
 </div>
 
 {% schema %}
@@ -28,14 +40,13 @@
   "settings": [
     {
       "type": "header",
-      "content": "Theme Hierarchy"
+      "content": "Theme"
     },
     {
       "type": "checkbox",
       "id": "inherit_scheme",
       "label": "Inherit Color Scheme",
-      "default": true,
-      "info": "Uncheck to enforce a specific scheme for this card."
+      "default": false
     },
     {
       "type": "color_scheme",
@@ -45,24 +56,47 @@
     },
     {
       "type": "header",
-      "content": "Layout"
+      "content": "Sizing & Layout"
+    },
+    {
+      "type": "select",
+      "id": "width_mode",
+      "label": "Width",
+      "options": [
+        { "value": "fill", "label": "Fill Container" },
+        { "value": "fit", "label": "Fit to Content" },
+        { "value": "fixed", "label": "Fixed Width" }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "fixed_width",
+      "label": "Fixed Max Width (px)",
+      "min": 200,
+      "max": 800,
+      "step": 10,
+      "default": 400,
+      "info": "Only applies if 'Fixed Width' is selected."
     },
     {
       "type": "range",
       "id": "gap",
       "label": "Gap (px)",
-      "min": 0, "max": 60, "default": 16
+      "min": 0,
+      "max": 60,
+      "default": 16
     },
     {
       "type": "select",
       "id": "align_items",
-      "label": "Alignment",
+      "label": "Inner Alignment",
       "options": [
         { "value": "flex-start", "label": "Left" },
         { "value": "center", "label": "Center" },
         { "value": "flex-end", "label": "Right" }
       ],
-      "default": "flex-start"
+      "default": "center"
     },
     {
       "type": "select",
@@ -73,25 +107,42 @@
         { "value": "center", "label": "Center" },
         { "value": "right", "label": "Right" }
       ],
-      "default": "left"
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Surface Design"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Enable Glass Effect",
+      "default": false,
+      "info": "Adds blur and subtle border. Best for dark backgrounds."
     },
     {
       "type": "range",
       "id": "padding",
       "label": "Padding (px)",
-      "min": 0, "max": 80, "default": 24
+      "min": 0,
+      "max": 80,
+      "default": 32
     },
     {
       "type": "range",
       "id": "opacity",
       "label": "Opacity",
-      "min": 0, "max": 100, "default": 100
+      "min": 0,
+      "max": 100,
+      "default": 100
     },
     {
       "type": "range",
       "id": "border_radius",
-      "label": "Radius",
-      "min": 0, "max": 40, "default": 8
+      "label": "Corner Radius",
+      "min": 0,
+      "max": 40,
+      "default": 12
     },
     {
       "type": "checkbox",
@@ -100,8 +151,6 @@
       "default": true
     }
   ],
-  "blocks": [
-    { "type": "@theme" }
-  ]
+  "blocks": [{ "type": "@theme" }]
 }
 {% endschema %}

@@ -57,10 +57,22 @@ export default {
           xl: '1240px', // Capping width for readability
         },
       },
-    },
+      zIndex: {
+        // The Mise Layer System
+        'negative': '-1',
+        'base': '0',
+        'media': '10',    // Background images/video
+        'content': '20',  // Text, buttons, standard blocks
+        'floating': '30', // Pinned elements inside a section (Marquees, badges)
+        'header': '40',   // Sticky site header
+        'overlay': '50',  // Slide-out drawers/cart
+        'modal': '60',    // Centered popups
+        'toast': '70',    // Notifications
+      }
+    }
   },
   plugins: [
-    require('@tailwindcss/typography'), 
+    require('@tailwindcss/typography'),
     require('@tailwindcss/forms'),
   ],
 }

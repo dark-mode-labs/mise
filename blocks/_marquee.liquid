@@ -1,30 +1,55 @@
+{% comment %}
+  LOGIC:
+  - If pinned: We use 'absolute bottom-0' to stick it to the section floor.
+  - If inline: We use the 'left-[calc...]' hack to break out of the container flow.
+{% endcomment %}
+
 {% assign scheme_class = '' %}
 {% unless block.settings.inherit_scheme %}
   {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
 {% endunless %}
 
-<div class="w-screen relative left-[calc(-50vw+50%)] my-4">
-  <div class="backdrop-blur-md border-y border-std {{ scheme_class }} bg-body text-body" 
-       style="opacity: 0.95;">
+{% if block.settings.pin_bottom %}
+  {% comment %} MODE A: PINNED TO BOTTOM {% endcomment %}
+  <div class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-body text-body"
+       style="opacity: {{ block.settings.opacity | divided_by: 100.0 }};">
     {% render 'marquee', items: block.settings.text_list, speed: block.settings.speed %}
   </div>
-</div>
+
+{% else %}
+  {% comment %} MODE B: INLINE (FLOW CONTENT) {% endcomment %}
+  <div class="w-screen relative left-[calc(-50vw+50%)] my-4 z-base">
+    <div class="border-y border-std {{ scheme_class }} bg-body text-body" 
+         style="opacity: {{ block.settings.opacity | divided_by: 100.0 }};">
+      {% render 'marquee', items: block.settings.text_list, speed: block.settings.speed %}
+    </div>
+  </div>
+{% endif %}
 
 {% schema %}
 {
   "name": "Scrolling Marquee",
   "settings": [
     {
-      "type": "checkbox",
-      "id": "inherit_scheme",
-      "label": "Inherit Color Scheme",
-      "default": true
+      "type": "header",
+      "content": "Layout"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Scheme",
-      "default": "scheme-1"
+      "type": "checkbox",
+      "id": "pin_bottom",
+      "label": "Pin to Bottom",
+      "default": false,
+      "info": "Fixes the marquee to the bottom of the section."
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "label": "Opacity",
+      "min": 0, "max": 100, "default": 95
+    },
+    {
+      "type": "header",
+      "content": "Content"
     },
     {
       "type": "text",
@@ -36,7 +61,24 @@
       "type": "range",
       "id": "speed",
       "label": "Speed",
-      "min": 5, "max": 30, "default": 15 }
+      "min": 5, "max": 30, "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_scheme",
+      "label": "Inherit Color Scheme",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-2"
+    }
   ]
 }
 {% endschema %}
