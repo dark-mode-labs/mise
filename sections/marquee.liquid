@@ -1,0 +1,71 @@
+{% assign s = section.settings %}
+{% assign scheme_class = 'color-' | append: s.color_scheme %}
+
+<section class="section-marquee w-full border-y border-std {{ scheme_class }} bg-body text-body overflow-hidden"
+         style="padding-top: {{ s.padding_vertical }}px; padding-bottom: {{ s.padding_vertical }}px;">
+  
+  {% comment %} Reuse the snippet we built {% endcomment %}
+  {% render 'marquee', 
+     items: s.text_list, 
+     speed: s.speed, 
+     direction: s.direction 
+  %}
+
+</section>
+
+{% schema %}
+{
+  "name": "Scrolling Text",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text_list",
+      "label": "Text",
+      "default": "Reserve Now • Open Daily • Fresh Ingredients",
+      "info": "Comma separated"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "min": 5,
+      "max": 60,
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 16
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling Text"
+    }
+  ]
+}
+{% endschema %}

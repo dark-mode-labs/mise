@@ -1,0 +1,98 @@
+{% assign s = section.settings %}
+
+<section class="section-divider w-full flex items-center justify-center color-{{ s.color_scheme }}"
+         style="
+           padding-top: {{ s.padding_top }}px; 
+           padding-bottom: {{ s.padding_bottom }}px;
+           background-color: var(--color-bg);
+         ">
+  
+  <div class="container mx-auto px-4">
+    <div class="relative flex items-center justify-center w-full">
+      
+      {% comment %} THE LINE {% endcomment %}
+      {% if s.show_line %}
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+          <div class="w-full border-t border-std opacity-50"></div>
+        </div>
+      {% endif %}
+
+      {% comment %} THE ICON (Centered on top of line) {% endcomment %}
+      {% if s.show_icon %}
+        <div class="relative bg-body px-4 text-body">
+          {% comment %} 
+            You can swap 'star' for a custom SVG snippet or select from your icon library.
+            Ideally, this select pulls from snippets/icon.liquid 
+          {% endcomment %}
+          {% render 'icon', name: s.icon_select, class: 'w-6 h-6 opacity-75' %}
+        </div>
+      {% endif %}
+      
+    </div>
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "Divider",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Visuals"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_line",
+      "label": "Show Line",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show Icon",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon_select",
+      "label": "Icon",
+      "options": [
+        { "value": "star", "label": "Star" },
+        { "value": "chevron-down", "label": "Diamond/Arrow" },
+        { "value": "menu", "label": "Utensils" }
+      ],
+      "default": "star"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Spacing",
+      "min": 0, "max": 120, "step": 4, "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Spacing",
+      "min": 0, "max": 120, "step": 4, "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    { "name": "Divider" }
+  ]
+}
+{% endschema %}
