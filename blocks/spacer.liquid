@@ -1,0 +1,12 @@
+<div class="w-full">
+  {% render 'spacer', height: block.settings.height %}
+</div>
+
+{% schema %}
+{
+  "name": "Spacer",
+  "settings": [
+    { "type": "range", "id": "height", "label": "Height (px)", "min": 10, "max": 150, "default": 40 }
+  ]
+}
+{% endschema %}

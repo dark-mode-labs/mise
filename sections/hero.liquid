@@ -1,0 +1,186 @@
+{% assign s = section.settings %}
+{% assign align_class = s.align_x | append: ' ' | append: s.align_y %}
+
+<section class="section-hero color-{{ s.color_scheme }} relative w-full flex flex-col overflow-hidden {{ s.height }}">
+  
+  {% comment %} Background Layer {% endcomment %}
+  <div class="absolute inset-0 z-0 bg-body">
+    {% comment %} bg-body uses var(--color-bg) defined by the scheme {% endcomment %}
+    
+    {% if s.bg_image != blank %}
+      {% render 'media', src: s.bg_image, fit: 'cover' %}
+      {% comment %} 
+         The overlay now uses the Scheme's "Background" color 
+         (usually black or white) with opacity.
+      {% endcomment %}
+      <div class="absolute inset-0 pointer-events-none bg-body" 
+           style="opacity: {{ s.overlay_opacity | divided_by: 100.0 }};">
+      </div>
+    {% endif %}
+  </div>
+
+  {% comment %} Content Layer (Text inherits var(--color-text) from Section Class) {% endcomment %}
+  <div class="relative z-10 container mx-auto px-4 h-full flex flex-col {{ align_class }} gap-6">
+    {% content_for 'blocks' %}
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "Modular Hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Section Height",
+      "options": [
+        { "value": "py-24", "label": "Auto" },
+        { "value": "h-[75vh]", "label": "75% Screen" },
+        { "value": "h-screen", "label": "Full Screen" }
+      ],
+      "default": "h-[75vh]"
+    },
+    {
+      "type": "select",
+      "id": "align_x",
+      "label": "Horizontal Align",
+      "options": [
+        { "value": "items-start text-left", "label": "Left" },
+        { "value": "items-center text-center", "label": "Center" },
+        { "value": "items-end text-right", "label": "Right" }
+      ],
+      "default": "items-center text-center"
+    },
+    {
+      "type": "select",
+      "id": "align_y",
+      "label": "Vertical Align",
+      "options": [
+        { "value": "justify-start pt-24", "label": "Top" },
+        { "value": "justify-center", "label": "Middle" },
+        { "value": "justify-end pb-24", "label": "Bottom" }
+      ],
+      "default": "justify-center"
+    },
+    {
+      "type": "header",
+      "content": "Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0, "max": 100, "default": 40
+    }
+  ],
+  "blocks": [
+    { "type": "@theme" }
+  ],
+  "presets": [
+    {
+      "name": "Hero (Gastropub Launch)",
+      "settings": {
+        "height": "h-screen",
+        "align_x": "items-center text-center",
+        "align_y": "justify-center",
+        "bg_image": "shopify-placeholder-food",
+        "color_scheme": "scheme-1",
+        "overlay_opacity": 40
+      },
+      "blocks": {
+        "hero_logo": {
+          "type": "logo",
+          "settings": {
+            "width": 120
+          }
+        },
+        "spacer_top": {
+          "type": "spacer",
+          "settings": {
+            "height": 20
+          }
+        },
+        "hero_heading": {
+          "type": "jumbo-text",
+          "settings": {
+            "text": "Farm to Table\nExcellence",
+            "size": "display",
+            "inherit_color": true
+          }
+        },
+        "hero_subtext": {
+          "type": "text",
+          "settings": {
+            "content": "Experience seasonal flavors sourced from local growers. Open daily for dinner and weekend brunch.",
+            "size": "body",
+            "inherit_color": true
+          }
+        },
+        "spacer_middle": {
+          "type": "spacer",
+          "settings": {
+            "height": 10
+          }
+        },
+        "btn_primary": {
+          "type": "button",
+          "settings": {
+            "label": "Book a Table",
+            "link": "/reservations",
+            "style": "primary",
+            "inherit_style": true
+          }
+        },
+        "btn_secondary": {
+          "type": "button",
+          "settings": {
+            "label": "View Menu",
+            "link": "/menu",
+            "style": "link",
+            "inherit_style": true
+          }
+        },
+        "hero_ticker": {
+          "type": "_marquee",
+          "settings": {
+            "text_list": "Fresh Oysters Daily • Live Jazz Fridays • Happy Hour 5-7pm",
+            "speed": 20,
+            "inherit_scheme": false,
+            "color_scheme": "scheme-2"
+          }
+        }
+      },
+      "block_order": [
+        "hero_logo",
+        "spacer_top",
+        "hero_heading",
+        "hero_subtext",
+        "spacer_middle",
+        "btn_primary",
+        "btn_secondary",
+        "hero_ticker"
+      ]
+    }
+  ]
+}
+{% endschema %}

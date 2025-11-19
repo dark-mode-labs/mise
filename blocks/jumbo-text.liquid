@@ -1,0 +1,54 @@
+{% assign text_color = 'var(--color-text)' %}
+{% unless block.settings.inherit_color %}
+  {% assign text_color = block.settings.custom_color %}
+{% endunless %}
+
+<div class="w-full max-w-4xl">
+  {% render 'typography', 
+     text: block.settings.text, 
+     tag: 'h1', 
+     size: block.settings.size, 
+     color: text_color 
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "Headline",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Taste the Difference"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "default": "display",
+      "options": [
+        { "value": "display", "label": "Display (Massive)" },
+        { "value": "h1", "label": "H1 (Standard)" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color",
+      "label": "Inherit Text Color",
+      "default": true,
+      "info": "Uncheck to pick a custom color."
+    },
+    {
+      "type": "color",
+      "id": "custom_color",
+      "label": "Custom Color",
+      "default": "#ffffff"
+    }
+  ]
+}
+{% endschema %}

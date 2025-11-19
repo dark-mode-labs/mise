@@ -1,0 +1,22 @@
+{% comment %}
+  Props:
+  - content: (Block content captured) - *Requires 'capture' or 'yield' support in parser*
+  - width: (string) 'narrow', 'regular', 'wide', 'full'
+{% endcomment %}
+
+{% assign max_w = 'max-w-5xl' %}
+
+{% case width %}
+  {% when 'narrow' %}  {% assign max_w = 'max-w-3xl' %}
+  {% when 'wide' %}    {% assign max_w = 'max-w-7xl' %}
+  {% when 'full' %}    {% assign max_w = 'max-w-full' %}
+{% endcase %}
+
+<div class="container mx-auto px-4 {{ max_w }}">
+  {{ content }} 
+  {% comment %} 
+    Note: In standard Liquid, you can't pass HTML 'content' into a render tag easily. 
+    Since you are writing the parser, you might implement this as a 'yield' 
+    or pass the inner HTML as a variable.
+  {% endcomment %}
+</div>

@@ -1,0 +1,25 @@
+{% comment %}
+  Props:
+  - tag: (string) 'h1', 'h2', 'p', 'span', 'div' (Default: 'p')
+  - size: (string) 'display', 'h1', 'h2', 'body', 'caption'
+  - color: (string) Hex code or CSS var
+  - weight: (string) 'bold', 'normal', 'light'
+  - text: (string) The content to render
+{% endcomment %}
+
+{% assign tag_el = tag | default: 'p' %}
+{% assign text_color = color | default: 'inherit' %}
+
+{% comment %} Map "size" names to your Tailwind/CSS utility classes {% endcomment %}
+{% case size %}
+  {% when 'display' %} {% assign size_class = 'text-5xl md:text-7xl tracking-tight leading-none' %}
+  {% when 'h1' %}      {% assign size_class = 'text-4xl md:text-5xl font-bold' %}
+  {% when 'h2' %}      {% assign size_class = 'text-3xl md:text-4xl font-semibold' %}
+  {% when 'body' %}    {% assign size_class = 'text-base md:text-lg leading-relaxed' %}
+  {% when 'caption' %} {% assign size_class = 'text-xs uppercase tracking-widest opacity-80' %}
+  {% else %}           {% assign size_class = 'text-base' %}
+{% endcase %}
+
+<{{ tag_el }} class="{{ size_class }} font-{{ weight | default: 'normal' }}" style="color: {{ text_color }};">
+  {{ text }}
+</{{ tag_el }}>

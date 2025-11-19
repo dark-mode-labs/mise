@@ -1,0 +1,53 @@
+{% assign text_color = 'var(--color-text)' %}
+{% unless block.settings.inherit_color %}
+  {% assign text_color = block.settings.custom_color %}
+{% endunless %}
+
+<div class="w-full max-w-prose">
+  {% render 'typography', 
+     text: block.settings.content, 
+     tag: 'div', 
+     size: block.settings.size, 
+     color: text_color 
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "Text",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "content",
+      "label": "Content",
+      "default": "Locally sourced ingredients."
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "default": "body",
+      "options": [
+        { "value": "body", "label": "Body" },
+        { "value": "caption", "label": "Caption" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color",
+      "label": "Inherit Text Color",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "custom_color",
+      "label": "Custom Color",
+      "default": "#ffffff"
+    }
+  ]
+}
+{% endschema %}

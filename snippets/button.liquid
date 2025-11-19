@@ -1,0 +1,36 @@
+{% comment %}
+  Props:
+  - type: (string) 'a' (link) or 'button' (action)
+  - url: (string) Required if type is 'a'
+  - label: (string) Button text
+  - style: (string) 'primary', 'secondary', 'outline', 'link'
+  - width: (string) 'full' or 'auto' (Default: 'auto')
+{% endcomment %}
+
+{% liquid 
+  assign width_class = 'inline-flex'
+  if width == 'full' 
+    assign width_class  = 'w-full flex justify-center'
+  endif
+%}
+
+{% case style %}
+  {% when 'primary' %}   {% assign style_class = 'bg-black text-white hover:bg-gray-800 border border-transparent' %}
+  {% when 'secondary' %} {% assign style_class = 'bg-gray-200 text-black hover:bg-gray-300 border border-transparent' %}
+  {% when 'outline' %}   {% assign style_class = 'bg-transparent border border-current hover:opacity-70' %}
+  {% when 'link' %}      {% assign style_class = 'underline underline-offset-4 hover:no-underline bg-transparent border-none p-0' %}
+{% endcase %}
+
+{% capture common_classes %}
+  {{ width_class }} {{ style_class }} px-6 py-3 text-sm font-bold uppercase tracking-wide transition-all duration-200 ease-in-out
+{% endcapture %}
+
+{% if type == 'button' %}
+  <button class="{{ common_classes }}">
+    {{ label }}
+  </button>
+{% else %}
+  <a href="{{ url }}" class="{{ common_classes }}">
+    {{ label }}
+  </a>
+{% endif %}

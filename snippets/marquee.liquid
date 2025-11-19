@@ -1,0 +1,27 @@
+{% comment %}
+  Props:
+  - items: (array of strings) or (string) comma separated
+  - speed: (integer) seconds (default: 15)
+  - direction: (string) 'left' or 'right'
+{% endcomment %}
+
+<div class="w-full overflow-hidden whitespace-nowrap py-3 border-y border-current/10">
+  <div class="inline-block animate-marquee" style="animation-duration: {{ speed | default: 15 }}s;">
+    {% comment %} Duplicate list 4 times to ensure seamless loop on wide screens {% endcomment %}
+    {% for i in (1..4) %}
+      {% assign list = items | split: ',' %}
+      {% for item in list %}
+        <span class="mx-6 text-sm font-bold uppercase tracking-widest">{{ item }}</span>
+        <span class="opacity-25 mx-2">•</span>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+
+{% stylesheet %}
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee { animation: marquee linear infinite; }
+{% endstylesheet %}

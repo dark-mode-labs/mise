@@ -1,0 +1,42 @@
+{% assign scheme_class = '' %}
+{% unless block.settings.inherit_scheme %}
+  {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
+{% endunless %}
+
+<div class="w-screen relative left-[calc(-50vw+50%)] my-4">
+  <div class="backdrop-blur-md border-y border-std {{ scheme_class }} bg-body text-body" 
+       style="opacity: 0.95;">
+    {% render 'marquee', items: block.settings.text_list, speed: block.settings.speed %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Scrolling Marquee",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "inherit_scheme",
+      "label": "Inherit Color Scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "text_list",
+      "label": "Items",
+      "default": "Fresh Pasta, Live Music"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "min": 5, "max": 30, "default": 15 }
+  ]
+}
+{% endschema %}

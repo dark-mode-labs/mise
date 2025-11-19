@@ -1,0 +1,34 @@
+{% comment %}
+  Props:
+  - src: (string) Image URL
+  - alt: (string) Alt text
+  - ratio: (string) 'square' (1:1), 'video' (16:9), 'portrait' (3:4), 'landscape' (4:3)
+  - fit: (string) 'cover' or 'contain' (Default: 'cover')
+  - loading: (string) 'lazy' or 'eager' (Default: 'lazy')
+{% endcomment %}
+
+{% assign fit_mode = fit | default: 'cover' %}
+{% assign load_mode = loading | default: 'lazy' %}
+{% assign ratio_class = 'aspect-auto' %}
+
+{% case ratio %}
+  {% when 'square' %}    {% assign ratio_class = 'aspect-square' %}
+  {% when 'video' %}     {% assign ratio_class = 'aspect-video' %}
+  {% when 'portrait' %}  {% assign ratio_class = 'aspect-[3/4]' %}
+  {% when 'landscape' %} {% assign ratio_class = 'aspect-[4/3]' %}
+{% endcase %}
+
+<div class="media-wrapper w-full overflow-hidden bg-gray-100 {{ ratio_class }}">
+  {% if src != blank %}
+    <img 
+      src="{{ src }}" 
+      alt="{{ alt | escape }}" 
+      loading="{{ load_mode }}"
+      class="w-full h-full object-{{ fit_mode }} transition-opacity duration-500 block"
+    >
+  {% else %}
+    <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200">
+      <span class="text-xs uppercase">No Image</span>
+    </div>
+  {% endif %}
+</div>

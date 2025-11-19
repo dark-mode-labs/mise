@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* .btn-primary
+    Consumes: 
+      - bg-btn  -> var(--color-btn-bg)
+      - text-btn -> var(--color-btn-text)
+  */
+  .btn-primary {
+    @apply bg-btn text-btn border border-transparent hover:opacity-90;
+  }
+
+  /* .btn-outline
+    Consumes: 
+      - text-body   -> var(--color-text)
+      - border-body -> var(--color-text)
+  */
+  .btn-outline {
+    @apply bg-transparent text-body border border-body hover:opacity-75;
+  }
+
+  /* .btn-link 
+    Consumes: 
+      - text-body -> var(--color-text)
+  */
+  .btn-link {
+    @apply bg-transparent text-body border-none underline underline-offset-4 p-0 hover:no-underline;
+  }
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 { @apply font-heading; }
+  body { @apply font-body text-body bg-body antialiased; }
+  
+  /* Marquee Pause on Hover */
+  .animate-marquee:hover { animation-play-state: paused; }
+}

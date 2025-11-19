@@ -1,0 +1,14 @@
+{% comment %}
+  Props:
+  - height: (integer) in pixels (default: 20)
+  - mobile_height: (integer) optional mobile override
+{% endcomment %}
+
+{% assign h = height | default: 20 %}
+{% assign mh = mobile_height | default: h %}
+
+<div 
+  style="--h-desk: {{ h }}px; --h-mob: {{ mh }}px;"
+  class="w-full h-[var(--h-mob)] md:h-[var(--h-desk)]"
+  aria-hidden="true">
+</div>
