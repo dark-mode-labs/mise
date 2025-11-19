@@ -1,34 +1,68 @@
 {% comment %}
   Props:
-  - src: (string) Image URL
-  - alt: (string) Alt text
-  - ratio: (string) 'square' (1:1), 'video' (16:9), 'portrait' (3:4), 'landscape' (4:3)
-  - fit: (string) 'cover' or 'contain' (Default: 'cover')
-  - loading: (string) 'lazy' or 'eager' (Default: 'lazy')
+  - src: (Image object) Desktop Image
+  - src_mobile: (Image object) Mobile Image (Optional)
+  - video: (String) URL to MP4 (Optional - Overrides images)
+  - ratio: (String) 'square', 'video', 'portrait', 'auto' (Default: 'auto' / fill)
+  - fit: (String) 'cover' or 'contain' (Default: 'cover')
+  - placeholder: (String) Name of the svg placeholder to use if src is missing (Default: 'image')
+  - loading: (String) 'lazy' or 'eager' (Default: 'lazy')
 {% endcomment %}
 
 {% assign fit_mode = fit | default: 'cover' %}
 {% assign load_mode = loading | default: 'lazy' %}
-{% assign ratio_class = 'aspect-auto' %}
 
-{% case ratio %}
-  {% when 'square' %}    {% assign ratio_class = 'aspect-square' %}
-  {% when 'video' %}     {% assign ratio_class = 'aspect-video' %}
-  {% when 'portrait' %}  {% assign ratio_class = 'aspect-[3/4]' %}
-  {% when 'landscape' %} {% assign ratio_class = 'aspect-[4/3]' %}
-{% endcase %}
+{% comment %} 1. Aspect Ratio Logic {% endcomment %}
+{% capture ratio_class %}
+  {% case ratio %}
+    {% when 'square' %}aspect-square
+    {% when 'video' %}aspect-video
+    {% when 'portrait' %}aspect-[3/4]
+    {% when 'landscape' %}aspect-[4/3]
+    {% else %}h-full
+  {% endcase %}
+{% endcapture %}
 
-<div class="media-wrapper w-full overflow-hidden bg-gray-100 {{ ratio_class }}">
-  {% if src != blank %}
-    <img 
-      src="{{ src }}" 
-      alt="{{ alt | escape }}" 
-      loading="{{ load_mode }}"
-      class="w-full h-full object-{{ fit_mode }} transition-opacity duration-500 block"
-    >
+<div class="media-wrapper w-full {{ ratio_class }} overflow-hidden relative bg-gray-100">
+
+  {% if video != blank %}
+    {% comment %} --- VIDEO MODE --- {% endcomment %}
+    <video 
+      autoplay muted loop playsinline 
+      class="w-full h-full object-{{ fit_mode }} pointer-events-none"
+      {% if src %}poster="{{ src | image_url: width: 800 }}"{% endif %}>
+      <source src="{{ video }}" type="video/mp4">
+    </video>
+
+  {% elsif src != blank %}
+    {% comment %} --- IMAGE MODE (With Art Direction) --- {% endcomment %}
+    {% if src_mobile != blank %}
+      <picture class="w-full h-full block">
+        <source media="(max-width: 767px)" srcset="{{ src_mobile | image_url: width: 800 }}">
+        <source media="(min-width: 768px)" srcset="{{ src | image_url: width: 1600 }}">
+        <img 
+          src="{{ src | image_url: width: 1600 }}" 
+          alt="{{ src.alt | escape }}"
+          loading="{{ load_mode }}"
+          width="{{ src.width }}"
+          height="{{ src.height }}"
+          class="w-full h-full object-{{ fit_mode }} block transition-opacity duration-500"
+        >
+      </picture>
+    {% else %}
+      <img 
+        src="{{ src | image_url: width: 1600 }}" 
+        alt="{{ src.alt | escape }}"
+        loading="{{ load_mode }}"
+        width="{{ src.width }}"
+        height="{{ src.height }}"
+        class="w-full h-full object-{{ fit_mode }} block transition-opacity duration-500"
+      >
+    {% endif %}
+
   {% else %}
-    <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200">
-      <span class="text-xs uppercase">No Image</span>
-    </div>
+    {% comment %} --- PLACEHOLDER FALLBACK --- {% endcomment %}
+    {{ placeholder | default: 'lifestyle-1' | placeholder_svg_tag: 'w-full h-full object-cover text-gray-300 bg-gray-100 fill-current' }}
   {% endif %}
+
 </div>
