@@ -1,42 +1,27 @@
 {% assign s = section.settings %}
 
-{% comment %} --- DETECT DUAL MEDIA --- {% endcomment %}
+{% comment %} --- 1. DETECT DUAL MEDIA --- {% endcomment %}
 {% assign has_media_2 = false %}
 {% if s.bg_image_2 != blank or s.video_url_2 != blank %}
   {% assign has_media_2 = true %}
 {% endif %}
 
-{% comment %} --- LAYOUT LOGIC --- {% endcomment %}
+{% comment %} --- 2. LAYOUT LOGIC --- {% endcomment %}
 {% capture container_layout %}
   {% if s.layout_mode == 'split_right' %}flex flex-col lg:flex-row-reverse
   {% elsif s.layout_mode == 'split_left' %}flex flex-col lg:flex-row
   {% else %}relative flex flex-col{% endif %} 
 {% endcapture %}
 
-{% comment %}
-  GAP LOGIC:
-  We apply the gap only in split mode on desktop.
-{% endcomment %}
 {% capture gap_style %}
   {% if s.layout_mode contains 'split' %}gap: {{ s.split_gap }}px;{% endif %}
 {% endcapture %}
 
-{% comment %}
-  MEDIA CONTAINER WIDTH:
-  - Split Mode: 50% width (lg:w-1/2) + h-full.
-  - Overlay Mode: Absolute inset-0 (behind text).
-{% endcomment %}
 {% capture media_container_class %}
   {% if s.layout_mode contains 'split' %}w-full lg:w-1/2 relative h-[50vh] lg:h-auto flex
   {% else %}absolute inset-0 z-media flex{% endif %}
 {% endcapture %}
 
-{% comment %}
-  CONTENT CONTAINER WIDTH:
-  - Split Mode: 50% width (lg:w-1/2).
-    IMPORTANT: We remove 'h-full' here and let flexbox handle height to fix the top-margin bug.
-  - Overlay Mode: Container centered.
-{% endcomment %}
 {% capture content_container_class %}
   {% if s.layout_mode contains 'split' %}w-full lg:w-1/2 relative bg-body flex flex-col justify-center
   {% else %}relative z-content container mx-auto flex flex-col{% endif %}
@@ -60,11 +45,14 @@
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
+{% comment %} Additive Padding: Aesthetic Spacing + Functional Clearance {% endcomment %}
+{% assign total_pb = s.padding_bottom | plus: s.marquee_clearance %}
+
 <section
   class="section-hero w-full overflow-hidden color-{{ s.color_scheme }} {{ container_layout }} {{ s.height }}"
   style="{{ gap_style }}"
 >
-  {% comment %} 1. MEDIA LAYER {% endcomment %}
+  {% comment %} LAYER 1: MEDIA {% endcomment %}
   <div class="{{ media_container_class }} bg-gray-900 overflow-hidden">
     {% comment %} SLOT 1 {% endcomment %}
     <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-white/10{% else %}w-full{% endif %}">
@@ -76,7 +64,7 @@
         loading: 'eager',
         placeholder: 'lifestyle-2'
       %}
-      {% comment %} Gradient only on Overlay Mode {% endcomment %}
+
       {% if s.layout_mode == 'overlay' %}
         <div
           class="absolute inset-0 pointer-events-none"
@@ -85,7 +73,7 @@
       {% endif %}
     </div>
 
-    {% comment %} SLOT 2 (If exists) {% endcomment %}
+    {% comment %} SLOT 2 (Optional) {% endcomment %}
     {% if has_media_2 %}
       <div class="relative h-full w-1/2">
         {% render 'media',
@@ -106,10 +94,10 @@
     {% endif %}
   </div>
 
-  {% comment %} 2. CONTENT LAYER {% endcomment %}
+  {% comment %} LAYER 2: CONTENT {% endcomment %}
   <div
     class="{{ content_container_class }} {{ s.align_x }} {{ s.align_y }} px-6 lg:px-12 gap-6 transition-all {{ animation_class }}"
-    style="padding-bottom: {{ s.marquee_clearance }}px;"
+    style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ total_pb }}px;"
   >
     {% content_for 'blocks' %}
   </div>
@@ -119,85 +107,77 @@
 {
   "name": "Modular Hero",
   "settings": [
-    {
-      "type": "header",
-      "content": "Composition"
-    },
+    { "type": "header", "content": "Composition" },
     {
       "type": "select",
       "id": "layout_mode",
       "label": "Layout Style",
       "options": [
-        { "value": "overlay", "label": "Classic Overlay" },
-        { "value": "split_left", "label": "Editorial Split (Image Left)" },
-        { "value": "split_right", "label": "Editorial Split (Image Right)" }
+        { "value": "overlay", "label": "Overlay (Classic)" },
+        { "value": "split_left", "label": "Split (Media Left)" },
+        { "value": "split_right", "label": "Split (Media Right)" }
       ],
       "default": "overlay"
-    },
-    {
-      "type": "range",
-      "id": "split_gap",
-      "label": "Split Gap (Desktop)",
-      "info": "Space between media and text in split mode.",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "default": 0,
-      "unit": "px"
     },
     {
       "type": "select",
       "id": "height",
       "label": "Section Height",
       "options": [
-        { "value": "h-auto py-24", "label": "Auto (Fit Content)" },
-        { "value": "h-[75vh]", "label": "Standard (75% Screen)" },
-        { "value": "h-screen", "label": "Immersive (Full Screen)" }
+        { "value": "h-auto", "label": "Auto (Fit Content)" },
+        { "value": "h-[75vh]", "label": "Standard (75%)" },
+        { "value": "h-screen", "label": "Immersive (Full)" }
       ],
-      "default": "h-auto py-24"
+      "default": "h-auto"
     },
     {
-      "type": "header",
-      "content": "Visuals"
+      "type": "range",
+      "id": "split_gap",
+      "label": "Split Gap (Desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
     },
+
+    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+
     { "type": "header", "content": "Primary Media" },
     { "type": "image_picker", "id": "bg_image", "label": "Image 1 (Desktop)" },
     { "type": "image_picker", "id": "mobile_image", "label": "Image 1 (Mobile)" },
     { "type": "text", "id": "video_url", "label": "Video 1 (MP4)" },
-    { "type": "header", "content": "Secondary Media (Optional)" },
+
+    { "type": "header", "content": "Secondary Media" },
     { "type": "image_picker", "id": "bg_image_2", "label": "Image 2 (Desktop)" },
-    { "type": "image_picker", "id": "mobile_image_2", "label": "Image 2 (Mobile)" },
     { "type": "text", "id": "video_url_2", "label": "Video 2 (MP4)" },
-    {
-      "type": "header",
-      "content": "Overlay & Contrast"
-    },
-    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
-    {
-      "type": "checkbox",
-      "id": "enable_gradient",
-      "label": "Use Gradient Overlay",
-      "default": true,
-      "info": "Fades from bottom-up to keep text readable."
-    },
-    {
-      "type": "color",
-      "id": "overlay_color",
-      "label": "Overlay Tint",
-      "default": "#000000"
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "label": "Intensity",
-      "min": 0,
-      "max": 100,
-      "default": 40
-    },
-    {
-      "type": "header",
-      "content": "Alignment & Spacing"
-    },
+
+    { "type": "header", "content": "Overlay" },
+    { "type": "checkbox", "id": "enable_gradient", "label": "Use Gradient Overlay", "default": false },
+    { "type": "color", "id": "overlay_color", "label": "Tint Color", "default": "" },
+    { "type": "range", "id": "overlay_opacity", "label": "Opacity", "min": 0, "max": 100, "default": 40 },
+
+    { "type": "header", "content": "Alignment" },
     {
       "type": "select",
       "id": "align_x",
@@ -213,84 +193,61 @@
       "type": "select",
       "id": "align_y",
       "label": "Vertical",
-      "default": "justify-center py-20",
+      "default": "justify-center",
       "options": [
-        { "value": "justify-start pt-20 pb-20", "label": "Top" },
-        { "value": "justify-center py-20", "label": "Middle" },
-        { "value": "justify-end pt-20 pb-20", "label": "Bottom" }
+        { "value": "justify-start", "label": "Top" },
+        { "value": "justify-center", "label": "Middle" },
+        { "value": "justify-end", "label": "Bottom" }
       ]
+    },
+    {
+      "type": "header",
+      "content": "Safe Area"
     },
     {
       "type": "range",
       "id": "marquee_clearance",
-      "label": "Bottom Clearance (Safe Area)",
-      "info": "Push content up to avoid overlapping pinned elements.",
+      "label": "Bottom Clearance",
+      "info": "Extra space for pinned marquees.",
       "min": 0,
       "max": 200,
       "default": 0,
       "unit": "px"
     },
-    {
-      "type": "header",
-      "content": "Theme"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
-      "default": "scheme-1"
-    }
+
+    { "type": "header", "content": "Theme" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
   ],
-  "blocks": [{ "type": "@theme" }],
+  "blocks": [{ "type": "@theme" }, { "type": "scroll-indicator" }],
   "presets": [
     {
       "name": "Hero (Fine Dining)",
       "settings": {
         "layout_mode": "overlay",
-        "height": "h-screen",
         "color_scheme": "scheme-1",
         "enable_gradient": true,
         "marquee_clearance": 80
       },
       "blocks": {
-        "heading": {
+        "hero_heading": {
           "type": "jumbo-text",
-          "settings": {
-            "text": "Taste the Season",
-            "display_size": "display"
-          }
+          "settings": { "text": "Taste the Season", "display_size": "display" }
         },
-        "subtext": {
+        "hero_subtext": {
           "type": "text",
-          "settings": {
-            "content": "Locally sourced ingredients, curated by Chef Marco.",
-            "display_size": "body"
-          }
+          "settings": { "content": "Locally sourced ingredients.", "display_size": "body" }
         },
-        "cta_reserve": {
+        "hero_cta": {
           "type": "button",
-          "settings": {
-            "label": "Reserve a Table",
-            "style": "primary"
-          }
+          "settings": { "label": "Reserve Table", "style": "primary" }
         },
-        "cta_menu": {
-          "type": "button",
-          "settings": {
-            "label": "View Menu",
-            "style": "link"
-          }
-        },
-        "ticker": {
+        "hero_ticker": {
           "type": "_marquee",
-          "settings": {
-            "text_list": "Fresh Catch Daily • Live Jazz Fridays • Private Events",
-            "pin_bottom": true,
-            "color_scheme": "scheme-2"
-          }
+          "settings": { "pin_bottom": true, "color_scheme": "scheme-2" }
         }
       },
-      "block_order": ["heading", "subtext", "cta_reserve", "cta_menu", "ticker"]
+      "block_order": ["hero_heading", "hero_subtext", "hero_cta", "hero_ticker"]
     }
   ]
 }

@@ -2,23 +2,33 @@
 
 {% comment %} --- LAYOUT LOGIC --- {% endcomment %}
 {% capture layout_class %}
-  flex flex-col gap-10 lg:gap-20
+  flex flex-col
   {% if s.desktop_layout == 'image_right' %}lg:flex-row-reverse{% else %}lg:flex-row{% endif %}
 {% endcapture %}
 
-{% comment %} MOBILE STACKING ORDER {% endcomment %}
 {% if s.mobile_layout == 'text_first' %}
   {% assign layout_class = layout_class | append: ' flex-col-reverse' %}
 {% endif %}
 
-{% comment %} --- ANIMATION LOGIC --- {% endcomment %}
 {% assign animation_class = '' %}
 {% if s.enable_animation %}
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
-<section class="section-feature w-full py-20 lg:py-32 px-6 lg:px-12 color-{{ s.color_scheme }}">
-  <div class="container mx-auto {{ layout_class }} items-center">
+<section
+  class="section-feature w-full color-{{ s.color_scheme }}"
+  style="
+    padding-top: {{ s.padding_top }}px;
+    padding-bottom: {{ s.padding_bottom }}px;
+    --desktop-gap: {{ s.desktop_gap }}px;
+  "
+>
+  {% comment %}
+    CONTAINER:
+    - 'gap-10': Default mobile gap (40px).
+    - 'lg:gap-[var(--desktop-gap)]': Uses the CSS variable specifically on Desktop.
+  {% endcomment %}
+  <div class="container mx-auto px-4 md:px-8 {{ layout_class }} items-center gap-10 lg:gap-[var(--desktop-gap)]">
     {% comment %} COLUMN 1: MEDIA {% endcomment %}
     <div class="w-full lg:w-1/2 relative">
       <div
@@ -40,10 +50,7 @@
 {
   "name": "Image with Text",
   "settings": [
-    {
-      "type": "header",
-      "content": "Layout"
-    },
+    { "type": "header", "content": "Layout" },
     {
       "type": "select",
       "id": "desktop_layout",
@@ -53,6 +60,16 @@
         { "value": "image_right", "label": "Image Right" }
       ],
       "default": "image_left"
+    },
+    {
+      "type": "range",
+      "id": "desktop_gap",
+      "label": "Gap (Desktop)",
+      "min": 40,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
     },
     {
       "type": "select",
@@ -75,15 +92,31 @@
       ],
       "default": "items-start text-left"
     },
+
+    { "type": "header", "content": "Spacing" },
     {
-      "type": "header",
-      "content": "Media"
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 96,
+      "unit": "px"
     },
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Feature Image"
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 96,
+      "unit": "px"
     },
+
+    { "type": "header", "content": "Media" },
+    { "type": "image_picker", "id": "image", "label": "Feature Image" },
     {
       "type": "select",
       "id": "media_aspect_ratio",
@@ -96,30 +129,11 @@
       ],
       "default": "portrait"
     },
-    {
-      "type": "range",
-      "id": "media_radius",
-      "label": "Corner Radius",
-      "min": 0,
-      "max": 40,
-      "default": 0
-    },
-    {
-      "type": "header",
-      "content": "Visuals"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_animation",
-      "label": "Enable Entry Animation",
-      "default": true
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
-      "default": "scheme-1"
-    }
+    { "type": "range", "id": "media_radius", "label": "Corner Radius", "min": 0, "max": 40, "default": 0 },
+
+    { "type": "header", "content": "Visuals" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
   ],
   "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }],
   "presets": [
@@ -129,7 +143,10 @@
         "desktop_layout": "image_left",
         "media_aspect_ratio": "portrait",
         "color_scheme": "scheme-1",
-        "enable_animation": true
+        "enable_animation": true,
+        "padding_top": 96,
+        "padding_bottom": 96,
+        "desktop_gap": 80
       },
       "blocks": {
         "chef_heading": {
@@ -143,7 +160,7 @@
         "chef_bio": {
           "type": "text",
           "settings": {
-            "content": "We believe in honest food, sourced from farmers we know by name. Every plate tells a story of the season.",
+            "content": "We believe in honest food, sourced from farmers we know by name.",
             "display_size": "body"
           }
         },
