@@ -1,0 +1,56 @@
+{% comment %}
+  Props: 
+  - menu: (LinkList Object)
+  - cta_block: (Block Object - Optional)
+{% endcomment %}
+
+<div id="mobile-menu-drawer" 
+     class="fixed inset-0 z-overlay transform transition-transform duration-300 ease-in-out -translate-x-full pointer-events-none"
+     data-behavior="drawer">
+  
+  {% comment %} BACKDROP (Click to close) {% endcomment %}
+  <div class="drawer-backdrop absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300" data-action="close"></div>
+
+  {% comment %} DRAWER PANEL {% endcomment %}
+  <div class="drawer-panel relative w-[90%] max-w-md h-full bg-body text-body flex flex-col shadow-2xl pointer-events-auto">
+    
+    {% comment %} HEADER {% endcomment %}
+    <div class="flex items-center justify-between px-6 py-4 border-b border-std">
+      <span class="text-sm font-bold uppercase tracking-widest">Menu</span>
+      <button type="button" class="p-2 -mr-2 hover:opacity-70" data-action="close" aria-label="Close Menu">
+        {% render 'icon', name: 'close', class: 'w-6 h-6' %}
+      </button>
+    </div>
+
+    {% comment %} LINKS {% endcomment %}
+    <nav class="flex-1 overflow-y-auto py-6 px-6">
+      <ul class="flex flex-col gap-6">
+        {% for link in menu.links %}
+          <li>
+            <a href="{{ link.url }}" class="text-2xl font-heading font-bold hover:opacity-70 block">
+              {{ link.title }}
+            </a>
+            {% comment %} Submenus would go here (Nested loop) {% endcomment %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {% comment %} FOOTER ACTIONS {% endcomment %}
+    <div class="p-6 border-t border-std bg-gray-50/5 space-y-4">
+      {% if cta_block %}
+        {% render 'button', 
+           label: cta_block.settings.label, 
+           url: cta_block.settings.link, 
+           style: 'primary', 
+           width: 'full' 
+        %}
+      {% endif %}
+      
+      <div class="text-sm opacity-60 text-center">
+        {{ 'now' | date: "%Y" }} RestaurantOS
+      </div>
+    </div>
+
+  </div>
+</div>

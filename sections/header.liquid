@@ -1,0 +1,101 @@
+{% assign s = section.settings %}
+
+{% capture slot_logo %}
+    {% content_for 'block', type: '_header-logo', id: 'header-logo' %}
+{% endcapture %}
+
+{% capture slot_nav %}
+    {% content_for 'block', type: '_header-menu', id: 'header-menu' %}
+{% endcapture %}
+
+{% capture slot_nav_mobile %}
+    {% content_for 'block', type: '_header-menu', id: 'header-menu', variant: 'mobile' %}
+{% endcapture %}
+
+{% capture slot_actions %}
+    {% content_for 'block', type: '_header-actions', id: 'header-actions' %}
+{% endcapture %}
+
+<header
+  class="fixed top-0 w-full z-header transition-all duration-300 border-b border-transparent bg-[var(--header-bg)] text-[var(--header-text)]"
+  data-behavior="header"
+  data-sticky="{{ s.sticky_behavior }}"
+  data-transparent="{{ s.enable_transparent }}"
+  style="--header-bg: {{ s.bg_color }}; --header-text: {{ s.text_color }};"
+>
+  <div class="container mx-auto px-4 md:px-8 h-16 md:h-24 grid grid-cols-[auto_1fr_auto] md:grid-cols-3 items-center gap-4">
+    <div class="flex items-center justify-start gap-4">
+      <button
+        type="button"
+        class="lg:hidden p-2 -ml-2 text-current hover:opacity-70"
+        data-action="toggle-drawer"
+        aria-label="Menu"
+      >
+        {% render 'icon', name: 'menu', class: 'w-6 h-6' %}
+      </button>
+
+      {% if s.desktop_layout == 'logo_center' %}
+        <div class="hidden lg:block">
+          {{ slot_nav }}
+        </div>
+      {% endif %}
+
+      {% if s.desktop_layout == 'logo_left' %}
+        <div class="mr-8 flex-shrink-0">
+          {{ slot_logo }}
+        </div>
+        <div class="hidden lg:block">
+          {{ slot_nav }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="flex items-center justify-center h-full">
+      <div class="{% if s.desktop_layout == 'logo_left' %}lg:hidden{% endif %}">
+        {{ slot_logo }}
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-4">
+      {{ slot_actions }}
+    </div>
+  </div>
+</header>
+
+{{ slot_nav_mobile }}
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "enabled_on": { "groups": ["header"] },
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "logo_center", "label": "Logo Center" },
+        { "value": "logo_left", "label": "Logo Left" }
+      ],
+      "default": "logo_center"
+    },
+    { "type": "header", "content": "Behavior" },
+    {
+      "type": "select",
+      "id": "sticky_behavior",
+      "label": "Sticky Mode",
+      "options": [
+        { "value": "none", "label": "Static" },
+        { "value": "always", "label": "Always Sticky" },
+        { "value": "on_scroll_up", "label": "Show on Scroll Up" }
+      ],
+      "default": "always"
+    },
+    { "type": "checkbox", "id": "enable_transparent", "label": "Transparent on Top", "default": true },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#000000" }
+  ]
+}
+{% endschema %}

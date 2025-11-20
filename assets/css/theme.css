@@ -3,37 +3,65 @@
 @tailwind utilities;
 
 @layer utilities {
+
   /* Global Utility: Hide Scrollbar (Moved from Slideshow) */
-  .scrollbar-hide::-webkit-scrollbar { display: none; }
-  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 @layer components {
+
   /* --- ANIMATIONS --- */
-  .stagger-load > *:not(.no-stagger):not(:has(.no-stagger)) {
+  .stagger-load>*:not(.no-stagger):not(:has(.no-stagger)) {
     opacity: 0;
-    @apply animate-fade-up; 
+    @apply animate-fade-up;
     will-change: opacity, transform;
   }
 
-  .stagger-load > *:not(.no-stagger):first-child { animation-delay: 0ms; animation-duration: 1s; }
-  .stagger-load > *:not(.no-stagger):nth-child(2) { animation-delay: 150ms; }
-  .stagger-load > *:not(.no-stagger):nth-child(3) { animation-delay: 300ms; }
-  .stagger-load > *:not(.no-stagger):nth-child(4) { animation-delay: 450ms; }
-  .stagger-load > *:not(.no-stagger):nth-child(5) { animation-delay: 600ms; }
-  .stagger-load > *:not(.no-stagger):nth-child(n+6) { animation-delay: 750ms; }
+  .stagger-load>*:not(.no-stagger):first-child {
+    animation-delay: 0ms;
+    animation-duration: 1s;
+  }
+
+  .stagger-load>*:not(.no-stagger):nth-child(2) {
+    animation-delay: 150ms;
+  }
+
+  .stagger-load>*:not(.no-stagger):nth-child(3) {
+    animation-delay: 300ms;
+  }
+
+  .stagger-load>*:not(.no-stagger):nth-child(4) {
+    animation-delay: 450ms;
+  }
+
+  .stagger-load>*:not(.no-stagger):nth-child(5) {
+    animation-delay: 600ms;
+  }
+
+  .stagger-load>*:not(.no-stagger):nth-child(n+6) {
+    animation-delay: 750ms;
+  }
 
   /* --- BUTTONS --- */
   .btn-primary {
     @apply bg-btn text-btn border border-transparent hover:opacity-90;
   }
+
   .btn-outline {
     @apply bg-transparent text-body border border-body hover:opacity-75;
   }
+
   .btn-link {
     @apply bg-transparent text-body border-none underline underline-offset-4 p-0 hover:no-underline;
   }
-  
+
   /* New: Nav Button Utility (Arrows) */
   .btn-nav {
     @apply bg-[var(--color-ui-bg)] text-[var(--color-ui-text)] shadow-lg hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
@@ -60,21 +88,65 @@
 
   /* Focus Ring */
   .slideshow-dot.is-active span.ring-1 {
-    box-shadow: 0 0 0 1px var(--color-ui-text); /* Tailwind ring emulation using vars */
+    box-shadow: 0 0 0 1px var(--color-ui-text);
+    /* Tailwind ring emulation using vars */
+  }
+
+  /* Header Transparency State */
+  #site-header.is-transparent {
+    background-color: transparent !important;
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+    color: white;
+    /* Force white text on transparent hero */
+  }
+
+  /* Logo Swap */
+  #site-header .logo-inverse {
+    opacity: 0;
+  }
+
+  #site-header.is-transparent .logo-inverse {
+    opacity: 1;
+  }
+
+  #site-header.is-transparent .logo-default {
+    opacity: 0;
+  }
+
+  /* Mega Menu Fix */
+  /* Ensure dropdowns don't inherit transparency */
+  .header-nav .absolute {
+    color: var(--color-text);
+    /* Reset text color for dropdowns */
   }
 }
 
 @layer base {
-  h1, h2, h3, h4, h5, h6 { @apply font-heading; }
-  body { @apply font-body text-body bg-body antialiased; }
-  
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+
+  body {
+    @apply font-body text-body bg-body antialiased;
+  }
+
   /* Apply Global Radius to images/containers if they use the variable */
   :root {
-    --radius-global: 0px; /* Default fallback */
+    --radius-global: 0px;
+    /* Default fallback */
   }
-  
-  .rounded-global { border-radius: var(--radius-global); }
-  
+
+  .rounded-global {
+    border-radius: var(--radius-global);
+  }
+
   .animate-marquee:hover,
   .animate-marquee-reverse:hover {
     animation-play-state: paused;

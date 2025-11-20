@@ -1,0 +1,40 @@
+{% assign s = block.settings %}
+{% comment %}
+  BLOCK: HEADER LOGO
+  - Handles transparency state swapping.
+{% endcomment %}
+
+<a href="/" class="header-logo block relative z-content group-hover:opacity-100">
+  {% if s.logo != blank %}
+    <img
+      src="{{ s.logo | image_url: width: s.width }}"
+      alt="{{ shop.name }}"
+      width="{{ s.width }}"
+      class="logo-default object-contain transition-opacity duration-300"
+      style="max-width: {{ s.width }}px;"
+    >
+
+    {% if s.logo_transparent != blank %}
+      <img
+        src="{{ s.logo_transparent | image_url: width: s.width }}"
+        alt="{{ shop.name }}"
+        width="{{ s.width }}"
+        class="logo-inverse absolute inset-0 object-contain opacity-0 transition-opacity duration-300"
+        style="max-width: {{ s.width }}px;"
+      >
+    {% endif %}
+  {% else %}
+    <span class="text-xl font-bold font-heading uppercase tracking-widest whitespace-nowrap">{{ shop.name }}</span>
+  {% endif %}
+</a>
+
+{% schema %}
+{
+  "name": "Header Logo",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo" },
+    { "type": "image_picker", "id": "logo_transparent", "label": "Logo (Transparent State)" },
+    { "type": "range", "id": "width", "label": "Width", "min": 50, "max": 250, "default": 120, "unit": "px" }
+  ]
+}
+{% endschema %}

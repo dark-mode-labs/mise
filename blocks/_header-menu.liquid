@@ -1,0 +1,87 @@
+{% assign s = block.settings %}
+{% comment %}
+  BLOCK: HEADER NAV
+  - Handles Mega Menus and simple dropdowns.
+{% endcomment %}
+
+{% if variant == 'mobile' %}
+  {% render 'header-drawer', menu: s.menu %}
+{% else %}
+  <nav class="header-nav hidden lg:flex items-center h-full">
+    <ul class="flex items-center gap-8 h-full">
+      {% for link in s.menu.links %}
+        {% assign has_mega = false %}
+        {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
+
+        <li class="group h-full flex items-center relative">
+          <a
+            href="{{ link.url }}"
+            class="text-sm font-bold uppercase tracking-wide flex items-center gap-1 hover:opacity-70"
+          >
+            {{ link.title }}
+            {% if link.links != blank %}
+              {% render 'icon',
+                name: 'chevron-down',
+                class: 'w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform'
+              %}
+            {% endif %}
+          </a>
+
+          {% if link.links != blank %}
+            <div
+              class="
+                absolute top-full left-0 bg-body border border-std shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating text-body
+                {% if has_mega %}!fixed left-0 right-0 w-full border-x-0{% else %}w-64{% endif %}
+              "
+            >
+              {% if has_mega %}
+                <div class="container mx-auto px-8 py-12 grid grid-cols-4 gap-8">
+                  {% for child in link.links %}
+                    <div>
+                      <a href="{{ child.url }}" class="block font-heading font-bold mb-4">{{ child.title }}</a>
+                      <ul class="space-y-2">
+                        {% for grandchild in child.links %}
+                          <li>
+                            <a href="{{ grandchild.url }}" class="text-sm opacity-70 hover:opacity-100">
+                              {{- grandchild.title -}}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  {% endfor %}
+
+                  {% if s.promo_image %}
+                    <div class="col-span-1">
+                      {% render 'media', src: s.promo_image, ratio: 'landscape', class: 'rounded mb-4' %}
+                      <p class="font-bold">{{ s.promo_text }}</p>
+                    </div>
+                  {% endif %}
+                </div>
+              {% else %}
+                <ul class="py-4">
+                  {% for child in link.links %}
+                    <li>
+                      <a href="{{ child.url }}" class="block px-6 py-2 text-sm hover:bg-gray-50">{{ child.title }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Header Nav",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "image_picker", "id": "promo_image", "label": "Mega Menu Promo Image" },
+    { "type": "text", "id": "promo_text", "label": "Promo Text" }
+  ]
+}
+{% endschema %}

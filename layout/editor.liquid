@@ -12,7 +12,7 @@
     {%- render 'stylesheets' -%}
     {%- render 'scripts' -%}
     {%- render 'theme_variables' -%}
-    
+
     {{ content_for_header }}
     <meta name="csrf-token" content="{{ csrf_token }}">
     <link rel="stylesheet" href="/assets/css/app.css">
@@ -29,6 +29,10 @@
       data-preview-iframe-business-uuid-value="{{ shop.uuid }}"
       data-preview-iframe-page-slug-value="{{ page_handle }}"
     >
+      <div id="header-group">
+        {% sections 'header-group' %}
+      </div>
+
       <main
         id="MainContent"
         class="content-for-layout"
