@@ -1,17 +1,18 @@
 {
-  "name": "restaurantos-theme-engine",
+  "name": "mise-theme-engine",
   "version": "1.0.0",
-  "description": "Asset compilation pipeline for RestaurantOS theme",
   "private": true,
   "scripts": {
-    "dev": "tailwindcss -i ./src_assets/base.css -o ./assets/theme.css --watch",
-    "build": "tailwindcss -i ./src_assets/base.css -o ./assets/theme.css --minify"
+    "build": "node build.js",
+    "dev": "node build.js --watch"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.9",
     "@tailwindcss/typography": "^0.5.15",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.13"
+    "chokidar": "^3.5.3",
+    "esbuild": "^0.19.5",
+    "esbuild-plugin-import-glob": "^0.1.1",
+    "fs-extra": "^11.1.1",
+    "tailwindcss": "^3.4.0"
   }
 }

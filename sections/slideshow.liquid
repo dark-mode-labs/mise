@@ -2,8 +2,10 @@
 
 <div
   class="section-slideshow relative w-full overflow-hidden bg-gray-900 group select-none color-{{ s.color_scheme }}"
+  data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
+  data-infinite="{{ s.infinite_scroll }}"
 >
   <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }} cursor-grab active:cursor-grabbing">
     {% content_for 'blocks' %}
@@ -12,7 +14,6 @@
   {% if section.blocks.size > 1 %}
     {% if s.show_arrows %}
       {% assign arrow_pos_class = 'absolute top-1/2 -translate-y-1/2 z-floating px-4 w-full flex justify-between pointer-events-none' %}
-
       {% if s.nav_position == 'bottom_right' %}
         {% assign arrow_pos_class = 'absolute bottom-8 right-8 z-floating flex gap-2' %}
       {% endif %}
@@ -96,136 +97,6 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
-  document.addEventListener('DOMContentLoaded', () => {
-    const slideshows = document.querySelectorAll('.section-slideshow');
-
-    slideshows.forEach((section) => {
-      const track = section.querySelector('.slideshow-track');
-      const prevBtn = section.querySelector('.slideshow-prev');
-      const nextBtn = section.querySelector('.slideshow-next');
-      const dots = section.querySelectorAll('.slideshow-dot');
-
-      if (!track) return;
-
-      let isDown = false;
-      let startX;
-      let scrollLeft;
-      let autoPlayInterval;
-
-      // --- 1. SCROLL SPY & UI UPDATER ---
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const slides = Array.from(track.children);
-              const index = slides.indexOf(entry.target);
-              updateUI(index);
-            }
-          });
-        },
-        { root: track, threshold: 0.5 }
-      );
-
-      Array.from(track.children).forEach((slide) => observer.observe(slide));
-
-      function updateUI(activeIndex) {
-        // Dots
-        if (dots.length) {
-          dots.forEach((dot, i) => dot.classList.toggle('is-active', i === activeIndex));
-        }
-        // Arrows (Disable at ends to prevent bounce)
-        if (prevBtn) prevBtn.disabled = activeIndex === 0;
-        if (nextBtn) nextBtn.disabled = activeIndex === track.children.length - 1;
-      }
-
-      // --- 2. MOUSE DRAG PHYSICS (The "Swipe" on Desktop) ---
-      track.addEventListener('mousedown', (e) => {
-        isDown = true;
-        track.classList.add('cursor-grabbing');
-        track.classList.remove('scroll-smooth', 'snap-x'); // Disable snap while dragging
-        startX = e.pageX - track.offsetLeft;
-        scrollLeft = track.scrollLeft;
-        stopAutoplay(); // Interaction stops autoplay
-      });
-
-      track.addEventListener('mouseleave', () => {
-        isDown = false;
-        track.classList.remove('cursor-grabbing');
-        track.classList.add('scroll-smooth', 'snap-x'); // Re-enable snap
-        startAutoplay(); // Resume
-      });
-
-      track.addEventListener('mouseup', () => {
-        isDown = false;
-        track.classList.remove('cursor-grabbing');
-        track.classList.add('scroll-smooth', 'snap-x');
-        startAutoplay();
-      });
-
-      track.addEventListener('mousemove', (e) => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - track.offsetLeft;
-        const walk = (x - startX) * 2; // Scroll-fast multiplier
-        track.scrollLeft = scrollLeft - walk;
-      });
-
-      // --- 3. NAVIGATION EVENTS ---
-      if (prevBtn)
-        prevBtn.addEventListener('click', () => {
-          track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
-          stopAutoplay();
-        });
-
-      if (nextBtn)
-        nextBtn.addEventListener('click', () => {
-          track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
-          stopAutoplay();
-        });
-
-      if (dots.length) {
-        dots.forEach((dot) => {
-          dot.addEventListener('click', (e) => {
-            const index = parseInt(e.currentTarget.dataset.index);
-            const slide = track.children[index];
-            if (slide) slide.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-            stopAutoplay();
-          });
-        });
-      }
-
-      // --- 4. AUTOPLAY ENGINE ---
-      function startAutoplay() {
-        if (section.dataset.autoplay !== 'true') return;
-        clearInterval(autoPlayInterval);
-
-        const speed = (parseInt(section.dataset.speed) || 5) * 1000;
-
-        autoPlayInterval = setInterval(() => {
-          // Check if we are at the end
-          if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10) {
-            track.scrollTo({ left: 0, behavior: 'smooth' }); // Rewind
-          } else {
-            track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }); // Next
-          }
-        }, speed);
-      }
-
-      function stopAutoplay() {
-        clearInterval(autoPlayInterval);
-      }
-
-      // Init
-      startAutoplay();
-
-      // Pause on hover (Global container)
-      section.addEventListener('mouseenter', stopAutoplay);
-      section.addEventListener('mouseleave', startAutoplay);
-    });
-  });
-{% endjavascript %}
-
 {% schema %}
 {
   "name": "Slideshow",
@@ -300,6 +171,7 @@
       "info": "Controls the color of arrows and dots."
     },
     { "type": "header", "content": "Behavior" },
+    { "type": "checkbox", "id": "infinite_scroll", "label": "Infinite Loop", "default": true },
     { "type": "checkbox", "id": "autoplay", "label": "Autoplay", "default": false },
     { "type": "range", "id": "autoplay_speed", "label": "Speed (seconds)", "min": 3, "max": 10, "default": 5 }
   ],
