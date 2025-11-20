@@ -17,13 +17,6 @@ export default {
         heading: ['var(--font-heading)', 'serif'],
         body: ['var(--font-body)', 'sans-serif'],
       },
-
-      // 3. Color Palette: Maps Tailwind utilities to Scheme Variables
-      colors: {
-        // Usage: bg-body, text-body, border-std
-        // These rely on the variables existing in the DOM (injected by snippet)
-        // Note: We define specific properties to handle the 'body' naming conflict
-      },
       textColor: {
         body: 'var(--color-text)',
         btn: 'var(--color-btn-text)',
@@ -34,17 +27,13 @@ export default {
       },
       borderColor: {
         std: 'var(--color-border)',
-        body: 'var(--color-text)', // Useful for outline buttons
+        body: 'var(--color-text)',
       },
-
-      // 4. Animations: For Marquee Block
       keyframes: {
-        // Normal (Left): Moves from 0 to -50%
         marquee: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
         },
-        // Reverse (Right): Moves from -50% to 0
         'marquee-reverse': {
           '0%': { transform: 'translateX(-50%)' },
           '100%': { transform: 'translateX(0)' },
@@ -52,16 +41,18 @@ export default {
         'fade-up': {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'ken-burns': {
+          '0%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1.15)' },
         }
       },
       animation: {
-        // We remove the specific duration here so we can control speed via inline styles
         marquee: 'marquee linear infinite',
         'marquee-reverse': 'marquee-reverse linear infinite',
         'fade-up': 'fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'ken-burns': 'ken-burns 20s ease-out infinite alternate',
       },
-
-      // 5. Spacing/Layout extensions
       container: {
         center: true,
         padding: '1rem',
@@ -69,7 +60,7 @@ export default {
           sm: '600px',
           md: '728px',
           lg: '984px',
-          xl: '1240px', // Capping width for readability
+          xl: '1240px',
         },
       },
       zIndex: {

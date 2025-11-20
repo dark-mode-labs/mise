@@ -1,18 +1,18 @@
 {% comment %}
   Props:
-  - src: (Image object) Desktop Image
-  - src_mobile: (Image object) Mobile Image (Optional)
-  - video: (String) URL to MP4 (Optional - Overrides images)
-  - ratio: (String) 'square', 'video', 'portrait', 'auto' (Default: 'auto' / fill)
-  - fit: (String) 'cover' or 'contain' (Default: 'cover')
-  - placeholder: (String) Name of the svg placeholder to use if src is missing (Default: 'image')
-  - loading: (String) 'lazy' or 'eager' (Default: 'lazy')
+  - src, src_mobile, video
+  - ratio, fit, loading, placeholder
+  - animate: (Boolean) Enables Ken Burns slow zoom. Default: false.
 {% endcomment %}
 
 {% assign fit_mode = fit | default: 'cover' %}
 {% assign load_mode = loading | default: 'lazy' %}
+{% assign anim_class = '' %}
 
-{% comment %} 1. Aspect Ratio Logic {% endcomment %}
+{% if animate %}
+  {% assign anim_class = 'animate-ken-burns' %}
+{% endif %}
+
 {% capture ratio_class %}
   {% case ratio %}
     {% when 'square' %}aspect-square
@@ -26,18 +26,16 @@
 <div class="media-wrapper w-full {{ ratio_class }} overflow-hidden relative bg-gray-100">
 
   {% if video != blank %}
-    {% comment %} --- VIDEO MODE --- {% endcomment %}
     <video 
       autoplay muted loop playsinline 
-      class="w-full h-full object-{{ fit_mode }} pointer-events-none"
+      class="w-full h-full object-{{ fit_mode }} pointer-events-none {{ anim_class }}"
       {% if src %}poster="{{ src | image_url: width: 800 }}"{% endif %}>
       <source src="{{ video }}" type="video/mp4">
     </video>
 
   {% elsif src != blank %}
-    {% comment %} --- IMAGE MODE (With Art Direction) --- {% endcomment %}
     {% if src_mobile != blank %}
-      <picture class="w-full h-full block">
+      <picture class="w-full h-full block {{ anim_class }}">
         <source media="(max-width: 767px)" srcset="{{ src_mobile | image_url: width: 800 }}">
         <source media="(min-width: 768px)" srcset="{{ src | image_url: width: 1600 }}">
         <img 
@@ -56,13 +54,15 @@
         loading="{{ load_mode }}"
         width="{{ src.width }}"
         height="{{ src.height }}"
-        class="w-full h-full object-{{ fit_mode }} block transition-opacity duration-500"
+        class="w-full h-full object-{{ fit_mode }} block transition-opacity duration-500 {{ anim_class }}"
       >
     {% endif %}
 
   {% else %}
-    {% comment %} --- PLACEHOLDER FALLBACK --- {% endcomment %}
-    {{ placeholder | default: 'lifestyle-1' | placeholder_svg_tag: 'w-full h-full object-cover text-gray-300 bg-gray-100 fill-current' }}
+    {% comment %} Even placeholders get to dance {% endcomment %}
+    <div class="w-full h-full {{ anim_class }}">
+      {{ placeholder | default: 'lifestyle-1' | placeholder_svg_tag: 'w-full h-full object-cover text-gray-300 bg-gray-100 fill-current' }}
+    </div>
   {% endif %}
 
 </div>

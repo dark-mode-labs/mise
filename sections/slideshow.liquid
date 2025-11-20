@@ -1,0 +1,137 @@
+{% assign s = section.settings %}
+
+<div class="section-slideshow relative w-full overflow-hidden bg-gray-900">
+  <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }}">
+    {% content_for 'blocks' %}
+  </div>
+  {% if section.blocks.size > 1 %}
+    <div class="pointer-events-none absolute inset-0 flex items-center justify-between px-4 z-floating">
+      <button
+        type="button"
+        class="slideshow-prev pointer-events-auto p-3 rounded-full bg-body/80 text-body shadow-lg hover:bg-body transition-all group"
+        aria-label="Previous"
+      >
+        {% render 'icon', name: 'chevron-left', class: 'w-5 h-5 group-hover:-translate-x-0.5 transition-transform' %}
+      </button>
+
+      <button
+        type="button"
+        class="slideshow-next pointer-events-auto p-3 rounded-full bg-body/80 text-body shadow-lg hover:bg-body transition-all group"
+        aria-label="Next"
+      >
+        {% render 'icon', name: 'chevron-right', class: 'w-5 h-5 group-hover:translate-x-0.5 transition-transform' %}
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', () => {
+    const slideshows = document.querySelectorAll('.section-slideshow');
+
+    slideshows.forEach((section) => {
+      const track = section.querySelector('.slideshow-track');
+      const prevBtn = section.querySelector('.slideshow-prev');
+      const nextBtn = section.querySelector('.slideshow-next');
+
+      if (!track) return;
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          track.scrollBy({ left: -window.innerWidth, behavior: 'smooth' });
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          track.scrollBy({ left: window.innerWidth, behavior: 'smooth' });
+        });
+      }
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Slideshow",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_height",
+      "label": "Mobile Height",
+      "options": [
+        { "value": "h-[50vh]", "label": "Compact (50%)" },
+        { "value": "h-[65vh]", "label": "Standard (65%)" },
+        { "value": "h-[80vh]", "label": "Tall (80%)" },
+        { "value": "h-screen", "label": "Full Screen" }
+      ],
+      "default": "h-[65vh]"
+    },
+    {
+      "type": "select",
+      "id": "desktop_height",
+      "label": "Desktop Height",
+      "options": [
+        { "value": "md:h-[500px]", "label": "Compact (500px)" },
+        { "value": "md:h-[75vh]", "label": "Standard (75%)" },
+        { "value": "md:h-screen", "label": "Full Screen" }
+      ],
+      "default": "md:h-[75vh]"
+    }
+  ],
+  "blocks": [{ "type": "slide" }],
+  "presets": [
+    {
+      "name": "Slideshow (Gallery)",
+      "settings": {
+        "mobile_height": "h-[65vh]",
+        "desktop_height": "md:h-[75vh]"
+      },
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {
+            "align_x": "items-center",
+            "align_y": "justify-center",
+            "color_scheme": "scheme-1",
+            "enable_zoom": true
+          },
+          "blocks": {
+            "heading": { "type": "jumbo-text", "settings": { "text": "Welcome", "display_size": "display" } },
+            "subtext": {
+              "type": "text",
+              "settings": { "content": "Experience seasonal flavors.", "display_size": "body" }
+            },
+            "btn": { "type": "button", "settings": { "label": "View Menu", "style": "primary" } }
+          },
+          "block_order": ["heading", "subtext", "btn"]
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": { "align_x": "items-start", "align_y": "justify-end pb-20", "color_scheme": "scheme-2" },
+          "blocks": {
+            "heading": { "type": "jumbo-text", "settings": { "text": "Private Events", "display_size": "h1" } },
+            "btn": { "type": "button", "settings": { "label": "Inquire Now", "style": "outline" } }
+          },
+          "block_order": ["heading", "btn"]
+        }
+      },
+      "block_order": ["slide_1", "slide_2"]
+    }
+  ]
+}
+{% endschema %}

@@ -62,7 +62,8 @@
         video: s.video_url,
         fit: 'cover',
         loading: 'eager',
-        placeholder: 'lifestyle-2'
+        placeholder: 'lifestyle-2',
+        animate: s.enable_zoom
       %}
 
       {% if s.layout_mode == 'overlay' %}
@@ -82,7 +83,8 @@
           video: s.video_url_2,
           fit: 'cover',
           loading: 'eager',
-          placeholder: 'lifestyle-1'
+          placeholder: 'lifestyle-1',
+          animate: s.enable_zoom
         %}
         {% if s.layout_mode == 'overlay' %}
           <div
@@ -217,6 +219,7 @@
 
     { "type": "header", "content": "Theme" },
     { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
+    { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
   ],
   "blocks": [{ "type": "@theme" }, { "type": "scroll-indicator" }],
@@ -243,7 +246,7 @@
           "settings": { "label": "Reserve Table", "style": "primary" }
         },
         "hero_ticker": {
-          "type": "_marquee",
+          "type": "marquee",
           "settings": { "pin_bottom": true, "color_scheme": "scheme-2" }
         }
       },
