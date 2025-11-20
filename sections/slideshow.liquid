@@ -19,19 +19,11 @@
       {% endif %}
 
       <div class="{{ arrow_pos_class }}">
-        <button
-          type="button"
-          class="slideshow-prev pointer-events-auto p-3 rounded-full bg-[var(--color-ui-bg)] text-[var(--color-ui-text)] shadow-lg hover:scale-105 transition-all disabled:opacity-50"
-          aria-label="Previous"
-        >
+        <button type="button" class="slideshow-prev pointer-events-auto p-3 rounded-full btn-nav" aria-label="Previous">
           {% render 'icon', name: s.arrow_icon, class: 'w-5 h-5' %}
         </button>
 
-        <button
-          type="button"
-          class="slideshow-next pointer-events-auto p-3 rounded-full bg-[var(--color-ui-bg)] text-[var(--color-ui-text)] shadow-lg hover:scale-105 transition-all disabled:opacity-50"
-          aria-label="Next"
-        >
+        <button type="button" class="slideshow-next pointer-events-auto p-3 rounded-full btn-nav" aria-label="Next">
           {% assign icon_name = s.arrow_icon | replace: '-left', '-right' %}
           {% render 'icon', name: icon_name, class: 'w-5 h-5' %}
         </button>
@@ -66,36 +58,6 @@
     {% endif %}
   {% endif %}
 </div>
-
-{% stylesheet %}
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  /* Active States */
-  /* 1. Dots and Bars get full opacity and scale */
-  .slideshow-dot.is-active span {
-    opacity: 1;
-    transform: scale(1.2);
-    background-color: var(--color-ui-bg);
-  }
-
-  /* 2. Numbers need text color change, not background */
-  .slideshow-dot.is-active span.text-sm {
-    opacity: 1;
-    background-color: transparent; /* Reset bg for numbers */
-    color: var(--color-ui-bg); /* Highlight number */
-  }
-
-  /* 3. Focus Ring (Accessibility/Visuals) */
-  .slideshow-dot.is-active span.ring-1 {
-    ring-color: var(--color-ui-text);
-  }
-{% endstylesheet %}
 
 {% schema %}
 {

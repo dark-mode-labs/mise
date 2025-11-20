@@ -25,10 +25,7 @@
 >
   <div class="container mx-auto px-4 md:px-8 {{ layout_class }} items-center gap-10 lg:gap-[var(--desktop-gap)]">
     <div class="w-full lg:w-1/2 relative">
-      <div
-        class="rounded-lg overflow-hidden shadow-lg"
-        style="border-radius: {{ s.media_radius }}px;"
-      >
+      <div class="rounded-lg overflow-hidden shadow-lg rounded-global">
         {% render 'media',
           src: s.image,
           src_mobile: s.mobile_image,
@@ -132,8 +129,6 @@
       ],
       "default": "portrait"
     },
-    { "type": "range", "id": "media_radius", "label": "Corner Radius", "min": 0, "max": 40, "default": 0 },
-
     { "type": "header", "content": "Visuals" },
     { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },

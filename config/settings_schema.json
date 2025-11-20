@@ -12,11 +12,9 @@
           { "type": "header", "content": "Base Colors" },
           { "type": "color", "id": "background", "label": "Background" },
           { "type": "color", "id": "text", "label": "Text" },
-          
           { "type": "header", "content": "Buttons" },
           { "type": "color", "id": "button_bg", "label": "Solid Button Background" },
           { "type": "color", "id": "button_text", "label": "Solid Button Label" },
-          
           { "type": "header", "content": "UI Controls (Arrows/Dots)" },
           { "type": "color", "id": "ui_bg", "label": "Control Background", "default": "#ffffff" },
           { "type": "color", "id": "ui_text", "label": "Control Icon/Text", "default": "#000000" },
@@ -37,6 +35,22 @@
         "type": "font_picker",
         "id": "body_font",
         "label": "Body Text"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "corner_radius",
+        "label": "Global Corner Radius",
+        "min": 0,
+        "max": 40,
+        "step": 4,
+        "default": 0,
+        "unit": "px",
+        "info": "Affects buttons, cards, and media."
       }
     ]
   }

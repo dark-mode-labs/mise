@@ -71,7 +71,7 @@ async function build() {
   }
 
   // 5. Compile CSS
-  const cssEntry = 'assets/css/base.css';
+  const cssEntry = 'assets/css/theme.css';
   if (await fs.pathExists(cssEntry)) {
     console.log('🎨 Compiling Tailwind...');
     const tailwindArgs = [

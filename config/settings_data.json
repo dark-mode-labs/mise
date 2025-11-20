@@ -39,6 +39,7 @@
       }
     },
     "heading_font": "serif",
-    "body_font": "sans-serif"
+    "body_font": "sans-serif",
+    "corner_radius": 0
   }
 }
