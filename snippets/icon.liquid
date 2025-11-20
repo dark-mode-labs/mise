@@ -1,32 +1,40 @@
-{% comment %}
-  Props:
-  - name: (string) 'arrow-right', 'menu', 'cart', 'star'
-  - size: (integer) pixel width (Default: 24)
-{% endcomment %}
-
 {% assign icon_classes = class | default: 'w-6 h-6' %}
-{% liquid
-  assign svg = '<circle cx="12" cy="12" r="10"></circle>'
-  case name
-    when 'arrow-right'
-      assign svg = '<path d="M5 12h14M12 5l7 7-7 7"/>'
-    when 'menu'
-      assign svg = '<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>'
-    when 'star'
-      assign svg = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>'
-    when 'chevron-down'
-      assign svg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7"/>'
-  endcase
-%}
+{% assign base_name = name %}
+{% assign rotate_class = '' %}
+
+{% if name contains 'chevron-' or name contains 'arrow-' %}
+  {% if name contains '-left' %}
+    {% assign rotate_class = 'rotate-180' %}
+  {% elsif name contains '-up' %}
+    {% assign rotate_class = '-rotate-90' %}
+  {% elsif name contains '-down' %}
+    {% assign rotate_class = 'rotate-90' %}
+  {% endif %}
+
+  {% assign base_name = name | remove: '-left' | remove: '-right' | remove: '-up' | remove: '-down' %}
+{% endif %}
 
 <svg
-  viewBox="0 0 24 24"
+  class="icon icon-{{ name }} {{ icon_classes }} {{ rotate_class }} transition-transform"
   fill="none"
   stroke="currentColor"
-  stroke-width="2"
-  stroke-linecap="round"
-  stroke-linejoin="round"
-  class="icon icon-{{ name }} {{ icon_classes }}"
+  viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg"
 >
-  {{ svg }}
+  {% case base_name %}
+    {% when 'chevron' %}
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+
+    {% when 'arrow' %}
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+
+    {% when 'menu' %}
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+
+    {% when 'star' %}
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke-width="2"/>
+
+    {% else %}
+      <circle cx="12" cy="12" r="10" stroke-width="2"/>
+  {% endcase %}
 </svg>

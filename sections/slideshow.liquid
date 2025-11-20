@@ -1,27 +1,68 @@
 {% assign s = section.settings %}
 
-<div class="section-slideshow relative w-full overflow-hidden bg-gray-900">
-  <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }}">
+<div
+  class="section-slideshow relative w-full overflow-hidden bg-gray-900 group select-none color-{{ s.color_scheme }}"
+  data-autoplay="{{ s.autoplay }}"
+  data-speed="{{ s.autoplay_speed }}"
+>
+  <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }} cursor-grab active:cursor-grabbing">
     {% content_for 'blocks' %}
   </div>
-  {% if section.blocks.size > 1 %}
-    <div class="pointer-events-none absolute inset-0 flex items-center justify-between px-4 z-floating">
-      <button
-        type="button"
-        class="slideshow-prev pointer-events-auto p-3 rounded-full bg-body/80 text-body shadow-lg hover:bg-body transition-all group"
-        aria-label="Previous"
-      >
-        {% render 'icon', name: 'chevron-left', class: 'w-5 h-5 group-hover:-translate-x-0.5 transition-transform' %}
-      </button>
 
-      <button
-        type="button"
-        class="slideshow-next pointer-events-auto p-3 rounded-full bg-body/80 text-body shadow-lg hover:bg-body transition-all group"
-        aria-label="Next"
-      >
-        {% render 'icon', name: 'chevron-right', class: 'w-5 h-5 group-hover:translate-x-0.5 transition-transform' %}
-      </button>
-    </div>
+  {% if section.blocks.size > 1 %}
+    {% if s.show_arrows %}
+      {% assign arrow_pos_class = 'absolute top-1/2 -translate-y-1/2 z-floating px-4 w-full flex justify-between pointer-events-none' %}
+
+      {% if s.nav_position == 'bottom_right' %}
+        {% assign arrow_pos_class = 'absolute bottom-8 right-8 z-floating flex gap-2' %}
+      {% endif %}
+
+      <div class="{{ arrow_pos_class }}">
+        <button
+          type="button"
+          class="slideshow-prev pointer-events-auto p-3 rounded-full bg-[var(--color-ui-bg)] text-[var(--color-ui-text)] shadow-lg hover:scale-105 transition-all disabled:opacity-50"
+          aria-label="Previous"
+        >
+          {% render 'icon', name: s.arrow_icon, class: 'w-5 h-5' %}
+        </button>
+
+        <button
+          type="button"
+          class="slideshow-next pointer-events-auto p-3 rounded-full bg-[var(--color-ui-bg)] text-[var(--color-ui-text)] shadow-lg hover:scale-105 transition-all disabled:opacity-50"
+          aria-label="Next"
+        >
+          {% assign icon_name = s.arrow_icon | replace: '-left', '-right' %}
+          {% render 'icon', name: icon_name, class: 'w-5 h-5' %}
+        </button>
+      </div>
+    {% endif %}
+
+    {% if s.show_dots %}
+      {% assign nav_pos_class = 'absolute bottom-6 left-1/2 -translate-x-1/2' %}
+      {% if s.nav_position == 'bottom_left' %} {% assign nav_pos_class = 'absolute bottom-8 left-8' %} {% endif %}
+      {% if s.nav_position == 'bottom_right' %} {% assign nav_pos_class = 'absolute bottom-8 right-8' %} {% endif %}
+
+      <div class="{{ nav_pos_class }} z-floating flex items-center gap-3">
+        {% for block in section.blocks %}
+          <button
+            type="button"
+            class="slideshow-dot transition-all duration-300"
+            data-index="{{ forloop.index0 }}"
+            aria-label="Go to slide {{ forloop.index }}"
+          >
+            {% if s.dot_style == 'dots' %}
+              <span
+                class="block w-2.5 h-2.5 rounded-full bg-[var(--color-ui-bg)] opacity-50 hover:opacity-100 ring-1 ring-transparent"
+              ></span>
+            {% elsif s.dot_style == 'bars' %}
+              <span class="block w-8 h-1 rounded-sm bg-[var(--color-ui-bg)] opacity-50 hover:opacity-100"></span>
+            {% elsif s.dot_style == 'numbers' %}
+              <span class="text-sm font-bold text-[var(--color-ui-text)] opacity-50">{{ forloop.index }}</span>
+            {% endif %}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
   {% endif %}
 </div>
 
@@ -33,6 +74,26 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Active States */
+  /* 1. Dots and Bars get full opacity and scale */
+  .slideshow-dot.is-active span {
+    opacity: 1;
+    transform: scale(1.2);
+    background-color: var(--color-ui-bg);
+  }
+
+  /* 2. Numbers need text color change, not background */
+  .slideshow-dot.is-active span.text-sm {
+    opacity: 1;
+    background-color: transparent; /* Reset bg for numbers */
+    color: var(--color-ui-bg); /* Highlight number */
+  }
+
+  /* 3. Focus Ring (Accessibility/Visuals) */
+  .slideshow-dot.is-active span.ring-1 {
+    ring-color: var(--color-ui-text);
+  }
 {% endstylesheet %}
 
 {% javascript %}
@@ -43,20 +104,124 @@
       const track = section.querySelector('.slideshow-track');
       const prevBtn = section.querySelector('.slideshow-prev');
       const nextBtn = section.querySelector('.slideshow-next');
+      const dots = section.querySelectorAll('.slideshow-dot');
 
       if (!track) return;
 
-      if (prevBtn) {
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+      let autoPlayInterval;
+
+      // --- 1. SCROLL SPY & UI UPDATER ---
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const slides = Array.from(track.children);
+              const index = slides.indexOf(entry.target);
+              updateUI(index);
+            }
+          });
+        },
+        { root: track, threshold: 0.5 }
+      );
+
+      Array.from(track.children).forEach((slide) => observer.observe(slide));
+
+      function updateUI(activeIndex) {
+        // Dots
+        if (dots.length) {
+          dots.forEach((dot, i) => dot.classList.toggle('is-active', i === activeIndex));
+        }
+        // Arrows (Disable at ends to prevent bounce)
+        if (prevBtn) prevBtn.disabled = activeIndex === 0;
+        if (nextBtn) nextBtn.disabled = activeIndex === track.children.length - 1;
+      }
+
+      // --- 2. MOUSE DRAG PHYSICS (The "Swipe" on Desktop) ---
+      track.addEventListener('mousedown', (e) => {
+        isDown = true;
+        track.classList.add('cursor-grabbing');
+        track.classList.remove('scroll-smooth', 'snap-x'); // Disable snap while dragging
+        startX = e.pageX - track.offsetLeft;
+        scrollLeft = track.scrollLeft;
+        stopAutoplay(); // Interaction stops autoplay
+      });
+
+      track.addEventListener('mouseleave', () => {
+        isDown = false;
+        track.classList.remove('cursor-grabbing');
+        track.classList.add('scroll-smooth', 'snap-x'); // Re-enable snap
+        startAutoplay(); // Resume
+      });
+
+      track.addEventListener('mouseup', () => {
+        isDown = false;
+        track.classList.remove('cursor-grabbing');
+        track.classList.add('scroll-smooth', 'snap-x');
+        startAutoplay();
+      });
+
+      track.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - track.offsetLeft;
+        const walk = (x - startX) * 2; // Scroll-fast multiplier
+        track.scrollLeft = scrollLeft - walk;
+      });
+
+      // --- 3. NAVIGATION EVENTS ---
+      if (prevBtn)
         prevBtn.addEventListener('click', () => {
-          track.scrollBy({ left: -window.innerWidth, behavior: 'smooth' });
+          track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
+          stopAutoplay();
+        });
+
+      if (nextBtn)
+        nextBtn.addEventListener('click', () => {
+          track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
+          stopAutoplay();
+        });
+
+      if (dots.length) {
+        dots.forEach((dot) => {
+          dot.addEventListener('click', (e) => {
+            const index = parseInt(e.currentTarget.dataset.index);
+            const slide = track.children[index];
+            if (slide) slide.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+            stopAutoplay();
+          });
         });
       }
 
-      if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-          track.scrollBy({ left: window.innerWidth, behavior: 'smooth' });
-        });
+      // --- 4. AUTOPLAY ENGINE ---
+      function startAutoplay() {
+        if (section.dataset.autoplay !== 'true') return;
+        clearInterval(autoPlayInterval);
+
+        const speed = (parseInt(section.dataset.speed) || 5) * 1000;
+
+        autoPlayInterval = setInterval(() => {
+          // Check if we are at the end
+          if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10) {
+            track.scrollTo({ left: 0, behavior: 'smooth' }); // Rewind
+          } else {
+            track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }); // Next
+          }
+        }, speed);
       }
+
+      function stopAutoplay() {
+        clearInterval(autoPlayInterval);
+      }
+
+      // Init
+      startAutoplay();
+
+      // Pause on hover (Global container)
+      section.addEventListener('mouseenter', stopAutoplay);
+      section.addEventListener('mouseleave', startAutoplay);
     });
   });
 {% endjavascript %}
@@ -65,10 +230,7 @@
 {
   "name": "Slideshow",
   "settings": [
-    {
-      "type": "header",
-      "content": "Layout"
-    },
+    { "type": "header", "content": "Layout" },
     {
       "type": "select",
       "id": "mobile_height",
@@ -91,7 +253,55 @@
         { "value": "md:h-screen", "label": "Full Screen" }
       ],
       "default": "md:h-[75vh]"
-    }
+    },
+
+    { "type": "header", "content": "Controls" },
+    { "type": "checkbox", "id": "show_arrows", "label": "Show Arrows", "default": true },
+    { "type": "checkbox", "id": "show_dots", "label": "Show Pagination", "default": true },
+    {
+      "type": "select",
+      "id": "dot_style",
+      "label": "Pagination Style",
+      "options": [
+        { "value": "dots", "label": "Dots" },
+        { "value": "bars", "label": "Bars" },
+        { "value": "numbers", "label": "Numbers" }
+      ],
+      "default": "dots"
+    },
+    {
+      "type": "select",
+      "id": "arrow_icon",
+      "label": "Arrow Style",
+      "options": [
+        { "value": "chevron-left", "label": "Chevron" },
+        { "value": "arrow-left", "label": "Arrow" }
+      ],
+      "default": "chevron-left"
+    },
+    {
+      "type": "select",
+      "id": "nav_position",
+      "label": "Controls Position",
+      "options": [
+        { "value": "middle_sides", "label": "Middle Sides (Arrows Only)" },
+        { "value": "bottom_center", "label": "Bottom Center" },
+        { "value": "bottom_left", "label": "Bottom Left" },
+        { "value": "bottom_right", "label": "Bottom Right" }
+      ],
+      "default": "middle_sides"
+    },
+    { "type": "header", "content": "Theme" },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "scheme-1",
+      "info": "Controls the color of arrows and dots."
+    },
+    { "type": "header", "content": "Behavior" },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay", "default": false },
+    { "type": "range", "id": "autoplay_speed", "label": "Speed (seconds)", "min": 3, "max": 10, "default": 5 }
   ],
   "blocks": [{ "type": "slide" }],
   "presets": [
@@ -99,38 +309,22 @@
       "name": "Slideshow (Gallery)",
       "settings": {
         "mobile_height": "h-[65vh]",
-        "desktop_height": "md:h-[75vh]"
+        "desktop_height": "md:h-[75vh]",
+        "show_arrows": true,
+        "show_dots": true
       },
       "blocks": {
         "slide_1": {
           "type": "slide",
-          "settings": {
-            "align_x": "items-center",
-            "align_y": "justify-center",
-            "color_scheme": "scheme-1",
-            "enable_zoom": true
-          },
+          "settings": { "align_x": "items-center", "align_y": "justify-center", "color_scheme": "scheme-1" },
           "blocks": {
             "heading": { "type": "jumbo-text", "settings": { "text": "Welcome", "display_size": "display" } },
-            "subtext": {
-              "type": "text",
-              "settings": { "content": "Experience seasonal flavors.", "display_size": "body" }
-            },
             "btn": { "type": "button", "settings": { "label": "View Menu", "style": "primary" } }
-          },
-          "block_order": ["heading", "subtext", "btn"]
-        },
-        "slide_2": {
-          "type": "slide",
-          "settings": { "align_x": "items-start", "align_y": "justify-end pb-20", "color_scheme": "scheme-2" },
-          "blocks": {
-            "heading": { "type": "jumbo-text", "settings": { "text": "Private Events", "display_size": "h1" } },
-            "btn": { "type": "button", "settings": { "label": "Inquire Now", "style": "outline" } }
           },
           "block_order": ["heading", "btn"]
         }
       },
-      "block_order": ["slide_1", "slide_2"]
+      "block_order": ["slide_1"]
     }
   ]
 }

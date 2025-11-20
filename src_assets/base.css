@@ -3,18 +3,12 @@
 @tailwind utilities;
 
 @layer components {
-  /* STAGGER LOGIC (Editor Safe)
-    
-    1. :not(.no-stagger) -> Handles live site (no wrapper).
-    2. :not(:has(.no-stagger)) -> Handles editor (wrapper contains .no-stagger).
-  */
   .stagger-load > *:not(.no-stagger):not(:has(.no-stagger)) {
     opacity: 0;
     @apply animate-fade-up; 
     will-change: opacity, transform;
   }
 
-  /* The Delays */
   .stagger-load>*:not(.no-stagger):first-child {
     animation-delay: 0ms;
     animation-duration: 1s;
@@ -40,28 +34,14 @@
     animation-delay: 750ms;
   }
 
-  /* .btn-primary
-    Consumes: 
-      - bg-btn  -> var(--color-btn-bg)
-      - text-btn -> var(--color-btn-text)
-  */
   .btn-primary {
     @apply bg-btn text-btn border border-transparent hover:opacity-90;
   }
 
-  /* .btn-outline
-    Consumes: 
-      - text-body   -> var(--color-text)
-      - border-body -> var(--color-text)
-  */
   .btn-outline {
     @apply bg-transparent text-body border border-body hover:opacity-75;
   }
 
-  /* .btn-link 
-    Consumes: 
-      - text-body -> var(--color-text)
-  */
   .btn-link {
     @apply bg-transparent text-body border-none underline underline-offset-4 p-0 hover:no-underline;
   }

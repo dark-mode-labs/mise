@@ -21,10 +21,12 @@
       --color-btn-bg: rgb({{ scheme.settings.button_bg.rgba }});
       --color-btn-text: rgb({{ scheme.settings.button_text.rgba }});
       --color-border: rgb({{ scheme.settings.border.rgba }});
-      
+      --color-ui-bg: rgb({{ scheme.settings.ui_bg.rgba }});
+      --color-ui-text: rgb({{ scheme.settings.ui_text.rgba }});
+
       /* Derived / Utilities (Optional) */
       /* E.g., Subtle text is 70% opacity of main text */
-      --color-text-subtle: rgb({{ scheme.settings.text | color_modify: 'alpha', 0.7 }}); 
+      --color-text-subtle: {{ scheme.settings.text.hex | color_modify: 'alpha', 0.7 }}; 
     }
   {% endfor %}
 </style>

@@ -8,50 +8,19 @@
         "label": "Defined Schemes",
         "entry_name": "Scheme",
         "schema": [
-          {
-            "type": "text",
-            "id": "title",
-            "label": "Scheme Name",
-            "default": "New Scheme"
-          },
-          {
-            "type": "header",
-            "content": "Base Colors"
-          },
-          {
-            "type": "color",
-            "id": "background",
-            "label": "Background",
-            "default": "#FFFFFF"
-          },
-          {
-            "type": "color",
-            "id": "text",
-            "label": "Text",
-            "default": "#121212"
-          },
-          {
-            "type": "header",
-            "content": "Elements"
-          },
-          {
-            "type": "color",
-            "id": "button_bg",
-            "label": "Primary Button Background",
-            "default": "#121212"
-          },
-          {
-            "type": "color",
-            "id": "button_text",
-            "label": "Primary Button Label",
-            "default": "#FFFFFF"
-          },
-          {
-            "type": "color",
-            "id": "border",
-            "label": "Borders / Lines",
-            "default": "#E5E5E5"
-          }
+          { "type": "text", "id": "title", "label": "Name" },
+          { "type": "header", "content": "Base Colors" },
+          { "type": "color", "id": "background", "label": "Background" },
+          { "type": "color", "id": "text", "label": "Text" },
+          
+          { "type": "header", "content": "Buttons" },
+          { "type": "color", "id": "button_bg", "label": "Solid Button Background" },
+          { "type": "color", "id": "button_text", "label": "Solid Button Label" },
+          
+          { "type": "header", "content": "UI Controls (Arrows/Dots)" },
+          { "type": "color", "id": "ui_bg", "label": "Control Background", "default": "#ffffff" },
+          { "type": "color", "id": "ui_text", "label": "Control Icon/Text", "default": "#000000" },
+          { "type": "color", "id": "border", "label": "Borders" }
         ]
       }
     ]

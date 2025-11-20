@@ -8,6 +8,8 @@
           "text": "#121212",
           "button_bg": "#121212",
           "button_text": "#FFFFFF",
+          "ui_bg": "#121212",
+          "ui_text": "#FFFFFF",
           "border": "#E5E5E5"
         }
       },
@@ -18,6 +20,8 @@
           "text": "#FFFFFF",
           "button_bg": "#FFFFFF",
           "button_text": "#0F0F0F",
+          "ui_bg": "#FFFFFF",
+          "ui_text": "#0F0F0F",
           "border": "#333333"
         }
       },
@@ -28,6 +32,8 @@
           "text": "#FFFFFF",
           "button_bg": "#FFFFFF",
           "button_text": "#D93025",
+          "ui_bg": "#FFFFFF",
+          "ui_text": "#D93025",
           "border": "#E06666"
         }
       }
