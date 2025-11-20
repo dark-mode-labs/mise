@@ -48,6 +48,11 @@
 {% comment %} Additive Padding: Aesthetic Spacing + Functional Clearance {% endcomment %}
 {% assign total_pb = s.padding_bottom | plus: s.marquee_clearance %}
 
+{% assign placeholder_name = 'scene-3' %}
+{% unless s.show_placeholder %}
+  {% assign placeholder_name = '' %}
+{% endunless %}
+
 <section
   class="section-hero w-full overflow-hidden color-{{ s.color_scheme }} {{ container_layout }} {{ s.height }}"
   style="{{ gap_style }}"
@@ -62,7 +67,7 @@
         video: s.video_url,
         fit: 'cover',
         loading: 'eager',
-        placeholder: 'lifestyle-2',
+        placeholder: placeholder_name,
         animate: s.enable_zoom
       %}
 
@@ -83,7 +88,7 @@
           video: s.video_url_2,
           fit: 'cover',
           loading: 'eager',
-          placeholder: 'lifestyle-1',
+          placeholder: placeholder_name,
           animate: s.enable_zoom
         %}
         {% if s.layout_mode == 'overlay' %}
@@ -107,7 +112,7 @@
 
 {% schema %}
 {
-  "name": "Modular Hero",
+  "name": "Hero",
   "settings": [
     { "type": "header", "content": "Composition" },
     {
@@ -173,6 +178,13 @@
     { "type": "header", "content": "Secondary Media" },
     { "type": "image_picker", "id": "bg_image_2", "label": "Image 2 (Desktop)" },
     { "type": "text", "id": "video_url_2", "label": "Video 2 (MP4)" },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show Placeholder",
+      "default": true,
+      "info": "Show a pattern when no image is selected."
+    },
 
     { "type": "header", "content": "Overlay" },
     { "type": "checkbox", "id": "enable_gradient", "label": "Use Gradient Overlay", "default": false },

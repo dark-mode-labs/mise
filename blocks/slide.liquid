@@ -10,6 +10,11 @@
   {% endcapture %}
 {% endif %}
 
+{% assign placeholder_name = 'scene-1' %}
+{% unless s.show_placeholder %}
+  {% assign placeholder_name = '' %}
+{% endunless %}
+
 <div class="slide-block w-full flex-shrink-0 snap-center relative h-full overflow-hidden color-{{ s.color_scheme }}">
   <div class="absolute inset-0 z-media bg-gray-900">
     {% render 'media',
@@ -17,7 +22,7 @@
       src_mobile: s.image_mobile,
       video: s.video_url,
       fit: 'cover',
-      placeholder: 'lifestyle-1',
+      placeholder: placeholder_name,
       animate: s.enable_zoom
     %}
 
@@ -42,6 +47,13 @@
     { "type": "image_picker", "id": "image", "label": "Desktop Image" },
     { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
     { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
+     {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show Placeholder",
+      "default": true,
+      "info": "Show a pattern when no image is selected."
+    },
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns (Zoom)", "default": false },
 
     { "type": "header", "content": "Overlay" },

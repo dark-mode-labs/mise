@@ -1,8 +1,9 @@
 {% comment %}
   Props:
   - src, src_mobile, video
-  - ratio, fit, loading, placeholder
-  - animate: (Boolean) Enables Ken Burns slow zoom. Default: false.
+  - ratio, fit, loading
+  - animate: (Boolean)
+  - placeholder: (String | Boolean) Pass 'false' to disable fallback. Default: 'scene-1'.
 {% endcomment %}
 
 {% assign fit_mode = fit | default: 'cover' %}
@@ -59,10 +60,12 @@
     {% endif %}
 
   {% else %}
-    {% comment %} Even placeholders get to dance {% endcomment %}
-    <div class="w-full h-full {{ anim_class }}">
-      {{ placeholder | default: 'lifestyle-1' | placeholder_svg_tag: 'w-full h-full object-cover text-gray-300 bg-gray-100 fill-current' }}
-    </div>
+    {% if placeholder != blank %}
+       {% render 'placeholder', 
+          name: placeholder | default: 'scene-1', 
+          class: 'w-full h-full object-cover' 
+       %}
+    {% endif %}
   {% endif %}
 
 </div>

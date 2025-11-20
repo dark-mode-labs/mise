@@ -15,6 +15,11 @@
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
+{% assign placeholder_name = 'scene-2' %}
+{% unless s.show_placeholder %}
+  {% assign placeholder_name = '' %}
+{% endunless %}
+
 <section
   class="section-feature w-full color-{{ s.color_scheme }}"
   style="
@@ -32,7 +37,7 @@
           video: s.video_url,
           fit: 'cover',
           ratio: s.media_aspect_ratio,
-          placeholder: 'lifestyle-1',
+          placeholder: placeholder_name,
           animate: s.enable_zoom
         %}
       </div>
@@ -128,6 +133,13 @@
         { "value": "auto", "label": "Natural" }
       ],
       "default": "portrait"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show Placeholder",
+      "default": true,
+      "info": "Show a pattern when no image is selected."
     },
     { "type": "header", "content": "Visuals" },
     { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
