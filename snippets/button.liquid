@@ -11,11 +11,6 @@
   {% assign width_class = 'w-full flex justify-center' %}
 {% endif %}
 
-{% comment %}
-  LOGIC:
-  - Solid/Outline buttons need padding (px-6 py-3).
-  - Text Links must have ZERO padding (p-0) to align flush with text.
-{% endcomment %}
 {% assign padding_class = 'px-6 py-3' %}
 
 {% case style %}
@@ -26,7 +21,6 @@
   {% when 'link' %}
     {% assign style_class = 'btn-link' %}
     {% assign padding_class = 'p-0' %}
-    {% comment %} Kill padding for links {% endcomment %}
   {% else %}
     {% assign style_class = 'btn-primary' %}
 {% endcase %}
