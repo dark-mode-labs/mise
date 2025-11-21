@@ -1,9 +1,10 @@
 {% assign s = block.settings %}
 
 {% comment %}
-  PART 1: DESKTOP NAV
-  Hidden on mobile via Tailwind classes.
+  - Handles Standard Dropdowns AND Mega Menus.
+  - Mobile rendering is handled by the Drawer (which consumes this data).
 {% endcomment %}
+
 <nav class="header-nav hidden lg:flex items-center h-full">
   <ul class="flex items-center gap-8 h-full">
     {% for link in s.menu.links %}
@@ -35,12 +36,17 @@
               <div class="container mx-auto px-8 py-12 grid grid-cols-4 gap-8">
                 {% for child in link.links %}
                   <div>
-                    <a href="{{ child.url }}" class="block font-heading font-bold mb-4">{{ child.title }}</a>
+                    <a
+                      href="{{ child.url }}"
+                      class="block font-heading font-bold text-lg mb-4 hover:underline underline-offset-4"
+                    >
+                      {{ child.title }}
+                    </a>
                     <ul class="space-y-2">
                       {% for grandchild in child.links %}
                         <li>
-                          <a href="{{ grandchild.url }}" class="text-sm opacity-70 hover:opacity-100">
-                            {{- grandchild.title -}}
+                          <a href="{{ grandchild.url }}" class="text-sm opacity-70 hover:opacity-100 block">
+                            {{ grandchild.title }}
                           </a>
                         </li>
                       {% endfor %}
@@ -48,18 +54,30 @@
                   </div>
                 {% endfor %}
 
-                {% if s.promo_image %}
-                  <div class="col-span-1">
-                    {% render 'media', src: s.promo_image, ratio: 'landscape', class: 'rounded mb-4' %}
-                    <p class="font-bold">{{ s.promo_text }}</p>
+                {% if s.show_promo %}
+                  <div class="col-span-1 bg-gray-50/5 p-6 rounded-global border border-[var(--color-border)]">
+                    {% if s.promo_image %}
+                      <div class="mb-4 rounded-global overflow-hidden">
+                        {% render 'media', src: s.promo_image, ratio: 'landscape', fit: 'cover' %}
+                      </div>
+                    {% endif %}
+                    {% if s.promo_heading != blank %}
+                      <h4 class="font-bold mb-1">{{ s.promo_heading }}</h4>
+                    {% endif %}
+                    {% if s.promo_text != blank %}
+                      <p class="text-sm opacity-70">{{ s.promo_text }}</p>
+                    {% endif %}
                   </div>
                 {% endif %}
               </div>
+
             {% else %}
               <ul class="py-4">
                 {% for child in link.links %}
                   <li>
-                    <a href="{{ child.url }}" class="block px-6 py-2 text-sm hover:bg-gray-50">{{ child.title }}</a>
+                    <a href="{{ child.url }}" class="block px-6 py-2 text-sm hover:bg-gray-50/5 whitespace-nowrap">
+                      {{ child.title }}
+                    </a>
                   </li>
                 {% endfor %}
               </ul>
@@ -77,9 +95,40 @@
 {
   "name": "Header Nav",
   "settings": [
-    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
-    { "type": "image_picker", "id": "promo_image", "label": "Mega Menu Promo Image" },
-    { "type": "text", "id": "promo_text", "label": "Promo Text" }
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "header",
+      "content": "Mega Menu Promo"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promo",
+      "label": "Show Promo Block",
+      "default": false,
+      "info": "Appears on the right side of multi-column menus."
+    },
+    {
+      "type": "image_picker",
+      "id": "promo_image",
+      "label": "Promo Image"
+    },
+    {
+      "type": "text",
+      "id": "promo_heading",
+      "label": "Promo Heading",
+      "default": "Featured"
+    },
+    {
+      "type": "text",
+      "id": "promo_text",
+      "label": "Promo Text",
+      "default": "Check out our new seasonal specials."
+    }
   ]
 }
 {% endschema %}
