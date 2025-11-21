@@ -5,7 +5,7 @@
   {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
 {% endunless %}
 
-<div class="w-full flex-shrink-0 snap-center py-2.5 px-4 flex items-center justify-center {{ scheme_class }} text-[var(--color-text)] bg-[var(--color-bg)]">
+<div class="w-full flex-shrink-0 snap-center py-2.5 px-4 flex items-center justify-center {{ scheme_class }} text-body bg-body">
   {% if s.link != blank %}
     <a href="{{ s.link }}" class="hover:opacity-70 transition-opacity flex items-center gap-2">
       {{ s.text }}
