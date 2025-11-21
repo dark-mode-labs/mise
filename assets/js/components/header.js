@@ -5,31 +5,43 @@ export default class Header {
       sticky: this.el.dataset.sticky,
       transparent: this.el.dataset.transparent === 'true'
     };
+
     this.lastScrollY = window.scrollY;
-    
+    this.headerHeight = this.el.offsetHeight;
+    this.ticking = false;
+
     this.init();
   }
 
   init() {
-    // Mobile Drawer Toggles
     document.querySelectorAll('[data-action="toggle-drawer"]').forEach(btn => {
       btn.addEventListener('click', () => this.toggleDrawer(true));
     });
-    
     document.querySelectorAll('[data-action="close"]').forEach(btn => {
       btn.addEventListener('click', () => this.toggleDrawer(false));
     });
 
-    // Scroll Loop
-    window.addEventListener('scroll', () => requestAnimationFrame(() => this.handleScroll()));
-    this.handleScroll(); // Init check
-    this.handleBodyPadding()
+    window.addEventListener('scroll', () => {
+      if (!this.ticking) {
+        window.requestAnimationFrame(() => {
+          this.handleScroll();
+          this.ticking = false;
+        });
+        this.ticking = true;
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      this.headerHeight = this.el.offsetHeight;
+    });
+
+    this.handleScroll();
   }
 
   toggleDrawer(open) {
-    const drawer = document.getElementById('mobile-menu-drawer');
+    const drawer = this.el.querySelector('.header-drawer');
     if (!drawer) return;
-    
+
     if (open) {
       drawer.classList.remove('-translate-x-full', 'pointer-events-none');
       document.body.classList.add('overflow-hidden');
@@ -39,24 +51,14 @@ export default class Header {
     }
   }
 
-  handleBodyPadding() {
-    if (this.config.transparent) {
-      // If transparent, we WANT it to overlap content. No padding.
-      document.body.style.paddingTop = '0px';
-    } else {
-      // If sticky & solid, push content down so it doesn't hide behind header
-      const height = this.el.offsetHeight;
-      document.body.style.paddingTop = `${height}px`;
-    }
-  }
-
   handleScroll() {
     const y = window.scrollY;
-    const isTop = y < 20;
-    const isDown = y > this.lastScrollY;
+    const scrollDown = y > this.lastScrollY;
 
-    // 1. TRANSPARENCY LOGIC
+    if (y < 0) return;
+
     if (this.config.transparent) {
+      const isTop = y < 20;
       if (isTop) {
         this.el.classList.add('is-transparent');
         this.el.classList.remove('bg-[var(--header-bg)]', 'shadow-sm');
@@ -66,16 +68,14 @@ export default class Header {
       }
     }
 
-    // 2. STICKY LOGIC
     if (this.config.sticky === 'on_scroll_up') {
-      // Hide on scroll down, show on scroll up (unless at top)
-      if (isDown && !isTop) {
+      if (y > this.headerHeight && scrollDown) {
         this.el.classList.add('-translate-y-full');
-      } else {
+      } else if (!scrollDown) {
         this.el.classList.remove('-translate-y-full');
       }
     }
-    
+
     this.lastScrollY = y;
   }
 }

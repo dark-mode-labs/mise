@@ -24,10 +24,9 @@
 
 {% capture content_container_class %}
   {% if s.layout_mode contains 'split' %}w-full lg:w-1/2 relative bg-body flex flex-col justify-center
-  {% else %}relative z-content container mx-auto flex flex-col{% endif %}
+  {% else %}relative z-content container flex flex-col{% endif %}
 {% endcapture %}
 
-{% comment %} --- GRADIENT LOGIC --- {% endcomment %}
 {% if s.overlay_color != blank %}
   {% capture overlay_style %}
     {% if s.enable_gradient %}
@@ -39,13 +38,11 @@
   {% endcapture %}
 {% endif %}
 
-{% comment %} --- 3. ANIMATION LOGIC --- {% endcomment %}
 {% assign animation_class = '' %}
 {% if s.enable_animation %}
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
-{% comment %} Additive Padding: Aesthetic Spacing + Functional Clearance {% endcomment %}
 {% assign total_pb = s.padding_bottom | plus: s.marquee_clearance %}
 
 {% assign placeholder_name = 'scene-3' %}
@@ -57,9 +54,7 @@
   class="section-hero w-full overflow-hidden color-{{ s.color_scheme }} {{ container_layout }} {{ s.height }}"
   style="{{ gap_style }}"
 >
-  {% comment %} LAYER 1: MEDIA {% endcomment %}
   <div class="{{ media_container_class }} bg-gray-900 overflow-hidden">
-    {% comment %} SLOT 1 {% endcomment %}
     <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-white/10{% else %}w-full{% endif %}">
       {% render 'media',
         src: s.bg_image,
@@ -79,7 +74,6 @@
       {% endif %}
     </div>
 
-    {% comment %} SLOT 2 (Optional) {% endcomment %}
     {% if has_media_2 %}
       <div class="relative h-full w-1/2">
         {% render 'media',
@@ -101,7 +95,6 @@
     {% endif %}
   </div>
 
-  {% comment %} LAYER 2: CONTENT {% endcomment %}
   <div
     class="{{ content_container_class }} {{ s.align_x }} {{ s.align_y }} px-6 lg:px-12 gap-6 transition-all {{ animation_class }}"
     style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ total_pb }}px;"

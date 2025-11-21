@@ -8,22 +8,29 @@
     {% content_for 'block', type: '_header-menu', id: 'header-menu' %}
 {% endcapture %}
 
-{% capture slot_nav_mobile %}
-    {% content_for 'block', type: '_header-menu', id: 'header-menu', variant: 'mobile' %}
-{% endcapture %}
-
 {% capture slot_actions %}
     {% content_for 'block', type: '_header-actions', id: 'header-actions' %}
 {% endcapture %}
 
+{% assign needs_spacer = false %}
+{% assign position_class = 'relative' %}
+{% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
+  {% assign position_class = 'fixed top-0 w-full' %}
+  {% unless s.enable_transparent %}
+    {% assign needs_spacer = true %}
+  {% endunless %}
+{% elsif s.enable_transparent %}
+  {% assign position_class = 'absolute top-0 w-full' %}
+{% endif %}
+
 <header
-  class="fixed top-0 w-full z-header transition-all duration-300 border-b border-transparent bg-[var(--header-bg)] text-[var(--header-text)]"
+  class="header-section {{ position_class }} z-header transition-all duration-300 border-b border-transparent bg-[var(--header-bg)] text-[var(--header-text)]"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
   data-transparent="{{ s.enable_transparent }}"
   style="--header-bg: {{ s.bg_color }}; --header-text: {{ s.text_color }};"
 >
-  <div class="container mx-auto px-4 md:px-8 h-16 md:h-24 grid grid-cols-[auto_1fr_auto] md:grid-cols-3 items-center gap-4">
+  <div class="wrapper h-16 md:h-24 grid grid-cols-3 items-center">
     <div class="flex items-center justify-start gap-4">
       <button
         type="button"
@@ -34,26 +41,22 @@
         {% render 'icon', name: 'menu', class: 'w-6 h-6' %}
       </button>
 
-      {% if s.desktop_layout == 'logo_center' %}
-        <div class="hidden lg:block">
-          {{ slot_nav }}
-        </div>
-      {% endif %}
-
       {% if s.desktop_layout == 'logo_left' %}
-        <div class="mr-8 flex-shrink-0">
+        <div class="mr-8 flex-shrink-0 hidden lg:block">
           {{ slot_logo }}
         </div>
-        <div class="hidden lg:block">
+        <div>
+          {{ slot_nav }}
+        </div>
+      {% else %}
+        <div>
           {{ slot_nav }}
         </div>
       {% endif %}
     </div>
 
-    <div class="flex items-center justify-center h-full">
-      <div class="{% if s.desktop_layout == 'logo_left' %}lg:hidden{% endif %}">
-        {{ slot_logo }}
-      </div>
+    <div class="flex items-center justify-center h-full {% if s.desktop_layout == 'logo_left' %}lg:hidden{% endif %}">
+      {{ slot_logo }}
     </div>
 
     <div class="flex items-center justify-end gap-4">
@@ -62,7 +65,9 @@
   </div>
 </header>
 
-{{ slot_nav_mobile }}
+{% if needs_spacer %}
+  <div class="w-full h-16 md:h-24"></div>
+{% endif %}
 
 {% schema %}
 {
@@ -72,8 +77,8 @@
   "settings": [
     {
       "type": "select",
-      "id": "layout",
-      "label": "Layout",
+      "id": "desktop_layout",
+      "label": "Layout (Desktop)",
       "options": [
         { "value": "logo_center", "label": "Logo Center" },
         { "value": "logo_left", "label": "Logo Left" }

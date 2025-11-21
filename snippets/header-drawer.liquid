@@ -1,56 +1,57 @@
 {% comment %}
-  Props: 
-  - menu: (LinkList Object)
-  - cta_block: (Block Object - Optional)
+  Snippet: Header Drawer (Mobile Menu)
+  - Props: menu (LinkList object)
+  - Uses variables from parent Section: var(--header-bg), var(--header-text)
 {% endcomment %}
 
-<div id="mobile-menu-drawer" 
-     class="fixed inset-0 z-overlay transform transition-transform duration-300 ease-in-out -translate-x-full pointer-events-none"
-     data-behavior="drawer">
-  
-  {% comment %} BACKDROP (Click to close) {% endcomment %}
-  <div class="drawer-backdrop absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300" data-action="close"></div>
+<div
+  class="header-drawer fixed inset-0 z-overlay h-screen transform transition-transform duration-300 ease-in-out -translate-x-full pointer-events-none"
+  aria-hidden="true"
+>
+  <div
+    class="drawer-backdrop absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 pointer-events-auto"
+    data-action="close"
+  ></div>
 
-  {% comment %} DRAWER PANEL {% endcomment %}
-  <div class="drawer-panel relative w-[90%] max-w-md h-full bg-body text-body flex flex-col shadow-2xl pointer-events-auto">
-    
-    {% comment %} HEADER {% endcomment %}
-    <div class="flex items-center justify-between px-6 py-4 border-b border-std">
-      <span class="text-sm font-bold uppercase tracking-widest">Menu</span>
+  <div class="drawer-panel relative w-[85%] max-w-md h-full bg-[var(--header-bg)] text-[var(--header-text)] flex flex-col shadow-2xl pointer-events-auto overflow-hidden">
+    <div class="flex items-center justify-end px-6 h-16 border-b border-current/10">
       <button type="button" class="p-2 -mr-2 hover:opacity-70" data-action="close" aria-label="Close Menu">
         {% render 'icon', name: 'close', class: 'w-6 h-6' %}
       </button>
     </div>
 
-    {% comment %} LINKS {% endcomment %}
     <nav class="flex-1 overflow-y-auto py-6 px-6">
-      <ul class="flex flex-col gap-6">
+      <ul class="flex flex-col gap-4">
         {% for link in menu.links %}
           <li>
-            <a href="{{ link.url }}" class="text-2xl font-heading font-bold hover:opacity-70 block">
-              {{ link.title }}
-            </a>
-            {% comment %} Submenus would go here (Nested loop) {% endcomment %}
+            {% if link.links != blank %}
+              <details class="group">
+                <summary class="flex items-center justify-between text-xl font-bold py-2 cursor-pointer list-none select-none">
+                  {{ link.title }}
+                  {% render 'icon', name: 'chevron-down', class: 'w-4 h-4 transition-transform group-open:rotate-180' %}
+                </summary>
+                <ul class="pl-4 mt-2 space-y-3 border-l border-current/20">
+                  {% for child in link.links %}
+                    <li>
+                      <a href="{{ child.url }}" class="block text-base opacity-80 hover:opacity-100 py-1">
+                        {{- child.title -}}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </details>
+            {% else %}
+              <a href="{{ link.url }}" class="text-xl font-bold block py-2">{{ link.title }}</a>
+            {% endif %}
           </li>
         {% endfor %}
       </ul>
     </nav>
 
-    {% comment %} FOOTER ACTIONS {% endcomment %}
-    <div class="p-6 border-t border-std bg-gray-50/5 space-y-4">
-      {% if cta_block %}
-        {% render 'button', 
-           label: cta_block.settings.label, 
-           url: cta_block.settings.link, 
-           style: 'primary', 
-           width: 'full' 
-        %}
-      {% endif %}
-      
-      <div class="text-sm opacity-60 text-center">
-        {{ 'now' | date: "%Y" }} RestaurantOS
-      </div>
+    <div class="p-6 border-t border-current/10 bg-black/5">
+      <p class="text-xs opacity-60 uppercase tracking-widest text-center">
+        {{ shop.name }} &copy; {{ 'now' | date: '%Y' }}
+      </p>
     </div>
-
   </div>
 </div>
