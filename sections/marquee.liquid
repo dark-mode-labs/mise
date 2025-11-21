@@ -1,16 +1,14 @@
 {% assign s = section.settings %}
-{% assign scheme_class = 'color-' | append: s.color_scheme %}
 
-<section class="section-marquee w-full border-y border-std {{ scheme_class }} bg-body text-body overflow-hidden"
-         style="padding-top: {{ s.padding_vertical }}px; padding-bottom: {{ s.padding_vertical }}px;">
-  
-  {% comment %} Reuse the snippet we built {% endcomment %}
+<section
+  class="section-marquee w-full border-y border-std color-{{ s.color_scheme }} bg-[var(--color-bg)] text-[var(--color-text)] overflow-hidden"
+  style="padding-top: {{ s.padding_vertical }}px; padding-bottom: {{ s.padding_vertical }}px;"
+>
   {% render 'marquee', 
      items: s.text_list, 
      speed: s.speed, 
      direction: s.direction 
   %}
-
 </section>
 
 {% schema %}
@@ -21,7 +19,7 @@
       "type": "text",
       "id": "text_list",
       "label": "Text",
-      "default": "Reserve Now • Open Daily • Fresh Ingredients",
+      "default": "Reserve Now, Open Daily, Fresh Ingredients",
       "info": "Comma separated"
     },
     {

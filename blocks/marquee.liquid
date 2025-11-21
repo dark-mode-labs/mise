@@ -14,16 +14,14 @@
 {% endcapture %}
 
 {% if block.settings.pin_bottom %}
-  {% comment %} MODE A: PINNED TO BOTTOM {% endcomment %}
-  <div class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-body text-body no-stagger"
+  <div class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-[var(--color-bg)] text-[var(--color-text)] no-stagger"
        style="opacity: {{ block.settings.opacity | divided_by: 100.0 }};">
     {{ rendered_marquee }}
   </div>
 
 {% else %}
-  {% comment %} MODE B: INLINE (FLOW CONTENT) {% endcomment %}
   <div class="w-screen relative left-[calc(-50vw+50%)] my-4 z-base no-stagger">
-    <div class="border-y border-std {{ scheme_class }} bg-body text-body" 
+    <div class="border-y border-std {{ scheme_class }} bg-[var(--color-bg)] text-[var(--color-text)]" 
          style="opacity: {{ block.settings.opacity | divided_by: 100.0 }};">
       {{ rendered_marquee }}
     </div>
