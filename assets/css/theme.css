@@ -3,8 +3,6 @@
 @tailwind utilities;
 
 @layer utilities {
-
-  /* Global Utility: Hide Scrollbar (Moved from Slideshow) */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -20,7 +18,6 @@
     @apply w-full max-w-screen-2xl mx-auto px-4 md:px-8;
   }
 
-  /* --- ANIMATIONS --- */
   .stagger-load>*:not(.no-stagger):not(:has(.no-stagger)) {
     opacity: 0;
     @apply animate-fade-up;
@@ -53,15 +50,15 @@
   }
 
   .btn-primary {
-    @apply bg-btn text-btn border border-transparent hover:opacity-90;
+    @apply bg-[var(--color-ui-bg)] text-[var(--color-ui-text)] border border-transparent hover:opacity-90;
   }
 
   .btn-outline {
-    @apply bg-transparent text-body border border-body hover:opacity-75;
+    @apply bg-transparent text-[var(--color-ui-text)] border border-body hover:opacity-75;
   }
 
   .btn-link {
-    @apply bg-transparent text-body border-none underline underline-offset-4 p-0 hover:no-underline;
+    @apply bg-transparent text-[var(--color-ui-text)] border-none underline underline-offset-4 p-0 hover:no-underline;
   }
 
   .btn-nav {
@@ -88,11 +85,6 @@
     box-shadow: 0 0 0 1px var(--color-ui-text);
   }
 
-  .header-nav .absolute {
-    color: var(--color-text);
-  }
-
-  /* HEADER BASE */
   .header-section {
     transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s;
     will-change: transform, background-color;
@@ -126,6 +118,9 @@
 }
 
 @layer base {
+  html, body {
+    @apply overflow-x-hidden;
+  }
 
   h1,
   h2,
@@ -137,13 +132,11 @@
   }
 
   body {
-    @apply font-body text-body bg-body antialiased;
+    @apply antialiased;
   }
 
-  /* Apply Global Radius to images/containers if they use the variable */
   :root {
     --radius-global: 0px;
-    /* Default fallback */
   }
 
   .rounded-global {

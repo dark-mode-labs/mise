@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 <section
-  class="section-marquee w-full border-y border-std color-{{ s.color_scheme }} bg-[var(--color-bg)] text-[var(--color-text)] overflow-hidden"
+  class="section-marquee w-full border-y border-std color-{{ s.color_scheme }} bg-body text-body overflow-hidden"
   style="padding-top: {{ s.padding_vertical }}px; padding-bottom: {{ s.padding_vertical }}px;"
 >
   {% render 'marquee', 

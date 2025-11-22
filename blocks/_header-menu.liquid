@@ -28,7 +28,7 @@
         {% if link.links != blank %}
           <div
             class="
-              absolute top-full left-0 bg-body border border-std shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating text-body
+              absolute top-full left-0 border border-std shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating
               {% if has_mega %}!fixed left-0 right-0 w-full border-x-0{% else %}w-64{% endif %}
             "
           >
@@ -55,7 +55,7 @@
                 {% endfor %}
 
                 {% if s.show_promo %}
-                  <div class="col-span-1 bg-gray-50/5 p-6 rounded-global border border-[var(--color-border)]">
+                  <div class="col-span-1 bg-gray-50/5 p-6 rounded-global border border-std">
                     {% if s.promo_image %}
                       <div class="mb-4 rounded-global overflow-hidden">
                         {% render 'media', src: s.promo_image, ratio: 'landscape', fit: 'cover' %}

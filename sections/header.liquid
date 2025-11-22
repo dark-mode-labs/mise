@@ -24,11 +24,10 @@
 {% endif %}
 
 <header
-  class="header-section {{ position_class }} z-header transition-all duration-300 border-b border-transparent bg-[var(--header-bg)] text-[var(--header-text)]"
+  class="header-section {{ position_class }} color-{{ s.color_scheme }} text-body bg-body z-header transition-all duration-300 border-b border-transparent"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
   data-transparent="{{ s.enable_transparent }}"
-  style="--header-bg: {{ s.bg_color }}; --header-text: {{ s.text_color }};"
 >
   <div class="wrapper h-16 md:h-24 grid grid-cols-3 items-center">
     <div class="flex items-center justify-start gap-4">
@@ -55,7 +54,7 @@
       {% endif %}
     </div>
 
-    <div class="flex items-center justify-center h-full {% if s.desktop_layout == 'logo_left' %}lg:hidden{% endif %}">
+    <div class="flex items-center justify-center h-full {% if s.desktop_layout == 'logo_left' %}lg:invisible{% endif %}">
       {{ slot_logo }}
     </div>
 
@@ -98,9 +97,7 @@
       "default": "always"
     },
     { "type": "checkbox", "id": "enable_transparent", "label": "Transparent on Top", "default": true },
-    { "type": "header", "content": "Colors" },
-    { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
-    { "type": "color", "id": "text_color", "label": "Text", "default": "#000000" }
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
   ]
 }
 {% endschema %}
