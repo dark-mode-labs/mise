@@ -1,9 +1,3 @@
-{% comment %}
-  BLOCK: STANDARD HEADING
-  - Semantic tags (H2-H6)
-  - Uses 'display_size' to avoid Liquid reserved keywords.
-{% endcomment %}
-
 {% capture style_override %}
   {% unless block.settings.inherit_color_scheme %}
     style="--color-text: {{ block.settings.custom_color }};"

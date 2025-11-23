@@ -1,0 +1,37 @@
+{% assign s = block.settings %}
+
+<div class="column-block flex flex-col gap-4 h-full {{ s.text_align }}">
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Column",
+  "settings": [
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "items-start text-left", "label": "Left" },
+        { "value": "items-center text-center", "label": "Center" },
+        { "value": "items-end text-right", "label": "Right" }
+      ],
+      "default": "items-start text-left"
+    }
+  ],
+  "blocks": [
+    { "type": "@theme" }
+  ],
+  "presets": [
+    {
+      "name": "Column",
+      "blocks": {
+        "title": { "type": "heading", "settings": { "text": "Feature", "tag": "h3", "display_size": "h3" } },
+        "desc": { "type": "text", "settings": { "content": "Details about this feature." } }
+      },
+      "block_order": ["title", "desc"]
+    }
+  ]
+}
+{% endschema %}
