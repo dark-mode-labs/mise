@@ -40,6 +40,11 @@
     },
     "heading_font": "serif",
     "body_font": "sans-serif",
-    "corner_radius": 0
+    "corner_radius": 0,
+    "social_instagram_link": "https://instagram.com/restaurant",
+    "social_facebook_link": "https://facebook.com/restaurant",
+    "social_tiktok_link": "https://tiktok.com/@restaurant",
+    "social_twitter_link": "https://x.com/restaurant",
+    "social_yelp_link": "https://yelp.com/biz/restaurant"
   }
 }
