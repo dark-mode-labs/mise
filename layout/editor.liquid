@@ -2,17 +2,17 @@
 <html lang="{{ request.locale.iso_code }}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <head>
-    {%- if settings.favicon != blank -%}
+    {% if settings.favicon != blank %}
       <link
         rel="icon"
         type="image/png"
         href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
       >
-    {%- endif -%}
+    {% endif %}
 
-    {%- render 'stylesheets' -%}
-    {%- render 'scripts' -%}
-    {%- render 'theme_variables' -%}
+    {% render 'stylesheets' %}
+    {% render 'scripts' %}
+    {% render 'theme_variables' %}
 
     {{ content_for_header }}
     <meta name="csrf-token" content="{{ csrf_token }}">
