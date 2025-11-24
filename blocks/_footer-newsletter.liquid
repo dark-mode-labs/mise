@@ -13,18 +13,20 @@
     <input type="hidden" name="form_type" value="customer">
     <input type="hidden" name="contact[tags]" value="newsletter">
 
-    <div class="relative">
+    <div class="relative group">
       <input
         type="email"
         name="contact[email]"
         placeholder="Email Address"
         required
-        class="w-full bg-transparent border-0 border-b border-current py-3 pr-10 placeholder-current/50 focus:ring-0 focus:border-current/100 transition-all"
+        class="w-full bg-transparent border-0 border-b border-[var(--color-text)] py-3 pr-10 placeholder-[var(--color-text)]/50 focus:ring-0 focus:border-[var(--color-text)] transition-all outline-none"
       >
       <button type="submit" class="absolute right-0 top-1/2 -translate-y-1/2 hover:opacity-70" aria-label="Subscribe">
         {% render 'icon', name: 'arrow-right', class: 'w-4 h-4' %}
       </button>
     </div>
+
+    <div class="hidden text-green-500 text-sm mt-2 font-bold">Thank you for subscribing!</div>
   </form>
 </div>
 
