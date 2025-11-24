@@ -1,37 +1,135 @@
-<div class="menu-item group w-full flex gap-4 md:gap-6 items-start py-4 border-b border-dashed border-[var(--color-text)]/10 last:border-0">
-  {% if item.image %}
-    <div class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-global overflow-hidden bg-gray-100">
-      {% render 'media', src: item.image, ratio: 'square', fit: 'cover' %}
-    </div>
-  {% endif %}
+{% comment %}
+  Snippet: Menu Item (List View)
+  Props: item (Object)
+  Features: Smart layout for Multi-Group Modifiers (e.g. Pizza Toppings vs Crust Style).
+{% endcomment %}
 
-  <div class="flex-grow flex flex-col w-full">
-    <div class="flex items-baseline justify-between w-full">
-      <div class="flex items-center gap-2">
-        <h4 class="font-heading font-bold text-lg leading-none">{{ item.name }}</h4>
+{% assign has_image = false %}
+{% if item.image != blank %}{% assign has_image = true %}{% endif %}
 
-        {% if item.badges.size > 0 %}
-          <div class="flex gap-1">
-            {% for badge in item.badges %}
-              <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded border border-current opacity-60">
-                {{ badge }}
-              </span>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
+{% assign modifier_count = 0 %}
+{% assign group_count = item.modifier_groups.size %}
 
-      <div class="flex-grow mx-2 border-b border-dotted border-current opacity-30 relative -top-1"></div>
+{% for group in item.modifier_groups %}
+  {% assign modifier_count = modifier_count | plus: group.modifiers.size %}
+{% endfor %}
 
-      <div class="font-bold font-heading text-lg whitespace-nowrap">
-        {{ item.price | money_with_currency }}
-      </div>
-    </div>
+{% assign use_body_layout = false %}
+{% if modifier_count > 4 or group_count > 1 %}{% assign use_body_layout = true %}{% endif %}
 
-    {% if item.description != blank %}
-      <div class="opacity-70 text-sm mt-1 max-w-prose">
-        {{ item.description }}
+<div class="menu-item group w-full py-4 border-b border-dashed border-[var(--color-text)]/10 last:border-0 break-inside-avoid">
+  <div class="flex gap-4 md:gap-6 items-start">
+    {% if has_image %}
+      <div class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-global overflow-hidden bg-gray-100">
+        {% render 'media', src: item.image, ratio: 'square', fit: 'cover', placeholder: 'scene-1' %}
       </div>
     {% endif %}
+
+    <div class="flex-grow flex flex-col w-full">
+      <div class="flex flex-col md:flex-row md:items-baseline justify-between w-full gap-1 md:gap-4">
+        <div class="flex items-center gap-3 flex-wrap">
+          <h4 class="font-heading font-bold text-lg md:text-xl leading-tight">{{ item.name }}</h4>
+          {% if item.dietary_flags.size > 0 %}
+            <div class="flex gap-1">
+              {% for flag in item.dietary_flags %}
+                <span class="badge-pill" title="{{ flag.name }}">
+                  {{ flag.code | default: flag.name | truncate: 2, '' }}
+                </span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {% unless use_body_layout %}
+          <div
+            class="hidden md:block flex-grow mx-2 border-b border-dotted border-current opacity-30 relative -top-1"
+          ></div>
+        {% endunless %}
+
+        <div class="text-right font-bold font-heading text-lg flex flex-col items-end">
+          {% if use_body_layout %}
+            <span class="whitespace-nowrap">
+              {% if item.price_varies %}From {% endif %}
+              {{ item.price | money }}
+            </span>
+          {% else %}
+            {% if modifier_count == 0 %}
+              <span class="whitespace-nowrap">{{ item.price | money }}</span>
+            {% else %}
+              <div class="flex flex-col items-end text-base md:text-lg">
+                {% for group in item.modifier_groups %}
+                  {% assign modifiers = group.modifiers | sort: 'price_delta' %}
+                  {% for mod in modifiers %}
+                    <div class="whitespace-nowrap flex items-center justify-end">
+                      <span class="text-xs opacity-70 uppercase tracking-wide mr-2">{{ mod.name }}</span>
+                      <span>
+                        {% assign base_val = item.price | money_without_currency %}
+                        {% assign mod_val = mod.price_delta | money_without_currency %}
+                        {% assign total_val = base_val | plus: mod_val %}
+                        {{ total_val | money }}
+                      </span>
+                    </div>
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      {% if item.description != blank %}
+        <div class="opacity-70 text-sm mt-1 max-w-prose leading-relaxed">
+          {{ item.description }}
+        </div>
+      {% endif %}
+
+      {% if use_body_layout %}
+        <div class="mt-4 pt-4 border-t border-dashed border-[var(--color-text)]/10 w-full">
+          {% if group_count > 1 %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+              {% for group in item.modifier_groups %}
+                {% if group.modifiers.size > 0 %}
+                  <div class="flex flex-col gap-2">
+                    <h5 class="text-[10px] font-bold uppercase tracking-widest opacity-50 border-b border-[var(--color-text)]/10 pb-1 mb-1">
+                      {{ group.name }}
+                    </h5>
+                    <ul class="flex flex-col gap-1">
+                      {% for mod in group.modifiers %}
+                        {% assign mod_price_check = mod.price_delta | money_without_currency %}
+                        <li class="flex justify-between text-sm opacity-80">
+                          <span>{{ mod.name }}</span>
+                          {% if mod_price_check > 0 %}
+                            <span class="opacity-60 font-bold text-xs">+{{ mod.price_delta | money }}</span>
+                          {% endif %}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+          {% else %}
+            {% assign group = item.modifier_groups.first %}
+            <div class="flex flex-col gap-2">
+              <h5 class="text-[10px] font-bold uppercase tracking-widest opacity-50 mb-1">
+                {{ group.name | default: 'Options' }}
+              </h5>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 text-sm opacity-80">
+                {% for mod in group.modifiers %}
+                  {% assign mod_price_check = mod.price_delta | money_without_currency %}
+                  <div class="flex justify-between items-baseline">
+                    <span>{{ mod.name }}</span>
+                    {% if mod_price_check > 0 %}
+                      <span class="opacity-60 font-bold text-xs">+{{ mod.price_delta | money }}</span>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
   </div>
 </div>

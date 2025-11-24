@@ -1,64 +1,95 @@
 {% assign s = section.settings %}
 {% assign menu = shop.menu_data | map: s.menu %}
 
-{% assign categories_to_render = menu.categories | map_values %}
-
-{% if s.display_scope == 'category' and s.category_filter != blank %}
-  {% assign categories_to_render = menu.categories | where: 'name', s.category_filter | map_values %}
-{% endif %}
-
 <section
   class="section-menu-list w-full color-{{ s.color_scheme }}"
   style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
 >
   <div class="wrapper">
-    {% if s.heading != blank %}
-      <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
+      {% if s.heading != blank %}
         {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
-        {% if s.subtext != blank %}
-          <div class="opacity-80 mt-4">
-            {% render 'typography', text: s.subtext, tag: 'div', size: 'body', color: 'var(--color-text)' %}
-          </div>
-        {% endif %}
-      </div>
-    {% endif %}
-
-    <div class="flex flex-col lg:flex-row gap-12">
-      {% if s.show_nav and s.display_scope == 'full_menu' and categories_to_render.size > 1 %}
-        <div class="hidden lg:block w-64 flex-shrink-0">
-          <div class="sticky top-32 flex flex-col gap-2 border-l-2 border-[var(--color-text)]/10 pl-4">
-            {% for category in categories_to_render %}
-              <a
-                href="#cat-{{ category.uuid }}"
-                class="text-sm font-bold opacity-50 hover:opacity-100 transition-opacity"
-              >
-                {{ category.name }}
-              </a>
-            {% endfor %}
-          </div>
-        </div>
+      {% else %}
+        {% render 'typography', text: menu.name, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
       {% endif %}
 
-      <div class="flex-grow flex flex-col gap-16">
-        {% for category in categories_to_render %}
-          <div id="cat-{{ category.uuid }}" class="scroll-mt-32">
-            <div class="flex items-end justify-between border-b-2 border-[var(--color-text)] mb-8 pb-2">
-              <h3 class="font-heading text-2xl font-bold uppercase tracking-wide">{{ category.name }}</h3>
-            </div>
+      {% if s.subtext != blank %}
+        <div class="opacity-80 mt-4">
+          {% render 'typography', text: s.subtext, tag: 'div', size: 'body', color: 'var(--color-text)' %}
+        </div>
+      {% endif %}
+    </div>
 
+    <div class="flex flex-col lg:flex-row gap-12">
+      {% if s.display_scope == 'full_menu' %}
+        {% assign all_categories = menu.categories | map_values | sort: 'display_order' %}
+        {% assign root_categories = all_categories | where: 'parent_uuid', null %}
+
+        {% if s.show_nav and root_categories.size > 1 %}
+          <div class="hidden lg:block w-64 flex-shrink-0">
+            <nav class="sticky top-32 flex flex-col gap-2 border-l-2 border-[var(--color-text)]/10 pl-4">
+              {% for parent in root_categories %}
+                <a
+                  href="#cat-{{ parent.uuid }}"
+                  class="text-sm font-bold opacity-50 hover:opacity-100 transition-opacity uppercase tracking-wider"
+                >
+                  {{ parent.name }}
+                </a>
+              {% endfor %}
+            </nav>
+          </div>
+        {% endif %}
+
+        <div class="flex-grow flex flex-col gap-20">
+          {% for parent in root_categories %}
+            <div id="cat-{{ parent.uuid }}" class="scroll-mt-32 menu-category-group">
+              <div class="flex items-end justify-between border-b-2 border-[var(--color-text)] mb-8 pb-2">
+                <h3 class="font-heading text-3xl font-bold uppercase tracking-wide">{{ parent.name }}</h3>
+              </div>
+
+              {% assign parent_items = parent.items | sort: 'display_order' %}
+              {% if parent_items.size > 0 %}
+                <div class="grid grid-cols-1 {% if s.columns == 2 %}md:grid-cols-2 gap-x-12{% endif %} gap-y-8 mb-12">
+                  {% for item in parent_items %}
+                    {% render 'menu-item-list', item: item %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% assign children = all_categories | where: 'parent_uuid', parent.uuid %}
+              {% for child in children %}
+                <div class="mb-12 pl-0 md:pl-4">
+                  <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ child.name }}</h4>
+                  <div class="grid grid-cols-1 {% if s.columns == 2 %}md:grid-cols-2 gap-x-12{% endif %} gap-y-8">
+                    {% assign child_items = child.items | sort: 'display_order' %}
+                    {% for item in child_items %}
+                      {% render 'menu-item-list', item: item %}
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+
+      {% elsif s.display_scope == 'category' %}
+        {% assign target_category = menu.categories | map_values | where: 'name', s.category_filter | first %}
+
+        <div class="w-full flex-grow">
+          {% if target_category %}
             <div class="grid grid-cols-1 {% if s.columns == 2 %}md:grid-cols-2 gap-x-12{% endif %} gap-y-8">
-              {% for item in category.items %}
+              {% assign sorted_items = target_category.items | sort: 'display_order' %}
+              {% for item in sorted_items %}
                 {% render 'menu-item-list', item: item %}
               {% endfor %}
             </div>
-          </div>
-
-        {% else %}
-          <div class="py-12 text-center opacity-60">
-            <p>Category "{{ s.category_filter }}" not found in this menu.</p>
-          </div>
-        {% endfor %}
-      </div>
+          {% else %}
+            <div class="text-center opacity-50 py-12">
+              Category "{{ s.category_filter }}" not found in menu "{{ menu.name }}".
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
     </div>
 
     {% if s.footer_text != blank %}
@@ -89,22 +120,17 @@
       "type": "text",
       "id": "category_filter",
       "label": "Category Name",
-      "info": "Exact name of the category to display (e.g. 'Starters'). Only used if Scope is 'Specific Category'.",
-      "visible_if": "{{ display_scope == 'category' }}"
-    },
-
-    { "type": "header", "content": "Content" },
-    { "type": "text", "id": "heading", "label": "Section Heading", "default": "Our Menu" },
-    { "type": "textarea", "id": "subtext", "label": "Description" },
-    {
-      "type": "text",
-      "id": "footer_text",
-      "label": "Footer Note",
-      "default": "* Consuming raw ingredients may increase risk."
+      "info": "Exact name of the category (e.g. 'Starters'). Used if Scope is Category."
     },
 
     { "type": "header", "content": "Layout" },
-    { "type": "checkbox", "id": "show_nav", "label": "Show Sticky Navigation", "default": true },
+    {
+      "type": "checkbox",
+      "id": "show_nav",
+      "label": "Show Sticky Navigation",
+      "default": true,
+      "info": "Only active in Full Menu mode."
+    },
     {
       "type": "range",
       "id": "columns",
@@ -112,6 +138,16 @@
       "min": 1,
       "max": 2,
       "default": 1
+    },
+
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Section Heading", "info": "Overrides Menu Name if set" },
+    { "type": "textarea", "id": "subtext", "label": "Description" },
+    {
+      "type": "text",
+      "id": "footer_text",
+      "label": "Footer Note",
+      "default": "* Consuming raw ingredients may increase risk."
     },
 
     { "type": "header", "content": "Spacing" },
