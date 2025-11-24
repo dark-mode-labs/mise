@@ -11,7 +11,7 @@ export default {
   theme: {
     extend: {
       height: {
-        'screen-dvh': '100dvh', // The fix
+        'screen-dvh': '100dvh',
       },
       fontFamily: {
         heading: ['var(--font-heading)', 'serif'],
