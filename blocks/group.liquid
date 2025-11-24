@@ -1,36 +1,27 @@
-{% comment %}
-  LOGIC:
-  - Sizing: We toggle between 'w-full' (Fill) and 'w-max max-w-full' (Fit).
-  - Glass: If enabled, we lower the bg opacity slightly and add backdrop-blur.
-{% endcomment %}
+{% assign s = block.settings %}
 
-{% assign scheme_class = '' %}
-{% unless block.settings.inherit_color_scheme %}
-  {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
-{% endunless %}
-
-{% capture width_class %}
-  {% if block.settings.width_mode == 'fit' %}w-fit max-w-full mx-auto
-  {% elsif block.settings.width_mode == 'fixed' %}w-full max-w-[{{ block.settings.fixed_width }}px] mx-auto
-  {% else %}w-full{% endif %}
+{% capture block_classes %}
+  group-block relative z-content overflow-hidden transition-all flex
+  {{ s.direction }} 
+  {{ s.align_items }} 
+  {{ s.justify_content }}
+  {% if s.wrap_content %}flex-wrap{% endif %}
+  {% if s.inherit_styles %}rounded-global{% else %}color-{{ s.color_scheme }}{% endif %}
+  {% if s.enable_glass %}backdrop-blur-md bg-opacity-80 border border-white/10{% endif %}
 {% endcapture %}
 
-{% capture glass_class %}
-  {% if block.settings.enable_glass %}backdrop-blur-md bg-opacity-80 border border-white/10{% endif %}
+{% capture block_styles %}
+  padding: {{ s.padding }}px;
+  gap: {{ s.gap }}px;
+  {% unless s.inherit_styles %}border-radius: {{ s.border_radius }}px;{% endunless %}
+  {% if s.shadow %}box-shadow: 0 8px 32px rgba(0,0,0,0.15);{% endif %}
+  opacity: {{ s.opacity | divided_by: 100.0 }};
 {% endcapture %}
 
-<div
-  class="group-block relative z-content {{ width_class }} flex flex-col overflow-hidden transition-all {{ scheme_class }} {{ glass_class }} rounded-global bg-body text-body"
-  style="
-    padding: {{ block.settings.padding }}px;
-    gap: {{ block.settings.gap }}px;
-    align-items: {{ block.settings.align_items }};
-    text-align: {{ block.settings.text_align }};
-    {% if block.settings.shadow %}box-shadow: 0 8px 32px rgba(0,0,0,0.15);{% endif %}
-    opacity: {{ block.settings.opacity | divided_by: 100.0 }};
-  "
->
-  {% content_for 'blocks' %}
+<div class="{{ block_classes }}" style="{{ block_styles }}">
+  <div class="contents {{ s.text_align }}">
+    {% content_for 'blocks' %}
+  </div>
 </div>
 
 {% schema %}
@@ -39,98 +30,116 @@
   "settings": [
     {
       "type": "header",
-      "content": "Theme"
-    },
-    {
-      "type": "checkbox",
-      "id": "inherit_color_scheme",
-      "label": "Inherit Color Scheme",
-      "default": false
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Scheme",
-      "default": "scheme-1"
-    },
-    {
-      "type": "header",
-      "content": "Sizing & Layout"
+      "content": "Flex Layout"
     },
     {
       "type": "select",
-      "id": "width_mode",
-      "label": "Width",
+      "id": "direction",
+      "label": "Direction",
       "options": [
-        { "value": "fill", "label": "Fill Container" },
-        { "value": "fit", "label": "Fit to Content" },
-        { "value": "fixed", "label": "Fixed Width" }
+        { "value": "flex-col", "label": "Vertical (Stack)" },
+        { "value": "flex-row", "label": "Horizontal (Row)" },
+        { "value": "flex-col md:flex-row", "label": "Responsive (Stack Mobile / Row Desktop)" }
       ],
-      "default": "fit"
+      "default": "flex-col"
     },
     {
-      "type": "range",
-      "id": "fixed_width",
-      "label": "Fixed Max Width (px)",
-      "min": 200,
-      "max": 800,
-      "step": 10,
-      "default": 400,
-      "info": "Only applies if 'Fixed Width' is selected."
+      "type": "select",
+      "id": "justify_content",
+      "label": "Main Axis Alignment (Justify)",
+      "options": [
+        { "value": "justify-start", "label": "Start" },
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-end", "label": "End" },
+        { "value": "justify-between", "label": "Space Between" }
+      ],
+      "default": "justify-start"
+    },
+    {
+      "type": "select",
+      "id": "align_items",
+      "label": "Cross Axis Alignment (Align)",
+      "options": [
+        { "value": "items-start", "label": "Start" },
+        { "value": "items-center", "label": "Center" },
+        { "value": "items-end", "label": "End" },
+        { "value": "items-stretch", "label": "Stretch" }
+      ],
+      "default": "items-center"
+    },
+    {
+      "type": "checkbox",
+      "id": "wrap_content",
+      "label": "Allow Wrapping",
+      "default": false,
+      "info": "Useful for horizontal lists on small screens."
     },
     {
       "type": "range",
       "id": "gap",
       "label": "Gap (px)",
       "min": 0,
-      "max": 60,
+      "max": 80,
+      "step": 4,
       "default": 16
     },
+
     {
-      "type": "select",
-      "id": "align_items",
-      "label": "Inner Alignment",
-      "options": [
-        { "value": "flex-start", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "flex-end", "label": "Right" }
-      ],
-      "default": "center"
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Global Styles",
+      "default": false,
+      "info": "Uncheck to set custom Color and Radius."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Enable Glass Effect",
+      "default": false
     },
     {
       "type": "select",
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
       ],
-      "default": "center"
-    },
-    {
-      "type": "header",
-      "content": "Surface Design"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_glass",
-      "label": "Enable Glass Effect",
-      "default": false,
-      "info": "Adds blur and subtle border. Best for dark backgrounds."
+      "default": "text-left"
     },
     {
       "type": "range",
       "id": "padding",
-      "label": "Padding (px)",
+      "label": "Padding",
       "min": 0,
       "max": 80,
-      "default": 32
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Custom Radius",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 12
     },
     {
       "type": "range",
       "id": "opacity",
-      "label": "Opacity",
+      "label": "Background Opacity",
       "min": 0,
       "max": 100,
       "default": 100
@@ -139,9 +148,24 @@
       "type": "checkbox",
       "id": "shadow",
       "label": "Show Shadow",
-      "default": true
+      "default": false
     }
   ],
-  "blocks": [{ "type": "@theme" }]
+  "blocks": [{ "type": "@theme" }],
+  "presets": [
+    {
+      "name": "Group (Row)",
+      "settings": {
+        "direction": "flex-row",
+        "gap": 12,
+        "align_items": "items-center"
+      },
+      "blocks": {
+        "icon": { "type": "media", "settings": { "aspect_ratio": "square", "border_radius": 999 } },
+        "text": { "type": "heading", "settings": { "text": "Feature Item", "tag": "h4", "display_size": "h3" } }
+      },
+      "block_order": ["icon", "text"]
+    }
+  ]
 }
 {% endschema %}
