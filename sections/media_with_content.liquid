@@ -1,6 +1,5 @@
 {% assign s = section.settings %}
 
-{% comment %} --- LAYOUT LOGIC --- {% endcomment %}
 {% capture layout_class %}
   flex flex-col
   {% if s.desktop_layout == 'image_right' %}lg:flex-row-reverse{% else %}lg:flex-row{% endif %}
