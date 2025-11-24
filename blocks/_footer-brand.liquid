@@ -1,0 +1,46 @@
+{% assign s = block.settings %}
+
+<div class="footer-block flex flex-col gap-6 items-start">
+  <div class="w-32">
+    {% if s.logo != blank %}
+      {% render 'media', src: s.logo, ratio: 'auto', fit: 'contain', class: 'bg-transparent' %}
+    {% else %}
+      <span class="font-heading font-bold text-2xl tracking-wide">{{ shop.name }}</span>
+    {% endif %}
+  </div>
+
+  {% if s.text != blank %}
+    <div class="opacity-80 max-w-sm">
+      {% render 'typography', text: s.text, tag: 'p', size: 'body' %}
+    </div>
+  {% endif %}
+
+  {% if s.show_socials %}
+    <div class="flex gap-4">
+      {% if s.social_instagram != blank %}
+        <a href="{{ s.social_instagram }}" class="hover:opacity-70 transition-opacity">
+          {%- render 'icon', name: 'instagram', class: 'w-5 h-5' -%}
+        </a>
+      {% endif %}
+      {% if s.social_facebook != blank %}
+        <a href="{{ s.social_facebook }}" class="hover:opacity-70 transition-opacity">
+          {%- render 'icon', name: 'facebook', class: 'w-5 h-5' -%}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Brand & Socials",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Footer Logo" },
+    { "type": "textarea", "id": "text", "label": "Bio", "default": "Fine dining in the heart of the city." },
+    { "type": "header", "content": "Social Media" },
+    { "type": "checkbox", "id": "show_socials", "label": "Show Social Icons", "default": true },
+    { "type": "text", "id": "social_instagram", "label": "Instagram URL" },
+    { "type": "text", "id": "social_facebook", "label": "Facebook URL" }
+  ]
+}
+{% endschema %}

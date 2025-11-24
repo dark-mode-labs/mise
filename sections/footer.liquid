@@ -1,0 +1,68 @@
+{% assign s = section.settings %}
+
+<footer
+  class="section-footer w-full color-{{ s.color_scheme }} bg-body text-body border-t border-[var(--color-text)]/10"
+  style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
+>
+  <div class="wrapper">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-8 mb-16">
+      {% content_for 'blocks' %}
+    </div>
+
+    <div class="pt-8 border-t border-[var(--color-text)]/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs opacity-60 uppercase tracking-widest">
+      <div class="flex flex-col md:flex-row gap-4 text-center md:text-left">
+        <span
+          >&copy; {{ 'now' | date: '%Y' }}
+          {{ shop.name -}}
+        </span>
+        {% if s.show_policy %}
+          <a href="/policies/privacy-policy" class="hover:underline">Privacy</a>
+          <a href="/policies/terms-of-service" class="hover:underline">Terms</a>
+        {% endif %}
+      </div>
+
+      <div class="text-center md:text-right">
+        <span>Powered by <a href="https://restaurantos.com" class="hover:underline">RestaurantOS</a></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "enabled_on": { "groups": ["footer"] },
+  "settings": [
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 120, "step": 4, "default": 80 },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 40
+    },
+
+    { "type": "header", "content": "Bottom Bar" },
+    { "type": "checkbox", "id": "show_policy", "label": "Show Policy Links", "default": true },
+
+    { "type": "header", "content": "Theme" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
+  ],
+  "blocks": [{ "type": "_footer-brand" }, { "type": "_footer-nav" }, { "type": "_footer-newsletter" }],
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": {
+        "brand": { "type": "_footer-brand" },
+        "nav_1": { "type": "_footer-nav", "settings": { "heading": "Discover" } },
+        "nav_2": { "type": "_footer-nav", "settings": { "heading": "Visit" } },
+        "news": { "type": "_footer-newsletter" }
+      },
+      "block_order": ["brand", "nav_1", "nav_2", "news"]
+    }
+  ]
+}
+{% endschema %}

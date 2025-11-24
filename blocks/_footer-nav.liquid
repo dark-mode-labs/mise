@@ -1,0 +1,25 @@
+{% assign s = block.settings %}
+
+<div class="footer-block flex flex-col gap-4">
+  {% if s.heading != blank %}
+    <h4 class="font-bold uppercase tracking-wider text-sm opacity-60">{{ s.heading }}</h4>
+  {% endif %}
+
+  <ul class="flex flex-col gap-3">
+    {% for link in s.menu.links %}
+      <li>
+        <a href="{{ link.url }}" class="hover:underline underline-offset-4 transition-all">{{ link.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Menu List",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Quick Links" },
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+  ]
+}
+{% endschema %}
