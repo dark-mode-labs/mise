@@ -53,26 +53,24 @@
               {{ item.price | money }}
             </span>
           {% else %}
-            {% if modifier_count == 0 %}
-              <span class="whitespace-nowrap">{{ item.price | money }}</span>
-            {% else %}
-              <div class="flex flex-col items-end text-base md:text-lg">
+            <div class="flex flex-wrap justify-end gap-x-4 gap-y-1 text-base md:text-lg">
+              {% if modifier_count == 0 %}
+                <span class="whitespace-nowrap">{{ item.price | money }}</span>
+              {% else %}
                 {% for group in item.modifier_groups %}
                   {% assign modifiers = group.modifiers | sort: 'price_delta' %}
                   {% for mod in modifiers %}
                     <div class="whitespace-nowrap flex items-center justify-end">
                       <span class="text-xs opacity-70 uppercase tracking-wide mr-2">{{ mod.name }}</span>
                       <span>
-                        {% assign base_val = item.price | money_without_currency %}
-                        {% assign mod_val = mod.price_delta | money_without_currency %}
-                        {% assign total_val = base_val | plus: mod_val %}
+                        {% assign total_val = item.price | plus: mod.price_delta %}
                         {{ total_val | money }}
                       </span>
                     </div>
                   {% endfor %}
                 {% endfor %}
-              </div>
-            {% endif %}
+              {% endif %}
+            </div>
           {% endif %}
         </div>
       </div>
@@ -115,7 +113,7 @@
               <h5 class="text-[10px] font-bold uppercase tracking-widest opacity-50 mb-1">
                 {{ group.name | default: 'Options' }}
               </h5>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 text-sm opacity-80">
+              <div class="flex flex-col gap-1 text-sm opacity-80">
                 {% for mod in group.modifiers %}
                   {% assign mod_price_check = mod.price_delta | money_without_currency %}
                   <div class="flex justify-between items-baseline">
