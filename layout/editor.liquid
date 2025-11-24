@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <head>
     {%- if settings.favicon != blank -%}
       <link
@@ -19,10 +20,7 @@
     <script defer type="text/javascript" src="/assets/js/app.js"></script>
   </head>
 
-  <body
-    class="page-width-{{ settings.page_width }}"
-    style="position: relative;"
-  >
+  <body style="position: relative;">
     <div
       id="preview-content"
       data-controller="preview-iframe"
