@@ -1,7 +1,10 @@
 {% comment %}
   Snippet: Menu Item (List View)
-  Props: item (Object)
-  Features: Smart layout for Multi-Group Modifiers (e.g. Pizza Toppings vs Crust Style).
+  Props:
+    - item (Object)
+    - padding_class (String): e.g. 'py-4'
+    - image_class (String): e.g. 'w-20 h-20'
+  Features: Smart layout for Multi-Group Modifiers.
 {% endcomment %}
 
 {% assign has_image = false %}
@@ -17,10 +20,13 @@
 {% assign use_body_layout = false %}
 {% if modifier_count > 4 or group_count > 1 %}{% assign use_body_layout = true %}{% endif %}
 
-<div class="menu-item group w-full py-4 border-b border-dashed border-[var(--color-text)]/10 last:border-0 break-inside-avoid">
+{% assign padding = padding_class | default: 'py-4' %}
+{% assign img_size = image_class | default: 'w-16 h-16 md:w-20 md:h-20' %}
+
+<div class="menu-item group w-full {{ padding }} border-b border-dashed border-[var(--color-text)]/10 last:border-0 break-inside-avoid">
   <div class="flex gap-4 md:gap-6 items-start">
     {% if has_image %}
-      <div class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-global overflow-hidden bg-gray-100">
+      <div class="flex-shrink-0 {{ img_size }} rounded-global overflow-hidden bg-gray-100">
         {% render 'media', src: item.image, ratio: 'square', fit: 'cover', placeholder: 'scene-1' %}
       </div>
     {% endif %}
@@ -106,7 +112,6 @@
                 {% endif %}
               {% endfor %}
             </div>
-
           {% else %}
             {% assign group = item.modifier_groups.first %}
             <div class="flex flex-col gap-2">

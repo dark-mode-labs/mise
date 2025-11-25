@@ -1,6 +1,10 @@
 {% comment %}
   Snippet: Menu Item Card
-  Props: item (Object), ratio (String), style (String: 'standard' | 'compact')
+  Props:
+    - item (Object)
+    - ratio (String)
+    - style (String: 'standard' | 'compact')
+    - padding_class (String): e.g. 'p-5'
 {% endcomment %}
 
 {% assign has_image = true %}
@@ -14,6 +18,8 @@
 {% assign is_complex = false %}
 {% if modifier_count > 4 or item.modifier_groups.size > 1 %}{% assign is_complex = true %}{% endif %}
 
+{% assign padding = padding_class | default: 'p-5' %}
+
 <div
   class="
     menu-item-card group relative h-full flex bg-[var(--color-bg)] border border-[var(--color-text)]/10 rounded-global overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 break-inside-avoid
@@ -21,7 +27,7 @@
   "
 >
   {% if style == 'compact' %}
-    <div class="p-4 flex-grow flex flex-col justify-between gap-2 min-w-0">
+    <div class="{{ padding }} flex-grow flex flex-col justify-between gap-2 min-w-0">
       <div>
         <div class="flex justify-between items-start gap-2">
           <h3 class="font-heading font-bold text-lg leading-tight truncate pr-2">{{ item.name }}</h3>
@@ -121,7 +127,7 @@
       {% endif %}
     </div>
 
-    <div class="p-5 flex-grow flex flex-col gap-3">
+    <div class="{{ _padding }} flex-grow flex flex-col gap-3">
       <h3 class="font-heading font-bold text-lg leading-tight">{{ item.name }}</h3>
 
       {% if item.description != blank %}
@@ -159,10 +165,6 @@
               {% endfor %}
             {% endfor %}
           </div>
-
-          {% comment %}
-            SCENARIO 3: SIMPLE -> Single Price
-          {% endcomment %}
         {% else %}
           <div class="flex items-center justify-between">
             <span class="font-bold text-lg">{{ item.price | money }}</span>

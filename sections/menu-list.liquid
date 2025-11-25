@@ -8,16 +8,20 @@
 
 {% capture column_class %}
   {% case s.columns %}
-    {% when 2 %}
-      grid-cols-1 md:grid-cols-2
-    {% when 3 %}
-      grid-cols-1 md:grid-cols-3
-    {% else %}
-      grid-cols-1
+    {% when 2 %}grid-cols-1 md:grid-cols-2
+    {% when 3 %}grid-cols-1 md:grid-cols-3
+    {% else %}grid-cols-1
   {% endcase %}
 {% endcapture %}
 
-{% assign grid_class = 'grid ' | append: column_class %}
+{% assign grid_class = 'grid'
+  | append: ' '
+  | append: column_class
+  | append: ' '
+  | append: s.grid_gap_x
+  | append: ' '
+  | append: s.grid_gap_y
+%}
 
 <section
   class="w-full color-{{ s.color_scheme }}"
@@ -81,13 +85,18 @@
               {% endcomment %}
               {% assign parent_items = parent.items %}
               {% if parent_items.size > 0 %}
-                <div class="{{ grid_class }} gap-x-12 gap-y-8 mb-12 {{ animation_class }}">
+                <div class="{{ grid_class }} mb-12 {{ animation_class }}">
                   {% for item in parent_items %}
                     {% if s.layout_style contains 'card-' %}
                       {% assign card_style = s.layout_style | replace: 'card-', '' %}
-                      {% render 'menu-item-card', item: item, ratio: s.aspect_ratio, style: card_style %}
+                      {% render 'menu-item-card',
+                        item: item,
+                        ratio: s.aspect_ratio,
+                        style: card_style,
+                        padding_class: s.card_padding
+                      %}
                     {% else %}
-                      {% render 'menu-item-list', item: item %}
+                      {% render 'menu-item-list', item: item, padding_class: s.list_row_padding %}
                     {% endif %}
                   {% endfor %}
                 </div>
@@ -97,7 +106,7 @@
               {% for child in children %}
                 <div class="mb-12 pl-0 md:pl-4">
                   <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ child.name }}</h4>
-                  <div class="{{ grid_class }} gap-x-12 gap-y-8 {{ animation_class }}">
+                  <div class="{{ grid_class }} {{ animation_class }}">
                     {% comment %}
                       Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
                       {% assign child_items = child.items | sort: 'display_order' %}
@@ -106,9 +115,14 @@
                     {% for item in child_items %}
                       {% if s.layout_style contains 'card-' %}
                         {% assign card_style = s.layout_style | replace: 'card-', '' %}
-                        {% render 'menu-item-card', item: item, ratio: s.aspect_ratio, style: card_style %}
+                        {% render 'menu-item-card',
+                          item: item,
+                          ratio: s.aspect_ratio,
+                          style: card_style,
+                          padding_class: s.card_padding
+                        %}
                       {% else %}
-                        {% render 'menu-item-list', item: item %}
+                        {% render 'menu-item-list', item: item, padding_class: s.list_row_padding %}
                       {% endif %}
                     {% endfor %}
                   </div>
@@ -123,14 +137,19 @@
 
         <div class="w-full flex-grow">
           {% if target_category %}
-            <div class="{{ grid_class }} gap-x-12 gap-y-8 {{ animation_class }}">
+            <div class="{{ grid_class }} {{ animation_class }}">
               {% assign sorted_items = target_category.items | sort: 'display_order' %}
               {% for item in sorted_items %}
                 {% if s.layout_style contains 'card-' %}
                   {% assign card_style = s.layout_style | replace: 'card-', '' %}
-                  {% render 'menu-item-card', item: item, ratio: s.aspect_ratio, style: card_style %}
+                  {% render 'menu-item-card',
+                    item: item,
+                    ratio: s.aspect_ratio,
+                    style: card_style,
+                    padding_class: s.card_padding
+                  %}
                 {% else %}
-                  {% render 'menu-item-list', item: item %}
+                  {% render 'menu-item-list', item: item, padding_class: s.list_row_padding %}
                 {% endif %}
               {% endfor %}
             </div>
@@ -192,7 +211,7 @@
     {
       "type": "select",
       "id": "aspect_ratio",
-      "label": "Care Image Ratio",
+      "label": "Card Image Ratio",
       "options": [
         { "value": "square", "label": "Square (1:1)" },
         { "value": "landscape", "label": "Landscape (4:3)" },
@@ -214,6 +233,57 @@
       "min": 1,
       "max": 3,
       "default": 1
+    },
+
+    { "type": "header", "content": "Layout Tuning" },
+    {
+      "type": "select",
+      "id": "grid_gap_x",
+      "label": "Horizontal Grid Gap",
+      "options": [
+        { "value": "gap-x-4", "label": "Tight (1rem)" },
+        { "value": "gap-x-8", "label": "Normal (2rem)" },
+        { "value": "gap-x-12", "label": "Relaxed (3rem)" },
+        { "value": "gap-x-16", "label": "Loose (4rem)" }
+      ],
+      "default": "gap-x-12"
+    },
+    {
+      "type": "select",
+      "id": "grid_gap_y",
+      "label": "Vertical Grid Gap",
+      "options": [
+        { "value": "gap-y-4", "label": "Tight (1rem)" },
+        { "value": "gap-y-8", "label": "Normal (2rem)" },
+        { "value": "gap-y-12", "label": "Relaxed (3rem)" },
+        { "value": "gap-y-16", "label": "Loose (4rem)" }
+      ],
+      "default": "gap-y-8"
+    },
+    {
+      "type": "select",
+      "id": "card_padding",
+      "label": "Card Internal Padding",
+      "options": [
+        { "value": "p-3", "label": "Tight" },
+        { "value": "p-4", "label": "Compact" },
+        { "value": "p-5", "label": "Normal" },
+        { "value": "p-6", "label": "Relaxed" },
+        { "value": "p-8", "label": "Loose" }
+      ],
+      "default": "p-5"
+    },
+    {
+      "type": "select",
+      "id": "list_row_padding",
+      "label": "List View Row Height",
+      "options": [
+        { "value": "py-2", "label": "Tight" },
+        { "value": "py-4", "label": "Normal" },
+        { "value": "py-6", "label": "Relaxed" },
+        { "value": "py-8", "label": "Loose" }
+      ],
+      "default": "py-4"
     },
 
     { "type": "header", "content": "Content" },
