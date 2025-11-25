@@ -118,10 +118,6 @@
 }
 
 @layer base {
-  html, body {
-    @apply overflow-x-hidden;
-  }
-
   h1,
   h2,
   h3,
