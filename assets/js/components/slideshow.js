@@ -5,13 +5,11 @@ export default class Slideshow {
     this.prevBtn = this.el.querySelector('.slideshow-prev');
     this.nextBtn = this.el.querySelector('.slideshow-next');
     this.dots = this.el.querySelectorAll('.slideshow-dot');
-    
-    // Config
+
     this.infinite = this.el.dataset.infinite === 'true';
     this.autoplayEnabled = this.el.dataset.autoplay === 'true';
     this.speed = (parseInt(this.el.dataset.speed) || 5) * 1000;
-    
-    // State
+
     this.interval = null;
     this.isDown = false;
     this.startX = 0;
@@ -22,11 +20,10 @@ export default class Slideshow {
 
   init() {
     if (!this.track) return;
-    
-    // Bind Events
+
     if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
     if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
-    
+
     this.dots.forEach(dot => {
       dot.addEventListener('click', (e) => {
         this.scrollToIndex(parseInt(e.target.dataset.index));
@@ -34,16 +31,13 @@ export default class Slideshow {
       });
     });
 
-    // Scroll Spy
-    this.observer = new IntersectionObserver(this.onIntersect.bind(this), { 
-      root: this.track, threshold: 0.5 
+    this.observer = new IntersectionObserver(this.onIntersect.bind(this), {
+      root: this.track, threshold: 0.5
     });
     Array.from(this.track.children).forEach(slide => this.observer.observe(slide));
 
-    // Mouse Drag (Desktop Swipe)
     this.initDragPhysics();
 
-    // Autoplay
     if (this.autoplayEnabled) {
       this.startAutoplay();
       this.el.addEventListener('mouseenter', () => this.stopAutoplay());
@@ -62,10 +56,8 @@ export default class Slideshow {
   }
 
   updateUI(index, total) {
-    // Update Dots
     this.dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
 
-    // Update Arrows (Only if NOT infinite)
     if (!this.infinite) {
       if (this.prevBtn) this.prevBtn.disabled = index === 0;
       if (this.nextBtn) this.nextBtn.disabled = index === total - 1;
@@ -75,9 +67,8 @@ export default class Slideshow {
   next() {
     const maxScroll = this.track.scrollWidth - this.track.clientWidth;
     const current = this.track.scrollLeft;
-    
+
     if (current >= maxScroll - 10) {
-      // End reached
       if (this.infinite) this.track.scrollTo({ left: 0, behavior: 'smooth' }); // Rewind
     } else {
       this.track.scrollBy({ left: this.track.clientWidth, behavior: 'smooth' });
@@ -87,9 +78,8 @@ export default class Slideshow {
 
   prev() {
     const current = this.track.scrollLeft;
-    
+
     if (current <= 10) {
-      // Start reached
       if (this.infinite) this.track.scrollTo({ left: this.track.scrollWidth, behavior: 'smooth' }); // Jump to end
     } else {
       this.track.scrollBy({ left: -this.track.clientWidth, behavior: 'smooth' });
@@ -103,7 +93,7 @@ export default class Slideshow {
   }
 
   startAutoplay() {
-    this.stopAutoplay(); // Clear existing
+    this.stopAutoplay();
     this.interval = setInterval(() => this.next(), this.speed);
   }
 
@@ -112,7 +102,6 @@ export default class Slideshow {
   }
 
   initDragPhysics() {
-    // Same physics logic as before, scoped to class instance
     this.track.addEventListener('mousedown', (e) => {
       this.isDown = true;
       this.track.classList.add('cursor-grabbing');
@@ -138,6 +127,6 @@ export default class Slideshow {
     this.isDown = false;
     this.track.classList.remove('cursor-grabbing');
     this.track.classList.add('scroll-smooth', 'snap-x');
-    if(this.autoplayEnabled) this.startAutoplay();
+    if (this.autoplayEnabled) this.startAutoplay();
   }
 }

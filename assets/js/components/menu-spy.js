@@ -1,8 +1,3 @@
-/**
- * MenuSpy Component
- * * Scoped navigation spy and smooth scroller.
- * * Independent of DOM IDs to allow multiple menus per page.
- */
 export default class MenuSpy {
     constructor(element) {
         this.nav = element;

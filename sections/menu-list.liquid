@@ -23,6 +23,21 @@
   | append: s.grid_gap_y
 %}
 
+{% assign main_flex_direction = 'flex-col lg:flex-row' %}
+{% assign nav_container_class = 'hidden lg:block w-64 flex-shrink-0 sticky self-start z-floating top-32' %}
+{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-[var(--color-text)]/10 pl-4' %}
+{% assign link_base_class = 'block border-l-2 border-transparent -ml-[18px] pl-[14px] [&.is-active]:border-[var(--color-text)] [&.is-active]:pl-4' %}
+{% assign sublink_base_class = 'block' %}
+
+{% if s.nav_layout == 'horizontal' %}
+  {% capture sticky_style %}top: {{ s.nav_sticky_offset }}px;{% endcapture %}
+  {% assign main_flex_direction = 'flex-col' %}
+  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--color-bg)] border-b border-[var(--color-text)]/10 mb-8 transition-[top] duration-200' %}
+  {% assign nav_wrapper_class = 'flex flex-row items-baseline gap-6 overflow-x-auto no-scrollbar py-4 px-1' %}
+  {% assign link_base_class = 'whitespace-nowrap border-b-2 border-transparent pb-2 transition-all duration-300 [&.is-active]:border-[var(--color-text)] [&.is-active]:opacity-100 [&.is-active]:font-bold' %}
+  {% assign sublink_base_class = 'hidden' %}
+{% endif %}
+
 <section
   class="w-full color-{{ s.color_scheme }}"
   style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
@@ -43,39 +58,44 @@
       {% endif %}
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-12 relative">
+    <div class="flex {{ main_flex_direction }} gap-12 relative">
       {% if s.display_scope == 'full_menu' %}
         {% assign all_categories = menu.categories | map_values | sort: 'display_order' %}
         {% assign root_categories = all_categories | where: 'parent_uuid', null %}
 
         {% if s.show_nav and root_categories.size > 1 %}
-          <div class="hidden lg:block w-64 flex-shrink-0">
+          <div
+            class="{{ nav_container_class }}"
+            style="{{ sticky_style }}"
+          >
             <nav
               data-behavior="menu-spy"
-              class="sticky top-32 flex flex-col gap-2 border-l-2 border-[var(--color-text)]/10 pl-4 h-fit"
+              class="{{ nav_wrapper_class }}"
             >
               {% for parent in root_categories %}
                 <a
                   href="#"
                   data-spy-trigger="{{ parent.uuid }}"
-                  class="text-sm font-bold opacity-50 hover:opacity-100 transition-all duration-300 uppercase tracking-wider py-1 block border-l-2 border-transparent -ml-[18px] pl-[14px] [&.is-active]:opacity-100 [&.is-active]:border-[var(--color-text)] [&.is-active]:pl-4"
+                  class="text-sm font-bold opacity-50 hover:opacity-100 uppercase tracking-wider {{ link_base_class }} [&.is-active]:opacity-100 [&.is-active]:font-bold"
                 >
                   {{ parent.name }}
                 </a>
 
-                {% assign nav_children = all_categories | where: 'parent_uuid', parent.uuid %}
-                {% if nav_children.size > 0 %}
-                  <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-[var(--color-text)]/5">
-                    {% for child in nav_children %}
-                      <a
-                        href="#"
-                        data-spy-trigger="{{ child.uuid }}"
-                        class="text-xs opacity-40 hover:opacity-80 transition-all duration-300 uppercase block [&.is-active]:opacity-100 [&.is-active]:font-bold"
-                      >
-                        {{- child.name -}}
-                      </a>
-                    {% endfor %}
-                  </div>
+                {% if s.nav_layout == 'vertical' %}
+                  {% assign nav_children = all_categories | where: 'parent_uuid', parent.uuid %}
+                  {% if nav_children.size > 0 %}
+                    <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-[var(--color-text)]/5">
+                      {% for child in nav_children %}
+                        <a
+                          href="#"
+                          data-spy-trigger="{{ child.uuid }}"
+                          class="text-xs opacity-40 hover:opacity-80 transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:opacity-100 [&.is-active]:font-bold"
+                        >
+                          {{- child.name -}}
+                        </a>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 {% endif %}
               {% endfor %}
             </nav>
@@ -84,11 +104,10 @@
 
         <div class="flex-grow flex flex-col gap-20">
           {% for parent in root_categories %}
-            <div data-spy-target="{{ parent.uuid }}" class="scroll-mt-32 menu-category-group">
+            <div data-spy-target="{{ parent.uuid }}" class="scroll-mt-48 menu-category-group">
               <div class="flex items-end justify-between border-b-2 border-[var(--color-text)] mb-8 pb-2">
                 <h3 class="font-heading text-3xl font-bold uppercase tracking-wide">{{ parent.name }}</h3>
               </div>
-
               {% comment %}
                 Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
                  {% assign parent_items = parent.items | sort: 'display_order' %}
@@ -114,7 +133,7 @@
 
               {% assign children = all_categories | where: 'parent_uuid', parent.uuid %}
               {% for child in children %}
-                <div data-spy-target="{{ child.uuid }}" class="scroll-mt-32 mb-12 pl-0 md:pl-4">
+                <div data-spy-target="{{ child.uuid }}" class="scroll-mt-48 mb-12 pl-0 md:pl-4">
                   <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ child.name }}</h4>
                   <div class="{{ grid_class }} {{ animation_class }}">
                     {% comment %}
@@ -204,6 +223,38 @@
       "info": "Exact name of the category (e.g. 'Starters'). Used if Scope is Category."
     },
 
+    { "type": "header", "content": "Navigation" },
+    {
+      "type": "checkbox",
+      "id": "show_nav",
+      "label": "Show Sticky Navigation",
+      "default": true,
+      "info": "Only active in Full Menu mode."
+    },
+    {
+      "type": "select",
+      "id": "nav_layout",
+      "label": "Navigation Layout",
+      "options": [
+        { "value": "vertical", "label": "Vertical Sidebar (Desktop Only)" },
+        { "value": "horizontal", "label": "Horizontal Top Bar" }
+      ],
+      "default": "vertical",
+      "info": "Horizontal layout works best for menus with many top-level categories."
+    },
+    {
+      "type": "range",
+      "id": "nav_sticky_offset",
+      "label": "Sticky Top Offset (Horizontal Nav Layout)",
+      "info": "Adjust this to clear your site header if the menu is being covered.",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px",
+      "visible_if": "{{ section.settings.nav_layout == 'horizontal' }}"
+    },
+
     { "type": "header", "content": "Layout" },
     { "type": "header", "content": "Style" },
     {
@@ -227,13 +278,6 @@
         { "value": "portrait", "label": "Portrait (3:4)" }
       ],
       "default": "landscape"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_nav",
-      "label": "Show Sticky Navigation",
-      "default": true,
-      "info": "Only active in Full Menu mode."
     },
     {
       "type": "range",
