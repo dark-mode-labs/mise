@@ -1,0 +1,174 @@
+{% comment %}
+  Snippet: Menu Item Card
+  Props: item (Object), ratio (String), style (String: 'standard' | 'compact')
+{% endcomment %}
+
+{% assign has_image = true %}
+{% if item.image != blank %}{% assign has_image = true %}{% endif %}
+
+{% assign modifier_count = 0 %}
+{% for group in item.modifier_groups %}
+  {% assign modifier_count = modifier_count | plus: group.modifiers.size %}
+{% endfor %}
+
+{% assign is_complex = false %}
+{% if modifier_count > 4 or item.modifier_groups.size > 1 %}{% assign is_complex = true %}{% endif %}
+
+<div
+  class="
+    menu-item-card group relative h-full flex bg-[var(--color-bg)] border border-[var(--color-text)]/10 rounded-global overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 break-inside-avoid
+    {% if style == 'compact' %}flex-row items-stretch text-left{% else %}flex-col{% endif %}
+  "
+>
+  {% if style == 'compact' %}
+    <div class="p-4 flex-grow flex flex-col justify-between gap-2 min-w-0">
+      <div>
+        <div class="flex justify-between items-start gap-2">
+          <h3 class="font-heading font-bold text-lg leading-tight truncate pr-2">{{ item.name }}</h3>
+
+          {% if modifier_count == 0 or is_complex %}
+            <span class="font-bold text-sm whitespace-nowrap shrink-0">
+              {% if is_complex %}From {% endif -%}
+              {{ item.price | money }}
+            </span>
+          {% endif %}
+        </div>
+
+        {% if item.description != blank %}
+          <div class="text-sm opacity-70 line-clamp-2 mt-1">
+            {{ item.description }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="mt-2">
+        {% if is_complex == false and modifier_count > 0 %}
+          <div class="flex flex-wrap gap-2 mb-2">
+            {% for group in item.modifier_groups %}
+              {% assign sorted_modifiers = group.modifiers | sort: 'price_delta' %}
+              {% for mod in sorted_modifiers %}
+                <button
+                  type="button"
+                  class="flex items-center gap-1 bg-[var(--color-text)]/5 hover:bg-[var(--color-text)]/10 border border-[var(--color-text)]/10 px-2 py-1 rounded-sm text-xs transition-colors"
+                  data-action="open-item"
+                  data-item-id="{{ item.uuid }}"
+                >
+                  <span class="opacity-70 uppercase font-bold">{{ mod.name }}</span>
+                  <span class="font-bold">
+                    {% assign base = item.price | money_without_currency %}
+                    {% assign delta = mod.price_delta | money_without_currency %}
+                    {% assign total = base | plus: delta %}
+                    {{ total | money }}
+                  </span>
+                </button>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap gap-1">
+            {% for flag in item.dietary_flags %}
+              <span class="badge-pill">{{ flag.code | default: flag.name | truncate: 2, '' }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if has_image %}
+      <div class="w-28 md:w-36 shrink-0 relative border-l border-[var(--color-text)]/10">
+        {% render 'media',
+          src: item.image,
+          fit: 'cover',
+          class: 'w-full h-full absolute inset-0',
+          placeholder: 'scene-1'
+        %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="w-full overflow-hidden bg-gray-100 border-b border-[var(--color-text)]/10 relative">
+      {% capture aspect_class %}
+        {% case ratio %}
+          {% when 'square' %}aspect-square
+          {% when 'portrait' %}aspect-[3/4]
+          {% else %}aspect-[4/3]
+        {% endcase %}
+      {% endcapture %}
+
+      <div class="{{ aspect_class }}">
+        {% if has_image %}
+          {% render 'media',
+            src: item.image,
+            fit: 'cover',
+            class: 'w-full h-full transition-transform duration-500 group-hover:scale-105',
+            placeholder: 'scene-1'
+          %}
+        {% else %}
+          {% render 'placeholder', name: 'scene-1', class: 'w-full h-full text-gray-300' %}
+        {% endif %}
+      </div>
+
+      {% if item.dietary_flags.size > 0 %}
+        <div class="absolute top-2 left-2 flex flex-wrap gap-1">
+          {% for flag in item.dietary_flags %}
+            <span class="badge-pill bg-white/90 text-black border-transparent shadow-sm backdrop-blur-sm">
+              {{ flag.code | default: flag.name | truncate: 2, '' }}
+            </span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="p-5 flex-grow flex flex-col gap-3">
+      <h3 class="font-heading font-bold text-lg leading-tight">{{ item.name }}</h3>
+
+      {% if item.description != blank %}
+        <div class="text-sm opacity-70 line-clamp-2 flex-grow">
+          {{ item.description }}
+        </div>
+      {% endif %}
+
+      <div class="mt-auto pt-3 border-t border-dashed border-[var(--color-text)]/10">
+        {% if is_complex %}
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col">
+              <span class="text-[10px] uppercase tracking-widest opacity-60 font-bold">Starts at</span>
+              <span class="font-bold text-lg">{{ item.price | money }}</span>
+            </div>
+          </div>
+
+        {% elsif modifier_count > 0 %}
+          <div class="flex flex-col gap-2">
+            {% for group in item.modifier_groups %}
+              {% assign sorted_modifiers = group.modifiers | sort: 'price_delta' %}
+              {% for mod in sorted_modifiers %}
+                <button
+                  type="button"
+                  class="flex items-center justify-between w-full text-left bg-[var(--color-text)]/5 hover:bg-[var(--color-text)]/10 transition-colors px-2 py-1.5 rounded-sm"
+                >
+                  <span class="text-xs uppercase font-bold opacity-70">{{ mod.name }}</span>
+                  <span class="text-sm font-bold">
+                    {% assign base = item.price | money_without_currency %}
+                    {% assign delta = mod.price_delta | money_without_currency %}
+                    {% assign total = base | plus: delta %}
+                    {{ total | money }}
+                  </span>
+                </button>
+              {% endfor %}
+            {% endfor %}
+          </div>
+
+          {% comment %}
+            SCENARIO 3: SIMPLE -> Single Price
+          {% endcomment %}
+        {% else %}
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-lg">{{ item.price | money }}</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
