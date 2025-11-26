@@ -3,7 +3,7 @@
 <div class="flex gap-4 {{ class }}">
   {% for network in networks %}
     {% assign setting_key = 'social_' | append: network | append: '_link' %}
-    {% assign link_url = settings | map: setting_key %}
+    {% assign link_url = settings[setting_key] %}
 
     {% if link_url != blank %}
       <a
