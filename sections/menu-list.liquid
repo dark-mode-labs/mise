@@ -7,9 +7,9 @@
 {% endif %}
 
 {% capture column_class %}
-  {% case s.columns %}
-    {% when 2 %}grid-cols-1 md:grid-cols-2
-    {% when 3 %}grid-cols-1 md:grid-cols-3
+  {% case s.column_preset %}
+    {% when '1:2:2' %}grid-cols-1 md:grid-cols-2
+    {% when '1:2:3' %}grid-cols-1 md:grid-cols-2 xl:grid-cols-3
     {% else %}grid-cols-1
   {% endcase %}
 {% endcapture %}
@@ -125,7 +125,11 @@
                         padding_class: s.card_padding
                       %}
                     {% else %}
-                      {% render 'menu-item-list', item: item, padding_class: s.list_row_padding %}
+                      {% render 'menu-item-list',
+                        item: item,
+                        padding_class: s.list_row_padding,
+                        image_class: s.list_image_size
+                      %}
                     {% endif %}
                   {% endfor %}
                 </div>
@@ -151,7 +155,11 @@
                           padding_class: s.card_padding
                         %}
                       {% else %}
-                        {% render 'menu-item-list', item: item, padding_class: s.list_row_padding %}
+                        {% render 'menu-item-list',
+                          item: item,
+                          padding_class: s.list_row_padding,
+                          image_class: s.list_image_size
+                        %}
                       {% endif %}
                     {% endfor %}
                   </div>
@@ -177,7 +185,11 @@
                     padding_class: s.card_padding
                   %}
                 {% else %}
-                  {% render 'menu-item-list', item: item, padding_class: s.list_row_padding %}
+                  {% render 'menu-item-list',
+                    item: item,
+                    padding_class: s.list_row_padding,
+                    image_class: s.list_image_size
+                  %}
                 {% endif %}
               {% endfor %}
             </div>
@@ -280,12 +292,15 @@
       "default": "landscape"
     },
     {
-      "type": "range",
-      "id": "columns",
-      "label": "Columns per Category",
-      "min": 1,
-      "max": 3,
-      "default": 1
+      "type": "select",
+      "id": "column_preset",
+      "label": "Column Presets",
+      "options": [
+        { "value": "1:1:1", "label": "1 (Small), 1 (Medium), 1 (Large)" },
+        { "value": "1:2:2", "label": "1 (Small), 2 (Medium), 2 (Large)" },
+        { "value": "1:2:3", "label": "1 (Small), 2 (Medium), 3 (Large)" }
+      ],
+      "default": "1:2:3"
     },
 
     { "type": "header", "content": "Layout Tuning" },
@@ -337,6 +352,17 @@
         { "value": "py-8", "label": "Loose" }
       ],
       "default": "py-4"
+    },
+    {
+      "type": "select",
+      "id": "list_image_size",
+      "label": "List View Image Size",
+      "options": [
+        { "value": "w-12 h-12 md:w-16 md:h-16", "label": "Small" },
+        { "value": "w-16 h-16 md:w-20 md:h-20", "label": "Medium" },
+        { "value": "w-20 h-20 md:w-24 md:h-24", "label": "Large" }
+      ],
+      "default": "w-16 h-16 md:w-20 md:h-20"
     },
 
     { "type": "header", "content": "Content" },
