@@ -53,16 +53,6 @@ export default {
         'fade-up': 'fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'ken-burns': 'ken-burns 20s ease-out infinite alternate',
       },
-      container: {
-        center: true,
-        padding: '1rem',
-        screens: {
-          sm: '600px',
-          md: '728px',
-          lg: '984px',
-          xl: '1240px',
-        },
-      },
       zIndex: {
         // The Mise Layer System
         'negative': '-1',
@@ -74,7 +64,15 @@ export default {
         'overlay': '50',  // Slide-out drawers/cart
         'modal': '60',    // Centered popups
         'toast': '70',    // Notifications
-      }
+      },
+      screens: {
+        sm: '600px',
+        md: '728px',
+        lg: '984px',
+        xl: '1240px',
+        '2xl': '1360px',
+        '3xl': '1496px',
+      },
     }
   },
   plugins: [

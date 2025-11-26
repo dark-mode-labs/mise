@@ -24,7 +24,7 @@
 
 {% capture content_container_class %}
   {% if s.layout_mode contains 'split' %}w-full lg:w-1/2 relative bg-body flex flex-col justify-center
-  {% else %}relative z-content container flex flex-col{% endif %}
+  {% else %}relative z-content wrapper flex flex-col{% endif %}
 {% endcapture %}
 
 {% if s.overlay_color != blank %}
