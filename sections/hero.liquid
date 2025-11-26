@@ -1,12 +1,10 @@
 {% assign s = section.settings %}
 
-{% comment %} --- 1. DETECT DUAL MEDIA --- {% endcomment %}
 {% assign has_media_2 = false %}
 {% if s.bg_image_2 != blank or s.video_url_2 != blank %}
   {% assign has_media_2 = true %}
 {% endif %}
 
-{% comment %} --- 2. LAYOUT LOGIC --- {% endcomment %}
 {% capture container_layout %}
   {% if s.layout_mode == 'split_right' %}flex flex-col lg:flex-row-reverse
   {% elsif s.layout_mode == 'split_left' %}flex flex-col lg:flex-row

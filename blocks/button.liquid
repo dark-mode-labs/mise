@@ -1,10 +1,3 @@
-{% comment %}
-  Buttons are complex. They usually adhere to 'primary' or 'outline' styles 
-  defined by the Global Scheme. 
-  However, if 'inherit_style' is false, we override the CSS variables 
-  locally for this button wrapper.
-{% endcomment %}
-
 {% capture style_override %}
   {% unless block.settings.inherit_style %}
     style="--color-btn-bg: {{ block.settings.custom_bg }}; --color-btn-text: {{ block.settings.custom_text }};"

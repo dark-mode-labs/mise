@@ -1,9 +1,3 @@
-{% comment %}
-  LOGIC:
-  - If pinned: We use 'absolute bottom-0' to stick it to the section floor.
-  - If inline: We use the 'left-[calc...]' hack to break out of the container flow.
-{% endcomment %}
-
 {% assign scheme_class = '' %}
 {% unless block.settings.inherit_scheme %}
   {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}

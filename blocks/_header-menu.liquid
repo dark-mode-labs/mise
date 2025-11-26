@@ -1,10 +1,5 @@
 {% assign s = block.settings %}
 
-{% comment %}
-  - Handles Standard Dropdowns AND Mega Menus.
-  - Mobile rendering is handled by the Drawer (which consumes this data).
-{% endcomment %}
-
 <nav class="header-nav hidden lg:flex items-center h-full">
   <ul class="flex items-center gap-8 h-full">
     {% for link in s.menu.links %}

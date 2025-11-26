@@ -1,12 +1,3 @@
-{% comment %}
-  Props:
-  - tag: (string) 'h1', 'h2', 'p', 'span', 'div' (Default: 'p')
-  - size: (string) 'display', 'h1', 'h2', 'body', 'caption'
-  - color: (string) Hex code or CSS var
-  - weight: (string) 'bold', 'normal', 'light'
-  - text: (string) The content to render
-{% endcomment %}
-
 {% assign tag_el = tag | default: 'p' %}
 {% assign text_color = color | default: 'text-body' %}
 {% assign size_class = 'text-base' %}
