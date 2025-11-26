@@ -58,7 +58,7 @@
       {% endif %}
     </div>
 
-    <div class="flex {{ main_flex_direction }} gap-12 relative">
+    <div class="flex {{ main_flex_direction }} relative">
       {% if s.display_scope == 'full_menu' %}
         {% assign all_categories = menu.categories | map_values | sort: 'display_order' %}
         {% assign root_categories = all_categories | where: 'parent_uuid', null %}
