@@ -120,7 +120,8 @@
                         item: item,
                         ratio: s.aspect_ratio,
                         style: card_style,
-                        padding_class: s.card_padding
+                        padding_class: s.card_padding,
+                        image_position: s.card_image_position
                       %}
                     {% else %}
                       {% render 'menu-item-list',
@@ -153,7 +154,8 @@
                           item: item,
                           ratio: s.aspect_ratio,
                           style: card_style,
-                          padding_class: s.card_padding
+                          padding_class: s.card_padding,
+                          image_position: s.card_image_position
                         %}
                       {% else %}
                         {% render 'menu-item-list',
@@ -183,7 +185,8 @@
                     item: item,
                     ratio: s.aspect_ratio,
                     style: card_style,
-                    padding_class: s.card_padding
+                    padding_class: s.card_padding,
+                    image_position: s.card_image_position
                   %}
                 {% else %}
                   {% render 'menu-item-list',
@@ -291,6 +294,16 @@
         { "value": "portrait", "label": "Portrait (3:4)" }
       ],
       "default": "landscape"
+    },
+    {
+      "type": "select",
+      "id": "card_image_position",
+      "label": "Card Image Position (Compact)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "right"
     },
     {
       "type": "select",
