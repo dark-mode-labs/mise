@@ -47,8 +47,6 @@
     <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
       {% if s.heading != blank %}
         {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
-      {% else %}
-        {% render 'typography', text: menu.name, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
       {% endif %}
 
       {% if s.subtext != blank %}
@@ -369,7 +367,13 @@
     },
 
     { "type": "header", "content": "Content" },
-    { "type": "text", "id": "heading", "label": "Section Heading", "info": "Overrides Menu Name if set" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "info": "Defaults to Menu Name or override",
+      "default": "{{ menu.name }}"
+    },
     { "type": "textarea", "id": "subtext", "label": "Description" },
 
     { "type": "header", "content": "Spacing" },
