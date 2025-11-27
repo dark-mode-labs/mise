@@ -25,7 +25,7 @@
 
 {% assign main_flex_direction = 'flex-col lg:flex-row' %}
 {% assign nav_container_class = 'hidden lg:block w-64 flex-shrink-0 sticky self-start z-floating top-32' %}
-{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-[var(--color-text)]/10 pl-4' %}
+{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-[var(--color-text)]/10 pl-4 overflow-y-auto no-scrollbar' %}
 {% assign link_base_class = 'block border-l-2 border-transparent -ml-[18px] pl-[14px] [&.is-active]:border-[var(--color-text)] [&.is-active]:pl-4' %}
 {% assign sublink_base_class = 'block' %}
 
@@ -137,7 +137,10 @@
 
               {% assign children = all_categories | where: 'parent_uuid', parent.uuid %}
               {% for child in children %}
-                <div data-spy-target="{{ child.uuid }}" class="scroll-mt-48 mb-12 pl-0 md:pl-4">
+                <div
+                  data-spy-target="{% if s.nav_layout == 'vertical' %}{{ child.uuid }}{% else %}{{ parent.uuid }}{% endif %}"
+                  class="scroll-mt-48 mb-12 pl-0 md:pl-4"
+                >
                   <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ child.name }}</h4>
                   <div class="{{ grid_class }} {{ animation_class }}">
                     {% comment %}
