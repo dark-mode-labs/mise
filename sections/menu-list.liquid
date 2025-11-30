@@ -25,16 +25,16 @@
 
 {% assign main_flex_direction = 'flex-col lg:flex-row' %}
 {% assign nav_container_class = 'hidden lg:block w-64 flex-shrink-0 sticky self-start z-floating top-32' %}
-{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-[var(--color-text)]/10 pl-4 overflow-y-auto no-scrollbar' %}
-{% assign link_base_class = 'block border-l-2 border-transparent -ml-[18px] pl-[14px] [&.is-active]:border-[var(--color-text)] [&.is-active]:pl-4' %}
+{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-body/10 pl-4 overflow-y-auto no-scrollbar' %}
+{% assign link_base_class = 'block border-l-2 border-transparent -ml-[18px] pl-[14px] [&.is-active]:border-body [&.is-active]:pl-4' %}
 {% assign sublink_base_class = 'block' %}
 
 {% if s.nav_layout == 'horizontal' %}
   {% capture sticky_style %}top: {{ s.nav_sticky_offset }}px;{% endcapture %}
   {% assign main_flex_direction = 'flex-col' %}
-  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--color-bg)] border-b border-[var(--color-text)]/10 mb-8 transition-[top] duration-200' %}
-  {% assign nav_wrapper_class = 'flex flex-row items-baseline gap-6 overflow-x-auto no-scrollbar py-4 px-1' %}
-  {% assign link_base_class = 'whitespace-nowrap border-b-2 border-transparent pb-2 transition-all duration-300 [&.is-active]:border-[var(--color-text)] [&.is-active]:opacity-100 [&.is-active]:font-bold' %}
+  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--color-bg)] border-b border-body/10 mb-8 transition-[top] duration-200' %}
+  {% assign nav_wrapper_class = 'flex flex-row items-center gap-6 overflow-x-auto no-scrollbar py-3 px-1' %}
+  {% assign link_base_class = 'whitespace-nowrap border-b-2 border-transparent pb-2 transition-all duration-300 [&.is-active]:border-body [&.is-active]:opacity-100 [&.is-active]:font-bold' %}
   {% assign sublink_base_class = 'hidden' %}
 {% endif %}
 
@@ -42,6 +42,7 @@
   class="w-full color-{{ s.color_scheme }}"
   style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
   data-spy-scope
+  data-filter-scope
 >
   <div class="wrapper">
     <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
@@ -65,45 +66,93 @@
           <div
             class="{{ nav_container_class }}"
             style="{{ sticky_style }}"
+            {% if s.enable_filtering %}
+              data-behavior="menu-filter"
+            {% endif %}
           >
-            <nav
-              data-behavior="menu-spy"
-              class="{{ nav_wrapper_class }}"
-            >
-              {% for parent in root_categories %}
-                <a
-                  href="#"
-                  data-spy-trigger="{{ parent.uuid }}"
-                  class="text-sm font-bold opacity-50 hover:opacity-100 uppercase tracking-wider {{ link_base_class }} [&.is-active]:opacity-100 [&.is-active]:font-bold"
+            <div class="{% if s.nav_layout == 'horizontal' %}flex items-center justify-between gap-4 max-w-none px-4{% else %}flex flex-col gap-6{% endif %}">
+              {% if s.enable_filtering %}
+                <div class="relative {% if s.nav_layout == 'horizontal' %}w-48 hidden md:block flex-shrink-0 order-2 ml-auto{% else %}w-[85%] order-1{% endif %}">
+                  <input
+                    type="text"
+                    placeholder="Search menu..."
+                    class="w-full bg-transparent border border-body/20 rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors placeholder:opacity-50"
+                    data-filter-search
+                  >
+                  {% render 'icon',
+                    name: 'search',
+                    class: 'absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40 pointer-events-none'
+                  %}
+                </div>
+              {% endif %}
+              {% if s.enable_filtering and menu.dietary_flags.size > 0 %}
+                <div
+                  class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-[var(--color-text)]/10 pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
+                  data-filter-tags
                 >
-                  {{ parent.name }}
-                </a>
+                  {% for tag in menu.dietary_flags %}
+                    <button
+                      type="button"
+                      data-filter-tag="{{ tag.name | downcase }}"
+                      title="Filter by {{ tag.name }}"
+                      class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-[var(--color-text)]/20 rounded-full text-[10px] font-bold uppercase opacity-60 hover:opacity-100 hover:border-[var(--color-text)]{% else %}px-2 py-1 border border-[var(--color-text)]/20 rounded text-[10px] uppercase tracking-wider opacity-60 hover:opacity-100 hover:border-[var(--color-text)]{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
+                    >
+                      {% if s.nav_layout == 'horizontal' %}
+                        {{ tag.name | slice: 0, 1 }}
+                      {% else %}
+                        {{ tag.name }}
+                      {% endif %}
+                    </button>
+                  {% endfor %}
+                </div>
+              {% endif %}
 
-                {% if s.nav_layout == 'vertical' %}
-                  {% assign nav_children = all_categories | where: 'parent_uuid', parent.uuid %}
-                  {% if nav_children.size > 0 %}
-                    <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-[var(--color-text)]/5">
-                      {% for child in nav_children %}
-                        <a
-                          href="#"
-                          data-spy-trigger="{{ child.uuid }}"
-                          class="text-xs opacity-40 hover:opacity-80 transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:opacity-100 [&.is-active]:font-bold"
-                        >
-                          {{- child.name -}}
-                        </a>
-                      {% endfor %}
-                    </div>
+              <nav
+                data-behavior="menu-spy"
+                class="{{ nav_wrapper_class }} flex-grow min-w-0 {% if s.nav_layout == 'vertical' %}order-3{% else %}order-1{% endif %}"
+              >
+                {% for parent in root_categories %}
+                  <a
+                    href="#"
+                    data-spy-trigger="{{ parent.uuid }}"
+                    data-filter-nav="{{ parent.uuid }}"
+                    class="text-sm font-bold opacity-50 hover:opacity-100 uppercase tracking-wider {{ link_base_class }} [&.is-active]:opacity-100 [&.is-active]:font-bold"
+                  >
+                    {{ parent.name }}
+                  </a>
+
+                  {% if s.nav_layout == 'vertical' %}
+                    {% assign nav_children = all_categories | where: 'parent_uuid', parent.uuid %}
+                    {% if nav_children.size > 0 %}
+                      <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-body/5">
+                        {% for child in nav_children %}
+                          <a
+                            href="#"
+                            data-spy-trigger="{{ child.uuid }}"
+                            data-filter-nav="{{ child.uuid }}"
+                            class="text-xs opacity-40 hover:opacity-80 transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:opacity-100 [&.is-active]:font-bold"
+                          >
+                            {{- child.name -}}
+                          </a>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
                   {% endif %}
-                {% endif %}
-              {% endfor %}
-            </nav>
+                {% endfor %}
+              </nav>
+            </div>
           </div>
         {% endif %}
 
-        <div class="flex-grow flex flex-col gap-20">
+        <div class="flex-grow flex flex-col gap-20" data-filter-container>
           {% for parent in root_categories %}
-            <div data-spy-target="{{ parent.uuid }}" class="scroll-mt-48 menu-category-group">
-              <div class="flex items-end justify-between border-b-2 border-[var(--color-text)] mb-8 pb-2">
+            <div
+              data-spy-target="{{ parent.uuid }}"
+              class="scroll-mt-48 menu-category-group"
+              data-filter-section
+              data-filter-section-id="{{ parent.uuid }}"
+            >
+              <div class="flex items-end justify-between border-b-2 border-body mb-8 pb-2">
                 <h3 class="font-heading text-3xl font-bold uppercase tracking-wide">{{ parent.name }}</h3>
               </div>
               {% comment %}
@@ -112,7 +161,7 @@
               {% endcomment %}
               {% assign parent_items = parent.items %}
               {% if parent_items.size > 0 %}
-                <div class="{{ grid_class }} mb-12 {{ animation_class }}">
+                <div class="{{ grid_class }} mb-12 {{ animation_class }}" data-filter-grid>
                   {% for item in parent_items %}
                     {% if s.layout_style contains 'card-' %}
                       {% assign card_style = s.layout_style | replace: 'card-', '' %}
@@ -139,9 +188,11 @@
                 <div
                   data-spy-target="{% if s.nav_layout == 'vertical' %}{{ child.uuid }}{% else %}{{ parent.uuid }}{% endif %}"
                   class="scroll-mt-48 mb-12 pl-0 md:pl-4"
+                  data-filter-section
+                  data-filter-section-id="{{ child.uuid }}"
                 >
                   <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ child.name }}</h4>
-                  <div class="{{ grid_class }} {{ animation_class }}">
+                  <div class="{{ grid_class }} {{ animation_class }}" data-filter-grid>
                     {% comment %}
                       Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
                       {% assign child_items = child.items | sort: 'display_order' %}
@@ -174,9 +225,20 @@
 
       {% elsif s.display_scope == 'category' %}
         {% assign target_category = menu.categories | map_values | where: 'name', s.category_filter | first %}
-        <div class="w-full flex-grow">
+        <div class="w-full flex-grow" data-filter-container>
           {% if target_category %}
-            <div class="{{ grid_class }} {{ animation_class }}">
+            {% if s.enable_filtering %}
+              <div class="mb-8 max-w-md" data-behavior="menu-filter">
+                <input
+                  type="text"
+                  placeholder="Search menu..."
+                  class="w-full bg-transparent border border-body/20 rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors"
+                  data-filter-search
+                >
+              </div>
+            {% endif %}
+
+            <div class="{{ grid_class }} {{ animation_class }}" data-filter-grid>
               {% assign sorted_items = target_category.items | sort: 'display_order' %}
               {% for item in sorted_items %}
                 {% if s.layout_style contains 'card-' %}
@@ -206,8 +268,15 @@
       {% endif %}
     </div>
 
+    <div id="filter-empty-state" class="hidden w-full py-20 text-center opacity-50">
+      <p class="text-xl font-heading font-bold">No items found matching your filters.</p>
+      <button type="button" data-action="clear-filters" class="mt-4 underline text-sm hover:opacity-100">
+        Clear Filters
+      </button>
+    </div>
+
     {% if menu.disclaimers.size > 0 %}
-      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest max-w-4xl mx-auto border-t border-[var(--color-text)]/10 pt-8">
+      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest max-w-4xl mx-auto border-t border-body/10 pt-8">
         {% for disclaimer in menu.disclaimers %}
           <p>{{ disclaimer.text }}</p>
         {% endfor %}
@@ -237,6 +306,14 @@
       "id": "category_filter",
       "label": "Category Name",
       "info": "Exact name of the category (e.g. 'Starters'). Used if Scope is Category."
+    },
+
+    { "type": "header", "content": "Filtering & Search" },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable Filtering Bar",
+      "default": true
     },
 
     { "type": "header", "content": "Navigation" },

@@ -12,15 +12,19 @@
 {% assign padding = padding_class | default: 'p-4' %}
 {% assign img_pos = image_position | default: 'left' %}
 
+{% capture tag_string %}{% for flag in item.dietary_flags %}{{ flag.name | downcase }},{% endfor %}{% endcapture %}
+
 <div
   class="
-    menu-item-card group relative h-full flex bg-[var(--color-bg)] border border-[var(--color-text)]/10 rounded-global overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 break-inside-avoid
+    menu-item-card group relative h-full flex bg-[var(--color-bg)] border border-body/10 rounded-global overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 break-inside-avoid
     {% if style == 'compact' %}flex-row items-stretch text-left{% else %}flex-col{% endif %}
   "
+  data-filter-item
+  data-tags="{{ tag_string }}"
 >
   {% if style == 'compact' %}
     {% if has_image and img_pos == 'left' %}
-      <div class="w-24 md:w-32 shrink-0 relative border-r border-[var(--color-text)]/10">
+      <div class="w-24 md:w-32 shrink-0 relative border-r border-body/10">
         {% render 'media',
           src: item.image,
           fit: 'cover',
@@ -62,7 +66,7 @@
             {% for group in item.modifier_groups %}
               {% assign sorted_modifiers = group.modifiers | sort: 'price_delta' %}
               {% for mod in sorted_modifiers %}
-                <div class="flex items-center gap-1 bg-[var(--color-text)]/5 border border-[var(--color-text)]/10 px-1.5 py-1 rounded-sm text-[10px] md:text-xs">
+                <div class="flex items-center gap-1 bg-body/5 border border-body/10 px-1.5 py-1 rounded-sm text-[10px] md:text-xs">
                   <span class="opacity-70 uppercase font-bold">{{ mod.name }}</span>
                   <span class="font-bold">
                     {% assign total = item.price | plus: mod.price_delta %}
@@ -87,7 +91,7 @@
     </div>
 
     {% if has_image and img_pos == 'right' %}
-      <div class="w-24 md:w-32 shrink-0 relative border-l border-[var(--color-text)]/10">
+      <div class="w-24 md:w-32 shrink-0 relative border-l border-body/10">
         {% render 'media',
           src: item.image,
           fit: 'cover',
@@ -98,7 +102,7 @@
     {% endif %}
 
   {% else %}
-    <div class="w-full overflow-hidden bg-gray-100 border-b border-[var(--color-text)]/10 relative">
+    <div class="w-full overflow-hidden bg-gray-100 border-b border-body/10 relative">
       {% capture aspect_class %}
         {% case ratio %}
           {% when 'square' %}aspect-square
@@ -140,7 +144,7 @@
         </div>
       {% endif %}
 
-      <div class="mt-auto pt-3 border-t border-dashed border-[var(--color-text)]/10">
+      <div class="mt-auto pt-3 border-t border-dashed border-body/10">
         {% if is_complex %}
           <div class="flex items-center justify-between">
             <div class="flex flex-col">
@@ -153,7 +157,7 @@
             {% for group in item.modifier_groups %}
               {% assign sorted_modifiers = group.modifiers | sort: 'price_delta' %}
               {% for mod in sorted_modifiers %}
-                <div class="flex items-center justify-between w-full text-left bg-[var(--color-text)]/5 px-2 py-1.5 rounded-sm">
+                <div class="flex items-center justify-between w-full text-left bg-body/5 px-2 py-1.5 rounded-sm">
                   <span class="text-xs uppercase font-bold opacity-70">{{ mod.name }}</span>
                   <span class="text-sm font-bold">
                     {% assign total = item.price | plus: mod.price_delta %}
