@@ -38,7 +38,8 @@
             <div class="inline-flex gap-1 relative -top-[1px]">
               {% for flag in item.dietary_flags %}
                 <span class="badge-pill" title="{{ flag.name }}">
-                  {{ flag.code | default: flag.name | truncate: 2, '' }}
+                  {% assign tag_name = flag.name | downcase %}
+                  {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
                 </span>
               {% endfor %}
             </div>

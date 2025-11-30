@@ -91,17 +91,14 @@
                   data-filter-tags
                 >
                   {% for tag in menu.dietary_flags %}
+                    {% assign tag_name = tag.name | downcase %}
                     <button
                       type="button"
-                      data-filter-tag="{{ tag.name | downcase }}"
+                      data-filter-tag="{{ tag_name }}"
                       title="Filter by {{ tag.name }}"
                       class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-[var(--color-text)]/20 rounded-full text-[10px] font-bold uppercase opacity-60 hover:opacity-100 hover:border-[var(--color-text)]{% else %}px-2 py-1 border border-[var(--color-text)]/20 rounded text-[10px] uppercase tracking-wider opacity-60 hover:opacity-100 hover:border-[var(--color-text)]{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
                     >
-                      {% if s.nav_layout == 'horizontal' %}
-                        {{ tag.name | slice: 0, 1 }}
-                      {% else %}
-                        {{ tag.name }}
-                      {% endif %}
+                      {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
                     </button>
                   {% endfor %}
                 </div>

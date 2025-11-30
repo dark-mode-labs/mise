@@ -81,8 +81,9 @@
         <div class="flex items-center justify-between">
           <div class="flex flex-wrap gap-1">
             {% for flag in item.dietary_flags %}
-              <span class="badge-pill text-[10px] px-1.5 py-0.5">
-                {{- flag.code | default: flag.name | truncate: 2, '' -}}
+              <span class="badge-pill text-[10px] px-1.5 py-0.5" title="{{ flag.name }}">
+                {% assign tag_name = flag.name | downcase %}
+                {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
               </span>
             {% endfor %}
           </div>
@@ -127,8 +128,12 @@
       {% if item.dietary_flags.size > 0 %}
         <div class="absolute top-2 left-2 flex flex-wrap gap-1">
           {% for flag in item.dietary_flags %}
-            <span class="badge-pill bg-white/90 text-black border-transparent shadow-sm backdrop-blur-sm">
-              {{ flag.code | default: flag.name | truncate: 2, '' }}
+            <span
+              class="badge-pill bg-white/90 text-black border-transparent shadow-sm backdrop-blur-sm"
+              title="{{ flag.name }}"
+            >
+              {% assign tag_name = flag.name | downcase %}
+              {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
             </span>
           {% endfor %}
         </div>
