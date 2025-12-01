@@ -1,0 +1,44 @@
+name: Build Dist on Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build dist
+        run: npm run build
+
+      - name: Prepare release branch
+        run: |
+          mv dist ../dist
+
+          git checkout --orphan release
+          git reset --hard
+          rm -rf ./*
+
+          mv ../dist ./dist
+          git add dist
+          git commit -m "Release ${{ github.event.release.tag_name }}"
+
+      - name: Push release branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }} release --force
