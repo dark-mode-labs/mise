@@ -32,7 +32,13 @@
       "label": "Inherit Color Scheme",
       "default": true
     },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-2" }
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "scheme-2",
+      "conditional": "setting.inherit_color_scheme != true"
+    }
   ]
 }
 {% endschema %}

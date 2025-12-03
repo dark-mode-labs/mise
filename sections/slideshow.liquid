@@ -100,7 +100,8 @@
         { "value": "bars", "label": "Bars" },
         { "value": "numbers", "label": "Numbers" }
       ],
-      "default": "dots"
+      "default": "dots",
+      "conditional": "setting.show_dots"
     },
     {
       "type": "select",
@@ -110,7 +111,8 @@
         { "value": "chevron-left", "label": "Chevron" },
         { "value": "arrow-left", "label": "Arrow" }
       ],
-      "default": "chevron-left"
+      "default": "chevron-left",
+      "conditional": "setting.show_arrows"
     },
     {
       "type": "select",
@@ -135,7 +137,7 @@
     { "type": "header", "content": "Behavior" },
     { "type": "checkbox", "id": "infinite_scroll", "label": "Infinite Loop", "default": true },
     { "type": "checkbox", "id": "autoplay", "label": "Autoplay", "default": false },
-    { "type": "range", "id": "autoplay_speed", "label": "Speed (seconds)", "min": 3, "max": 10, "default": 5 }
+    { "type": "range", "id": "autoplay_speed", "label": "Speed (seconds)", "min": 3, "max": 10, "default": 5, "conditional": "setting.autoplay == true" }
   ],
   "blocks": [{ "type": "_slide" }],
   "presets": [

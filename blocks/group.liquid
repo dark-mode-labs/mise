@@ -99,7 +99,8 @@
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Palette",
-      "default": "scheme-1"
+      "default": "scheme-1",
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "checkbox",
@@ -134,7 +135,8 @@
       "min": 0,
       "max": 60,
       "step": 4,
-      "default": 12
+      "default": 12,
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "range",
