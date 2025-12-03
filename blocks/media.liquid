@@ -78,7 +78,8 @@
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Palette",
-      "default": "scheme-1"
+      "default": "scheme-1",
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "range",
@@ -88,7 +89,8 @@
       "max": 100,
       "step": 4,
       "default": 0,
-      "unit": "px"
+      "unit": "px",
+      "conditional": "setting.inherit_styles != true"
     }
   ],
   "presets": [

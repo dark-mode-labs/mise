@@ -110,19 +110,22 @@
     {
       "type": "image_picker",
       "id": "promo_image",
-      "label": "Promo Image"
+      "label": "Promo Image",
+      "conditional": "setting.show_promo"
     },
     {
       "type": "text",
       "id": "promo_heading",
       "label": "Promo Heading",
-      "default": "Featured"
+      "default": "Featured",
+      "conditional": "setting.show_promo"
     },
     {
       "type": "text",
       "id": "promo_text",
       "label": "Promo Text",
-      "default": "Check out our new seasonal specials."
+      "default": "Check out our new seasonal specials.",
+      "conditional": "setting.show_promo"
     }
   ]
 }

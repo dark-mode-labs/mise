@@ -256,10 +256,6 @@
                 {% endif %}
               {% endfor %}
             </div>
-          {% else %}
-            <div class="text-center opacity-50 py-12">
-              Category "{{ s.category_filter }}" not found in menu "{{ menu.name }}".
-            </div>
           {% endif %}
         </div>
       {% endif %}
@@ -299,10 +295,11 @@
       "default": "full_menu"
     },
     {
-      "type": "text",
-      "id": "category_filter",
+      "type": "collection",
+      "id": "category",
       "label": "Category Name",
-      "info": "Exact name of the category (e.g. 'Starters'). Used if Scope is Category."
+      "info": "Select category to display.",
+      "conditional": "setting.display_scope == 'category'"
     },
 
     { "type": "header", "content": "Filtering & Search" },
@@ -313,13 +310,13 @@
       "default": true
     },
 
-    { "type": "header", "content": "Navigation" },
+    { "type": "header", "content": "Navigation", "conditional": "setting.display_scope == 'full_menu'" },
     {
       "type": "checkbox",
       "id": "show_nav",
       "label": "Show Sticky Navigation",
       "default": true,
-      "info": "Only active in Full Menu mode."
+      "conditional": "setting.display_scope == 'full_menu'"
     },
     {
       "type": "select",
@@ -330,7 +327,8 @@
         { "value": "horizontal", "label": "Horizontal Top Bar" }
       ],
       "default": "vertical",
-      "info": "Horizontal layout works best for menus with many top-level categories."
+      "info": "Horizontal layout works best for menus with many top-level categories.",
+      "conditional": "setting.show_nav"
     },
     {
       "type": "range",
@@ -342,11 +340,10 @@
       "step": 4,
       "default": 80,
       "unit": "px",
-      "visible_if": "{{ section.settings.nav_layout == 'horizontal' }}"
+      "conditional": "setting.show_nav and setting.nav_layout == 'horizontal'"
     },
 
     { "type": "header", "content": "Layout" },
-    { "type": "header", "content": "Style" },
     {
       "type": "select",
       "id": "layout_style",
@@ -367,7 +364,8 @@
         { "value": "landscape", "label": "Landscape (4:3)" },
         { "value": "portrait", "label": "Portrait (3:4)" }
       ],
-      "default": "landscape"
+      "default": "landscape",
+      "conditional": "setting.layout_style != 'list'"
     },
     {
       "type": "select",
@@ -377,7 +375,8 @@
         { "value": "left", "label": "Left" },
         { "value": "right", "label": "Right" }
       ],
-      "default": "right"
+      "default": "right",
+      "conditional": "setting.layout_style != 'list'"
     },
     {
       "type": "select",
@@ -427,7 +426,8 @@
         { "value": "p-6", "label": "Relaxed" },
         { "value": "p-8", "label": "Loose" }
       ],
-      "default": "p-5"
+      "default": "p-5",
+      "conditional": "setting.layout_style != 'list'"
     },
     {
       "type": "select",
@@ -439,7 +439,8 @@
         { "value": "py-6", "label": "Relaxed" },
         { "value": "py-8", "label": "Loose" }
       ],
-      "default": "py-4"
+      "default": "py-4",
+      "conditional": "setting.layout_style == 'list'"
     },
     {
       "type": "select",
@@ -450,7 +451,8 @@
         { "value": "w-16 h-16 md:w-20 md:h-20", "label": "Medium" },
         { "value": "w-20 h-20 md:w-24 md:h-24", "label": "Large" }
       ],
-      "default": "w-16 h-16 md:w-20 md:h-20"
+      "default": "w-16 h-16 md:w-20 md:h-20",
+      "conditional": "setting.layout_style == 'list'"
     },
 
     { "type": "header", "content": "Content" },

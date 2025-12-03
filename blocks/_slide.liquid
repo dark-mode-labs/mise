@@ -10,12 +10,16 @@
   {% endcapture %}
 {% endif %}
 
+{% unless s.inherit_color_scheme %}
+  {% assign scheme_class = 'color-' | append: s.color_scheme %}
+{% endunless %}
+
 {% assign placeholder_name = 'scene-1' %}
 {% unless s.show_placeholder %}
   {% assign placeholder_name = '' %}
 {% endunless %}
 
-<div class="slide-block w-full flex-shrink-0 snap-center relative h-full overflow-hidden color-{{ s.color_scheme }}">
+<div class="slide-block w-full flex-shrink-0 snap-center relative h-full overflow-hidden {{ scheme_class }}">
   <div class="absolute inset-0 z-media bg-gray-900">
     {% render 'media',
       src: s.image,
@@ -47,7 +51,7 @@
     { "type": "image_picker", "id": "image", "label": "Desktop Image" },
     { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
     { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
-     {
+    {
       "type": "checkbox",
       "id": "show_placeholder",
       "label": "Show Placeholder",
@@ -97,7 +101,19 @@
     },
 
     { "type": "header", "content": "Theme" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "Inherit Color Scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "scheme-1",
+      "conditional": "setting.inherit_color_scheme != true"
+    }
   ],
   "blocks": [{ "type": "@theme" }],
   "presets": [
