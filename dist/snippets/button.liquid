@@ -1,0 +1,25 @@
+{% assign width_class = 'inline-flex' %}
+{% if width == 'full' %}
+  {% assign width_class = 'w-full flex justify-center' %}
+{% endif %}
+
+{% assign padding_class = 'px-6 py-3' %}
+
+{% case style %}
+  {% when 'primary' %}
+    {% assign style_class = 'btn-primary' %}
+  {% when 'outline' %}
+    {% assign style_class = 'btn-outline' %}
+  {% when 'link' %}
+    {% assign style_class = 'btn-link' %}
+    {% assign padding_class = 'p-0' %}
+  {% else %}
+    {% assign style_class = 'btn-primary' %}
+{% endcase %}
+
+<a
+  href="{{ url }}"
+  class="{{ width_class }} {{ padding_class }} {{ style_class }} text-sm font-bold uppercase tracking-wide transition-all duration-200 ease-in-out"
+>
+  {{ label }}
+</a>
