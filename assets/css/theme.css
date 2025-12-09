@@ -50,15 +50,15 @@
   }
 
   .btn-primary {
-    @apply bg-[var(--color-ui-bg)] text-[var(--color-ui-text)] border border-transparent hover:opacity-90;
+    @apply bg-[var(--color-btn-bg)] text-[var(--color-btn-text)] border border-transparent hover:opacity-90;
   }
 
   .btn-outline {
-    @apply bg-transparent text-[var(--color-ui-text)] border border-body hover:opacity-75;
+    @apply bg-transparent text-[var(--color-btn-text)] border border-body hover:opacity-75;
   }
 
   .btn-link {
-    @apply bg-transparent text-[var(--color-ui-text)] border-none underline underline-offset-4 p-0 hover:no-underline;
+    @apply bg-transparent text-[var(--color-btn-text)] border-none underline underline-offset-4 p-0 hover:no-underline;
   }
 
   .btn-nav {

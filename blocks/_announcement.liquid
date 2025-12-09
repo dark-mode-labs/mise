@@ -1,7 +1,7 @@
 {% assign s = block.settings %}
 
 {% assign scheme_class = '' %}
-{% unless block.settings.inherit_scheme %}
+{% unless block.settings.inherit_color_scheme %}
   {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
 {% endunless %}
 
