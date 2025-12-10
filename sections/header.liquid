@@ -15,21 +15,21 @@
 {% assign needs_spacer = false %}
 {% assign position_class = 'relative' %}
 {% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
-  {% assign position_class = 'fixed top-0 w-full' %}
+  {% assign position_class = 'fixed top-0' %}
   {% unless s.enable_transparent %}
     {% assign needs_spacer = true %}
   {% endunless %}
 {% elsif s.enable_transparent %}
-  {% assign position_class = 'absolute top-0 w-full' %}
+  {% assign position_class = 'absolute top-0' %}
 {% endif %}
 
 <header
-  class="header-section {{ position_class }} color-{{ s.color_scheme }} text-body bg-body z-header transition-all duration-300 border-b border-std"
+  class="header-section w-full {{ position_class }} color-{{ s.color_scheme }} text-body bg-body z-header transition-all duration-300 border-b border-std"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
   data-transparent="{{ s.enable_transparent }}"
 >
-  <div class="wrapper h-16 md:h-24 grid grid-cols-3 items-center">
+  <div class="wrapper-{{ s.content_width }} h-16 md:h-24 grid grid-cols-3 items-center">
     <div class="flex items-center justify-start gap-4">
       <button
         type="button"
@@ -74,13 +74,26 @@
   "class": "section-header",
   "restriction": { "groups": ["header"] },
   "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content Width",
+       "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "standard"
+    },
     {
       "type": "select",
       "id": "desktop_layout",
-      "label": "Layout (Desktop)",
+      "label": "Logo placement",
       "options": [
-        { "value": "logo_center", "label": "Logo Center" },
-        { "value": "logo_left", "label": "Logo Left" }
+        { "value": "logo_center", "label": "Center" },
+        { "value": "logo_left", "label": "Left" }
       ],
       "default": "logo_center"
     },

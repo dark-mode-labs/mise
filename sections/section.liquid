@@ -15,11 +15,11 @@
 {% endcapture %}
 
 <section
-  class="w-full color-{{ s.color_scheme }} bg-body text-body flex flex-col {{ s.vertical_align }}"
+  class="color-{{ s.color_scheme }} bg-body text-body flex flex-col {{ s.vertical_align }} pt-[var(--pt)] pb-[var(--pb)] min-h-[var(--min-h)] wrapper-{{ s.content_width }}"
   style="
-    padding-top: {{ s.padding_top }}px; 
-    padding-bottom: {{ s.padding_bottom }}px;
-    min-height: {{ s.min_height }}px;
+    --pt: {{ s.padding_top }}px; 
+    --pb: {{ s.padding_bottom }}px;
+    --min-h: {{ s.min_height }}px;
   "
 >
   <div class="w-full {{ container_width }}">

@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 <div
-  class="section-slideshow relative w-full overflow-hidden bg-surface group select-none color-{{ s.color_scheme }}"
+  class="section-slideshow relative overflow-hidden bg-surface group select-none color-{{ s.color_scheme }} wrapper-{{ s.content_width }}"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
@@ -9,12 +9,10 @@
   style="
     --slide-width: {{ s.slide_width_mobile }}%;
     --slide-width-md: {{ s.slide_width }}%;
+    --slide-gap: {{ s.slide_gap }}px;
   "
 >
-  <div
-    class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }} cursor-grab active:cursor-grabbing"
-    style="gap: {{ s.slide_gap }}px;"
-  >
+  <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }} cursor-grab active:cursor-grabbing gap-[var(--slide-gap)]">
     {% content_for 'blocks' %}
   </div>
 
@@ -71,6 +69,18 @@
   "name": "Slideshow",
   "settings": [
     { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content Width",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "standard"
+    },
     {
       "type": "select",
       "id": "mobile_height",

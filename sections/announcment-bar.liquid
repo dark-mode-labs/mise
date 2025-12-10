@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 <div
-  class="section-announcement color-{{ s.color_scheme }} text-body bg-body relative z-header-top w-full text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std"
+  class="section-announcement color-{{ s.color_scheme }} text-body bg-body relative z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std wrapper-{{ s.content_width }}"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
@@ -40,6 +40,22 @@
   "class": "section-group-header",
   "restriction": { "groups": ["header"] },
   "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content Width",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "full"
+    },
     {
       "type": "header",
       "content": "Behavior"

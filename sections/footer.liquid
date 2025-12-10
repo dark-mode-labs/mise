@@ -1,10 +1,10 @@
 {% assign s = section.settings %}
 
 <footer
-  class="section-footer w-full color-{{ s.color_scheme }} bg-body text-body border-t border-std"
-  style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
+  class="section-footer color-{{ s.color_scheme }} bg-body text-body border-t border-std pt-[var(--pt)] pb-[var(--pb)] wrapper-{{ s.content_width }}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
 >
-  <div class="wrapper">
+  <div class="w-full">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-0 md:gap-y-12 gap-x-8 mb-16">
       {% content_for 'blocks' %}
     </div>
@@ -37,6 +37,19 @@
   "name": "Footer",
   "restriction": { "groups": ["footer"] },
   "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content Width",
+       "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "standard"
+    },
     { "type": "header", "content": "Spacing" },
     { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 120, "step": 4, "default": 80 },
     {

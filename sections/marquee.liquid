@@ -1,15 +1,15 @@
 {% assign s = section.settings %}
 
 <section
-  class="section-marquee w-full border-y border-std color-{{ s.color_scheme }} bg-body text-body overflow-hidden"
-  style="padding-top: {{ s.padding_vertical }}px; padding-bottom: {{ s.padding_vertical }}px;"
+  class="section-marquee border-y border-std color-{{ s.color_scheme }} bg-body text-body overflow-hidden pt-[var(--py)] pb-[var(--py)] wrapper-{{ s.content_width }}"
+  style="--py: {{ s.padding_vertical }}px;"
 >
-  {% render 'marquee', 
-     items: s.text_list, 
-     speed: s.speed, 
-     direction: s.direction,
-     size_class: s.text_size,
-     uppercase: s.uppercase
+  {% render 'marquee',
+    items: s.text_list,
+    speed: s.speed,
+    direction: s.direction,
+    size_class: s.text_size,
+    uppercase: s.uppercase
   %}
 </section>
 
@@ -17,6 +17,19 @@
 {
   "name": "Scrolling Text",
   "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content Width",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "full"
+    },
     {
       "type": "text",
       "id": "text_list",

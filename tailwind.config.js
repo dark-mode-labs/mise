@@ -6,7 +6,8 @@ export default {
     './snippets/*.liquid',
     './blocks/*.liquid',
     './templates/*.json',
-    './config/*.json'
+    './config/*.json',
+    './assets/css/theme.css'
   ],
   theme: {
     extend: {

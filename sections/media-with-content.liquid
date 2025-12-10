@@ -20,14 +20,14 @@
 {% endunless %}
 
 <section
-  class="section-feature w-full color-{{ s.color_scheme }}"
+  class="section-feature color-{{ s.color_scheme }} pt-[var(--pt)] pb-[var(--pb)] wrapper-{{ s.content_width }}"
   style="
-    padding-top: {{ s.padding_top }}px;
-    padding-bottom: {{ s.padding_bottom }}px;
+    --pt: {{ s.padding_top }}px;
+    --pb: {{ s.padding_bottom }}px;
     --desktop-gap: {{ s.desktop_gap }}px;
   "
 >
-  <div class="wrapper {{ layout_class }} items-center gap-gap lg:gap-[var(--desktop-gap)]">
+  <div class="w-full {{ layout_class }} items-center gap-gap lg:gap-[var(--desktop-gap)]">
     <div class="w-full lg:w-1/2 relative">
       <div class="overflow-hidden rounded-global {% if s.show_shadow %}shadow-lg{% endif %}">
         {% render 'media',
@@ -53,6 +53,18 @@
   "name": "Media with content",
   "settings": [
     { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content Width",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "standard"
+    },
     {
       "type": "select",
       "id": "desktop_layout",

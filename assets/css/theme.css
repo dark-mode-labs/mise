@@ -20,8 +20,20 @@
 }
 
 @layer components {
-  .wrapper {
-    @apply w-full mx-auto px-4 max-w-wrapper;
+  .wrapper-standard {
+    @apply w-full mx-auto max-w-wrapper;
+  }
+
+  .wrapper-full {
+    @apply w-full mx-auto px-4;
+  }
+
+  .wrapper-wide {
+    @apply w-full mx-auto max-w-wrapper;
+  }
+
+  .wrapper-narrow {
+    @apply w-[50%] mx-auto;
   }
 
   .stagger-load>*:not(.no-stagger):not(:has(.no-stagger)) {
@@ -124,6 +136,7 @@
 }
 
 @layer base {
+
   h1,
   h2,
   h3,

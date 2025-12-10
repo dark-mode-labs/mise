@@ -20,10 +20,10 @@
 {% endif %}
 
 <section
-  class="section-multi-column w-full color-{{ s.color_scheme }}"
-  style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
+  class="section-multi-column color-{{ s.color_scheme }} pt-[var(--pt)] pb-[var(--pb)] wrapper-{{ s.content_width }}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
 >
-  <div class="wrapper flex flex-col gap-12">
+  <div class="w-full flex flex-col gap-12">
     {% if s.heading != blank %}
       <div class="w-full text-center max-w-3xl mx-auto mb-4 animate-fade-up">
         {% render 'typography', text: s.heading, tag: 'h2', size: 'h2' %}
@@ -44,6 +44,18 @@
     { "type": "text", "id": "heading", "label": "Section Heading", "default": "Our Process" },
 
     { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content Width",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "standard"
+    },
     {
       "type": "range",
       "id": "columns_desktop",

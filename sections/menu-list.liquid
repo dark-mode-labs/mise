@@ -39,12 +39,12 @@
 {% endif %}
 
 <section
-  class="w-full color-{{ s.color_scheme }}"
-  style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
+  class="color-{{ s.color_scheme }} pt-[var(--pt)] pb-[var(--pb)] wrapper-{{ s.content_width }}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
   data-spy-scope
   data-filter-scope
 >
-  <div class="wrapper">
+  <div class="w-full">
     <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
       {% if s.heading != blank %}
         {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
@@ -453,6 +453,20 @@
       ],
       "default": "w-16 h-16 md:w-20 md:h-20",
       "conditional": "setting.layout_style == 'list'"
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content Width",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "full"
     },
 
     { "type": "header", "content": "Content" },
