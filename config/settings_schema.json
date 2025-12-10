@@ -1,7 +1,8 @@
 [
   {
-    "name": "Color Scheme Group",
-    "type": "color_scheme_group",
+    "name": "Color Schemes",
+    "type": "group",
+    "id": "color_schemes",
     "definition": [
       {
         "type": "text",
@@ -15,30 +16,32 @@
       {
         "type": "color",
         "id": "background",
-        "label": "Background"
+        "label": "Background",
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "color",
         "id": "text",
-        "label": "Text"
+        "label": "Text",
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "color",
         "id": "text_secondary",
         "label": "Secondary Text",
-        "default": "#666666"
+        "default": "rgba(102, 102, 102, 1)"
       },
       {
         "type": "color",
         "id": "accent",
         "label": "Accent / Links",
-        "default": "#000000"
+        "default": "rgba(0, 0, 0, 1)"
       },
       {
         "type": "color",
         "id": "surface",
         "label": "Surface / Card Background",
-        "default": "#F5F5F5"
+        "default": "rgba(245, 245, 245, 1)"
       },
       {
         "type": "header",
@@ -47,12 +50,14 @@
       {
         "type": "color",
         "id": "button_bg",
-        "label": "Solid Button Background"
+        "label": "Solid Button Background",
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "color",
         "id": "button_text",
-        "label": "Solid Button Label"
+        "label": "Solid Button Label",
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "header",
@@ -62,26 +67,77 @@
         "type": "color",
         "id": "ui_bg",
         "label": "Control Background",
-        "default": "#ffffff"
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "color",
         "id": "ui_text",
         "label": "Control Icon/Text",
-        "default": "#000000"
+        "default": "rgba(0, 0, 0, 1)"
       },
       {
         "type": "color",
         "id": "border",
-        "label": "Borders"
+        "label": "Borders",
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "color",
         "id": "shadow",
         "label": "Shadows",
-        "default": "#000000"
+        "default": "rgba(0, 0, 0, 1)"
       }
-    ]
+    ],
+    "preset": {
+      "scheme-1": {
+        "settings": {
+          "title": "Daylight (Default)",
+          "background": "rgba(255, 255, 255, 1)",
+          "text": "rgba(18, 18, 18, 1)",
+          "text_secondary": "rgba(102, 102, 102, 1)",
+          "accent": "rgba(18, 18, 18, 1)",
+          "surface": "rgba(245, 245, 245, 1)",
+          "button_bg": "rgba(18, 18, 18, 1)",
+          "button_text": "rgba(255, 255, 255, 1)",
+          "ui_bg": "rgba(18, 18, 18, 1)",
+          "ui_text": "rgba(255, 255, 255, 1)",
+          "border": "rgba(229, 229, 229, 1)",
+          "shadow": "rgba(0, 0, 0, 1)"
+        }
+      },
+      "scheme-2": {
+        "settings": {
+          "title": "Midnight",
+          "background": "rgba(15, 15, 15, 1)",
+          "text": "rgba(255, 255, 255, 1)",
+          "text_secondary": "rgba(160, 160, 160, 1)",
+          "accent": "rgba(255, 255, 255, 1)",
+          "surface": "rgba(31, 31, 31, 1)",
+          "button_bg": "rgba(255, 255, 255, 1)",
+          "button_text": "rgba(15, 15, 15, 1)",
+          "ui_bg": "rgba(255, 255, 255, 1)",
+          "ui_text": "rgba(15, 15, 15, 1)",
+          "border": "rgba(51, 51, 51, 1)",
+          "shadow": "rgba(0, 0, 0, 1)"
+        }
+      },
+      "scheme-3": {
+        "settings": {
+          "title": "Chef's Accent",
+          "background": "rgba(217, 48, 37, 1)",
+          "text": "rgba(255, 255, 255, 1)",
+          "text_secondary": "rgba(255, 204, 204, 1)",
+          "accent": "rgba(255, 255, 255, 1)",
+          "surface": "rgba(176, 32, 21, 1)",
+          "button_bg": "rgba(255, 255, 255, 1)",
+          "button_text": "rgba(217, 48, 37, 1)",
+          "ui_bg": "rgba(255, 255, 255, 1)",
+          "ui_text": "rgba(217, 48, 37, 1)",
+          "border": "rgba(224, 102, 102, 1)",
+          "shadow": "rgba(0, 0, 0, 1)"
+        }
+      }
+    }
   },
   {
     "name": "Typography",
@@ -90,7 +146,7 @@
         "type": "font_picker",
         "id": "heading_font",
         "label": "Headings",
-        "default": "serif"
+        "default": "sans-serif"
       },
       {
         "type": "font_picker",
@@ -121,12 +177,42 @@
     "settings": [
       {
         "type": "range",
-        "id": "page_width",
-        "label": "Page Width",
-        "min": 1000,
+        "id": "full_width",
+        "label": "Full Width",
+        "min": 1360,
         "max": 1600,
         "step": 40,
+        "default": 1360,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "standard_width",
+        "label": "Standard Width",
+        "min": 984,
+        "max": 1240,
+        "step": 40,
+        "default": 984,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "wide_width",
+        "label": "Wide Width",
+        "min": 1240,
+        "max": 1496,
+        "step": 40,
         "default": 1240,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "narrow_width",
+        "label": "Narrow Width",
+        "min": 600,
+        "max": 728,
+        "step": 20,
+        "default": 600,
         "unit": "px"
       },
       {

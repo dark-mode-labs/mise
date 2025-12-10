@@ -21,19 +21,19 @@
 
 @layer components {
   .wrapper-standard {
-    @apply w-full mx-auto max-w-wrapper;
+    @apply w-full mx-auto max-w-standard;
   }
 
   .wrapper-full {
-    @apply w-full mx-auto px-4;
+    @apply w-full mx-auto px-4 max-w-full;
   }
 
   .wrapper-wide {
-    @apply w-full mx-auto max-w-wrapper;
+    @apply w-full mx-auto px-4 max-w-wide;
   }
 
   .wrapper-narrow {
-    @apply w-[50%] mx-auto;
+    @apply w-full mx-auto max-w-narrow;
   }
 
   .stagger-load>*:not(.no-stagger):not(:has(.no-stagger)) {

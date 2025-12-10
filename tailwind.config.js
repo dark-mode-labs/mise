@@ -15,12 +15,15 @@ export default {
         'screen-dvh': '100dvh',
       },
       fontFamily: {
-        heading: ['var(--font-heading)', 'serif'],
+        heading: ['var(--font-heading)', 'sans-serif'],
         body: ['var(--font-body)', 'sans-serif'],
         btn: ['var(--font-button)', 'sans-serif'],
       },
       maxWidth: {
-        wrapper: 'var(--page-width)',
+        narrow: 'var(--narrow-width)',
+        standard: 'var(--standard-width)',
+        wide: 'var(--wide-width)',
+        full: 'var(--full-width)',
       },
       spacing: {
         gap: 'var(--grid-gap)',
