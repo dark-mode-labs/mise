@@ -6,8 +6,15 @@
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
   data-infinite="{{ s.infinite_scroll }}"
+  style="
+    --slide-width: {{ s.slide_width_mobile }}%;
+    --slide-width-md: {{ s.slide_width }}%;
+  "
 >
-  <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }} cursor-grab active:cursor-grabbing">
+  <div
+    class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }} cursor-grab active:cursor-grabbing"
+    style="gap: {{ s.slide_gap }}px;"
+  >
     {% content_for 'blocks' %}
   </div>
 
@@ -87,6 +94,41 @@
       ],
       "default": "md:h-[75vh]"
     },
+    {
+      "type": "range",
+      "id": "slide_gap",
+      "label": "Gap between slides",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Peeking / Sizing"
+    },
+    {
+      "type": "range",
+      "id": "slide_width",
+      "label": "Slide Width (Desktop)",
+      "min": 80,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "info": "Set to < 100% to show part of the next slide."
+    },
+    {
+      "type": "range",
+      "id": "slide_width_mobile",
+      "label": "Slide Width (Mobile)",
+      "min": 80,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
 
     { "type": "header", "content": "Controls" },
     { "type": "checkbox", "id": "show_arrows", "label": "Show Arrows", "default": true },
@@ -137,7 +179,15 @@
     { "type": "header", "content": "Behavior" },
     { "type": "checkbox", "id": "infinite_scroll", "label": "Infinite Loop", "default": true },
     { "type": "checkbox", "id": "autoplay", "label": "Autoplay", "default": false },
-    { "type": "range", "id": "autoplay_speed", "label": "Speed (seconds)", "min": 3, "max": 10, "default": 5, "conditional": "setting.autoplay == true" }
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Speed (seconds)",
+      "min": 3,
+      "max": 10,
+      "default": 5,
+      "conditional": "setting.autoplay == true"
+    }
   ],
   "blocks": [{ "type": "_slide" }],
   "presets": [
