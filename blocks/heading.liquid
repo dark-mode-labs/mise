@@ -4,7 +4,14 @@
   {% endunless %}
 {% endcapture %}
 
-<div class="w-full max-w-prose mb-4" {{ style_override }}>
+{% capture text_classes %}
+  {{ block.settings.text_align }}
+  {% if block.settings.uppercase %}uppercase tracking-widest{% endif %}
+  {% if block.settings.italic %}italic{% endif %}
+  font-{{ block.settings.font_weight }}
+{% endcapture %}
+
+<div class="w-full max-w-prose mb-4 {{ text_classes }}" {{ style_override }}>
   {% render 'typography', 
      text: block.settings.text, 
      tag: block.settings.tag, 
@@ -43,6 +50,45 @@
         { "value": "body", "label": "Small (Body)" }
       ],
       "default": "h2"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "", "label": "Inherit" },
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "bold", "label": "Bold" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "italic",
+      "label": "Italic",
+      "default": false
     },
     {
       "type": "header",

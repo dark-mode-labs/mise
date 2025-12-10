@@ -4,11 +4,17 @@
   {% endunless %}
 {% endcapture %}
 
-<div class="inline-block" {{ style_override }}>
+{% assign width_class = 'inline-block' %}
+{% if block.settings.width == 'full' %}
+  {% assign width_class = 'w-full block' %}
+{% endif %}
+
+<div class="{{ width_class }}" {{ style_override }}>
   {% render 'button', 
      label: block.settings.label, 
      url: block.settings.link, 
-     style: block.settings.style 
+     style: block.settings.style,
+     width: block.settings.width
   %}
 </div>
 
@@ -22,6 +28,10 @@
       { "value": "primary", "label": "Solid" },
       { "value": "outline", "label": "Outline" },
       { "value": "link", "label": "Link" }
+    ]},
+    { "type": "select", "id": "width", "label": "Width", "default": "auto", "options": [
+      { "value": "auto", "label": "Auto" },
+      { "value": "full", "label": "Full Width" }
     ]},
     {
       "type": "header",

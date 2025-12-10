@@ -1,6 +1,17 @@
 {% assign s = block.settings %}
 
-<div class="column-block flex flex-col gap-4 h-full {{ s.text_align }}">
+{% capture style_override %}
+  {% if s.enable_card %}
+    background-color: {{ s.background_color }};
+    padding: {{ s.padding }}px;
+    border-radius: var(--radius-global);
+    {% if s.show_shadow %}
+      box-shadow: var(--shadow-md);
+    {% endif %}
+  {% endif %}
+{% endcapture %}
+
+<div class="column-block flex flex-col gap-4 h-full {{ s.text_align }}" style="{{ style_override }}">
   {% content_for 'blocks' %}
 </div>
 
@@ -18,6 +29,40 @@
         { "value": "items-end text-right", "label": "Right" }
       ],
       "default": "items-start text-left"
+    },
+    {
+      "type": "header",
+      "content": "Card Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_card",
+      "label": "Enable Card Style",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#F5F5F5",
+      "conditional": "setting.enable_card == true"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "conditional": "setting.enable_card == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow",
+      "default": false,
+      "conditional": "setting.enable_card == true"
     }
   ],
   "blocks": [

@@ -4,7 +4,12 @@
   {% endunless %}
 {% endcapture %}
 
-<div class="w-full max-w-prose" {{ style_override }}>
+{% capture text_classes %}
+  {{ block.settings.text_align }}
+  font-{{ block.settings.font_weight }}
+{% endcapture %}
+
+<div class="w-full max-w-prose {{ text_classes }}" {{ style_override }}>
   {% render 'typography', 
      text: block.settings.content, 
      tag: 'div', 
@@ -35,6 +40,29 @@
         { "value": "body", "label": "Body" },
         { "value": "caption", "label": "Caption" }
       ]
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "", "label": "Inherit" },
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "bold", "label": "Bold" }
+      ],
+      "default": "normal"
     },
     {
       "type": "checkbox",

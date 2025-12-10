@@ -4,6 +4,7 @@
   w-full h-full relative overflow-hidden
   {% unless s.inherit_styles %}
     color-{{ s.color_scheme }}
+    {% if s.show_shadow %}shadow-lg{% endif %}
   {% endunless %}
 {% endcapture %}
 
@@ -90,6 +91,13 @@
       "step": 4,
       "default": 0,
       "unit": "px",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow",
+      "default": false,
       "conditional": "setting.inherit_styles != true"
     }
   ],
