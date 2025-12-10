@@ -75,7 +75,35 @@
 
     { "type": "header", "content": "Theme" },
     { "type": "checkbox", "id": "enable_animation", "label": "Enable Animation", "default": true },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" },
+
+    { "type": "header", "content": "Cards" },
+    { "type": "checkbox", "id": "enable_cards_global", "label": "Enable Cards for All Columns", "default": false },
+    { "type": "header", "content": "Card Style", "conditional": "setting.enable_cards_global == true" },
+    {
+      "type": "color",
+      "id": "card_bg_global",
+      "label": "Card Background",
+      "default": "#F5F5F5",
+      "conditional": "setting.enable_cards_global == true"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_global",
+      "label": "Card Padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "conditional": "setting.enable_cards_global == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow_global",
+      "label": "Show Shadow",
+      "default": false,
+      "conditional": "setting.enable_cards_global == true"
+    }
   ],
   "blocks": [{ "type": "_column" }],
   "presets": [

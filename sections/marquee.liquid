@@ -7,7 +7,9 @@
   {% render 'marquee', 
      items: s.text_list, 
      speed: s.speed, 
-     direction: s.direction 
+     direction: s.direction,
+     size_class: s.text_size,
+     uppercase: s.uppercase
   %}
 </section>
 
@@ -21,6 +23,25 @@
       "label": "Text",
       "default": "Reserve Now, Open Daily, Fresh Ingredients",
       "info": "Comma separated"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "Text Size",
+      "options": [
+        { "value": "text-sm", "label": "Small" },
+        { "value": "text-base", "label": "Medium" },
+        { "value": "text-lg", "label": "Large" },
+        { "value": "text-xl", "label": "Extra Large" },
+        { "value": "text-4xl", "label": "Display" }
+      ],
+      "default": "text-sm"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": true
     },
     {
       "type": "range",

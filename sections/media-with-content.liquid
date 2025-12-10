@@ -29,7 +29,7 @@
 >
   <div class="wrapper {{ layout_class }} items-center gap-gap lg:gap-[var(--desktop-gap)]">
     <div class="w-full lg:w-1/2 relative">
-      <div class="rounded-lg overflow-hidden shadow-lg rounded-global">
+      <div class="overflow-hidden rounded-global {% if s.show_shadow %}shadow-lg{% endif %}">
         {% render 'media',
           src: s.image,
           src_mobile: s.mobile_image,
@@ -93,6 +93,12 @@
         { "value": "items-end text-right", "label": "Right" }
       ],
       "default": "items-start text-left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow on Media",
+      "default": true
     },
 
     { "type": "header", "content": "Spacing" },

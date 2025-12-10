@@ -7,18 +7,23 @@
 
 {% capture container_width %}
   {% case s.content_width %}
-    {% when 'narrow' %}max-w-2xl
-    {% when 'standard' %}max-w-4xl
-    {% when 'wide' %}max-w-full
+    {% when 'narrow' %}max-w-2xl mx-auto px-4
+    {% when 'standard' %}max-w-4xl mx-auto px-4
+    {% when 'wide' %}wrapper
+    {% when 'full' %}w-full
   {% endcase %}
 {% endcapture %}
 
 <section
-  class="wrapper w-full color-{{ s.color_scheme }} bg-body text-body"
-  style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
+  class="w-full color-{{ s.color_scheme }} bg-body text-body flex flex-col {{ s.vertical_align }}"
+  style="
+    padding-top: {{ s.padding_top }}px; 
+    padding-bottom: {{ s.padding_bottom }}px;
+    min-height: {{ s.min_height }}px;
+  "
 >
-  <div class="flex flex-col {{ s.text_align }} items-center">
-    <div class="w-full {{ container_width }} flex flex-col gap-6 {{ s.text_align }} {{ animation_class }}">
+  <div class="w-full {{ container_width }}">
+    <div class="flex flex-col gap-6 {{ s.text_align }} {{ animation_class }}">
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -36,9 +41,31 @@
       "options": [
         { "value": "narrow", "label": "Narrow (Reading)" },
         { "value": "standard", "label": "Standard" },
-        { "value": "wide", "label": "Wide (Full Wrapper)" }
+        { "value": "wide", "label": "Wide (Wrapper)" },
+        { "value": "full", "label": "Full Width" }
       ],
       "default": "standard"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Minimum Height",
+      "min": 0,
+      "max": 800,
+      "step": 40,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "justify-start", "label": "Top" },
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-end", "label": "Bottom" }
+      ],
+      "default": "justify-center"
     },
     {
       "type": "select",

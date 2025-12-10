@@ -1,11 +1,26 @@
 {% assign s = block.settings %}
+{% assign ss = section.settings %}
+{% assign show_card = false %}
+
+{% if ss.enable_cards_global %}
+  {% assign show_card = true %}
+  {% assign bg_color = ss.card_bg_global %}
+  {% assign padding = ss.card_padding_global %}
+  {% assign shadow = ss.card_shadow_global %}
+
+  {% if s.override_card_style %}
+    {% assign bg_color = s.background_color %}
+    {% assign padding = s.padding %}
+    {% assign shadow = s.show_shadow %}
+  {% endif %}
+{% endif %}
 
 {% capture style_override %}
-  {% if s.enable_card %}
-    background-color: {{ s.background_color }};
-    padding: {{ s.padding }}px;
+  {% if show_card %}
+    background-color: {{ bg_color }};
+    padding: {{ padding }}px;
     border-radius: var(--radius-global);
-    {% if s.show_shadow %}
+    {% if shadow %}
       box-shadow: var(--shadow-md);
     {% endif %}
   {% endif %}
@@ -36,8 +51,8 @@
     },
     {
       "type": "checkbox",
-      "id": "enable_card",
-      "label": "Enable Card Style",
+      "id": "override_card_style",
+      "label": "Override Card Style",
       "default": false
     },
     {
@@ -45,7 +60,7 @@
       "id": "background_color",
       "label": "Background Color",
       "default": "#F5F5F5",
-      "conditional": "setting.enable_card == true"
+      "conditional": "setting.override_card_style == true"
     },
     {
       "type": "range",
@@ -55,19 +70,17 @@
       "max": 60,
       "step": 4,
       "default": 24,
-      "conditional": "setting.enable_card == true"
+      "conditional": "setting.override_card_style == true"
     },
     {
       "type": "checkbox",
       "id": "show_shadow",
       "label": "Show Shadow",
       "default": false,
-      "conditional": "setting.enable_card == true"
+      "conditional": "setting.override_card_style == true"
     }
   ],
-  "blocks": [
-    { "type": "@theme" }
-  ],
+  "blocks": [{ "type": "@theme" }],
   "presets": [
     {
       "name": "Column",
