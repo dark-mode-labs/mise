@@ -23,6 +23,24 @@
         "label": "Text"
       },
       {
+        "type": "color",
+        "id": "text_secondary",
+        "label": "Secondary Text",
+        "default": "#666666"
+      },
+      {
+        "type": "color",
+        "id": "accent",
+        "label": "Accent / Links",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "surface",
+        "label": "Surface / Card Background",
+        "default": "#F5F5F5"
+      },
+      {
         "type": "header",
         "content": "Buttons"
       },
@@ -56,6 +74,12 @@
         "type": "color",
         "id": "border",
         "label": "Borders"
+      },
+      {
+        "type": "color",
+        "id": "shadow",
+        "label": "Shadows",
+        "default": "#000000"
       }
     ]
   },
@@ -73,12 +97,48 @@
         "id": "body_font",
         "label": "Body Text",
         "default": "sans-serif"
+      },
+      {
+        "type": "font_picker",
+        "id": "button_font",
+        "label": "Buttons & UI",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "type_scale",
+        "label": "Type Scale",
+        "min": 80,
+        "max": 120,
+        "step": 5,
+        "default": 100,
+        "unit": "%"
       }
     ]
   },
   {
     "name": "Layout",
     "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Page Width",
+        "min": 1000,
+        "max": 1600,
+        "step": 40,
+        "default": 1240,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "grid_gap",
+        "label": "Grid Gap",
+        "min": 0,
+        "max": 64,
+        "step": 4,
+        "default": 32,
+        "unit": "px"
+      },
       {
         "type": "range",
         "id": "corner_radius",

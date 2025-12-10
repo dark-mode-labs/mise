@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 <footer
-  class="section-footer w-full color-{{ s.color_scheme }} bg-[var(--color-bg)] text-[var(--color-text)] border-t border-[var(--color-text)]/10"
+  class="section-footer w-full color-{{ s.color_scheme }} bg-body text-body border-t border-std"
   style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
 >
   <div class="wrapper">
@@ -9,7 +9,7 @@
       {% content_for 'blocks' %}
     </div>
 
-    <div class="pt-8 border-t border-[var(--color-text)]/10 flex flex-col md:flex-row items-center justify-between gap-6 text-xs opacity-60 uppercase tracking-widest">
+    <div class="pt-8 border-t border-std flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-secondary uppercase tracking-widest">
       <div class="flex flex-col md:flex-row gap-4 text-center md:text-left items-center">
         <span
           >&copy; {{ 'now' | date: '%Y' }}
@@ -24,7 +24,7 @@
       <div class="flex flex-col md:flex-row items-center gap-6">
         {% if s.show_payment %}
           <div class="flex gap-2 items-center">
-            {% render 'icon', name: 'credit-card', class: 'w-6 h-6 opacity-80' %}
+            {% render 'icon', name: 'credit-card', class: 'w-6 h-6 text-secondary' %}
           </div>
         {% endif %}
       </div>

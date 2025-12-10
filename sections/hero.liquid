@@ -52,8 +52,8 @@
   class="section-hero w-full overflow-hidden color-{{ s.color_scheme }} {{ container_layout }} {{ s.height }}"
   style="{{ gap_style }}"
 >
-  <div class="{{ media_container_class }} bg-gray-900 overflow-hidden">
-    <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-white/10{% else %}w-full{% endif %}">
+  <div class="{{ media_container_class }} bg-surface overflow-hidden">
+    <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-std{% else %}w-full{% endif %}">
       {% render 'media',
         src: s.bg_image,
         src_mobile: s.mobile_image,

@@ -2,6 +2,10 @@
   :root {
     --font-heading: {{ settings.heading_font.family }}, serif;
     --font-body: {{ settings.body_font.family }}, sans-serif;
+    --font-button: {{ settings.button_font.family }}, sans-serif;
+    --type-scale: {{ settings.type_scale | divided_by: 100.0 }};
+    --page-width: {{ settings.page_width }}px;
+    --grid-gap: {{ settings.grid_gap }}px;
     --radius-global: {{ settings.corner_radius }}px;
   }
 
@@ -9,13 +13,15 @@
     .color-{{ scheme.id }} {
       --color-bg: rgb({{ scheme.settings.background.rgba }});
       --color-text: rgb({{ scheme.settings.text.rgba }});
-
+      --color-text-secondary: rgb({{ scheme.settings.text_secondary.rgba }});
+      --color-accent: rgb({{ scheme.settings.accent.rgba }});
+      --color-surface: rgb({{ scheme.settings.surface.rgba }});
       --color-btn-bg: rgb({{ scheme.settings.button_bg.rgba }});
       --color-btn-text: rgb({{ scheme.settings.button_text.rgba }});
       --color-border: rgb({{ scheme.settings.border.rgba }});
+      --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
       --color-ui-bg: rgb({{ scheme.settings.ui_bg.rgba }});
       --color-ui-text: rgb({{ scheme.settings.ui_text.rgba }});
-
       --color-text-subtle: {{ scheme.settings.text.hex | color_modify: 'alpha', 0.7 }};
     }
   {% endfor %}
