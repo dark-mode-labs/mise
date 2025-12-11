@@ -26,7 +26,7 @@
   {% endfor %}
 
   {% for scheme in settings.width_schemes %}
-    {% assign width = scheme[1].settings.custom_width | default: scheme[1].settings.width %}
+    {% assign width = scheme[1].settings.width %}
     {% capture width_scheme %}
       {% case width %}
         {% when 'sm' %}
@@ -47,6 +47,8 @@
           --limit-width: fit-content;
         {% when 'full' %}
           --limit-width: 100%;
+        {% when 'custom' %}
+          --limit-width: {{ scheme[1].settings.custom_width }}
         {% else %}
           --limit-width: {{ width }};
       {% endcase %}
