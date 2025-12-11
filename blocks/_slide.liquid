@@ -19,8 +19,8 @@
   {% assign placeholder_name = '' %}
 {% endunless %}
 
-<div class="slide-block w-full flex-shrink-0 snap-center relative h-full overflow-hidden {{ scheme_class }}">
-  <div class="absolute inset-0 z-media bg-gray-900">
+<div class="slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative h-full overflow-hidden {{ scheme_class }}">
+  <div class="absolute inset-0 z-media bg-surface">
     {% render 'media',
       src: s.image,
       src_mobile: s.image_mobile,
@@ -37,7 +37,7 @@
   </div>
 
   <div class="wrapper absolute inset-0 z-content h-full flex flex-col {{ s.align_x }} {{ s.align_y }}">
-    <div class="max-w-3xl w-full flex flex-col gap-4 stagger-load {{ s.text_align }}">
+    <div class="w-full flex flex-col gap-4 stagger-load {{ s.text_align }}">
       {% content_for 'blocks' %}
     </div>
   </div>

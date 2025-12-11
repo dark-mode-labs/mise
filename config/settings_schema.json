@@ -1,7 +1,8 @@
 [
   {
-    "name": "Color Scheme Group",
-    "type": "color_scheme_group",
+    "name": "Color Schemes",
+    "type": "group",
+    "id": "color_schemes",
     "definition": [
       {
         "type": "text",
@@ -15,12 +16,32 @@
       {
         "type": "color",
         "id": "background",
-        "label": "Background"
+        "label": "Background",
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "color",
         "id": "text",
-        "label": "Text"
+        "label": "Text",
+        "default": "rgba(255, 255, 255, 1)"
+      },
+      {
+        "type": "color",
+        "id": "text_secondary",
+        "label": "Secondary Text",
+        "default": "rgba(102, 102, 102, 1)"
+      },
+      {
+        "type": "color",
+        "id": "accent",
+        "label": "Accent / Links",
+        "default": "rgba(0, 0, 0, 1)"
+      },
+      {
+        "type": "color",
+        "id": "surface",
+        "label": "Surface / Card Background",
+        "default": "rgba(245, 245, 245, 1)"
       },
       {
         "type": "header",
@@ -29,12 +50,14 @@
       {
         "type": "color",
         "id": "button_bg",
-        "label": "Solid Button Background"
+        "label": "Solid Button Background",
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "color",
         "id": "button_text",
-        "label": "Solid Button Label"
+        "label": "Solid Button Label",
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "header",
@@ -44,20 +67,77 @@
         "type": "color",
         "id": "ui_bg",
         "label": "Control Background",
-        "default": "#ffffff"
+        "default": "rgba(255, 255, 255, 1)"
       },
       {
         "type": "color",
         "id": "ui_text",
         "label": "Control Icon/Text",
-        "default": "#000000"
+        "default": "rgba(0, 0, 0, 1)"
       },
       {
         "type": "color",
         "id": "border",
-        "label": "Borders"
+        "label": "Borders",
+        "default": "rgba(255, 255, 255, 1)"
+      },
+      {
+        "type": "color",
+        "id": "shadow",
+        "label": "Shadows",
+        "default": "rgba(0, 0, 0, 1)"
       }
-    ]
+    ],
+    "preset": {
+      "scheme-1": {
+        "settings": {
+          "title": "Daylight (Default)",
+          "background": "rgba(255, 255, 255, 1)",
+          "text": "rgba(18, 18, 18, 1)",
+          "text_secondary": "rgba(102, 102, 102, 1)",
+          "accent": "rgba(18, 18, 18, 1)",
+          "surface": "rgba(245, 245, 245, 1)",
+          "button_bg": "rgba(18, 18, 18, 1)",
+          "button_text": "rgba(255, 255, 255, 1)",
+          "ui_bg": "rgba(18, 18, 18, 1)",
+          "ui_text": "rgba(255, 255, 255, 1)",
+          "border": "rgba(229, 229, 229, 1)",
+          "shadow": "rgba(0, 0, 0, 1)"
+        }
+      },
+      "scheme-2": {
+        "settings": {
+          "title": "Midnight",
+          "background": "rgba(15, 15, 15, 1)",
+          "text": "rgba(255, 255, 255, 1)",
+          "text_secondary": "rgba(160, 160, 160, 1)",
+          "accent": "rgba(255, 255, 255, 1)",
+          "surface": "rgba(31, 31, 31, 1)",
+          "button_bg": "rgba(255, 255, 255, 1)",
+          "button_text": "rgba(15, 15, 15, 1)",
+          "ui_bg": "rgba(255, 255, 255, 1)",
+          "ui_text": "rgba(15, 15, 15, 1)",
+          "border": "rgba(51, 51, 51, 1)",
+          "shadow": "rgba(0, 0, 0, 1)"
+        }
+      },
+      "scheme-3": {
+        "settings": {
+          "title": "Chef's Accent",
+          "background": "rgba(217, 48, 37, 1)",
+          "text": "rgba(255, 255, 255, 1)",
+          "text_secondary": "rgba(255, 204, 204, 1)",
+          "accent": "rgba(255, 255, 255, 1)",
+          "surface": "rgba(176, 32, 21, 1)",
+          "button_bg": "rgba(255, 255, 255, 1)",
+          "button_text": "rgba(217, 48, 37, 1)",
+          "ui_bg": "rgba(255, 255, 255, 1)",
+          "ui_text": "rgba(217, 48, 37, 1)",
+          "border": "rgba(224, 102, 102, 1)",
+          "shadow": "rgba(0, 0, 0, 1)"
+        }
+      }
+    }
   },
   {
     "name": "Typography",
@@ -66,19 +146,144 @@
         "type": "font_picker",
         "id": "heading_font",
         "label": "Headings",
-        "default": "serif"
+        "default": "sans-serif"
       },
       {
         "type": "font_picker",
         "id": "body_font",
         "label": "Body Text",
         "default": "sans-serif"
+      },
+      {
+        "type": "font_picker",
+        "id": "button_font",
+        "label": "Buttons & UI",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "type_scale",
+        "label": "Type Scale",
+        "min": 80,
+        "max": 120,
+        "step": 5,
+        "default": 100,
+        "unit": "%"
       }
     ]
   },
   {
+    "name": "Max Width Schemes",
+    "type": "group",
+    "id": "width_schemes",
+    "definition": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Name"
+      },
+      {
+        "type": "select",
+        "id": "width",
+        "label": "Width",
+        "options": [
+          {
+            "value": "sm",
+            "label": "Small"
+          },
+          {
+            "value": "md",
+            "label": "Medium"
+          },
+          {
+            "value": "lg",
+            "label": "Large"
+          },
+          {
+            "value": "xl",
+            "label": "x-Large"
+          },
+          {
+            "value": "2xl",
+            "label": "2x-Large"
+          },
+          {
+            "value": "3xl",
+            "label": "3x-Large"
+          },
+          {
+            "value": "4xl",
+            "label": "4x-Large"
+          },
+          {
+            "value": "fit-content",
+            "label": "Fit Content"
+          },
+          {
+            "value": "full",
+            "label": "Full"
+          },
+          {
+            "value": "custom",
+            "label": "Custom"
+          }
+        ],
+        "default": "1240px"
+      },
+      {
+        "type": "text",
+        "id": "custom_width",
+        "label": "Width",
+        "default": "1496px",
+        "conditional": "setting.width == 'custom'"
+      }
+    ],
+    "preset": {
+      "fit": {
+        "settings": {
+          "title": "Fit Content",
+          "width": "fit"
+        }
+      },
+      "narrow": {
+        "settings": {
+          "title": "Narrow",
+          "width": "md"
+        }
+      },
+      "standard": {
+        "settings": {
+          "title": "Standard",
+          "width": "2xl"
+        }
+      },
+      "wide": {
+        "settings": {
+          "title": "Wide",
+          "width": "3xl"
+        }
+      },
+      "full": {
+        "settings": {
+          "title": "Full",
+          "width": "full"
+        }
+      }
+    }
+  },
+  {
     "name": "Layout",
     "settings": [
+      {
+        "type": "range",
+        "id": "grid_gap",
+        "label": "Grid Gap",
+        "min": 0,
+        "max": 64,
+        "step": 4,
+        "default": 32,
+        "unit": "px"
+      },
       {
         "type": "range",
         "id": "corner_radius",

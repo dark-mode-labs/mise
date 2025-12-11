@@ -12,7 +12,7 @@
   {% when 'body' %}
     {% assign size_class = 'text-base md:text-lg leading-relaxed' %}
   {% when 'caption' %}
-    {% assign size_class = 'text-xs uppercase tracking-widest opacity-80' %}
+    {% assign size_class = 'text-xs uppercase tracking-widest text-secondary' %}
 {% endcase %}
 
 <{{ tag_el }} class="{{ size_class }} font-{{ weight | default: 'normal' }} {{ text_color }}">

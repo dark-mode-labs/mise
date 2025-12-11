@@ -1,13 +1,13 @@
 {% assign s = section.settings %}
 
 <section
-  class="section-divider w-full flex items-center justify-center color-{{ s.color_scheme }} bg-body text-body"
+  class="section-divider flex items-center justify-center color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body pt-[var(--pt)] pb-[var(--pb)] limit-width"
   style="
-    padding-top: {{ s.padding_top }}px;
-    padding-bottom: {{ s.padding_bottom }}px;
+    --pt: {{ s.padding_top }}px;
+    --pb: {{ s.padding_bottom }}px;
   "
 >
-  <div class="wrapper">
+  <div class="w-full">
     <div class="relative flex items-center justify-center w-full">
       {% if s.show_line %}
         <div class="absolute inset-0 flex items-center" aria-hidden="true">
@@ -17,7 +17,7 @@
 
       {% if s.show_icon %}
         <div class="relative bg-body px-4">
-          {% render 'icon', name: s.icon_select, class: 'w-6 h-6 opacity-75' %}
+          {% render 'icon', name: s.icon_select, class: 'w-6 h-6 text-secondary' %}
         </div>
       {% endif %}
     </div>
@@ -28,6 +28,13 @@
 {
   "name": "Divider",
   "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "full"
+    },
     {
       "type": "header",
       "content": "Visuals"

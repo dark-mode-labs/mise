@@ -6,7 +6,8 @@ export default {
     './snippets/*.liquid',
     './blocks/*.liquid',
     './templates/*.json',
-    './config/*.json'
+    './config/*.json',
+    './assets/css/theme.css'
   ],
   theme: {
     extend: {
@@ -14,20 +15,36 @@ export default {
         'screen-dvh': '100dvh',
       },
       fontFamily: {
-        heading: ['var(--font-heading)', 'serif'],
+        heading: ['var(--font-heading)', 'sans-serif'],
         body: ['var(--font-body)', 'sans-serif'],
+        btn: ['var(--font-button)', 'sans-serif'],
+      },
+      spacing: {
+        gap: 'var(--grid-gap)',
       },
       textColor: {
         body: 'var(--color-text)',
+        secondary: 'var(--color-text-secondary)',
+        accent: 'var(--color-accent)',
         btn: 'var(--color-btn-text)',
       },
       backgroundColor: {
         body: 'var(--color-bg)',
+        surface: 'var(--color-surface)',
+        accent: 'var(--color-accent)',
         btn: 'var(--color-btn-bg)',
       },
       borderColor: {
         std: 'var(--color-border)',
         body: 'var(--color-text)',
+        accent: 'var(--color-accent)',
+      },
+      boxShadow: {
+        sm: '0 1px 2px 0 rgb(var(--color-shadow) / 0.05)',
+        DEFAULT: '0 1px 3px 0 rgb(var(--color-shadow) / 0.1), 0 1px 2px -1px rgb(var(--color-shadow) / 0.1)',
+        md: '0 4px 6px -1px rgb(var(--color-shadow) / 0.1), 0 2px 4px -2px rgb(var(--color-shadow) / 0.1)',
+        lg: '0 10px 15px -3px rgb(var(--color-shadow) / 0.1), 0 4px 6px -4px rgb(var(--color-shadow) / 0.1)',
+        xl: '0 20px 25px -5px rgb(var(--color-shadow) / 0.1), 0 8px 10px -6px rgb(var(--color-shadow) / 0.1)',
       },
       keyframes: {
         marquee: {
@@ -64,15 +81,7 @@ export default {
         'overlay': '50',  // Slide-out drawers/cart
         'modal': '60',    // Centered popups
         'toast': '70',    // Notifications
-      },
-      screens: {
-        sm: '600px',
-        md: '728px',
-        lg: '984px',
-        xl: '1240px',
-        '2xl': '1360px',
-        '3xl': '1496px',
-      },
+      }
     }
   },
   plugins: [

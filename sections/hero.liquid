@@ -22,7 +22,7 @@
 
 {% capture content_container_class %}
   {% if s.layout_mode contains 'split' %}w-full lg:w-1/2 relative bg-body flex flex-col justify-center
-  {% else %}relative z-content wrapper flex flex-col{% endif %}
+  {% else %}relative z-content w-full flex flex-col{% endif %}
 {% endcapture %}
 
 {% if s.overlay_color != blank %}
@@ -49,11 +49,11 @@
 {% endunless %}
 
 <section
-  class="section-hero w-full overflow-hidden color-{{ s.color_scheme }} {{ container_layout }} {{ s.height }}"
-  style="{{ gap_style }}"
+  class="section-hero overflow-hidden color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ container_layout }} {{ s.height }} limit-width"
+  style="{{ gap_style }}; --pt: {{ s.padding_top }}px; --pb: {{ total_pb }}px;"
 >
-  <div class="{{ media_container_class }} bg-gray-900 overflow-hidden">
-    <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-white/10{% else %}w-full{% endif %}">
+  <div class="{{ media_container_class }} bg-surface overflow-hidden">
+    <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-std{% else %}w-full{% endif %}">
       {% render 'media',
         src: s.bg_image,
         src_mobile: s.mobile_image,
@@ -94,8 +94,7 @@
   </div>
 
   <div
-    class="{{ content_container_class }} {{ s.align_x }} {{ s.align_y }} px-6 lg:px-12 gap-6 transition-all {{ animation_class }}"
-    style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ total_pb }}px;"
+    class="{{ content_container_class }} {{ s.align_x }} {{ s.align_y }} gap-6 transition-all {{ animation_class }} pt-[var(--pt)] pb-[var(--pb)]"
   >
     {% content_for 'blocks' %}
   </div>
@@ -105,7 +104,13 @@
 {
   "name": "Hero",
   "settings": [
-    { "type": "header", "content": "Composition" },
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
     {
       "type": "select",
       "id": "layout_mode",

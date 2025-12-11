@@ -1,13 +1,15 @@
 {% assign s = section.settings %}
 
 <section
-  class="section-marquee w-full border-y border-std color-{{ s.color_scheme }} bg-body text-body overflow-hidden"
-  style="padding-top: {{ s.padding_vertical }}px; padding-bottom: {{ s.padding_vertical }}px;"
+  class="section-marquee border-y border-std color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body overflow-hidden pt-[var(--py)] pb-[var(--py)] limit-width"
+  style="--py: {{ s.padding_vertical }}px;"
 >
-  {% render 'marquee', 
-     items: s.text_list, 
-     speed: s.speed, 
-     direction: s.direction 
+  {% render 'marquee',
+    items: s.text_list,
+    speed: s.speed,
+    direction: s.direction,
+    size_class: s.text_size,
+    uppercase: s.uppercase
   %}
 </section>
 
@@ -15,12 +17,38 @@
 {
   "name": "Scrolling Text",
   "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "full"
+    },
     {
       "type": "text",
       "id": "text_list",
       "label": "Text",
       "default": "Reserve Now, Open Daily, Fresh Ingredients",
       "info": "Comma separated"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "Text Size",
+      "options": [
+        { "value": "text-sm", "label": "Small" },
+        { "value": "text-base", "label": "Medium" },
+        { "value": "text-lg", "label": "Large" },
+        { "value": "text-xl", "label": "Extra Large" },
+        { "value": "text-4xl", "label": "Display" }
+      ],
+      "default": "text-sm"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": true
     },
     {
       "type": "range",

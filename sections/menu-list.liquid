@@ -39,20 +39,20 @@
 {% endif %}
 
 <section
-  class="w-full color-{{ s.color_scheme }}"
-  style="padding-top: {{ s.padding_top }}px; padding-bottom: {{ s.padding_bottom }}px;"
+  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
   data-spy-scope
   data-filter-scope
 >
-  <div class="wrapper">
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
+  <div class="w-full">
+    <div class="text-center mx-auto mb-16 animate-fade-up">
       {% if s.heading != blank %}
         {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
       {% endif %}
 
       {% if s.subtext != blank %}
-        <div class="opacity-80 mt-4">
-          {% render 'typography', text: s.subtext, tag: 'div', size: 'body', color: 'var(--color-text)' %}
+        <div class="text-secondary mt-4">
+          {% render 'typography', text: s.subtext, tag: 'div', size: 'body', color: 'var(--color-text-secondary)' %}
         </div>
       {% endif %}
     </div>
@@ -76,18 +76,18 @@
                   <input
                     type="text"
                     placeholder="Search menu..."
-                    class="w-full bg-transparent border border-body/20 rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors placeholder:opacity-50"
+                    class="w-full bg-transparent border border-std rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors placeholder:text-secondary"
                     data-filter-search
                   >
                   {% render 'icon',
                     name: 'search',
-                    class: 'absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40 pointer-events-none'
+                    class: 'absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none'
                   %}
                 </div>
               {% endif %}
               {% if s.enable_filtering and menu.dietary_flags.size > 0 %}
                 <div
-                  class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-[var(--color-text)]/10 pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
+                  class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-std pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
                   data-filter-tags
                 >
                   {% for tag in menu.dietary_flags %}
@@ -96,7 +96,7 @@
                       type="button"
                       data-filter-tag="{{ tag_name }}"
                       title="Filter by {{ tag.name }}"
-                      class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-[var(--color-text)]/20 rounded-full text-[10px] font-bold uppercase opacity-60 hover:opacity-100 hover:border-[var(--color-text)]{% else %}px-2 py-1 border border-[var(--color-text)]/20 rounded text-[10px] uppercase tracking-wider opacity-60 hover:opacity-100 hover:border-[var(--color-text)]{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
+                      class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[10px] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[10px] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
                     >
                       {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
                     </button>
@@ -113,7 +113,7 @@
                     href="#"
                     data-spy-trigger="{{ parent.uuid }}"
                     data-filter-nav="{{ parent.uuid }}"
-                    class="text-sm font-bold opacity-50 hover:opacity-100 uppercase tracking-wider {{ link_base_class }} [&.is-active]:opacity-100 [&.is-active]:font-bold"
+                    class="text-sm font-bold text-secondary hover:text-body uppercase tracking-wider {{ link_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
                   >
                     {{ parent.name }}
                   </a>
@@ -121,13 +121,13 @@
                   {% if s.nav_layout == 'vertical' %}
                     {% assign nav_children = all_categories | where: 'parent_uuid', parent.uuid %}
                     {% if nav_children.size > 0 %}
-                      <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-body/5">
+                      <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-std">
                         {% for child in nav_children %}
                           <a
                             href="#"
                             data-spy-trigger="{{ child.uuid }}"
                             data-filter-nav="{{ child.uuid }}"
-                            class="text-xs opacity-40 hover:opacity-80 transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:opacity-100 [&.is-active]:font-bold"
+                            class="text-xs text-secondary hover:text-body transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
                           >
                             {{- child.name -}}
                           </a>
@@ -269,7 +269,7 @@
     </div>
 
     {% if menu.disclaimers.size > 0 %}
-      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest max-w-4xl mx-auto border-t border-body/10 pt-8">
+      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest mx-auto border-t border-body/10 pt-8">
         {% for disclaimer in menu.disclaimers %}
           <p>{{ disclaimer.text }}</p>
         {% endfor %}
@@ -453,6 +453,14 @@
       ],
       "default": "w-16 h-16 md:w-20 md:h-20",
       "conditional": "setting.layout_style == 'list'"
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
     },
 
     { "type": "header", "content": "Content" },

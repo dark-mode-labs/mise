@@ -1,6 +1,32 @@
 {% assign s = block.settings %}
+{% assign ss = section.settings %}
+{% assign show_card = false %}
 
-<div class="column-block flex flex-col gap-4 h-full {{ s.text_align }}">
+{% if ss.enable_cards_global %}
+  {% assign show_card = true %}
+  {% assign bg_color = ss.card_bg_global %}
+  {% assign padding = ss.card_padding_global %}
+  {% assign shadow = ss.card_shadow_global %}
+
+  {% if s.override_card_style %}
+    {% assign bg_color = s.background_color %}
+    {% assign padding = s.padding %}
+    {% assign shadow = s.show_shadow %}
+  {% endif %}
+{% endif %}
+
+{% capture style_override %}
+  {% if show_card %}
+    background-color: {{ bg_color }};
+    padding: {{ padding }}px;
+    border-radius: var(--radius-global);
+    {% if shadow %}
+      box-shadow: var(--shadow-md);
+    {% endif %}
+  {% endif %}
+{% endcapture %}
+
+<div class="column-block flex flex-col gap-4 h-full {{ s.text_align }}" style="{{ style_override }}">
   {% content_for 'blocks' %}
 </div>
 
@@ -18,11 +44,43 @@
         { "value": "items-end text-right", "label": "Right" }
       ],
       "default": "items-start text-left"
+    },
+    {
+      "type": "header",
+      "content": "Card Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "override_card_style",
+      "label": "Override Card Style",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#F5F5F5",
+      "conditional": "setting.override_card_style == true"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "conditional": "setting.override_card_style == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow",
+      "default": false,
+      "conditional": "setting.override_card_style == true"
     }
   ],
-  "blocks": [
-    { "type": "@theme" }
-  ],
+  "blocks": [{ "type": "@theme" }],
   "presets": [
     {
       "name": "Column",

@@ -1,22 +1,56 @@
 <style>
   :root {
-    --font-heading: {{ settings.heading_font.family }}, serif;
-    --font-body: {{ settings.body_font.family }}, sans-serif;
+    --font-heading: {{ settings.heading_font }}, sans-serif;
+    --font-body: {{ settings.body_font }}, sans-serif;
+    --font-button: {{ settings.button_font }}, sans-serif;
+    --type-scale: {{ settings.type_scale | divided_by: 100.0 }};
+    --grid-gap: {{ settings.grid_gap }}px;
     --radius-global: {{ settings.corner_radius }}px;
   }
 
   {% for scheme in settings.color_schemes %}
-    .color-{{ scheme.id }} {
-      --color-bg: rgb({{ scheme.settings.background.rgba }});
-      --color-text: rgb({{ scheme.settings.text.rgba }});
-
-      --color-btn-bg: rgb({{ scheme.settings.button_bg.rgba }});
-      --color-btn-text: rgb({{ scheme.settings.button_text.rgba }});
-      --color-border: rgb({{ scheme.settings.border.rgba }});
-      --color-ui-bg: rgb({{ scheme.settings.ui_bg.rgba }});
-      --color-ui-text: rgb({{ scheme.settings.ui_text.rgba }});
-
-      --color-text-subtle: {{ scheme.settings.text.hex | color_modify: 'alpha', 0.7 }};
+    .color-{{ scheme[0] }} {
+      --color-bg: {{ scheme[1].settings.background }};
+      --color-text: {{ scheme[1].settings.text }};
+      --color-text-secondary: {{ scheme[1].settings.text_secondary }};
+      --color-accent: {{ scheme[1].settings.accent }};
+      --color-surface: {{ scheme[1].settings.surface }};
+      --color-btn-bg: {{ scheme[1].settings.button_bg }};
+      --color-btn-text: {{ scheme[1].settings.button_text }};
+      --color-border: {{ scheme[1].settings.border }};
+      --color-shadow: {{ scheme[1].settings.shadow }};
+      --color-ui-bg: {{ scheme[1].settings.ui_bg }};
+      --color-ui-text: {{ scheme[1].settings.ui_text }};
+      --color-text-subtle: {{ scheme[1].settings.text | color_modify: 'alpha', 0.7 }};
     }
+  {% endfor %}
+
+  {% for scheme in settings.width_schemes %}
+    {% assign width = scheme[1].settings.custom_width | default: scheme[1].settings.width %}
+    {% capture width_scheme %}
+      {% case width %}
+        {% when 'sm' %}
+          --limit-width: 600px;
+        {% when 'md' %}
+          --limit-width: 728px;
+        {% when 'lg' %}
+          --limit-width: 984px;
+        {% when 'xl' %}
+          --limit-width: 1240px;
+        {% when '2xl' %}
+          --limit-width: 1360px;
+        {% when '3xl' %}
+          --limit-width: 1496px;
+        {% when '4xl' %}
+          --limit-width: 1640px;
+        {% when 'fit' %}
+          --limit-width: fit-content;
+        {% when 'full' %}
+          --limit-width: 100%;
+        {% else %}
+          --limit-width: {{ width }};
+      {% endcase %}
+    {% endcapture %}
+    .width-{{ scheme[0] }} { {{ width_scheme }} }
   {% endfor %}
 </style>

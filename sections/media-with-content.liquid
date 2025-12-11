@@ -20,16 +20,16 @@
 {% endunless %}
 
 <section
-  class="section-feature w-full color-{{ s.color_scheme }}"
+  class="section-feature color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
   style="
-    padding-top: {{ s.padding_top }}px;
-    padding-bottom: {{ s.padding_bottom }}px;
+    --pt: {{ s.padding_top }}px;
+    --pb: {{ s.padding_bottom }}px;
     --desktop-gap: {{ s.desktop_gap }}px;
   "
 >
-  <div class="wrapper {{ layout_class }} items-center gap-10 lg:gap-[var(--desktop-gap)]">
+  <div class="w-full {{ layout_class }} items-center gap-gap lg:gap-[var(--desktop-gap)]">
     <div class="w-full lg:w-1/2 relative">
-      <div class="rounded-lg overflow-hidden shadow-lg rounded-global">
+      <div class="overflow-hidden rounded-global {% if s.show_shadow %}shadow-lg{% endif %}">
         {% render 'media',
           src: s.image,
           src_mobile: s.mobile_image,
@@ -53,6 +53,12 @@
   "name": "Media with content",
   "settings": [
     { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
     {
       "type": "select",
       "id": "desktop_layout",
@@ -93,6 +99,12 @@
         { "value": "items-end text-right", "label": "Right" }
       ],
       "default": "items-start text-left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow on Media",
+      "default": true
     },
 
     { "type": "header", "content": "Spacing" },
