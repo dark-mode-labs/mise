@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 <section
-  class="section-divider flex items-center justify-center color-{{ s.color_scheme }} bg-body text-body pt-[var(--pt)] pb-[var(--pb)] wrapper-{{ s.content_width }}"
+  class="section-divider flex items-center justify-center color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body pt-[var(--pt)] pb-[var(--pb)] limit-width"
   style="
     --pt: {{ s.padding_top }}px;
     --pb: {{ s.padding_bottom }}px;
@@ -30,16 +30,10 @@
   "settings": [
     { "type": "header", "content": "Layout" },
     {
-      "type": "select",
-      "id": "content_width",
+      "type": "width_scheme",
+      "id": "width_scheme",
       "label": "Content Width",
-       "options": [
-        { "value": "narrow", "label": "Narrow" },
-        { "value": "standard", "label": "Standard" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "full", "label": "Full" }
-      ],
-      "default": "standard"
+      "default": "full"
     },
     {
       "type": "header",

@@ -4,10 +4,6 @@
     --font-body: {{ settings.body_font }}, sans-serif;
     --font-button: {{ settings.button_font }}, sans-serif;
     --type-scale: {{ settings.type_scale | divided_by: 100.0 }};
-    --standard-width: {{ settings.standard_width }}px;
-    --narrow-width: {{ settings.narrow_width }}px;
-    --wide-width: {{ settings.wide_width }}px;
-    --full-width: {{ settings.full_width }}px;
     --grid-gap: {{ settings.grid_gap }}px;
     --radius-global: {{ settings.corner_radius }}px;
   }
@@ -26,6 +22,12 @@
       --color-ui-bg: {{ scheme[1].settings.ui_bg }};
       --color-ui-text: {{ scheme[1].settings.ui_text }};
       --color-text-subtle: {{ scheme[1].settings.text | color_modify: 'alpha', 0.7 }};
+    }
+  {% endfor %}
+
+  {% for scheme in settings.width_schemes %}
+    .width-{{ scheme[0] }} {
+      --limit-width: {{ scheme[1].settings.width }};
     }
   {% endfor %}
 </style>

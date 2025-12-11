@@ -49,7 +49,7 @@
 {% endunless %}
 
 <section
-  class="section-hero overflow-hidden color-{{ s.color_scheme }} {{ container_layout }} {{ s.height }} wrapper-{{ s.content_width }}"
+  class="section-hero overflow-hidden color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ container_layout }} {{ s.height }} limit-width"
   style="{{ gap_style }}; --pt: {{ s.padding_top }}px; --pb: {{ total_pb }}px;"
 >
   <div class="{{ media_container_class }} bg-surface overflow-hidden">
@@ -106,15 +106,9 @@
   "settings": [
     { "type": "header", "content": "Layout" },
     {
-      "type": "select",
-      "id": "content_width",
+      "type": "width_scheme",
+      "id": "width_scheme",
       "label": "Content Width",
-       "options": [
-        { "value": "narrow", "label": "Narrow" },
-        { "value": "standard", "label": "Standard" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "full", "label": "Full" }
-      ],
       "default": "standard"
     },
     {

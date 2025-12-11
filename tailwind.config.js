@@ -19,12 +19,6 @@ export default {
         body: ['var(--font-body)', 'sans-serif'],
         btn: ['var(--font-button)', 'sans-serif'],
       },
-      maxWidth: {
-        narrow: 'var(--narrow-width)',
-        standard: 'var(--standard-width)',
-        wide: 'var(--wide-width)',
-        full: 'var(--full-width)',
-      },
       spacing: {
         gap: 'var(--grid-gap)',
       },
@@ -87,15 +81,7 @@ export default {
         'overlay': '50',  // Slide-out drawers/cart
         'modal': '60',    // Centered popups
         'toast': '70',    // Notifications
-      },
-      screens: {
-        sm: '600px',
-        md: '728px',
-        lg: '984px',
-        xl: '1240px',
-        '2xl': '1360px',
-        '3xl': '1496px',
-      },
+      }
     }
   },
   plugins: [

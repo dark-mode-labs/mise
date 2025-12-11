@@ -39,13 +39,13 @@
 {% endif %}
 
 <section
-  class="color-{{ s.color_scheme }} pt-[var(--pt)] pb-[var(--pb)] wrapper-{{ s.content_width }}"
+  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
   style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
   data-spy-scope
   data-filter-scope
 >
   <div class="w-full">
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
+    <div class="text-center mx-auto mb-16 animate-fade-up">
       {% if s.heading != blank %}
         {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
       {% endif %}
@@ -269,7 +269,7 @@
     </div>
 
     {% if menu.disclaimers.size > 0 %}
-      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest max-w-4xl mx-auto border-t border-body/10 pt-8">
+      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest mx-auto border-t border-body/10 pt-8">
         {% for disclaimer in menu.disclaimers %}
           <p>{{ disclaimer.text }}</p>
         {% endfor %}
@@ -457,16 +457,10 @@
 
     { "type": "header", "content": "Layout" },
     {
-      "type": "select",
-      "id": "content_width",
+      "type": "width_scheme",
+      "id": "width_scheme",
       "label": "Content Width",
-      "options": [
-        { "value": "narrow", "label": "Narrow" },
-        { "value": "standard", "label": "Standard" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "full", "label": "Full" }
-      ],
-      "default": "full"
+      "default": "standard"
     },
 
     { "type": "header", "content": "Content" },

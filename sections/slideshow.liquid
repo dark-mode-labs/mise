@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 <div
-  class="section-slideshow relative overflow-hidden bg-surface group select-none color-{{ s.color_scheme }} wrapper-{{ s.content_width }}"
+  class="section-slideshow relative overflow-hidden bg-surface group select-none color-{{ s.color_scheme }} width-{{ s.width_scheme }} limit-width px-0"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
@@ -70,15 +70,9 @@
   "settings": [
     { "type": "header", "content": "Layout" },
     {
-      "type": "select",
-      "id": "content_width",
+      "type": "width_scheme",
+      "id": "width_scheme",
       "label": "Content Width",
-      "options": [
-        { "value": "narrow", "label": "Narrow" },
-        { "value": "standard", "label": "Standard" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "full", "label": "Full" }
-      ],
       "default": "standard"
     },
     {

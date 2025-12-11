@@ -20,20 +20,8 @@
 }
 
 @layer components {
-  .wrapper-standard {
-    @apply w-full mx-auto max-w-standard;
-  }
-
-  .wrapper-full {
-    @apply w-full mx-auto px-4 max-w-full;
-  }
-
-  .wrapper-wide {
-    @apply w-full mx-auto px-4 max-w-wide;
-  }
-
-  .wrapper-narrow {
-    @apply w-full mx-auto max-w-narrow;
+  .limit-width {
+    @apply w-full max-w-[var(--limit-width)] mx-auto px-4 md:px-6 lg:px-8;
   }
 
   .stagger-load>*:not(.no-stagger):not(:has(.no-stagger)) {

@@ -5,24 +5,15 @@
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
-{% capture container_width %}
-  {% case s.content_width %}
-    {% when 'narrow' %}max-w-2xl mx-auto px-4
-    {% when 'standard' %}max-w-4xl mx-auto px-4
-    {% when 'wide' %}wrapper
-    {% when 'full' %}w-full
-  {% endcase %}
-{% endcapture %}
-
 <section
-  class="color-{{ s.color_scheme }} bg-body text-body flex flex-col {{ s.vertical_align }} pt-[var(--pt)] pb-[var(--pb)] min-h-[var(--min-h)] wrapper-{{ s.content_width }}"
+  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body flex flex-col {{ s.vertical_align }} pt-[var(--pt)] pb-[var(--pb)] min-h-[var(--min-h)] limit-width"
   style="
     --pt: {{ s.padding_top }}px; 
     --pb: {{ s.padding_bottom }}px;
     --min-h: {{ s.min_height }}px;
   "
 >
-  <div class="w-full {{ container_width }}">
+  <div class="w-full">
     <div class="flex flex-col gap-6 {{ s.text_align }} {{ animation_class }}">
       {% content_for 'blocks' %}
     </div>
@@ -35,15 +26,9 @@
   "settings": [
     { "type": "header", "content": "Layout" },
     {
-      "type": "select",
-      "id": "content_width",
+      "type": "width_scheme",
+      "id": "width_scheme",
       "label": "Content Width",
-      "options": [
-        { "value": "narrow", "label": "Narrow (Reading)" },
-        { "value": "standard", "label": "Standard" },
-        { "value": "wide", "label": "Wide (Wrapper)" },
-        { "value": "full", "label": "Full Width" }
-      ],
       "default": "standard"
     },
     {
@@ -120,8 +105,7 @@
     {
       "name": "Rich Text",
       "settings": {
-        "text_align": "text-center items-center",
-        "content_width": "standard"
+        "text_align": "text-center items-center"
       },
       "blocks": {
         "heading": {

@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 <div
-  class="section-announcement color-{{ s.color_scheme }} text-body bg-body relative z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std wrapper-{{ s.content_width }}"
+  class="section-announcement color-{{ s.color_scheme }} width-{{ s.width_scheme }} text-body bg-body relative z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std limit-width"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
@@ -45,15 +45,9 @@
       "content": "Layout"
     },
     {
-      "type": "select",
-      "id": "content_width",
+      "type": "width_scheme",
+      "id": "width_scheme",
       "label": "Content Width",
-      "options": [
-        { "value": "narrow", "label": "Narrow" },
-        { "value": "standard", "label": "Standard" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "full", "label": "Full" }
-      ],
       "default": "full"
     },
     {

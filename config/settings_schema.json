@@ -173,48 +173,107 @@
     ]
   },
   {
+    "name": "Width Schemes",
+    "type": "group",
+    "id": "width_schemes",
+    "definition": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Name"
+      },
+      {
+        "type": "select",
+        "id": "width",
+        "label": "Width",
+        "options": [
+          {
+            "value": "600px",
+            "label": "Small"
+          },
+          {
+            "value": "728px",
+            "label": "Medium"
+          },
+          {
+            "value": "984px",
+            "label": "Large"
+          },
+          {
+            "value": "1240px",
+            "label": "x-Large"
+          },
+          {
+            "value": "1360px",
+            "label": "2x-Large"
+          },
+          {
+            "value": "1496px",
+            "label": "3x-Large"
+          },
+          {
+            "value": "1640px",
+            "label": "4x-Large"
+          },
+          {
+            "value": "fit-content",
+            "label": "Fit Content"
+          },
+          {
+            "value": "100%",
+            "label": "Full"
+          },
+          {
+            "value": "custom",
+            "label": "Custom"
+          }
+        ],
+        "default": "1240px"
+      },
+      {
+        "type": "text",
+        "id": "custom_width",
+        "label": "Width",
+        "default": "1496px",
+        "conditional": "setting.width == 'custom'"
+      }
+    ],
+    "preset": {
+      "fit": {
+        "settings": {
+          "title": "Fit Content",
+          "width": "fit-content"
+        }
+      },
+      "narrow": {
+        "settings": {
+          "title": "Narrow",
+          "width": "728px"
+        }
+      },
+      "standard": {
+        "settings": {
+          "title": "Standard",
+          "width": "1360px"
+        }
+      },
+      "wide": {
+        "settings": {
+          "title": "Wide",
+          "width": "1496px"
+        }
+      },
+      "full": {
+        "settings": {
+          "title": "Full",
+          "width": "100%"
+        }
+      }
+    }
+  },
+  {
     "name": "Layout",
     "settings": [
-      {
-        "type": "range",
-        "id": "full_width",
-        "label": "Full Width",
-        "min": 1360,
-        "max": 1600,
-        "step": 40,
-        "default": 1360,
-        "unit": "px"
-      },
-      {
-        "type": "range",
-        "id": "standard_width",
-        "label": "Standard Width",
-        "min": 984,
-        "max": 1240,
-        "step": 40,
-        "default": 984,
-        "unit": "px"
-      },
-      {
-        "type": "range",
-        "id": "wide_width",
-        "label": "Wide Width",
-        "min": 1240,
-        "max": 1496,
-        "step": 40,
-        "default": 1240,
-        "unit": "px"
-      },
-      {
-        "type": "range",
-        "id": "narrow_width",
-        "label": "Narrow Width",
-        "min": 600,
-        "max": 728,
-        "step": 20,
-        "default": 600,
-        "unit": "px"
-      },
       {
         "type": "range",
         "id": "grid_gap",

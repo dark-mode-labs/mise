@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 <section
-  class="section-marquee border-y border-std color-{{ s.color_scheme }} bg-body text-body overflow-hidden pt-[var(--py)] pb-[var(--py)] wrapper-{{ s.content_width }}"
+  class="section-marquee border-y border-std color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body overflow-hidden pt-[var(--py)] pb-[var(--py)] limit-width"
   style="--py: {{ s.padding_vertical }}px;"
 >
   {% render 'marquee',
@@ -19,15 +19,9 @@
   "settings": [
     { "type": "header", "content": "Layout" },
     {
-      "type": "select",
-      "id": "content_width",
+      "type": "width_scheme",
+      "id": "width_scheme",
       "label": "Content Width",
-      "options": [
-        { "value": "narrow", "label": "Narrow" },
-        { "value": "standard", "label": "Standard" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "full", "label": "Full" }
-      ],
       "default": "full"
     },
     {
