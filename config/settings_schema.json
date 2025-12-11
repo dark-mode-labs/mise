@@ -257,6 +257,84 @@
     }
   ],
   "presets": {
+    "Standard": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Neutral (Light)",
+            "background": "#FFFFFF",
+            "text": "#121212",
+            "button_bg": "#121212",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#FFFFFF",
+            "ui_text": "#121212",
+            "border": "#E5E5E5"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Neutral (Dark)",
+            "background": "#121212",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#121212",
+            "ui_bg": "#121212",
+            "ui_text": "#FFFFFF",
+            "border": "#333333"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Neutral Accent",
+            "background": "#555555",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#555555",
+            "ui_bg": "#555555",
+            "ui_text": "#FFFFFF",
+            "border": "#333333"
+          }
+        }
+      },
+      "heading_font": "sans-serif",
+      "body_font": "sans-serif",
+      "button_font": "sans-serif",
+      "type_scale": 100,
+      "corner_radius": 4,
+      "grid_gap": 32,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
+      }
+    },
     "Indian": {
       "color_schemes": {
         "scheme-1": {
