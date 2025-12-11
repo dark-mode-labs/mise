@@ -92,6 +92,7 @@
     },
     {
       "name": "Typography",
+      "id": "typography",
       "settings": [
         {
           "type": "font_picker",
@@ -192,6 +193,7 @@
     },
     {
       "name": "Layout",
+      "id": "layout",
       "settings": [
         {
           "type": "range",
@@ -218,6 +220,7 @@
     },
     {
       "name": "Social Media",
+      "id": "social-media",
       "settings": [
         {
           "type": "header",
