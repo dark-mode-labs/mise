@@ -26,27 +26,29 @@
   {% endfor %}
 
   {% for scheme in settings.width_schemes %}
-    {% assign width = scheme[1].settings.custom_width | default: scheme[1].settings.width %}
+    {% assign width = scheme[1].settings.width %}
     {% capture width_scheme %}
       {% case width %}
         {% when 'sm' %}
           --limit-width: 600px;
         {% when 'md' %}
-          --limit-width: 728px;
+          --limit-width: 720px;
         {% when 'lg' %}
           --limit-width: 984px;
         {% when 'xl' %}
           --limit-width: 1240px;
         {% when '2xl' %}
-          --limit-width: 1360px;
+          --limit-width: 1440px;
         {% when '3xl' %}
-          --limit-width: 1496px;
+          --limit-width: 1600px;
         {% when '4xl' %}
-          --limit-width: 1640px;
+          --limit-width: 1920px;
         {% when 'fit' %}
           --limit-width: fit-content;
         {% when 'full' %}
           --limit-width: 100%;
+        {% when 'custom' %}
+          --limit-width: {{ scheme[1].settings.custom_width }}
         {% else %}
           --limit-width: {{ width }};
       {% endcase %}

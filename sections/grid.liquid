@@ -20,7 +20,7 @@
 {% endif %}
 
 <section
-  class="section-multi-column color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
+  class="section-multi-column color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width bg-body"
   style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
 >
   <div class="w-full flex flex-col gap-12">
@@ -86,13 +86,6 @@
     { "type": "header", "content": "Cards" },
     { "type": "checkbox", "id": "enable_cards_global", "label": "Enable Cards for All Columns", "default": false },
     { "type": "header", "content": "Card Style", "conditional": "setting.enable_cards_global == true" },
-    {
-      "type": "color",
-      "id": "card_bg_global",
-      "label": "Card Background",
-      "default": "#F5F5F5",
-      "conditional": "setting.enable_cards_global == true"
-    },
     {
       "type": "range",
       "id": "card_padding_global",

@@ -1,339 +1,968 @@
-[
-  {
-    "name": "Color Schemes",
-    "type": "group",
-    "id": "color_schemes",
-    "definition": [
-      {
-        "type": "text",
-        "id": "title",
-        "label": "Name"
-      },
-      {
-        "type": "header",
-        "content": "Base Colors"
-      },
-      {
-        "type": "color",
-        "id": "background",
-        "label": "Background",
-        "default": "rgba(255, 255, 255, 1)"
-      },
-      {
-        "type": "color",
-        "id": "text",
-        "label": "Text",
-        "default": "rgba(255, 255, 255, 1)"
-      },
-      {
-        "type": "color",
-        "id": "text_secondary",
-        "label": "Secondary Text",
-        "default": "rgba(102, 102, 102, 1)"
-      },
-      {
-        "type": "color",
-        "id": "accent",
-        "label": "Accent / Links",
-        "default": "rgba(0, 0, 0, 1)"
-      },
-      {
-        "type": "color",
-        "id": "surface",
-        "label": "Surface / Card Background",
-        "default": "rgba(245, 245, 245, 1)"
-      },
-      {
-        "type": "header",
-        "content": "Buttons"
-      },
-      {
-        "type": "color",
-        "id": "button_bg",
-        "label": "Solid Button Background",
-        "default": "rgba(255, 255, 255, 1)"
-      },
-      {
-        "type": "color",
-        "id": "button_text",
-        "label": "Solid Button Label",
-        "default": "rgba(255, 255, 255, 1)"
-      },
-      {
-        "type": "header",
-        "content": "UI Controls (Arrows/Dots)"
-      },
-      {
-        "type": "color",
-        "id": "ui_bg",
-        "label": "Control Background",
-        "default": "rgba(255, 255, 255, 1)"
-      },
-      {
-        "type": "color",
-        "id": "ui_text",
-        "label": "Control Icon/Text",
-        "default": "rgba(0, 0, 0, 1)"
-      },
-      {
-        "type": "color",
-        "id": "border",
-        "label": "Borders",
-        "default": "rgba(255, 255, 255, 1)"
-      },
-      {
-        "type": "color",
-        "id": "shadow",
-        "label": "Shadows",
-        "default": "rgba(0, 0, 0, 1)"
-      }
-    ],
-    "preset": {
-      "scheme-1": {
-        "settings": {
-          "title": "Daylight (Default)",
-          "background": "rgba(255, 255, 255, 1)",
-          "text": "rgba(18, 18, 18, 1)",
-          "text_secondary": "rgba(102, 102, 102, 1)",
-          "accent": "rgba(18, 18, 18, 1)",
-          "surface": "rgba(245, 245, 245, 1)",
-          "button_bg": "rgba(18, 18, 18, 1)",
-          "button_text": "rgba(255, 255, 255, 1)",
-          "ui_bg": "rgba(18, 18, 18, 1)",
-          "ui_text": "rgba(255, 255, 255, 1)",
-          "border": "rgba(229, 229, 229, 1)",
-          "shadow": "rgba(0, 0, 0, 1)"
+{
+  "schema": [
+    {
+      "name": "Color Schemes",
+      "type": "group",
+      "id": "color_schemes",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Default Color Scheme"
+        },
+        {
+          "type": "header",
+          "content": "Base Colors"
+        },
+        {
+          "type": "color",
+          "id": "background",
+          "label": "Background",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "text",
+          "label": "Text",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "text_secondary",
+          "label": "Secondary Text",
+          "default": "rgba(102, 102, 102, 1)"
+        },
+        {
+          "type": "color",
+          "id": "accent",
+          "label": "Accent / Links",
+          "default": "rgba(0, 0, 0, 1)"
+        },
+        {
+          "type": "color",
+          "id": "surface",
+          "label": "Surface / Card Background",
+          "default": "rgba(245, 245, 245, 1)"
+        },
+        {
+          "type": "color",
+          "id": "border",
+          "label": "Borders",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "shadow",
+          "label": "Shadows",
+          "default": "rgba(0, 0, 0, 1)"
+        },
+        {
+          "type": "header",
+          "content": "Buttons"
+        },
+        {
+          "type": "color",
+          "id": "button_bg",
+          "label": "Solid Button Background",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "button_text",
+          "label": "Solid Button Label",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "header",
+          "content": "UI Controls (Arrows/Dots)"
+        },
+        {
+          "type": "color",
+          "id": "ui_bg",
+          "label": "Control Background",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "ui_text",
+          "label": "Control Icon/Text",
+          "default": "rgba(0, 0, 0, 1)"
         }
-      },
-      "scheme-2": {
-        "settings": {
-          "title": "Midnight",
-          "background": "rgba(15, 15, 15, 1)",
-          "text": "rgba(255, 255, 255, 1)",
-          "text_secondary": "rgba(160, 160, 160, 1)",
-          "accent": "rgba(255, 255, 255, 1)",
-          "surface": "rgba(31, 31, 31, 1)",
-          "button_bg": "rgba(255, 255, 255, 1)",
-          "button_text": "rgba(15, 15, 15, 1)",
-          "ui_bg": "rgba(255, 255, 255, 1)",
-          "ui_text": "rgba(15, 15, 15, 1)",
-          "border": "rgba(51, 51, 51, 1)",
-          "shadow": "rgba(0, 0, 0, 1)"
+      ]
+    },
+    {
+      "name": "Typography",
+      "id": "typography",
+      "settings": [
+        {
+          "type": "font_picker",
+          "id": "heading_font",
+          "label": "Headings",
+          "default": "sans-serif"
+        },
+        {
+          "type": "font_picker",
+          "id": "body_font",
+          "label": "Body Text",
+          "default": "sans-serif"
+        },
+        {
+          "type": "font_picker",
+          "id": "button_font",
+          "label": "Buttons & UI",
+          "default": "sans-serif"
+        },
+        {
+          "type": "range",
+          "id": "type_scale",
+          "label": "Type Scale",
+          "min": 80,
+          "max": 120,
+          "step": 5,
+          "default": 100,
+          "unit": "%"
         }
-      },
-      "scheme-3": {
-        "settings": {
-          "title": "Chef's Accent",
-          "background": "rgba(217, 48, 37, 1)",
-          "text": "rgba(255, 255, 255, 1)",
-          "text_secondary": "rgba(255, 204, 204, 1)",
-          "accent": "rgba(255, 255, 255, 1)",
-          "surface": "rgba(176, 32, 21, 1)",
-          "button_bg": "rgba(255, 255, 255, 1)",
-          "button_text": "rgba(217, 48, 37, 1)",
-          "ui_bg": "rgba(255, 255, 255, 1)",
-          "ui_text": "rgba(217, 48, 37, 1)",
-          "border": "rgba(224, 102, 102, 1)",
-          "shadow": "rgba(0, 0, 0, 1)"
+      ]
+    },
+    {
+      "name": "Max Width Schemes",
+      "type": "group",
+      "id": "width_schemes",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Default Width Scheme"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Width",
+          "options": [
+            {
+              "value": "sm",
+              "label": "Small"
+            },
+            {
+              "value": "md",
+              "label": "Medium"
+            },
+            {
+              "value": "lg",
+              "label": "Large"
+            },
+            {
+              "value": "xl",
+              "label": "x-Large"
+            },
+            {
+              "value": "2xl",
+              "label": "2x-Large"
+            },
+            {
+              "value": "3xl",
+              "label": "3x-Large"
+            },
+            {
+              "value": "4xl",
+              "label": "4x-Large"
+            },
+            {
+              "value": "fit",
+              "label": "Fit Content"
+            },
+            {
+              "value": "full",
+              "label": "Full"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
+            }
+          ],
+          "default": "1240px"
+        },
+        {
+          "type": "text",
+          "id": "custom_width",
+          "label": "Width",
+          "default": "1496px",
+          "conditional": "setting.width == 'custom'"
         }
-      }
+      ]
+    },
+    {
+      "name": "Layout",
+      "id": "layout",
+      "settings": [
+        {
+          "type": "range",
+          "id": "grid_gap",
+          "label": "Grid Gap",
+          "min": 0,
+          "max": 64,
+          "step": 4,
+          "default": 32,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "corner_radius",
+          "label": "Global Corner Radius",
+          "min": 0,
+          "max": 40,
+          "step": 4,
+          "default": 0,
+          "unit": "px",
+          "info": "Affects buttons, cards, and media."
+        }
+      ]
+    },
+    {
+      "name": "Social Media",
+      "id": "social-media",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Accounts"
+        },
+        {
+          "type": "text",
+          "id": "social_instagram_link",
+          "label": "Instagram",
+          "info": "https://instagram.com/yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "social_facebook_link",
+          "label": "Facebook",
+          "info": "https://facebook.com/yourpage"
+        },
+        {
+          "type": "text",
+          "id": "social_tiktok_link",
+          "label": "TikTok",
+          "info": "https://tiktok.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "social_twitter_link",
+          "label": "X (Twitter)",
+          "info": "https://x.com/yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "social_yelp_link",
+          "label": "Yelp",
+          "info": "https://yelp.com/biz/your-biz"
+        }
+      ]
     }
-  },
-  {
-    "name": "Typography",
-    "settings": [
-      {
-        "type": "font_picker",
-        "id": "heading_font",
-        "label": "Headings",
-        "default": "sans-serif"
-      },
-      {
-        "type": "font_picker",
-        "id": "body_font",
-        "label": "Body Text",
-        "default": "sans-serif"
-      },
-      {
-        "type": "font_picker",
-        "id": "button_font",
-        "label": "Buttons & UI",
-        "default": "sans-serif"
-      },
-      {
-        "type": "range",
-        "id": "type_scale",
-        "label": "Type Scale",
-        "min": 80,
-        "max": 120,
-        "step": 5,
-        "default": 100,
-        "unit": "%"
-      }
-    ]
-  },
-  {
-    "name": "Max Width Schemes",
-    "type": "group",
-    "id": "width_schemes",
-    "definition": [
-      {
-        "type": "text",
-        "id": "title",
-        "label": "Name"
-      },
-      {
-        "type": "select",
-        "id": "width",
-        "label": "Width",
-        "options": [
-          {
-            "value": "sm",
-            "label": "Small"
-          },
-          {
-            "value": "md",
-            "label": "Medium"
-          },
-          {
-            "value": "lg",
-            "label": "Large"
-          },
-          {
-            "value": "xl",
-            "label": "x-Large"
-          },
-          {
-            "value": "2xl",
-            "label": "2x-Large"
-          },
-          {
-            "value": "3xl",
-            "label": "3x-Large"
-          },
-          {
-            "value": "4xl",
-            "label": "4x-Large"
-          },
-          {
-            "value": "fit-content",
-            "label": "Fit Content"
-          },
-          {
-            "value": "full",
-            "label": "Full"
-          },
-          {
-            "value": "custom",
-            "label": "Custom"
+  ],
+  "presets": {
+    "Standard": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Neutral (Light)",
+            "background": "#FFFFFF",
+            "text": "#121212",
+            "button_bg": "#121212",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#FFFFFF",
+            "ui_text": "#121212",
+            "border": "#E5E5E5"
           }
-        ],
-        "default": "1240px"
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Neutral (Dark)",
+            "background": "#121212",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#121212",
+            "ui_bg": "#121212",
+            "ui_text": "#FFFFFF",
+            "border": "#333333"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Neutral Accent",
+            "background": "#555555",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#555555",
+            "ui_bg": "#555555",
+            "ui_text": "#FFFFFF",
+            "border": "#333333"
+          }
+        }
       },
-      {
-        "type": "text",
-        "id": "custom_width",
-        "label": "Width",
-        "default": "1496px",
-        "conditional": "setting.width == 'custom'"
+      "heading_font": "sans-serif",
+      "body_font": "sans-serif",
+      "button_font": "sans-serif",
+      "type_scale": 100,
+      "corner_radius": 4,
+      "grid_gap": 32,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
       }
-    ],
-    "preset": {
-      "fit": {
-        "settings": {
-          "title": "Fit Content",
-          "width": "fit"
+    },
+    "Indian": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Masala (Light)",
+            "background": "#FFF8E1",
+            "text": "#4A1414",
+            "button_bg": "#D35400",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#FFF8E1",
+            "ui_text": "#4A1414",
+            "border": "#D35400"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Royal (Dark)",
+            "background": "#2C003E",
+            "text": "#FFD700",
+            "button_bg": "#FFD700",
+            "button_text": "#2C003E",
+            "ui_bg": "#2C003E",
+            "ui_text": "#FFD700",
+            "border": "#FFD700"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Saffron Accent",
+            "background": "#FF9933",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#FF9933",
+            "ui_bg": "#FF9933",
+            "ui_text": "#FFFFFF",
+            "border": "#CC7A00"
+          }
         }
       },
-      "narrow": {
-        "settings": {
-          "title": "Narrow",
-          "width": "md"
+      "heading_font": "serif",
+      "body_font": "sans-serif",
+      "button_font": "sans-serif",
+      "type_scale": 100,
+      "corner_radius": 8,
+      "grid_gap": 24,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
+      }
+    },
+    "Mexican": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Fiesta (Light)",
+            "background": "#FFFFFF",
+            "text": "#121212",
+            "button_bg": "#E91E63",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#FFFFFF",
+            "ui_text": "#121212",
+            "border": "#E91E63"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Noche (Dark)",
+            "background": "#121212",
+            "text": "#FFFFFF",
+            "button_bg": "#00BCD4",
+            "button_text": "#121212",
+            "ui_bg": "#121212",
+            "ui_text": "#FFFFFF",
+            "border": "#00BCD4"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Sol Accent",
+            "background": "#FFEB3B",
+            "text": "#121212",
+            "button_bg": "#121212",
+            "button_text": "#FFEB3B",
+            "ui_bg": "#FFEB3B",
+            "ui_text": "#121212",
+            "border": "#FBC02D"
+          }
         }
       },
-      "standard": {
-        "settings": {
-          "title": "Standard",
-          "width": "2xl"
+      "heading_font": "sans-serif",
+      "body_font": "sans-serif",
+      "button_font": "sans-serif",
+      "type_scale": 100,
+      "corner_radius": 16,
+      "grid_gap": 32,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
+      }
+    },
+    "Chinese": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Silk (Light)",
+            "background": "#FDFBF7",
+            "text": "#1A1A1A",
+            "button_bg": "#B71C1C",
+            "button_text": "#FFD700",
+            "ui_bg": "#FDFBF7",
+            "ui_text": "#1A1A1A",
+            "border": "#B71C1C"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Lacquer (Dark)",
+            "background": "#B71C1C",
+            "text": "#FFD700",
+            "button_bg": "#FFD700",
+            "button_text": "#B71C1C",
+            "ui_bg": "#B71C1C",
+            "ui_text": "#FFD700",
+            "border": "#FFD700"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Jade Accent",
+            "background": "#00695C",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#00695C",
+            "ui_bg": "#00695C",
+            "ui_text": "#FFFFFF",
+            "border": "#004D40"
+          }
         }
       },
-      "wide": {
-        "settings": {
-          "title": "Wide",
-          "width": "3xl"
+      "heading_font": "serif",
+      "body_font": "serif",
+      "button_font": "serif",
+      "type_scale": 100,
+      "corner_radius": 4,
+      "grid_gap": 24,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
+      }
+    },
+    "Thai": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Coconut (Light)",
+            "background": "#FFFFFF",
+            "text": "#333333",
+            "button_bg": "#7CB342",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#FFFFFF",
+            "ui_text": "#333333",
+            "border": "#7CB342"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Night Market (Dark)",
+            "background": "#212121",
+            "text": "#FFFFFF",
+            "button_bg": "#AB47BC",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#212121",
+            "ui_text": "#FFFFFF",
+            "border": "#AB47BC"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Chili Accent",
+            "background": "#F44336",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#F44336",
+            "ui_bg": "#F44336",
+            "ui_text": "#FFFFFF",
+            "border": "#D32F2F"
+          }
         }
       },
-      "full": {
-        "settings": {
-          "title": "Full",
-          "width": "full"
+      "heading_font": "sans-serif",
+      "body_font": "sans-serif",
+      "button_font": "sans-serif",
+      "type_scale": 100,
+      "corner_radius": 12,
+      "grid_gap": 32,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
+      }
+    },
+    "Korean": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Day (Light)",
+            "background": "#FFFFFF",
+            "text": "#000000",
+            "button_bg": "#2962FF",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#FFFFFF",
+            "ui_text": "#000000",
+            "border": "#2962FF"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Night (Dark)",
+            "background": "#000000",
+            "text": "#FFFFFF",
+            "button_bg": "#FF4081",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#000000",
+            "ui_text": "#FFFFFF",
+            "border": "#FF4081"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Spice Accent",
+            "background": "#D50000",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#D50000",
+            "ui_bg": "#D50000",
+            "ui_text": "#FFFFFF",
+            "border": "#B71C1C"
+          }
+        }
+      },
+      "heading_font": "sans-serif",
+      "body_font": "mono",
+      "button_font": "mono",
+      "type_scale": 100,
+      "corner_radius": 0,
+      "grid_gap": 16,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
+      }
+    },
+    "Japanese": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Washi (Light)",
+            "background": "#F5F5F0",
+            "text": "#2C2C2C",
+            "button_bg": "#2C2C2C",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#F5F5F0",
+            "ui_text": "#2C2C2C",
+            "border": "#D7D7D7"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Indigo (Dark)",
+            "background": "#1A237E",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#1A237E",
+            "ui_bg": "#1A237E",
+            "ui_text": "#FFFFFF",
+            "border": "#3949AB"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Matcha Accent",
+            "background": "#558B2F",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#558B2F",
+            "ui_bg": "#558B2F",
+            "ui_text": "#FFFFFF",
+            "border": "#33691E"
+          }
+        }
+      },
+      "heading_font": "sans-serif",
+      "body_font": "sans-serif",
+      "button_font": "sans-serif",
+      "type_scale": 100,
+      "corner_radius": 2,
+      "grid_gap": 48,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
+      }
+    },
+    "American": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Diner (Light)",
+            "background": "#FFFFFF",
+            "text": "#0D47A1",
+            "button_bg": "#B71C1C",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#FFFFFF",
+            "ui_text": "#0D47A1",
+            "border": "#0D47A1"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Steakhouse (Dark)",
+            "background": "#121212",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#121212",
+            "ui_bg": "#121212",
+            "ui_text": "#FFFFFF",
+            "border": "#424242"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Mustard Accent",
+            "background": "#FFC107",
+            "text": "#121212",
+            "button_bg": "#121212",
+            "button_text": "#FFC107",
+            "ui_bg": "#FFC107",
+            "ui_text": "#121212",
+            "border": "#FFA000"
+          }
+        }
+      },
+      "heading_font": "sans-serif",
+      "body_font": "sans-serif",
+      "button_font": "sans-serif",
+      "type_scale": 100,
+      "corner_radius": 8,
+      "grid_gap": 32,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
+        }
+      }
+    },
+    "Italian": {
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "title": "Tuscan (Light)",
+            "background": "#FFFDE7",
+            "text": "#33691E",
+            "button_bg": "#BF360C",
+            "button_text": "#FFFFFF",
+            "ui_bg": "#FFFDE7",
+            "ui_text": "#33691E",
+            "border": "#33691E"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "title": "Espresso (Dark)",
+            "background": "#3E2723",
+            "text": "#FFFDE7",
+            "button_bg": "#FFFDE7",
+            "button_text": "#3E2723",
+            "ui_bg": "#3E2723",
+            "ui_text": "#FFFDE7",
+            "border": "#5D4037"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "title": "Tomato Accent",
+            "background": "#D84315",
+            "text": "#FFFFFF",
+            "button_bg": "#FFFFFF",
+            "button_text": "#D84315",
+            "ui_bg": "#D84315",
+            "ui_text": "#FFFFFF",
+            "border": "#BF360C"
+          }
+        }
+      },
+      "heading_font": "serif",
+      "body_font": "serif",
+      "button_font": "serif",
+      "type_scale": 100,
+      "corner_radius": 4,
+      "grid_gap": 40,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full"
+          }
         }
       }
     }
-  },
-  {
-    "name": "Layout",
-    "settings": [
-      {
-        "type": "range",
-        "id": "grid_gap",
-        "label": "Grid Gap",
-        "min": 0,
-        "max": 64,
-        "step": 4,
-        "default": 32,
-        "unit": "px"
-      },
-      {
-        "type": "range",
-        "id": "corner_radius",
-        "label": "Global Corner Radius",
-        "min": 0,
-        "max": 40,
-        "step": 4,
-        "default": 0,
-        "unit": "px",
-        "info": "Affects buttons, cards, and media."
-      }
-    ]
-  },
-  {
-    "name": "Social Media",
-    "settings": [
-      {
-        "type": "header",
-        "content": "Accounts"
-      },
-      {
-        "type": "text",
-        "id": "social_instagram_link",
-        "label": "Instagram",
-        "info": "https://instagram.com/yourhandle"
-      },
-      {
-        "type": "text",
-        "id": "social_facebook_link",
-        "label": "Facebook",
-        "info": "https://facebook.com/yourpage"
-      },
-      {
-        "type": "text",
-        "id": "social_tiktok_link",
-        "label": "TikTok",
-        "info": "https://tiktok.com/@yourhandle"
-      },
-      {
-        "type": "text",
-        "id": "social_twitter_link",
-        "label": "X (Twitter)",
-        "info": "https://x.com/yourhandle"
-      },
-      {
-        "type": "text",
-        "id": "social_yelp_link",
-        "label": "Yelp",
-        "info": "https://yelp.com/biz/your-biz"
-      }
-    ]
   }
-]
+}
