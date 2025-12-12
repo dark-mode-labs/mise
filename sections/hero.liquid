@@ -141,7 +141,8 @@
       "max": 80,
       "step": 4,
       "default": 0,
-      "unit": "px"
+      "unit": "px",
+      "conditional": "setting.layout_mode != 'overlay'"
     },
 
     { "type": "header", "content": "Section Spacing" },
@@ -173,13 +174,15 @@
 
     { "type": "header", "content": "Secondary Media" },
     { "type": "image_picker", "id": "bg_image_2", "label": "Image 2 (Desktop)" },
+    { "type": "image_picker", "id": "mobile_image_2", "label": "Image 2 (Mobile)" },
     { "type": "text", "id": "video_url_2", "label": "Video 2 (MP4)" },
     {
       "type": "checkbox",
       "id": "show_placeholder",
       "label": "Show Placeholder",
       "default": true,
-      "info": "Show a pattern when no image is selected."
+      "info": "Show a pattern when no image is selected.",
+      "conditional": "setting.bg_image == blank and setting.bg_image_2 == blank"
     },
 
     { "type": "header", "content": "Overlay" },

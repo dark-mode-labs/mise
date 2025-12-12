@@ -8,7 +8,8 @@
         {
           "type": "text",
           "id": "title",
-          "label": "Name"
+          "label": "Name",
+          "default": "Color Scheme"
         },
         {
           "type": "header",
@@ -132,7 +133,8 @@
         {
           "type": "text",
           "id": "title",
-          "label": "Name"
+          "label": "Name",
+          "default": "Width Scheme"
         },
         {
           "type": "select",
