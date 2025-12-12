@@ -9,7 +9,7 @@
           "type": "text",
           "id": "title",
           "label": "Name",
-          "default": "Color Scheme"
+          "default": "Default Color Scheme"
         },
         {
           "type": "header",
@@ -46,6 +46,18 @@
           "default": "rgba(245, 245, 245, 1)"
         },
         {
+          "type": "color",
+          "id": "border",
+          "label": "Borders",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "shadow",
+          "label": "Shadows",
+          "default": "rgba(0, 0, 0, 1)"
+        },
+        {
           "type": "header",
           "content": "Buttons"
         },
@@ -75,18 +87,6 @@
           "type": "color",
           "id": "ui_text",
           "label": "Control Icon/Text",
-          "default": "rgba(0, 0, 0, 1)"
-        },
-        {
-          "type": "color",
-          "id": "border",
-          "label": "Borders",
-          "default": "rgba(255, 255, 255, 1)"
-        },
-        {
-          "type": "color",
-          "id": "shadow",
-          "label": "Shadows",
           "default": "rgba(0, 0, 0, 1)"
         }
       ]
@@ -134,7 +134,7 @@
           "type": "text",
           "id": "title",
           "label": "Name",
-          "default": "Width Scheme"
+          "default": "Default Width Scheme"
         },
         {
           "type": "select",
@@ -170,7 +170,7 @@
               "label": "4x-Large"
             },
             {
-              "value": "fit-content",
+              "value": "fit",
               "label": "Fit Content"
             },
             {
