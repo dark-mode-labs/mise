@@ -110,16 +110,12 @@
       {% endcapture %}
 
       <div class="{{ aspect_class }}">
-        {% if has_image %}
-          {% render 'media',
-            src: item.asset.url,
-            fit: 'cover',
-            class: 'w-full h-full transition-transform duration-500 group-hover:scale-105',
-            placeholder: 'scene-1'
-          %}
-        {% else %}
-          {% render 'placeholder', name: 'scene-1', class: 'w-full h-full text-gray-300' %}
-        {% endif %}
+        {% render 'media',
+          src: item.asset.url,
+          fit: 'cover',
+          class: 'w-full h-full transition-transform duration-500 group-hover:scale-105',
+          placeholder: 'scene-1'
+        %}
       </div>
 
       {% if item.dietary_flags.size > 0 %}
