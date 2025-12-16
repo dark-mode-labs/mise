@@ -1,5 +1,5 @@
 {% assign has_image = false %}
-{% unless item.asset.url == blank %}{% assign has_image = true %}{% endunless %}
+{% unless item.asset_assignment == blank %}{% assign has_image = true %}{% endunless %}
 
 {% assign modifier_count = 0 %}
 {% assign group_count = item.modifier_groups.size %}
@@ -24,7 +24,12 @@
   <div class="flex gap-4 md:gap-6 items-start">
     {% if has_image %}
       <div class="flex-shrink-0 {{ img_size }} rounded-global overflow-hidden bg-gray-100">
-        {% render 'media', src: item.asset.url, ratio: 'square', fit: 'cover', placeholder: 'scene-1' %}
+        {% render 'media',
+          src: item.asset_assignment.asset_uuid,
+          ratio: 'square',
+          fit: 'cover',
+          placeholder: 'scene-1'
+        %}
       </div>
     {% endif %}
 

@@ -23,7 +23,7 @@
     {% if img_pos == 'left' %}
       <div class="w-24 md:w-32 shrink-0 relative border-r border-body/10">
         {% render 'media',
-          src: item.asset.url,
+          src: item.asset_assignment.asset_uuid,
           fit: 'cover',
           class: 'w-full h-full absolute inset-0',
           placeholder: 'scene-1'
@@ -91,7 +91,7 @@
     {% if img_pos == 'right' %}
       <div class="w-24 md:w-32 shrink-0 relative border-l border-body/10">
         {% render 'media',
-          src: item.asset.url,
+          src: item.asset_assignment.asset_uuid,
           fit: 'cover',
           class: 'w-full h-full absolute inset-0',
           placeholder: 'scene-1'
@@ -111,7 +111,7 @@
 
       <div class="{{ aspect_class }}">
         {% render 'media',
-          src: item.asset.url,
+          src: item.asset_assignment.asset_uuid,
           fit: 'cover',
           class: 'w-full h-full transition-transform duration-500 group-hover:scale-105',
           placeholder: 'scene-1'
