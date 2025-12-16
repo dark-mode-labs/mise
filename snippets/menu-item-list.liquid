@@ -1,5 +1,6 @@
-{% assign has_image = false %}
-{% if item.image != blank %}{% assign has_image = true %}{% endif %}
+{% unless item.asset_assignment == blank %}
+  {% assign asset_src = item.asset_assignment.asset_uuid %}
+{% endunless %}
 
 {% assign modifier_count = 0 %}
 {% assign group_count = item.modifier_groups.size %}
@@ -22,11 +23,11 @@
   data-tags="{{ tag_string }}"
 >
   <div class="flex gap-4 md:gap-6 items-start">
-    {% if has_image %}
+    {% unless asset_src == blank %}
       <div class="flex-shrink-0 {{ img_size }} rounded-global overflow-hidden bg-gray-100">
-        {% render 'media', src: item.image, ratio: 'square', fit: 'cover', placeholder: 'scene-1' %}
+        {% render 'media', src: asset_src, ratio: 'square', fit: 'cover', placeholder: 'scene-1' %}
       </div>
-    {% endif %}
+    {% endunless %}
 
     <div class="flex-grow flex flex-col w-full min-w-0">
       <div class="flex flex-nowrap items-start justify-between gap-x-4 w-full">
