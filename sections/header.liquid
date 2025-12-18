@@ -75,7 +75,7 @@
   "restriction": { "groups": ["header"] },
   "settings": [
     { "type": "header", "content": "Layout" },
-   {
+    {
       "type": "width_scheme",
       "id": "width_scheme",
       "label": "Max Content Width",
@@ -105,6 +105,25 @@
     },
     { "type": "checkbox", "id": "enable_transparent", "label": "Transparent on Top", "default": true },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "blocks": {
+        "header-logo": {
+          "type": "_header-logo",
+          "static": true
+        },
+        "header-menu": {
+          "type": "_header-menu",
+          "static": true,
+          "settings": { "menu": { "links": [{ "url": "/", "title": "Home" }] } }
+        }
+      },
+      "settings": {
+        "enable_transparent": false
+      }
+    }
   ]
 }
 {% endschema %}
