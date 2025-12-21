@@ -72,7 +72,7 @@
 {
   "name": "Header",
   "class": "section-header",
-  "restriction": { "groups": ["header"] },
+  "restriction": { "groups": [] },
   "settings": [
     { "type": "header", "content": "Layout" },
     {
@@ -101,7 +101,7 @@
         { "value": "always", "label": "Always Sticky" },
         { "value": "on_scroll_up", "label": "Show on Scroll Up" }
       ],
-      "default": "always"
+      "default": "none"
     },
     { "type": "checkbox", "id": "enable_transparent", "label": "Transparent on Top", "default": true },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
@@ -118,6 +118,11 @@
           "type": "_header-menu",
           "static": true,
           "settings": { "menu": { "links": [{ "url": "/", "title": "Home" }] } }
+        },
+        "header-actions": {
+          "type": "_header-actions",
+          "static": true,
+          "settings": { "show_search": false, "show_cart": false, "btn_label": "" }
         }
       },
       "settings": {
