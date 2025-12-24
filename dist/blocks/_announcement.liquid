@@ -1,0 +1,44 @@
+{% assign s = block.settings %}
+
+{% assign scheme_class = '' %}
+{% unless block.settings.inherit_color_scheme %}
+  {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
+{% endunless %}
+
+<div class="w-full flex-shrink-0 snap-center py-2.5 px-4 flex items-center justify-center {{ scheme_class }} text-body bg-body">
+  {% if s.link != blank %}
+    <a href="{{ s.link }}" class="hover:opacity-70 transition-opacity flex items-center gap-2">
+      {{ s.text }}
+      {% render 'icon', name: 'arrow-right', class: 'w-3 h-3' %}
+    </a>
+  {% else %}
+    <span>{{ s.text }}</span>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Message",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Text", "default": "Welcome to our Restaurant" },
+    { "type": "url", "id": "link", "label": "Link" },
+    {
+      "type": "header",
+      "content": "Custom Override"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "Inherit Color Scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_color_scheme != true"
+    }
+  ]
+}
+{% endschema %}

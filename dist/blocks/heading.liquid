@@ -1,0 +1,112 @@
+{% capture style_override %}
+  {% unless block.settings.inherit_color_scheme %}
+    style="--color-text: {{ block.settings.custom_color }};"
+  {% endunless %}
+{% endcapture %}
+
+{% capture text_classes %}
+  {{ block.settings.text_align }}
+  {% if block.settings.uppercase %}uppercase tracking-widest{% endif %}
+  {% if block.settings.italic %}italic{% endif %}
+  font-{{ block.settings.font_weight }}
+{% endcapture %}
+
+<div class="w-full max-w-prose mb-4 {{ text_classes }}" {{ style_override }}>
+  {% render 'typography', 
+     text: block.settings.text, 
+     tag: block.settings.tag, 
+     display_size: block.settings.display_size
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "Heading",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Section Title"
+    },
+    {
+      "type": "select",
+      "id": "tag",
+      "label": "HTML Tag",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "display_size",
+      "label": "Visual Scale",
+      "options": [
+        { "value": "h2", "label": "Large (H2)" },
+        { "value": "h3", "label": "Medium (H3)" },
+        { "value": "body", "label": "Small (Body)" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "", "label": "Inherit" },
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "bold", "label": "Bold" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "italic",
+      "label": "Italic",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "Inherit Color Scheme",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "custom_color",
+      "label": "Custom Color",
+      "default": "#000000",
+      "conditional": "setting.inherit_color_scheme != true"
+    }
+  ]
+}
+{% endschema %}
