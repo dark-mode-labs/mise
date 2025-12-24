@@ -231,7 +231,7 @@
     { "type": "header", "content": "Theme" },
     { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "scheme-1" }
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
   ],
   "blocks": [
     { "type": "@theme" },
@@ -249,7 +249,7 @@
       "name": "Hero (Fine Dining)",
       "settings": {
         "layout_mode": "overlay",
-        "color_scheme": "scheme-1",
+        "color_scheme": "default",
         "enable_gradient": true,
         "marquee_clearance": 80
       },
@@ -268,7 +268,7 @@
         },
         "hero_ticker": {
           "type": "_marquee",
-          "settings": { "pin_bottom": true, "color_scheme": "scheme-2" }
+          "settings": { "pin_bottom": true, "color_scheme": "default" }
         }
       },
       "block_order": ["hero_heading", "hero_subtext", "hero_cta", "hero_ticker"]
