@@ -58,108 +58,146 @@
     </div>
 
     <div class="flex {{ main_flex_direction }} relative">
+      {% assign all_categories = menu.categories | map_values | sort: 'display_order' %}
       {% if s.display_scope == 'full_menu' %}
-        {% assign all_categories = menu.categories | map_values | sort: 'display_order' %}
         {% assign root_categories = all_categories | where: 'parent_uuid', null %}
-
-        {% if s.show_nav and root_categories.size > 1 %}
-          <div
-            class="{{ nav_container_class }}"
-            style="{{ sticky_style }}"
+      {% elsif s.display_scope == 'category' %}
+        {% assign root_categories = menu.categories[s.category] | sort %}
+      {% endif %}
+      {% if s.show_nav and root_categories != blank %}
+        <div
+          class="{{ nav_container_class }}"
+          style="{{ sticky_style }}"
+          {% if s.enable_filtering %}
+            data-behavior="menu-filter"
+          {% endif %}
+        >
+          <div class="{% if s.nav_layout == 'horizontal' %}flex items-center justify-between gap-4 max-w-none px-4{% else %}flex flex-col gap-6{% endif %}">
             {% if s.enable_filtering %}
-              data-behavior="menu-filter"
-            {% endif %}
-          >
-            <div class="{% if s.nav_layout == 'horizontal' %}flex items-center justify-between gap-4 max-w-none px-4{% else %}flex flex-col gap-6{% endif %}">
-              {% if s.enable_filtering %}
-                <div class="relative {% if s.nav_layout == 'horizontal' %}w-48 hidden md:block flex-shrink-0 order-2 ml-auto{% else %}w-[85%] order-1{% endif %}">
-                  <input
-                    type="text"
-                    placeholder="Search menu..."
-                    class="w-full bg-transparent border border-std rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors placeholder:text-secondary"
-                    data-filter-search
-                  >
-                  {% render 'icon',
-                    name: 'search',
-                    class: 'absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none'
-                  %}
-                </div>
-              {% endif %}
-              {% if s.enable_filtering and menu.dietary_flags.size > 0 %}
-                <div
-                  class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-std pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
-                  data-filter-tags
+              <div class="relative {% if s.nav_layout == 'horizontal' %}w-48 hidden md:block flex-shrink-0 order-2 ml-auto{% else %}w-[85%] order-1{% endif %}">
+                <input
+                  type="text"
+                  placeholder="Search menu..."
+                  class="w-full bg-transparent border border-std rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors placeholder:text-secondary"
+                  data-filter-search
                 >
-                  {% for tag in menu.dietary_flags %}
-                    {% assign tag_name = tag.name | downcase %}
-                    <button
-                      type="button"
-                      data-filter-tag="{{ tag_name }}"
-                      title="Filter by {{ tag.name }}"
-                      class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[10px] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[10px] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
-                    >
-                      {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
-                    </button>
-                  {% endfor %}
-                </div>
-              {% endif %}
-
-              <nav
-                data-behavior="menu-spy"
-                class="{{ nav_wrapper_class }} flex-grow min-w-0 {% if s.nav_layout == 'vertical' %}order-3{% else %}order-1{% endif %}"
+                {% render 'icon',
+                  name: 'search',
+                  class: 'absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none'
+                %}
+              </div>
+            {% endif %}
+            {% if s.enable_filtering and menu.dietary_flags.size > 0 %}
+              <div
+                class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-std pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
+                data-filter-tags
               >
-                {% for parent in root_categories %}
-                  <a
-                    href="#"
-                    data-spy-trigger="{{ parent.uuid }}"
-                    data-filter-nav="{{ parent.uuid }}"
-                    class="text-sm font-bold text-secondary hover:text-body uppercase tracking-wider {{ link_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
+                {% for tag in menu.dietary_flags %}
+                  {% assign tag_name = tag.name | downcase %}
+                  <button
+                    type="button"
+                    data-filter-tag="{{ tag_name }}"
+                    title="Filter by {{ tag.name }}"
+                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[10px] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[10px] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
                   >
-                    {{ parent.name }}
-                  </a>
+                    {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
+                  </button>
+                {% endfor %}
+              </div>
+            {% endif %}
 
-                  {% if s.nav_layout == 'vertical' %}
-                    {% assign nav_children = all_categories | where: 'parent_uuid', parent.uuid %}
-                    {% if nav_children.size > 0 %}
-                      <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-std">
-                        {% for child in nav_children %}
-                          <a
-                            href="#"
-                            data-spy-trigger="{{ child.uuid }}"
-                            data-filter-nav="{{ child.uuid }}"
-                            class="text-xs text-secondary hover:text-body transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
-                          >
-                            {{- child.name -}}
-                          </a>
-                        {% endfor %}
-                      </div>
-                    {% endif %}
+            <nav
+              data-behavior="menu-spy"
+              class="{{ nav_wrapper_class }} flex-grow min-w-0 {% if s.nav_layout == 'vertical' %}order-3{% else %}order-1{% endif %}"
+            >
+              {% for parent in root_categories %}
+                <a
+                  href="#"
+                  data-spy-trigger="{{ parent.uuid }}"
+                  data-filter-nav="{{ parent.uuid }}"
+                  class="text-sm font-bold text-secondary hover:text-body uppercase tracking-wider {{ link_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
+                >
+                  {{ parent.name }}
+                </a>
+
+                {% if s.nav_layout == 'vertical' %}
+                  {% assign nav_children = all_categories | where: 'parent_uuid', parent.uuid %}
+                  {% if nav_children.size > 0 %}
+                    <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-std">
+                      {% for child in nav_children %}
+                        <a
+                          href="#"
+                          data-spy-trigger="{{ child.uuid }}"
+                          data-filter-nav="{{ child.uuid }}"
+                          class="text-xs text-secondary hover:text-body transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
+                        >
+                          {{- child.name -}}
+                        </a>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            </nav>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="flex-grow flex flex-col gap-20" data-filter-container>
+        {% for parent in root_categories %}
+          <div
+            data-spy-target="{{ parent.uuid }}"
+            class="scroll-mt-48 menu-category-group"
+            data-filter-section
+            data-filter-section-id="{{ parent.uuid }}"
+          >
+            <div class="flex items-end justify-between border-b-2 border-body mb-8 pb-2">
+              <h3 class="font-heading text-3xl font-bold uppercase tracking-wide">{{ parent.name }}</h3>
+            </div>
+            {% comment %}
+              Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
+               {% assign parent_items = parent.items | sort: 'display_order' %}
+            {% endcomment %}
+            {% assign parent_items = parent.items %}
+            {% if parent_items.size > 0 %}
+              <div class="{{ grid_class }} mb-12 {{ animation_class }}" data-filter-grid>
+                {% for item in parent_items %}
+                  {% if s.layout_style contains 'card-' %}
+                    {% assign card_style = s.layout_style | replace: 'card-', '' %}
+                    {% render 'menu-item-card',
+                      item: item,
+                      ratio: s.aspect_ratio,
+                      style: card_style,
+                      padding_class: s.card_padding,
+                      image_position: s.card_image_position
+                    %}
+                  {% else %}
+                    {% render 'menu-item-list',
+                      item: item,
+                      padding_class: s.list_row_padding,
+                      image_class: s.list_image_size
+                    %}
                   {% endif %}
                 {% endfor %}
-              </nav>
-            </div>
-          </div>
-        {% endif %}
-
-        <div class="flex-grow flex flex-col gap-20" data-filter-container>
-          {% for parent in root_categories %}
-            <div
-              data-spy-target="{{ parent.uuid }}"
-              class="scroll-mt-48 menu-category-group"
-              data-filter-section
-              data-filter-section-id="{{ parent.uuid }}"
-            >
-              <div class="flex items-end justify-between border-b-2 border-body mb-8 pb-2">
-                <h3 class="font-heading text-3xl font-bold uppercase tracking-wide">{{ parent.name }}</h3>
               </div>
-              {% comment %}
-                Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
-                 {% assign parent_items = parent.items | sort: 'display_order' %}
-              {% endcomment %}
-              {% assign parent_items = parent.items %}
-              {% if parent_items.size > 0 %}
-                <div class="{{ grid_class }} mb-12 {{ animation_class }}" data-filter-grid>
-                  {% for item in parent_items %}
+            {% endif %}
+
+            {% assign children = all_categories | where: 'parent_uuid', parent.uuid %}
+            {% for child in children %}
+              <div
+                data-spy-target="{% if s.nav_layout == 'vertical' %}{{ child.uuid }}{% else %}{{ parent.uuid }}{% endif %}"
+                class="scroll-mt-48 mb-12 pl-0 md:pl-4"
+                data-filter-section
+                data-filter-section-id="{{ child.uuid }}"
+              >
+                <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ child.name }}</h4>
+                <div class="{{ grid_class }} {{ animation_class }}" data-filter-grid>
+                  {% comment %}
+                    Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
+                    {% assign child_items = child.items | sort: 'display_order' %}
+                  {% endcomment %}
+                  {% assign child_items = child.items %}
+                  {% for item in child_items %}
                     {% if s.layout_style contains 'card-' %}
                       {% assign card_style = s.layout_style | replace: 'card-', '' %}
                       {% render 'menu-item-card',
@@ -178,87 +216,11 @@
                     {% endif %}
                   {% endfor %}
                 </div>
-              {% endif %}
-
-              {% assign children = all_categories | where: 'parent_uuid', parent.uuid %}
-              {% for child in children %}
-                <div
-                  data-spy-target="{% if s.nav_layout == 'vertical' %}{{ child.uuid }}{% else %}{{ parent.uuid }}{% endif %}"
-                  class="scroll-mt-48 mb-12 pl-0 md:pl-4"
-                  data-filter-section
-                  data-filter-section-id="{{ child.uuid }}"
-                >
-                  <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ child.name }}</h4>
-                  <div class="{{ grid_class }} {{ animation_class }}" data-filter-grid>
-                    {% comment %}
-                      Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
-                      {% assign child_items = child.items | sort: 'display_order' %}
-                    {% endcomment %}
-                    {% assign child_items = child.items %}
-                    {% for item in child_items %}
-                      {% if s.layout_style contains 'card-' %}
-                        {% assign card_style = s.layout_style | replace: 'card-', '' %}
-                        {% render 'menu-item-card',
-                          item: item,
-                          ratio: s.aspect_ratio,
-                          style: card_style,
-                          padding_class: s.card_padding,
-                          image_position: s.card_image_position
-                        %}
-                      {% else %}
-                        {% render 'menu-item-list',
-                          item: item,
-                          padding_class: s.list_row_padding,
-                          image_class: s.list_image_size
-                        %}
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-          {% endfor %}
-        </div>
-
-      {% elsif s.display_scope == 'category' %}
-        {% assign target_category = menu.categories | map_values | where: 'name', s.category_filter | first %}
-        <div class="w-full flex-grow" data-filter-container>
-          {% if target_category %}
-            {% if s.enable_filtering %}
-              <div class="mb-8 max-w-md" data-behavior="menu-filter">
-                <input
-                  type="text"
-                  placeholder="Search menu..."
-                  class="w-full bg-transparent border border-body/20 rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors"
-                  data-filter-search
-                >
               </div>
-            {% endif %}
-
-            <div class="{{ grid_class }} {{ animation_class }}" data-filter-grid>
-              {% assign sorted_items = target_category.items | sort: 'display_order' %}
-              {% for item in sorted_items %}
-                {% if s.layout_style contains 'card-' %}
-                  {% assign card_style = s.layout_style | replace: 'card-', '' %}
-                  {% render 'menu-item-card',
-                    item: item,
-                    ratio: s.aspect_ratio,
-                    style: card_style,
-                    padding_class: s.card_padding,
-                    image_position: s.card_image_position
-                  %}
-                {% else %}
-                  {% render 'menu-item-list',
-                    item: item,
-                    padding_class: s.list_row_padding,
-                    image_class: s.list_image_size
-                  %}
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-      {% endif %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
 
     <div id="filter-empty-state" class="hidden w-full py-20 text-center opacity-50">
