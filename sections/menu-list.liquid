@@ -111,32 +111,14 @@
               class="{{ nav_wrapper_class }} flex-grow min-w-0 {% if s.nav_layout == 'vertical' %}order-3{% else %}order-1{% endif %}"
             >
               {% for parent in root_categories %}
-                <a
-                  href="#"
-                  data-spy-trigger="{{ parent.uuid }}"
-                  data-filter-nav="{{ parent.uuid }}"
-                  class="text-sm font-bold text-secondary hover:text-body uppercase tracking-wider {{ link_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
-                >
-                  {{ parent.name }}
-                </a>
-
-                {% if s.nav_layout == 'vertical' %}
-                  {% assign nav_children = all_categories | where: 'parent_uuid', parent.uuid %}
-                  {% if nav_children.size > 0 %}
-                    <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-std">
-                      {% for child in nav_children %}
-                        <a
-                          href="#"
-                          data-spy-trigger="{{ child.uuid }}"
-                          data-filter-nav="{{ child.uuid }}"
-                          class="text-xs text-secondary hover:text-body transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
-                        >
-                          {{- child.name -}}
-                        </a>
-                      {% endfor %}
-                    </div>
-                  {% endif %}
-                {% endif %}
+                {% render 'menu-nav-recursive',
+                  category: parent,
+                  all_categories: all_categories,
+                  depth: 0,
+                  s: s,
+                  link_base_class: link_base_class,
+                  sublink_base_class: sublink_base_class
+                %}
               {% endfor %}
             </nav>
           </div>
@@ -145,80 +127,15 @@
 
       <div class="flex-grow flex flex-col gap-20" data-filter-container>
         {% for parent in root_categories %}
-          <div
-            data-spy-target="{{ parent.uuid }}"
-            class="scroll-mt-48 menu-category-group"
-            data-filter-section
-            data-filter-section-id="{{ parent.uuid }}"
-          >
-            <div class="flex items-end justify-between border-b-2 border-body mb-8 pb-2">
-              <h3 class="font-heading text-3xl font-bold uppercase tracking-wide">{{ parent.name }}</h3>
-            </div>
-            {% comment %}
-              Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
-               {% assign parent_items = parent.items | sort: 'display_order' %}
-            {% endcomment %}
-            {% assign parent_items = parent.items %}
-            {% if parent_items.size > 0 %}
-              <div class="{{ grid_class }} mb-12 {{ animation_class }}" data-filter-grid>
-                {% for item in parent_items %}
-                  {% if s.layout_style contains 'card-' %}
-                    {% assign card_style = s.layout_style | replace: 'card-', '' %}
-                    {% render 'menu-item-card',
-                      item: item,
-                      ratio: s.aspect_ratio,
-                      style: card_style,
-                      padding_class: s.card_padding,
-                      image_position: s.card_image_position
-                    %}
-                  {% else %}
-                    {% render 'menu-item-list',
-                      item: item,
-                      padding_class: s.list_row_padding,
-                      image_class: s.list_image_size
-                    %}
-                  {% endif %}
-                {% endfor %}
-              </div>
-            {% endif %}
-
-            {% assign children = all_categories | where: 'parent_uuid', parent.uuid %}
-            {% for child in children %}
-              <div
-                data-spy-target="{% if s.nav_layout == 'vertical' %}{{ child.uuid }}{% else %}{{ parent.uuid }}{% endif %}"
-                class="scroll-mt-48 mb-12 pl-0 md:pl-4"
-                data-filter-section
-                data-filter-section-id="{{ child.uuid }}"
-              >
-                <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ child.name }}</h4>
-                <div class="{{ grid_class }} {{ animation_class }}" data-filter-grid>
-                  {% comment %}
-                    Item doesnt have a display_order attr as yet, im thinking it makes sense to have it there but how much overhead will it be
-                    {% assign child_items = child.items | sort: 'display_order' %}
-                  {% endcomment %}
-                  {% assign child_items = child.items %}
-                  {% for item in child_items %}
-                    {% if s.layout_style contains 'card-' %}
-                      {% assign card_style = s.layout_style | replace: 'card-', '' %}
-                      {% render 'menu-item-card',
-                        item: item,
-                        ratio: s.aspect_ratio,
-                        style: card_style,
-                        padding_class: s.card_padding,
-                        image_position: s.card_image_position
-                      %}
-                    {% else %}
-                      {% render 'menu-item-list',
-                        item: item,
-                        padding_class: s.list_row_padding,
-                        image_class: s.list_image_size
-                      %}
-                    {% endif %}
-                  {% endfor %}
-                </div>
-              </div>
-            {% endfor %}
-          </div>
+          {% render 'menu-category-recursive',
+            category: parent,
+            all_categories: all_categories,
+            depth: 0,
+            s: s,
+            grid_class: grid_class,
+            animation_class: animation_class,
+            spy_target: parent.uuid
+          %}
         {% endfor %}
       </div>
     </div>
