@@ -1,28 +1,22 @@
 {% assign s = block.settings %}
+{% if shop.logo_src == blank %}
+  {% if s.logo == blank %}
+    {% assign asset_src = shop.logo %}
+  {% else %}
+    {% assign asset_src = shop.logo_transparent %}
+  {% endif %}
+{% else %}
+  {% assign asset_src = shop.logo_src %}
+{% endif %}
 
 <a href="/" class="header-logo flex items-center justify-center relative z-content group-hover:opacity-100 h-full">
-  {% if s.logo != blank %}
+  {% if asset_src != blank %}
     <div
       class="logo-default transition-opacity duration-300 block"
       style="width: {{ s.width }}px;"
     >
-      {% render 'media', src: s.logo, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}
+      {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}
     </div>
-
-    {% if s.logo_transparent != blank %}
-      <div class="logo-inverse absolute inset-0 transition-opacity duration-300 opacity-0 flex items-center justify-center">
-        <div style="width: {{ s.width }}px;">
-          {% render 'media',
-            src: s.logo_transparent,
-            ratio: 'auto',
-            fit: 'contain',
-            class: 'bg-transparent',
-            loading: 'eager'
-          %}
-        </div>
-      </div>
-    {% endif %}
-
   {% else %}
     <span class="text-xl font-bold font-heading uppercase tracking-widest whitespace-nowrap">{{ shop.name }}</span>
   {% endif %}
@@ -32,8 +26,13 @@
 {
   "name": "Header Logo",
   "settings": [
-    { "type": "image_picker", "id": "logo", "label": "Logo" },
-    { "type": "image_picker", "id": "logo_transparent", "label": "Logo (Light)" },
+    { "type": "image_picker", "id": "logo", "label": "Logo", "conditional": "shop.logo_src == blank" },
+    {
+      "type": "image_picker",
+      "id": "logo_transparent",
+      "label": "Logo (Light)",
+      "conditional": "shop.logo_src == blank"
+    },
     { "type": "range", "id": "width", "label": "Width", "min": 50, "max": 250, "default": 120, "unit": "px" }
   ]
 }
