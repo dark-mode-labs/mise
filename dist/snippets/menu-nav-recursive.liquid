@@ -1,0 +1,46 @@
+{% comment %}
+  Props:
+  - category: The current category object
+  - all_categories: Array of all categories
+  - depth: Current depth (0-based)
+  - s: Section settings
+  - link_base_class: Class for root links
+  - sublink_base_class: Class for child links
+{% endcomment %}
+
+{% assign children = all_categories | where: 'parent_uuid', category.uuid | sort: 'display_order' %}
+
+{% if depth == 0 %}
+  <a
+    href="#"
+    data-spy-trigger="{{ category.uuid }}"
+    data-filter-nav="{{ category.uuid }}"
+    class="text-sm font-bold text-secondary hover:text-body uppercase tracking-wider {{ link_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
+  >
+    {{ category.name }}
+  </a>
+{% else %}
+  <a
+    href="#"
+    data-spy-trigger="{{ category.uuid }}"
+    data-filter-nav="{{ category.uuid }}"
+    class="text-xs text-secondary hover:text-body transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
+  >
+    {{ category.name }}
+  </a>
+{% endif %}
+
+{% if children.size > 0 and s.nav_layout == 'vertical' %}
+  <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-std">
+    {% for child in children %}
+      {% render 'menu-nav-recursive',
+        category: child,
+        all_categories: all_categories,
+        depth: depth | plus: 1,
+        s: s,
+        link_base_class: link_base_class,
+        sublink_base_class: sublink_base_class
+      %}
+    {% endfor %}
+  </div>
+{% endif %}

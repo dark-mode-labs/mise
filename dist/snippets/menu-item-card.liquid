@@ -1,0 +1,177 @@
+{% assign modifier_count = 0 %}
+{% for group in item.modifier_groups %}
+  {% assign modifier_count = modifier_count | plus: group.modifiers.size %}
+{% endfor %}
+
+{% assign is_complex = false %}
+{% if modifier_count > 4 or item.modifier_groups.size > 1 %}{% assign is_complex = true %}{% endif %}
+
+{% assign padding = padding_class | default: 'p-4' %}
+{% assign img_pos = image_position | default: 'left' %}
+{% unless item.asset_assignment == blank %}
+  {% assign asset_src = item.asset_assignment.asset_uuid %}
+{% endunless %}
+
+{% capture tag_string %}{% for flag in item.dietary_flags %}{{ flag.name | downcase }},{% endfor %}{% endcapture %}
+
+<div
+  class="
+    menu-item-card group relative h-full flex bg-[var(--color-bg)] border border-body/10 rounded-global overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 break-inside-avoid
+    {% if style == 'compact' %}flex-row items-stretch text-left{% else %}flex-col{% endif %}
+  "
+  data-filter-item
+  data-tags="{{ tag_string }}"
+>
+  {% if style == 'compact' %}
+    {% if img_pos == 'left' %}
+      <div class="w-24 md:w-32 shrink-0 relative border-r border-body/10">
+        {% render 'media',
+          src: asset_src,
+          fit: 'cover',
+          class: 'w-full h-full absolute inset-0',
+          placeholder: 'scene-1'
+        %}
+      </div>
+    {% endif %}
+
+    <div class="{{ padding }} flex-grow flex flex-col justify-between gap-2 min-w-0">
+      <div>
+        <div class="flex flex-nowrap justify-between items-start gap-3">
+          <h3 class="font-heading font-bold text-lg leading-tight flex-1 min-w-0 pr-1">
+            {{ item.name }}
+          </h3>
+
+          <div class="text-right flex-shrink-0">
+            {% if modifier_count > 0 or is_complex %}
+              <span class="block text-[10px] uppercase tracking-wider opacity-60 font-bold leading-none mb-1"
+                >From</span
+              >
+            {% endif %}
+            <span class="font-bold text-lg leading-none block">
+              {{ item.amount | plus: 0 | money }}
+            </span>
+          </div>
+        </div>
+
+        {% if item.description != blank %}
+          <div class="text-sm opacity-70 line-clamp-2 mt-1.5">
+            {{ item.description }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="mt-2">
+        {% if is_complex == false and modifier_count > 0 %}
+          <div class="flex flex-wrap gap-2 mb-2">
+            {% for group in item.modifier_groups %}
+              {% assign sorted_modifiers = group.modifiers | sort: 'amount_delta' %}
+              {% for mod in sorted_modifiers %}
+                <div class="flex items-center gap-1 bg-body/5 border border-body/10 px-1.5 py-1 rounded-sm text-[10px] md:text-xs">
+                  <span class="opacity-70 uppercase font-bold">{{ mod.name }}</span>
+                  <span class="font-bold">
+                    {{ item.amount | plus: mod.amount_delta | money }}
+                  </span>
+                </div>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap gap-1">
+            {% for flag in item.dietary_flags %}
+              <span class="badge-pill text-[10px] px-1.5 py-0.5" title="{{ flag.name }}">
+                {% assign tag_name = flag.name | downcase %}
+                {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
+              </span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if img_pos == 'right' %}
+      <div class="w-24 md:w-32 shrink-0 relative border-l border-body/10">
+        {% render 'media',
+          src: asset_src,
+          fit: 'cover',
+          class: 'w-full h-full absolute inset-0',
+          placeholder: 'scene-1'
+        %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="w-full overflow-hidden bg-gray-100 border-b border-body/10 relative">
+      {% capture aspect_class %}
+        {% case ratio %}
+          {% when 'square' %}aspect-square
+          {% when 'portrait' %}aspect-[3/4]
+          {% else %}aspect-[4/3]
+        {% endcase %}
+      {% endcapture %}
+
+      <div class="{{ aspect_class }}">
+        {% render 'media',
+          src: asset_src,
+          fit: 'cover',
+          class: 'w-full h-full transition-transform duration-500 group-hover:scale-105',
+          placeholder: 'scene-1'
+        %}
+      </div>
+
+      {% if item.dietary_flags.size > 0 %}
+        <div class="absolute top-2 left-2 flex flex-wrap gap-1">
+          {% for flag in item.dietary_flags %}
+            <span
+              class="badge-pill bg-white/90 text-black border-transparent shadow-sm backdrop-blur-sm"
+              title="{{ flag.name }}"
+            >
+              {% assign tag_name = flag.name | downcase %}
+              {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
+            </span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="{{ padding }} flex-grow flex flex-col gap-3">
+      <h3 class="font-heading font-bold text-lg leading-tight">{{ item.name }}</h3>
+
+      {% if item.description != blank %}
+        <div class="text-sm opacity-70 line-clamp-2 flex-grow">
+          {{ item.description }}
+        </div>
+      {% endif %}
+
+      <div class="mt-auto pt-3 border-t border-dashed border-body/10">
+        {% if is_complex %}
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col">
+              <span class="text-[10px] uppercase tracking-widest opacity-60 font-bold">Starts at</span>
+              <span class="font-bold text-lg">{{ item.amount | plus: 0 | money }}</span>
+            </div>
+          </div>
+        {% elsif modifier_count > 0 %}
+          <div class="flex flex-col gap-2">
+            {% for group in item.modifier_groups %}
+              {% assign sorted_modifiers = group.modifiers | sort: 'amount_delta' %}
+              {% for mod in sorted_modifiers %}
+                <div class="flex items-center justify-between w-full text-left bg-body/5 px-2 py-1.5 rounded-sm">
+                  <span class="text-xs uppercase font-bold opacity-70">{{ mod.name }}</span>
+                  <span class="text-sm font-bold">
+                    {{ item.amount | plus: mod.amount_delta | money }}
+                  </span>
+                </div>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-lg">{{ item.amount | plus: 0 | money }}</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>

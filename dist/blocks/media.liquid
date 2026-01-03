@@ -1,0 +1,110 @@
+{% assign s = block.settings %}
+
+{% capture block_classes %}
+  w-full h-full relative overflow-hidden
+  {% unless s.inherit_styles %}
+    color-{{ s.color_scheme }}
+    {% if s.show_shadow %}shadow-lg{% endif %}
+  {% endunless %}
+{% endcapture %}
+
+{% capture block_styles %}
+  {% unless s.inherit_styles %}
+    border-radius: {{ s.border_radius }}px;
+  {% endunless %}
+{% endcapture %}
+
+<div class="media-block {{ block_classes }}" style="{{ block_styles }}">
+  {% render 'media',
+    src: s.image,
+    src_mobile: s.image_mobile,
+    video: s.video_url,
+    ratio: s.aspect_ratio,
+    fit: s.object_fit,
+    placeholder: 'scene-1'
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "Media (Image/Video)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    { "type": "image_picker", "id": "image", "label": "Desktop Image" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
+    { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
+
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect Ratio",
+      "options": [
+        { "value": "auto", "label": "Natural" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "video", "label": "Video (16:9)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "object_fit",
+      "label": "Object Fit",
+      "options": [
+        { "value": "cover", "label": "Cover (Fill)" },
+        { "value": "contain", "label": "Contain (Fit)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Global Styles",
+      "default": true,
+      "info": "Uncheck to customize Radius and Colors."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Custom Radius",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Media"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,278 @@
+{% assign s = section.settings %}
+
+{% assign has_media_2 = false %}
+{% if s.bg_image_2 != blank or s.video_url_2 != blank %}
+  {% assign has_media_2 = true %}
+{% endif %}
+
+{% capture container_layout %}
+  {% if s.layout_mode == 'split_right' %}flex flex-col lg:flex-row-reverse
+  {% elsif s.layout_mode == 'split_left' %}flex flex-col lg:flex-row
+  {% else %}relative flex flex-col{% endif %} 
+{% endcapture %}
+
+{% capture gap_style %}
+  {% if s.layout_mode contains 'split' %}gap: {{ s.split_gap }}px;{% endif %}
+{% endcapture %}
+
+{% capture media_container_class %}
+  {% if s.layout_mode contains 'split' %}w-full lg:w-1/2 relative h-[50vh] lg:h-auto flex
+  {% else %}absolute inset-0 z-media flex{% endif %}
+{% endcapture %}
+
+{% capture content_container_class %}
+  {% if s.layout_mode contains 'split' %}w-full lg:w-1/2 relative bg-body flex flex-col justify-center
+  {% else %}relative z-content w-full flex flex-col{% endif %}
+{% endcapture %}
+
+{% if s.overlay_color != blank %}
+  {% capture overlay_style %}
+    {% if s.enable_gradient %}
+      background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%);
+    {% else %}
+      background-color: {{ s.overlay_color }};
+    {% endif %}
+    opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+  {% endcapture %}
+{% endif %}
+
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+{% assign total_pb = s.padding_bottom | plus: s.marquee_clearance %}
+
+{% assign placeholder_name = 'scene-3' %}
+{% unless s.show_placeholder %}
+  {% assign placeholder_name = '' %}
+{% endunless %}
+
+<section
+  class="section-hero overflow-hidden color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ container_layout }} {{ s.height }} limit-width"
+  style="{{ gap_style }}; --pt: {{ s.padding_top }}px; --pb: {{ total_pb }}px;"
+>
+  <div class="{{ media_container_class }} bg-surface overflow-hidden">
+    <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-std{% else %}w-full{% endif %}">
+      {% render 'media',
+        src: s.bg_image,
+        src_mobile: s.mobile_image,
+        video: s.video_url,
+        fit: 'cover',
+        loading: 'eager',
+        placeholder: placeholder_name,
+        animate: s.enable_zoom
+      %}
+
+      {% if s.layout_mode == 'overlay' %}
+        <div
+          class="absolute inset-0 pointer-events-none"
+          style="{{ overlay_style }}"
+        ></div>
+      {% endif %}
+    </div>
+
+    {% if has_media_2 %}
+      <div class="relative h-full w-1/2">
+        {% render 'media',
+          src: s.bg_image_2,
+          src_mobile: s.mobile_image_2,
+          video: s.video_url_2,
+          fit: 'cover',
+          loading: 'eager',
+          placeholder: placeholder_name,
+          animate: s.enable_zoom
+        %}
+        {% if s.layout_mode == 'overlay' %}
+          <div
+            class="absolute inset-0 pointer-events-none"
+            style="{{ overlay_style }}"
+          ></div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div
+    class="{{ content_container_class }} {{ s.align_x }} {{ s.align_y }} gap-6 transition-all {{ animation_class }} pt-[var(--pt)] pb-[var(--pb)]"
+  >
+    {% content_for 'blocks' %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout Style",
+      "options": [
+        { "value": "overlay", "label": "Overlay (Classic)" },
+        { "value": "split_left", "label": "Split (Media Left)" },
+        { "value": "split_right", "label": "Split (Media Right)" }
+      ],
+      "default": "overlay"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Section Height",
+      "options": [
+        { "value": "h-auto", "label": "Auto (Fit Content)" },
+        { "value": "h-[75vh]", "label": "Standard (75%)" },
+        { "value": "h-screen", "label": "Immersive (Full)" }
+      ],
+      "default": "h-auto"
+    },
+    {
+      "type": "range",
+      "id": "split_gap",
+      "label": "Split Gap (Desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.layout_mode != 'overlay'"
+    },
+
+    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+
+    { "type": "header", "content": "Primary Media" },
+    { "type": "image_picker", "id": "bg_image", "label": "Image 1 (Desktop)" },
+    { "type": "image_picker", "id": "mobile_image", "label": "Image 1 (Mobile)" },
+    { "type": "text", "id": "video_url", "label": "Video 1 (MP4)" },
+
+    { "type": "header", "content": "Secondary Media" },
+    { "type": "image_picker", "id": "bg_image_2", "label": "Image 2 (Desktop)" },
+    { "type": "image_picker", "id": "mobile_image_2", "label": "Image 2 (Mobile)" },
+    { "type": "text", "id": "video_url_2", "label": "Video 2 (MP4)" },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show Placeholder",
+      "default": true,
+      "info": "Show a pattern when no image is selected.",
+      "conditional": "setting.bg_image == blank and setting.bg_image_2 == blank"
+    },
+
+    { "type": "header", "content": "Overlay" },
+    { "type": "checkbox", "id": "enable_gradient", "label": "Use Gradient Overlay", "default": false },
+    { "type": "color", "id": "overlay_color", "label": "Tint Color", "default": "" },
+    { "type": "range", "id": "overlay_opacity", "label": "Opacity", "min": 0, "max": 100, "default": 40 },
+
+    { "type": "header", "content": "Alignment" },
+    {
+      "type": "select",
+      "id": "align_x",
+      "label": "Horizontal",
+      "default": "items-center text-center",
+      "options": [
+        { "value": "items-start text-left", "label": "Left" },
+        { "value": "items-center text-center", "label": "Center" },
+        { "value": "items-end text-right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "align_y",
+      "label": "Vertical",
+      "default": "justify-center",
+      "options": [
+        { "value": "justify-start", "label": "Top" },
+        { "value": "justify-center", "label": "Middle" },
+        { "value": "justify-end", "label": "Bottom" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Safe Area"
+    },
+    {
+      "type": "range",
+      "id": "marquee_clearance",
+      "label": "Bottom Clearance",
+      "info": "Extra space for pinned marquees.",
+      "min": 0,
+      "max": 200,
+      "default": 0,
+      "unit": "px"
+    },
+
+    { "type": "header", "content": "Theme" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
+    { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+  ],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "scroll-indicator" },
+    { "type": "text" },
+    { "type": "jumbo-text" },
+    { "type": "spacer" },
+    { "type": "_marquee" },
+    { "type": "media" },
+    { "type": "group" },
+    { "type": "button" }
+  ],
+  "presets": [
+    {
+      "name": "Hero (Fine Dining)",
+      "settings": {
+        "layout_mode": "overlay",
+        "color_scheme": "default",
+        "enable_gradient": true,
+        "marquee_clearance": 80
+      },
+      "blocks": {
+        "hero_heading": {
+          "type": "jumbo-text",
+          "settings": { "text": "Taste the Season", "display_size": "display" }
+        },
+        "hero_subtext": {
+          "type": "text",
+          "settings": { "content": "Locally sourced ingredients.", "display_size": "body" }
+        },
+        "hero_cta": {
+          "type": "button",
+          "settings": { "label": "Reserve Table", "style": "primary" }
+        },
+        "hero_ticker": {
+          "type": "_marquee",
+          "settings": { "pin_bottom": true, "color_scheme": "default" }
+        }
+      },
+      "block_order": ["hero_heading", "hero_subtext", "hero_cta", "hero_ticker"]
+    }
+  ]
+}
+{% endschema %}
