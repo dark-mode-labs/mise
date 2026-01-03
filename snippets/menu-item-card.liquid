@@ -48,7 +48,7 @@
               >
             {% endif %}
             <span class="font-bold text-lg leading-none block">
-              {{ item.price | money }}
+              {{ item.amount | plus: 0 | money }}
             </span>
           </div>
         </div>
@@ -64,13 +64,12 @@
         {% if is_complex == false and modifier_count > 0 %}
           <div class="flex flex-wrap gap-2 mb-2">
             {% for group in item.modifier_groups %}
-              {% assign sorted_modifiers = group.modifiers | sort: 'price_delta' %}
+              {% assign sorted_modifiers = group.modifiers | sort: 'amount_delta' %}
               {% for mod in sorted_modifiers %}
                 <div class="flex items-center gap-1 bg-body/5 border border-body/10 px-1.5 py-1 rounded-sm text-[10px] md:text-xs">
                   <span class="opacity-70 uppercase font-bold">{{ mod.name }}</span>
                   <span class="font-bold">
-                    {% assign total = item.price | plus: mod.price_delta %}
-                    {{ total | money }}
+                    {{ item.amount | plus: mod.amount_delta | money }}
                   </span>
                 </div>
               {% endfor %}
@@ -150,19 +149,18 @@
           <div class="flex items-center justify-between">
             <div class="flex flex-col">
               <span class="text-[10px] uppercase tracking-widest opacity-60 font-bold">Starts at</span>
-              <span class="font-bold text-lg">{{ item.price | money }}</span>
+              <span class="font-bold text-lg">{{ item.amount | plus: 0 | money }}</span>
             </div>
           </div>
         {% elsif modifier_count > 0 %}
           <div class="flex flex-col gap-2">
             {% for group in item.modifier_groups %}
-              {% assign sorted_modifiers = group.modifiers | sort: 'price_delta' %}
+              {% assign sorted_modifiers = group.modifiers | sort: 'amount_delta' %}
               {% for mod in sorted_modifiers %}
                 <div class="flex items-center justify-between w-full text-left bg-body/5 px-2 py-1.5 rounded-sm">
                   <span class="text-xs uppercase font-bold opacity-70">{{ mod.name }}</span>
                   <span class="text-sm font-bold">
-                    {% assign total = item.price | plus: mod.price_delta %}
-                    {{ total | money }}
+                    {{ item.amount | plus: mod.amount_delta | money }}
                   </span>
                 </div>
               {% endfor %}
@@ -170,7 +168,7 @@
           </div>
         {% else %}
           <div class="flex items-center justify-between">
-            <span class="font-bold text-lg">{{ item.price | money }}</span>
+            <span class="font-bold text-lg">{{ item.amount | plus: 0 | money }}</span>
           </div>
         {% endif %}
       </div>

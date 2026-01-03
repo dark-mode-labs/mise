@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if settings.favicon != blank %}
       <link
         rel="icon"
@@ -10,6 +9,7 @@
       >
     {% endif %}
 
+    {% render 'meta-tags' %}
     {% render 'stylesheets' %}
     {% render 'scripts' %}
     {% render 'theme_variables' %}

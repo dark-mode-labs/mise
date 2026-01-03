@@ -50,22 +50,21 @@
         <div class="flex-none w-auto text-right font-bold font-heading text-lg leading-tight">
           {% if use_body_layout %}
             <span class="whitespace-nowrap">
-              {% if item.price_varies %}From {% endif %}
-              {{ item.price | money }}
+              {% comment %} {% if item.modifier_groups.size > 0 %}From {% endif %} {% endcomment %}
+              {{ item.amount | plus: 0 | money }}
             </span>
           {% else %}
             <div class="flex flex-col xl:flex-row items-end xl:items-center justify-end gap-x-4 gap-y-1">
               {% if modifier_count == 0 %}
-                <span class="whitespace-nowrap">{{ item.price | money }}</span>
+                <span class="whitespace-nowrap">{{ item.amount | plus: 0 | money }}</span>
               {% else %}
                 {% for group in item.modifier_groups %}
-                  {% assign modifiers = group.modifiers | sort: 'price_delta' %}
+                  {% assign modifiers = group.modifiers | sort: 'amount_delta' %}
                   {% for mod in modifiers %}
                     <div class="whitespace-nowrap flex items-center justify-end">
                       <span class="text-xs opacity-70 uppercase tracking-wide mr-2">{{ mod.name }}</span>
                       <span>
-                        {% assign total_val = item.price | plus: mod.price_delta %}
-                        {{ total_val | money }}
+                        {{ item.amount | plus: mod.amount_delta | money }}
                       </span>
                     </div>
                   {% endfor %}
@@ -94,11 +93,10 @@
                     </h5>
                     <ul class="flex flex-col gap-1">
                       {% for mod in group.modifiers %}
-                        {% assign mod_price_check = mod.price_delta | money_without_currency %}
                         <li class="flex justify-between text-sm opacity-80">
                           <span>{{ mod.name }}</span>
-                          {% if mod_price_check > 0 %}
-                            <span class="opacity-60 font-bold text-xs">+{{ mod.price_delta | money }}</span>
+                          {% if mod.amount_delta > 0 %}
+                            <span class="opacity-60 font-bold text-xs">+{{ mod.amount_delta | money }}</span>
                           {% endif %}
                         </li>
                       {% endfor %}
@@ -115,11 +113,10 @@
               </h5>
               <div class="flex flex-col gap-1 text-sm opacity-80">
                 {% for mod in group.modifiers %}
-                  {% assign mod_price_check = mod.price_delta | money_without_currency %}
                   <div class="flex justify-between items-baseline">
                     <span>{{ mod.name }}</span>
-                    {% if mod_price_check > 0 %}
-                      <span class="opacity-60 font-bold text-xs">+{{ mod.price_delta | money }}</span>
+                    {% if mod.amount_delta > 0 %}
+                      <span class="opacity-60 font-bold text-xs">+{{ mod.amount_delta | money }}</span>
                     {% endif %}
                   </div>
                 {% endfor %}
