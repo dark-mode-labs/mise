@@ -1,4 +1,4 @@
-{% assign networks = 'instagram,facebook,tiktok,twitter,yelp' | split: ',' %}
+{% assign networks = 'instagram,facebook,tiktok,twitter,yelp,linkedin,youtube' | split: ',' %}
 
 <div class="flex gap-4 {{ class }}">
   {% for network in networks %}
@@ -6,6 +6,24 @@
     {% assign link_url = settings[setting_key] %}
 
     {% if link_url != blank %}
+      {% liquid
+        case network
+          when 'instagram'
+            assign link_url = link_url | prepend: 'https://instagram.com/@'
+          when 'facebook'
+            assign link_url = link_url | prepend: 'https://facebook.com/'
+          when 'tiktok'
+            assign link_url = link_url | prepend: 'https://tiktok.com/@'
+          when 'twitter'
+            assign link_url = link_url | prepend: 'https://x.com/@'
+          when 'yelp'
+            assign link_url = link_url | prepend: 'https://yelp.com/biz/'
+          when 'linkedin'
+            assign link_url = link_url | prepend: 'https://linkedin.com/company/'
+          when 'youtube'
+            assign link_url = link_url | prepend: 'https://youtube.com/@'
+        endcase
+      %}
       <a
         href="{{ link_url }}"
         class="text-current hover:opacity-70 transition-opacity"
