@@ -184,11 +184,30 @@
       "info": "Show a pattern when no image is selected.",
       "conditional": "setting.bg_image == blank and setting.bg_image_2 == blank"
     },
-
-    { "type": "header", "content": "Overlay" },
-    { "type": "checkbox", "id": "enable_gradient", "label": "Use Gradient Overlay", "default": false },
-    { "type": "color", "id": "overlay_color", "label": "Tint Color", "default": "" },
-    { "type": "range", "id": "overlay_opacity", "label": "Opacity", "min": 0, "max": 100, "default": 40 },
+    { "type": "header", "content": "Overlay", "conditional": "setting.layout_mode == 'overlay'" },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient",
+      "label": "Use Gradient Overlay",
+      "default": false,
+      "conditional": "setting.layout_mode == 'overlay'"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Tint Color",
+      "default": "",
+      "conditional": "setting.layout_mode == 'overlay'"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "conditional": "setting.layout_mode == 'overlay'"
+    },
 
     { "type": "header", "content": "Alignment" },
     {
