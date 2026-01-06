@@ -6,6 +6,10 @@
   {% assign anim_class = 'animate-ken-burns' %}
 {% endif %}
 
+{% if animate_hover %}
+  {% assign anim_class = anim_class | append: ' transition-transform duration-700 ease-out group-hover:scale-110' %}
+{% endif %}
+
 {% capture ratio_class %}
   {% case ratio %}
     {% when 'square' %}aspect-square
@@ -16,7 +20,7 @@
   {% endcase %}
 {% endcapture %}
 
-<div class="media-wrapper w-full {{ ratio_class }} overflow-hidden relative bg-gray-100">
+<div class="media-wrapper w-full {{ ratio_class }} overflow-hidden relative group">
 
   {% if video != blank %}
     <video 
