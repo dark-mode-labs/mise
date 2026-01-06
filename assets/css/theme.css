@@ -21,7 +21,7 @@
 
 @layer components {
   .limit-width {
-    @apply w-full max-w-[var(--limit-width)] mx-auto px-4 md:px-6 lg:px-8;
+    @apply w-full max-w-[var(--limit-width)] mx-auto;
   }
 
   .stagger-load>*:not(.no-stagger):not(:has(.no-stagger)) {
