@@ -1,0 +1,20 @@
+{% assign tag_el = tag | default: 'p' %}
+{% assign text_color = color | default: 'text-body' %}
+{% assign size_class = 'text-base' %}
+
+{% case display_size %}
+  {% when 'display' %}
+    {% assign size_class = 'text-5xl md:text-7xl tracking-tight leading-none' %}
+  {% when 'h1' %}
+    {% assign size_class = 'text-4xl md:text-5xl font-bold' %}
+  {% when 'h2' %}
+    {% assign size_class = 'text-3xl md:text-4xl font-semibold' %}
+  {% when 'body' %}
+    {% assign size_class = 'text-base md:text-lg leading-relaxed' %}
+  {% when 'caption' %}
+    {% assign size_class = 'text-xs uppercase tracking-widest text-secondary' %}
+{% endcase %}
+
+<{{ tag_el }} class="{{ size_class }} font-{{ weight | default: 'normal' }} {{ text_color }}">
+  {{ text }}
+</{{ tag_el }}>

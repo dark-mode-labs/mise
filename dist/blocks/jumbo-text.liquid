@@ -1,0 +1,55 @@
+{% capture style_override %}
+  {% unless block.settings.inherit_color_scheme %}
+    style="--color-text: {{ block.settings.custom_color }};"
+  {% endunless %}
+{% endcapture %}
+
+<div class="w-full" {{ style_override }}>
+  {% render 'typography', 
+     text: block.settings.text, 
+     tag: 'h1', 
+     display_size: block.settings.display_size
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "Headline",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Taste the Difference"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "display_size",
+      "label": "Size",
+      "default": "display",
+      "options": [
+        { "value": "display", "label": "Display (Massive)" },
+        { "value": "h1", "label": "H1 (Standard)" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "Inherit Color Scheme",
+      "default": true,
+      "info": "Uncheck to pick a custom color."
+    },
+    {
+      "type": "color",
+      "id": "custom_color",
+      "label": "Custom Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_color_scheme != true"
+    }
+  ]
+}
+{% endschema %}

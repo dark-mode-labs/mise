@@ -1,0 +1,133 @@
+{% assign s = section.settings %}
+
+{% case s.columns_desktop %}
+  {% when 2 %}
+    {% assign grid_class = 'lg:grid-cols-2' %}
+  {% when 3 %}
+    {% assign grid_class = 'lg:grid-cols-3' %}
+  {% when 4 %}
+    {% assign grid_class = 'lg:grid-cols-4' %}
+{% endcase %}
+
+{% case s.columns_mobile %}
+  {% when 2 %}
+    {% assign mobile_grid_class = 'md:grid-cols-2' %}
+{% endcase %}
+
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+<section
+  class="section-multi-column color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width bg-body"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+>
+  <div class="w-full flex flex-col gap-12">
+    {% if s.heading != blank %}
+      <div class="w-full text-center mx-auto mb-4 animate-fade-up">
+        {% render 'typography', text: s.heading, tag: 'h2', size: 'h2' %}
+      </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 {{ mobile_grid_class }} {{ grid_class }} gap-gap gap-y-12 {{ animation_class }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Grid",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Section Heading", "default": "Our Process" },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns per row",
+      "min": 2,
+      "max": 4,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns per row (Mobile)",
+      "min": 1,
+      "max": 2,
+      "default": 2
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 160, "step": 4, "default": 96 },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 96
+    },
+
+    { "type": "header", "content": "Theme" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Animation", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" },
+
+    { "type": "header", "content": "Cards" },
+    { "type": "checkbox", "id": "enable_cards_global", "label": "Enable Cards for All Columns", "default": false },
+    { "type": "header", "content": "Card Style", "conditional": "setting.enable_cards_global == true" },
+    {
+      "type": "range",
+      "id": "card_padding_global",
+      "label": "Card Padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "conditional": "setting.enable_cards_global == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow_global",
+      "label": "Show Shadow",
+      "default": false,
+      "conditional": "setting.enable_cards_global == true"
+    }
+  ],
+  "blocks": [{ "type": "_column" }],
+  "presets": [
+    {
+      "name": "Multi-Column",
+      "settings": { "columns_desktop": 3 },
+      "blocks": {
+        "col_1": {
+          "type": "_column",
+          "blocks": { "title": { "type": "heading", "settings": { "text": "Sourcing" } } },
+          "block_order": ["title"]
+        },
+        "col_2": {
+          "type": "_column",
+          "blocks": { "title": { "type": "heading", "settings": { "text": "Prep" } } },
+          "block_order": ["title"]
+        },
+        "col_3": {
+          "type": "_column",
+          "blocks": { "title": { "type": "heading", "settings": { "text": "Plating" } } },
+          "block_order": ["title"]
+        }
+      },
+      "block_order": ["col_1", "col_2", "col_3"]
+    }
+  ]
+}
+{% endschema %}

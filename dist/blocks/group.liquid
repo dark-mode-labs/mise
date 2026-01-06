@@ -1,0 +1,173 @@
+{% assign s = block.settings %}
+
+{% capture block_classes %}
+  group-block relative z-content overflow-hidden transition-all flex
+  {{ s.direction }} 
+  {{ s.align_items }} 
+  {{ s.justify_content }}
+  {% if s.wrap_content %}flex-wrap{% endif %}
+  {% if s.inherit_styles %}rounded-global{% else %}color-{{ s.color_scheme }}{% endif %}
+  {% if s.enable_glass %}backdrop-blur-md bg-opacity-80 border border-white/10{% endif %}
+{% endcapture %}
+
+{% capture block_styles %}
+  padding: {{ s.padding }}px;
+  gap: {{ s.gap }}px;
+  {% unless s.inherit_styles %}border-radius: {{ s.border_radius }}px;{% endunless %}
+  {% if s.shadow %}box-shadow: 0 8px 32px rgba(0,0,0,0.15);{% endif %}
+  opacity: {{ s.opacity | divided_by: 100.0 }};
+{% endcapture %}
+
+<div class="{{ block_classes }}" style="{{ block_styles }}">
+  <div class="contents {{ s.text_align }}">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Group (Container)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Flex Layout"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "flex-col", "label": "Vertical (Stack)" },
+        { "value": "flex-row", "label": "Horizontal (Row)" },
+        { "value": "flex-col md:flex-row", "label": "Responsive (Stack Mobile / Row Desktop)" }
+      ],
+      "default": "flex-col"
+    },
+    {
+      "type": "select",
+      "id": "justify_content",
+      "label": "Main Axis Alignment (Justify)",
+      "options": [
+        { "value": "justify-start", "label": "Start" },
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-end", "label": "End" },
+        { "value": "justify-between", "label": "Space Between" }
+      ],
+      "default": "justify-start"
+    },
+    {
+      "type": "select",
+      "id": "align_items",
+      "label": "Cross Axis Alignment (Align)",
+      "options": [
+        { "value": "items-start", "label": "Start" },
+        { "value": "items-center", "label": "Center" },
+        { "value": "items-end", "label": "End" },
+        { "value": "items-stretch", "label": "Stretch" }
+      ],
+      "default": "items-center"
+    },
+    {
+      "type": "checkbox",
+      "id": "wrap_content",
+      "label": "Allow Wrapping",
+      "default": false,
+      "info": "Useful for horizontal lists on small screens."
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap (px)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 16
+    },
+
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Global Styles",
+      "default": false,
+      "info": "Uncheck to set custom Color and Radius."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Enable Glass Effect",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
+      ],
+      "default": "text-left"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Custom Radius",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 12,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "label": "Background Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 100
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow",
+      "label": "Show Shadow",
+      "default": false
+    }
+  ],
+  "blocks": [{ "type": "@theme" }],
+  "presets": [
+    {
+      "name": "Group (Row)",
+      "settings": {
+        "direction": "flex-row",
+        "gap": 12,
+        "align_items": "items-center"
+      },
+      "blocks": {
+        "icon": { "type": "media", "settings": { "aspect_ratio": "square", "border_radius": 999 } },
+        "text": { "type": "heading", "settings": { "text": "Feature Item", "tag": "h4", "display_size": "h3" } }
+      },
+      "block_order": ["icon", "text"]
+    }
+  ]
+}
+{% endschema %}

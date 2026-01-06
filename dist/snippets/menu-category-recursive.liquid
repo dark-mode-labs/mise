@@ -1,0 +1,68 @@
+{% comment %}
+  Props:
+  - category: Current category
+  - all_categories: All categories
+  - depth: Current depth
+  - s: Settings
+  - grid_class: Grid classes
+  - animation_class: Animation classes
+  - spy_target: The UUID for the spy target (inherited if horizontal)
+{% endcomment %}
+
+{% assign children = all_categories | where: 'parent_uuid', category.uuid | sort: 'display_order' %}
+
+{% assign current_spy_target = spy_target %}
+{% if s.nav_layout == 'vertical' %}
+  {% assign current_spy_target = category.uuid %}
+{% endif %}
+
+<div
+  data-spy-target="{{ current_spy_target }}"
+  class="{% if depth == 0 %}scroll-mt-48 menu-category-group{% else %}scroll-mt-48 mb-12 pl-0 md:pl-4{% endif %}"
+  data-filter-section
+  data-filter-section-id="{{ category.uuid }}"
+>
+  {% if depth == 0 %}
+    <div class="flex items-end justify-between border-b-2 border-body mb-8 pb-2">
+      <h3 class="font-heading text-3xl font-bold uppercase tracking-wide">{{ category.name }}</h3>
+    </div>
+  {% else %}
+    <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ category.name }}</h4>
+  {% endif %}
+
+  {% assign items = category.items %}
+  {% if items.size > 0 %}
+    <div class="{{ grid_class }} {% if depth == 0 %}mb-12{% endif %} {{ animation_class }}" data-filter-grid>
+      {% for item in items %}
+        {% if s.layout_style contains 'card-' %}
+          {% assign card_style = s.layout_style | replace: 'card-', '' %}
+          {% render 'menu-item-card',
+            item: item,
+            ratio: s.aspect_ratio,
+            style: card_style,
+            padding_class: s.card_padding,
+            image_position: s.card_image_position
+          %}
+        {% else %}
+          {% render 'menu-item-list',
+            item: item,
+            padding_class: s.list_row_padding,
+            image_class: s.list_image_size
+          %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% for child in children %}
+    {% render 'menu-category-recursive',
+      category: child,
+      all_categories: all_categories,
+      depth: depth | plus: 1,
+      s: s,
+      grid_class: grid_class,
+      animation_class: animation_class,
+      spy_target: current_spy_target
+    %}
+  {% endfor %}
+</div>

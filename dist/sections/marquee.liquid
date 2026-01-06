@@ -1,0 +1,97 @@
+{% assign s = section.settings %}
+
+<section
+  class="section-marquee border-y border-std color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body overflow-hidden pt-[var(--py)] pb-[var(--py)] limit-width"
+  style="--py: {{ s.padding_vertical }}px;"
+>
+  {% render 'marquee',
+    items: s.text_list,
+    speed: s.speed,
+    direction: s.direction,
+    size_class: s.text_size,
+    uppercase: s.uppercase
+  %}
+</section>
+
+{% schema %}
+{
+  "name": "Scrolling Text",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "full"
+    },
+    {
+      "type": "text",
+      "id": "text_list",
+      "label": "Text",
+      "default": "Reserve Now, Open Daily, Fresh Ingredients",
+      "info": "Comma separated"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "Text Size",
+      "options": [
+        { "value": "text-sm", "label": "Small" },
+        { "value": "text-base", "label": "Medium" },
+        { "value": "text-lg", "label": "Large" },
+        { "value": "text-xl", "label": "Extra Large" },
+        { "value": "text-4xl", "label": "Display" }
+      ],
+      "default": "text-sm"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "min": 5,
+      "max": 60,
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 16
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling Text"
+    }
+  ]
+}
+{% endschema %}

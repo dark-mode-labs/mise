@@ -1,0 +1,131 @@
+{% assign s = section.settings %}
+
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+<section
+  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body flex flex-col {{ s.vertical_align }} pt-[var(--pt)] pb-[var(--pb)] min-h-[var(--min-h)] limit-width"
+  style="
+    --pt: {{ s.padding_top }}px; 
+    --pb: {{ s.padding_bottom }}px;
+    --min-h: {{ s.min_height }}px;
+  "
+>
+  <div class="w-full">
+    <div class="flex flex-col gap-6 {{ s.text_align }} {{ animation_class }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Generic section",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Minimum Height",
+      "min": 0,
+      "max": 800,
+      "step": 40,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "justify-start", "label": "Top" },
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-end", "label": "Bottom" }
+      ],
+      "default": "justify-center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "text-left items-start", "label": "Left" },
+        { "value": "text-center items-center", "label": "Center" },
+        { "value": "text-right items-end", "label": "Right" }
+      ],
+      "default": "text-center items-center"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 96,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 96,
+      "unit": "px"
+    },
+
+    { "type": "header", "content": "Theme" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Animation", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+  ],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "scroll-indicator" },
+    { "type": "text" },
+    { "type": "jumbo-text" },
+    { "type": "spacer" },
+    { "type": "_marquee" },
+    { "type": "media" },
+    { "type": "group" },
+    { "type": "button" }
+  ],
+  "presets": [
+    {
+      "name": "Rich Text",
+      "settings": {
+        "text_align": "text-center items-center"
+      },
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": { "text": "Our Story", "display_size": "h2", "tag": "h2" }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "content": "Founded in 2025, we believe in honest ingredients and good vibes.",
+            "display_size": "body"
+          }
+        },
+        "btn": {
+          "type": "button",
+          "settings": { "label": "Learn More", "style": "link" }
+        }
+      },
+      "block_order": ["heading", "body", "btn"]
+    }
+  ]
+}
+{% endschema %}

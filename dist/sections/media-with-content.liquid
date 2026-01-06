@@ -1,0 +1,201 @@
+{% assign s = section.settings %}
+
+{% capture layout_class %}
+  flex flex-col
+  {% if s.desktop_layout == 'image_right' %}lg:flex-row-reverse{% else %}lg:flex-row{% endif %}
+{% endcapture %}
+
+{% if s.mobile_layout == 'text_first' %}
+  {% assign layout_class = layout_class | append: ' flex-col-reverse' %}
+{% endif %}
+
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+{% assign placeholder_name = 'scene-2' %}
+{% unless s.show_placeholder %}
+  {% assign placeholder_name = '' %}
+{% endunless %}
+
+<section
+  class="section-feature color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
+  style="
+    --pt: {{ s.padding_top }}px;
+    --pb: {{ s.padding_bottom }}px;
+    --desktop-gap: {{ s.desktop_gap }}px;
+  "
+>
+  <div class="w-full {{ layout_class }} items-center gap-gap lg:gap-[var(--desktop-gap)]">
+    <div class="w-full lg:w-1/2 relative">
+      <div class="overflow-hidden rounded-global {% if s.show_shadow %}shadow-lg{% endif %}">
+        {% render 'media',
+          src: s.image,
+          src_mobile: s.mobile_image,
+          video: s.video_url,
+          fit: 'cover',
+          ratio: s.media_aspect_ratio,
+          placeholder: placeholder_name,
+          animate: s.enable_zoom
+        %}
+      </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 flex flex-col {{ s.text_align }} {{ animation_class }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Media with content",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop Position",
+      "options": [
+        { "value": "image_left", "label": "Media Left" },
+        { "value": "image_right", "label": "Media Right" }
+      ],
+      "default": "image_left"
+    },
+    {
+      "type": "range",
+      "id": "desktop_gap",
+      "label": "Gap (Desktop)",
+      "min": 40,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Stacking",
+      "options": [
+        { "value": "image_first", "label": "Media First" },
+        { "value": "text_first", "label": "Text First" }
+      ],
+      "default": "image_first"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "items-start text-left", "label": "Left" },
+        { "value": "items-center text-center", "label": "Center" },
+        { "value": "items-end text-right", "label": "Right" }
+      ],
+      "default": "items-start text-left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow on Media",
+      "default": true
+    },
+
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 96,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 96,
+      "unit": "px"
+    },
+
+    { "type": "header", "content": "Media" },
+    { "type": "image_picker", "id": "image", "label": "Feature Image" },
+    { "type": "image_picker", "id": "mobile_image", "label": "Feature Image (Mobile)" },
+    { "type": "text", "id": "video_url", "label": "Feature Video" },
+    {
+      "type": "select",
+      "id": "media_aspect_ratio",
+      "label": "Aspect Ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "auto", "label": "Natural" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show Placeholder",
+      "default": true,
+      "info": "Show a pattern when no image is selected."
+    },
+    { "type": "header", "content": "Visuals" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
+    { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+  ],
+  "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }],
+  "presets": [
+    {
+      "name": "Feature (Chef Profile)",
+      "settings": {
+        "desktop_layout": "image_left",
+        "media_aspect_ratio": "portrait",
+        "color_scheme": "default",
+        "enable_animation": true,
+        "padding_top": 96,
+        "padding_bottom": 96,
+        "desktop_gap": 80
+      },
+      "blocks": {
+        "chef_heading": {
+          "type": "heading",
+          "settings": {
+            "text": "Our Philosophy",
+            "tag": "h2",
+            "display_size": "h2"
+          }
+        },
+        "chef_bio": {
+          "type": "text",
+          "settings": {
+            "content": "We believe in honest food, sourced from farmers we know by name.",
+            "display_size": "body"
+          }
+        },
+        "chef_cta": {
+          "type": "button",
+          "settings": {
+            "label": "Read Our Story",
+            "style": "link"
+          }
+        }
+      },
+      "block_order": ["chef_heading", "chef_bio", "chef_cta"]
+    }
+  ]
+}
+{% endschema %}

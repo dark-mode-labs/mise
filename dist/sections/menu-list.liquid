@@ -1,0 +1,373 @@
+{% assign s = section.settings %}
+{% assign menu = shop.menu_data[s.menu] %}
+
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+{% capture column_class %}
+  {% case s.column_preset %}
+    {% when '1:2:2' %}grid-cols-1 md:grid-cols-2
+    {% when '1:2:3' %}grid-cols-1 md:grid-cols-2 xl:grid-cols-3
+    {% else %}grid-cols-1
+  {% endcase %}
+{% endcapture %}
+
+{% assign grid_class = 'grid'
+  | append: ' '
+  | append: column_class
+  | append: ' '
+  | append: s.grid_gap_x
+  | append: ' '
+  | append: s.grid_gap_y
+%}
+
+{% assign main_flex_direction = 'flex-col lg:flex-row' %}
+{% assign nav_container_class = 'hidden lg:block w-64 flex-shrink-0 sticky self-start z-floating top-32' %}
+{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-body/10 pl-4 overflow-y-auto no-scrollbar' %}
+{% assign link_base_class = 'block border-l-2 border-transparent -ml-[18px] pl-[14px] [&.is-active]:border-body [&.is-active]:pl-4' %}
+{% assign sublink_base_class = 'block' %}
+
+{% if s.nav_layout == 'horizontal' %}
+  {% capture sticky_style %}top: {{ s.nav_sticky_offset }}px;{% endcapture %}
+  {% assign main_flex_direction = 'flex-col' %}
+  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--color-bg)] border-b border-body/10 mb-8 transition-[top] duration-200' %}
+  {% assign nav_wrapper_class = 'flex flex-row items-center gap-6 overflow-x-auto no-scrollbar py-3 px-1' %}
+  {% assign link_base_class = 'whitespace-nowrap border-b-2 border-transparent pb-2 transition-all duration-300 [&.is-active]:border-body [&.is-active]:opacity-100 [&.is-active]:font-bold' %}
+  {% assign sublink_base_class = 'hidden' %}
+{% endif %}
+
+<section
+  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+  data-spy-scope
+  data-filter-scope
+>
+  <div class="w-full">
+    <div class="text-center mx-auto mb-16 animate-fade-up">
+      {% if s.heading != blank %}
+        {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
+      {% endif %}
+
+      {% if s.subtext != blank %}
+        <div class="text-secondary mt-4">
+          {% render 'typography', text: s.subtext, tag: 'div', size: 'body', color: 'var(--color-text-secondary)' %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="flex {{ main_flex_direction }} relative">
+      {% assign all_categories = menu.categories | map_values | sort: 'display_order' %}
+      {% if s.display_scope == 'full_menu' %}
+        {% assign root_categories = all_categories | where: 'parent_uuid', null %}
+      {% elsif s.display_scope == 'category' %}
+        {% assign root_categories = menu.categories[s.category] | sort %}
+      {% endif %}
+      {% if s.show_nav and root_categories != blank %}
+        <div
+          class="{{ nav_container_class }}"
+          style="{{ sticky_style }}"
+          {% if s.enable_filtering %}
+            data-behavior="menu-filter"
+          {% endif %}
+        >
+          <div class="{% if s.nav_layout == 'horizontal' %}flex items-center justify-between gap-4 max-w-none px-4{% else %}flex flex-col gap-6{% endif %}">
+            {% if s.enable_filtering %}
+              <div class="relative {% if s.nav_layout == 'horizontal' %}w-48 hidden md:block flex-shrink-0 order-2 ml-auto{% else %}w-[85%] order-1{% endif %}">
+                <input
+                  type="text"
+                  placeholder="Search menu..."
+                  class="w-full bg-transparent border border-std rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors placeholder:text-secondary"
+                  data-filter-search
+                >
+                {% render 'icon',
+                  name: 'search',
+                  class: 'absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none'
+                %}
+              </div>
+            {% endif %}
+            {% if s.enable_filtering and menu.dietary_flags.size > 0 %}
+              <div
+                class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-std pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
+                data-filter-tags
+              >
+                {% for tag in menu.dietary_flags %}
+                  {% assign tag_name = tag.name | downcase %}
+                  <button
+                    type="button"
+                    data-filter-tag="{{ tag_name }}"
+                    title="Filter by {{ tag.name }}"
+                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[10px] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[10px] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
+                  >
+                    {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
+                  </button>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <nav
+              data-behavior="menu-spy"
+              class="{{ nav_wrapper_class }} flex-grow min-w-0 {% if s.nav_layout == 'vertical' %}order-3{% else %}order-1{% endif %}"
+            >
+              {% for parent in root_categories %}
+                {% render 'menu-nav-recursive',
+                  category: parent,
+                  all_categories: all_categories,
+                  depth: 0,
+                  s: s,
+                  link_base_class: link_base_class,
+                  sublink_base_class: sublink_base_class
+                %}
+              {% endfor %}
+            </nav>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="flex-grow flex flex-col gap-20" data-filter-container>
+        {% for parent in root_categories %}
+          {% render 'menu-category-recursive',
+            category: parent,
+            all_categories: all_categories,
+            depth: 0,
+            s: s,
+            grid_class: grid_class,
+            animation_class: animation_class,
+            spy_target: parent.uuid
+          %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div id="filter-empty-state" class="hidden w-full py-20 text-center opacity-50">
+      <p class="text-xl font-heading font-bold">No items found matching your filters.</p>
+      <button type="button" data-action="clear-filters" class="mt-4 underline text-sm hover:opacity-100">
+        Clear Filters
+      </button>
+    </div>
+
+    {% if menu.disclaimers.size > 0 %}
+      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest mx-auto border-t border-body/10 pt-8">
+        {% for disclaimer in menu.disclaimers %}
+          <p>{{ disclaimer.text }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Menu View",
+  "settings": [
+    { "type": "header", "content": "Data Source" },
+    { "type": "collection", "id": "menu", "label": "Select Menu" },
+    {
+      "type": "select",
+      "id": "display_scope",
+      "label": "Display Scope",
+      "options": [
+        { "value": "full_menu", "label": "Full Menu (All Categories)" },
+        { "value": "category", "label": "Specific Category Only" }
+      ],
+      "default": "full_menu"
+    },
+    {
+      "type": "collection",
+      "id": "category",
+      "label": "Category Name",
+      "info": "Select category to display.",
+      "conditional": "setting.display_scope == 'category'"
+    },
+
+    { "type": "header", "content": "Filtering & Search" },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable Filtering Bar",
+      "default": true
+    },
+
+    { "type": "header", "content": "Navigation", "conditional": "setting.display_scope == 'full_menu'" },
+    {
+      "type": "checkbox",
+      "id": "show_nav",
+      "label": "Show Sticky Navigation",
+      "default": true,
+      "conditional": "setting.display_scope == 'full_menu'"
+    },
+    {
+      "type": "select",
+      "id": "nav_layout",
+      "label": "Navigation Layout",
+      "options": [
+        { "value": "vertical", "label": "Vertical Sidebar (Desktop Only)" },
+        { "value": "horizontal", "label": "Horizontal Top Bar" }
+      ],
+      "default": "vertical",
+      "info": "Horizontal layout works best for menus with many top-level categories.",
+      "conditional": "setting.show_nav"
+    },
+    {
+      "type": "range",
+      "id": "nav_sticky_offset",
+      "label": "Sticky Top Offset (Horizontal Nav Layout)",
+      "info": "Adjust this to clear your site header if the menu is being covered.",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.show_nav and setting.nav_layout == 'horizontal'"
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Layout Style",
+      "options": [
+        { "value": "list", "label": "List" },
+        { "value": "card-standard", "label": "Standard Card" },
+        { "value": "card-compact", "label": "Compact Card" }
+      ],
+      "default": "list"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Card Image Ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "portrait", "label": "Portrait (3:4)" }
+      ],
+      "default": "landscape",
+      "conditional": "setting.layout_style != 'list'"
+    },
+    {
+      "type": "select",
+      "id": "card_image_position",
+      "label": "Card Image Position (Compact)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "right",
+      "conditional": "setting.layout_style != 'list'"
+    },
+    {
+      "type": "select",
+      "id": "column_preset",
+      "label": "Column Presets",
+      "options": [
+        { "value": "1:1:1", "label": "1 (Small), 1 (Medium), 1 (Large)" },
+        { "value": "1:2:2", "label": "1 (Small), 2 (Medium), 2 (Large)" },
+        { "value": "1:2:3", "label": "1 (Small), 2 (Medium), 3 (Large)" }
+      ],
+      "default": "1:2:3"
+    },
+
+    { "type": "header", "content": "Layout Tuning" },
+    {
+      "type": "select",
+      "id": "grid_gap_x",
+      "label": "Horizontal Grid Gap",
+      "options": [
+        { "value": "gap-x-4", "label": "Tight (1rem)" },
+        { "value": "gap-x-8", "label": "Normal (2rem)" },
+        { "value": "gap-x-12", "label": "Relaxed (3rem)" },
+        { "value": "gap-x-16", "label": "Loose (4rem)" }
+      ],
+      "default": "gap-x-12"
+    },
+    {
+      "type": "select",
+      "id": "grid_gap_y",
+      "label": "Vertical Grid Gap",
+      "options": [
+        { "value": "gap-y-4", "label": "Tight (1rem)" },
+        { "value": "gap-y-8", "label": "Normal (2rem)" },
+        { "value": "gap-y-12", "label": "Relaxed (3rem)" },
+        { "value": "gap-y-16", "label": "Loose (4rem)" }
+      ],
+      "default": "gap-y-8"
+    },
+    {
+      "type": "select",
+      "id": "card_padding",
+      "label": "Card Internal Padding",
+      "options": [
+        { "value": "p-3", "label": "Tight" },
+        { "value": "p-4", "label": "Compact" },
+        { "value": "p-5", "label": "Normal" },
+        { "value": "p-6", "label": "Relaxed" },
+        { "value": "p-8", "label": "Loose" }
+      ],
+      "default": "p-5",
+      "conditional": "setting.layout_style != 'list'"
+    },
+    {
+      "type": "select",
+      "id": "list_row_padding",
+      "label": "List View Row Height",
+      "options": [
+        { "value": "py-2", "label": "Tight" },
+        { "value": "py-4", "label": "Normal" },
+        { "value": "py-6", "label": "Relaxed" },
+        { "value": "py-8", "label": "Loose" }
+      ],
+      "default": "py-4",
+      "conditional": "setting.layout_style == 'list'"
+    },
+    {
+      "type": "select",
+      "id": "list_image_size",
+      "label": "List View Image Size",
+      "options": [
+        { "value": "w-12 h-12 md:w-16 md:h-16", "label": "Small" },
+        { "value": "w-16 h-16 md:w-20 md:h-20", "label": "Medium" },
+        { "value": "w-20 h-20 md:w-24 md:h-24", "label": "Large" }
+      ],
+      "default": "w-16 h-16 md:w-20 md:h-20",
+      "conditional": "setting.layout_style == 'list'"
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
+
+    { "type": "header", "content": "Content" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "info": "Defaults to Menu Name or override",
+      "default": "{{ menu.name }}"
+    },
+    { "type": "textarea", "id": "subtext", "label": "Description" },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 160, "step": 4, "default": 96 },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 96
+    },
+
+    { "type": "header", "content": "Theme" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+  ],
+  "presets": [{ "name": "Menu View" }]
+}
+{% endschema %}

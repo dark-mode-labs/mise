@@ -1,0 +1,80 @@
+{% assign s = section.settings %}
+
+<footer
+  class="section-footer color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body border-t border-std pt-[var(--pt)] pb-[var(--pb)] limit-width"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+>
+  <div class="w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-0 md:gap-y-12 gap-x-8 mb-16">
+      {% content_for 'blocks' %}
+    </div>
+
+    <div class="pt-8 border-t border-std flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-secondary uppercase tracking-widest">
+      <div class="flex flex-col md:flex-row gap-4 text-center md:text-left items-center">
+        <span
+          >&copy; {{ 'now' | date: '%Y' }}
+          {{ shop.name }}
+        </span>
+        {% if s.show_policy %}
+          <a href="/policies/privacy-policy" class="hover:underline">Privacy</a>
+          <a href="/policies/terms-of-service" class="hover:underline">Terms</a>
+        {% endif %}
+      </div>
+
+      <div class="flex flex-col md:flex-row items-center gap-6">
+        {% if s.show_payment %}
+          <div class="flex gap-2 items-center">
+            {% render 'icon', name: 'credit-card', class: 'w-6 h-6 text-secondary' %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "restriction": { "groups": ["footer"] },
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 120, "step": 4, "default": 80 },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 40
+    },
+
+    { "type": "header", "content": "Bottom Bar" },
+    { "type": "checkbox", "id": "show_policy", "label": "Show Policy Links", "default": true },
+    { "type": "checkbox", "id": "show_payment", "label": "Show Payment Icons", "default": true },
+
+    { "type": "header", "content": "Theme" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+  ],
+  "blocks": [{ "type": "_footer-brand" }, { "type": "_footer-nav" }, { "type": "_footer-newsletter" }],
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": {
+        "brand": { "type": "_footer-brand" },
+        "nav_1": { "type": "_footer-nav", "settings": { "heading": "Discover" } },
+        "nav_2": { "type": "_footer-nav", "settings": { "heading": "Visit" } },
+        "news": { "type": "_footer-newsletter" }
+      },
+      "block_order": ["brand", "nav_1", "nav_2", "news"]
+    }
+  ]
+}
+{% endschema %}

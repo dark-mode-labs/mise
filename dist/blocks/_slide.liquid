@@ -1,0 +1,136 @@
+{% assign s = block.settings %}
+{% if s.overlay_color != blank %}
+  {% capture overlay_style %}
+    {% if s.enable_gradient %}
+      background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%);
+    {% else %}
+      background-color: {{ s.overlay_color }};
+    {% endif %}
+    opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+  {% endcapture %}
+{% endif %}
+
+{% unless s.inherit_color_scheme %}
+  {% assign scheme_class = 'color-' | append: s.color_scheme %}
+{% endunless %}
+
+{% assign placeholder_name = 'scene-1' %}
+{% unless s.show_placeholder %}
+  {% assign placeholder_name = '' %}
+{% endunless %}
+
+<div class="slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative h-full overflow-hidden {{ scheme_class }}">
+  <div class="absolute inset-0 z-media bg-surface">
+    {% render 'media',
+      src: s.image,
+      src_mobile: s.image_mobile,
+      video: s.video_url,
+      fit: 'cover',
+      placeholder: placeholder_name,
+      animate: s.enable_zoom
+    %}
+
+    <div
+      class="absolute inset-0 pointer-events-none"
+      style="{{ overlay_style }}"
+    ></div>
+  </div>
+
+  <div class="wrapper absolute inset-0 z-content h-full flex flex-col {{ s.align_x }} {{ s.align_y }}">
+    <div class="w-full flex flex-col gap-4 stagger-load {{ s.text_align }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Slide",
+  "settings": [
+    { "type": "header", "content": "Media" },
+    { "type": "image_picker", "id": "image", "label": "Desktop Image" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
+    { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show Placeholder",
+      "default": true,
+      "info": "Show a pattern when no image is selected."
+    },
+    { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns (Zoom)", "default": false },
+
+    { "type": "header", "content": "Overlay" },
+    { "type": "checkbox", "id": "enable_gradient", "label": "Use Gradient Overlay", "default": true },
+    { "type": "color", "id": "overlay_color", "label": "Tint Color", "default": "#000000" },
+    { "type": "range", "id": "overlay_opacity", "label": "Opacity", "min": 0, "max": 100, "default": 40 },
+
+    { "type": "header", "content": "Alignment" },
+    {
+      "type": "select",
+      "id": "align_x",
+      "label": "Horizontal",
+      "options": [
+        { "value": "items-start", "label": "Left" },
+        { "value": "items-center", "label": "Center" },
+        { "value": "items-end", "label": "Right" }
+      ],
+      "default": "items-center"
+    },
+    {
+      "type": "select",
+      "id": "align_y",
+      "label": "Vertical",
+      "options": [
+        { "value": "justify-start pt-20", "label": "Top" },
+        { "value": "justify-center", "label": "Middle" },
+        { "value": "justify-end pb-20", "label": "Bottom" }
+      ],
+      "default": "justify-center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "text-left items-start", "label": "Left" },
+        { "value": "text-center items-center", "label": "Center" },
+        { "value": "text-right items-end", "label": "Right" }
+      ],
+      "default": "text-center items-center"
+    },
+
+    { "type": "header", "content": "Theme" },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "Inherit Color Scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_color_scheme != true"
+    }
+  ],
+  "blocks": [{ "type": "@theme" }],
+  "presets": [
+    {
+      "name": "Slide",
+      "blocks": {
+        "heading": {
+          "type": "jumbo-text",
+          "settings": { "text": "New Slide", "display_size": "display" }
+        },
+        "button": {
+          "type": "button",
+          "settings": { "label": "View Menu", "style": "primary" }
+        }
+      },
+      "block_order": ["heading", "button"]
+    }
+  ]
+}
+{% endschema %}
