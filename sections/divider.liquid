@@ -1,11 +1,8 @@
 {% assign s = section.settings %}
 
 <section
-  class="section-divider flex items-center justify-center color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body pt-[var(--pt)] pb-[var(--pb)] limit-width"
-  style="
-    --pt: {{ s.padding_top }}px;
-    --pb: {{ s.padding_bottom }}px;
-  "
+  class="section-divider flex items-center justify-center color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body pt-[var(--pt)] pb-[var(--pb)] limit-width h-[var(--max-h)]"
+  style="--max-h: {{ s.height }}px;"
 >
   <div class="w-full">
     <div class="relative flex items-center justify-center w-full">
@@ -68,21 +65,13 @@
     },
     {
       "type": "range",
-      "id": "padding_top",
-      "label": "Top Spacing",
+      "id": "height",
+      "label": "Height",
       "min": 0,
-      "max": 120,
+      "max": 600,
       "step": 4,
-      "default": 32
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "label": "Bottom Spacing",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "default": 32
+      "default": 32,
+      "unit": "px"
     },
     {
       "type": "header",
