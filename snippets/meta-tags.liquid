@@ -90,3 +90,7 @@
     content="{{ page.description | escape }}"
   >
 {% endif %}
+
+{% if page.keywords %}
+  <meta name="keywords" content="{{ page.keywords | escape }}">
+{% endif %}
