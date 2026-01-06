@@ -27,7 +27,7 @@
     --desktop-gap: {{ s.desktop_gap }}px;
   "
 >
-  <div class="w-full {{ layout_class }} items-center gap-gap lg:gap-[var(--desktop-gap)]">
+  <div class="w-full {{ layout_class }} items-center gap-gap lg:gap-[var(--desktop-gap)] bg-body">
     <div class="w-full lg:w-1/2 relative">
       <div class="overflow-hidden rounded-global {% if s.show_shadow %}shadow-lg{% endif %}">
         {% render 'media',
@@ -73,7 +73,7 @@
       "type": "range",
       "id": "desktop_gap",
       "label": "Gap (Desktop)",
-      "min": 40,
+      "min": 0,
       "max": 160,
       "step": 4,
       "default": 80,
