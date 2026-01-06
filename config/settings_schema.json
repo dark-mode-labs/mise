@@ -232,7 +232,7 @@
           "type": "text",
           "id": "social_instagram_link",
           "label": "Instagram",
-          "info": "https://instagram.com/yourhandle"
+          "info": "https://instagram.com/@yourhandle"
         },
         {
           "type": "text",
@@ -250,13 +250,25 @@
           "type": "text",
           "id": "social_twitter_link",
           "label": "X (Twitter)",
-          "info": "https://x.com/yourhandle"
+          "info": "https://x.com/@yourhandle"
         },
         {
           "type": "text",
           "id": "social_yelp_link",
           "label": "Yelp",
           "info": "https://yelp.com/biz/your-biz"
+        },
+        {
+          "type": "text",
+          "id": "social_linkedin_link",
+          "label": "LinkedIn",
+          "info": "https://linkedin.com/company/your-company"
+        },
+        {
+          "type": "text",
+          "id": "social_youtube_link",
+          "label": "YouTube",
+          "info": "https://youtube.com/@yourhandle"
         }
       ]
     }
