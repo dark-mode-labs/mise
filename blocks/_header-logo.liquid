@@ -1,18 +1,10 @@
 {% assign s = block.settings %}
-{% if shop.logo_src == blank %}
-  {% if s.logo == blank %}
-    {% assign asset_src = shop.logo %}
-  {% else %}
-    {% assign asset_src = shop.logo_transparent %}
-  {% endif %}
-{% else %}
-  {% assign asset_src = shop.logo_src %}
-{% endif %}
+{% assign asset_src = shop.logo_src | default: s.logo %}
 
 <a href="/" class="header-logo flex items-center justify-center relative z-content group-hover:opacity-100 h-full">
   {% if asset_src != blank %}
     <div
-      class="logo-default transition-opacity duration-300 block"
+      class="logo-inverse transition-opacity duration-300 block"
       style="width: {{ s.width }}px;"
     >
       {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}
@@ -27,13 +19,7 @@
   "name": "Header Logo",
   "settings": [
     { "type": "image_picker", "id": "logo", "label": "Logo", "conditional": "shop.logo_src == blank" },
-    {
-      "type": "image_picker",
-      "id": "logo_transparent",
-      "label": "Logo (Light)",
-      "conditional": "shop.logo_src == blank"
-    },
-    { "type": "range", "id": "width", "label": "Width", "min": 50, "max": 250, "default": 120, "unit": "px" }
+    { "type": "range", "id": "width", "label": "Width", "min": 50, "max": 400, "default": 120, "unit": "px" }
   ]
 }
 {% endschema %}
