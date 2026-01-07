@@ -4,12 +4,8 @@
   {% endunless %}
 {% endcapture %}
 
-<div class="w-full" {{ style_override }}>
-  {% render 'typography', 
-     text: block.settings.text, 
-     tag: 'h1', 
-     display_size: block.settings.display_size
-  %}
+<div class="w-full max-w-prose" {{ style_override }}>
+  {% render 'typography', text: block.settings.text, tag: 'h1', display_size: block.settings.display_size %}
 </div>
 
 {% schema %}
