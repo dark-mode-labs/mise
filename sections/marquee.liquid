@@ -1,5 +1,7 @@
 {% assign s = section.settings %}
 
+{% assign size_class = 'text-size-' | append: s.text_size %}
+
 <section
   class="section-marquee border-y border-std color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body overflow-hidden pt-[var(--py)] pb-[var(--py)] limit-width"
   style="--py: {{ s.padding_vertical }}px;"
@@ -8,7 +10,7 @@
     items: s.text_list,
     speed: s.speed,
     direction: s.direction,
-    size_class: s.text_size,
+    size_class: size_class,
     uppercase: s.uppercase
   %}
 </section>
@@ -36,13 +38,13 @@
       "id": "text_size",
       "label": "Text Size",
       "options": [
-        { "value": "text-sm", "label": "Small" },
-        { "value": "text-base", "label": "Medium" },
-        { "value": "text-lg", "label": "Large" },
-        { "value": "text-xl", "label": "Extra Large" },
-        { "value": "text-4xl", "label": "Display" }
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "display", "label": "Display" }
       ],
-      "default": "text-sm"
+      "default": "small"
     },
     {
       "type": "checkbox",
