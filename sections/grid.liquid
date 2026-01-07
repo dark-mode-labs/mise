@@ -1,5 +1,23 @@
 {% assign s = section.settings %}
 
+{% capture section_spacing_style %}
+  {% if s.padding_vertical == 'custom' %}
+    padding-top: {{ s.padding_vertical_custom }}px;
+    padding-bottom: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     padding-left: {{ s.padding_horizontal_custom }}px;
+     padding-right: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+  {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
+{% endcapture %}
+
+{% capture section_spacing_class %}
+  {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
+  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
+  section-h-{{ s.height }}
+{% endcapture %}
+
 {% case s.columns_desktop %}
   {% when 2 %}
     {% assign grid_class = 'lg:grid-cols-2' %}
@@ -36,8 +54,8 @@
 {% endif %}
 
 <section
-  class="section-multi-column relative color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] px-[var(--px)] limit-width {{ body_color }}"
-  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px; --px: {{ s.padding_horizontal }}px;"
+  class="section-multi-column relative color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ body_color }} {{ section_spacing_class }} limit-width"
+  style="{{ section_spacing_style }}"
 >
   {% if s.bg_image != blank %}
     <div class="absolute inset-0 -z-10 w-full h-full overflow-hidden bg-surface">
@@ -59,8 +77,8 @@
     {% endif %}
 
     <div
-      class="grid grid-cols-1 {{ mobile_grid_class }} {{ grid_class }} gap-gap gap-y-12 {{ animation_class }}"
-      style="padding: {{ s.card_padding_global }}px;"
+      class="grid grid-cols-1 {{ mobile_grid_class }} {{ grid_class }} {{ animation_class }} grid-gap-y-{{ s.card_padding }}"
+      style="{% if s.card_padding == 'custom' %}--grid-gap-y: {{ s.card_padding_custom }}px;{% endif %}"
     >
       {% content_for 'blocks' %}
     </div>
@@ -125,25 +143,82 @@
     },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Padding Top", "min": 0, "max": 160, "step": 4, "default": 96 },
     {
-      "type": "range",
-      "id": "padding_bottom",
-      "label": "Padding Bottom",
-      "min": 0,
-      "max": 160,
-      "step": 4,
-      "default": 96
+      "type": "select",
+      "id": "height",
+      "label": "Section Height",
+      "options": [
+        { "value": "auto", "label": "Auto (Fit Content)" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
     },
     {
       "type": "range",
-      "id": "padding_horizontal",
-      "label": "Padding Horizontal (L/R)",
+      "id": "height_custom",
+      "label": "Custom Height",
+      "min": 200,
+      "max": 1000,
+      "step": 10,
+      "default": 400,
+      "unit": "px",
+      "conditional": "setting.height == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
       "min": 0,
-      "max": 80,
+      "max": 200,
+      "step": 4,
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
       "step": 4,
       "default": 0,
-      "unit": "px"
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
     },
 
     { "type": "header", "content": "Theme" },
@@ -154,14 +229,29 @@
     { "type": "checkbox", "id": "enable_cards_global", "label": "Enable Cards for All Columns", "default": false },
     { "type": "header", "content": "Card Style", "conditional": "setting.enable_cards_global == true" },
     {
-      "type": "range",
-      "id": "card_padding_global",
+      "type": "select",
+      "id": "card_padding",
       "label": "Card Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "md",
+      "conditional": "setting.enable_cards_global == true"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_custom",
+      "label": "Custom Card Padding",
       "min": 0,
-      "max": 60,
+      "max": 100,
       "step": 4,
       "default": 24,
-      "conditional": "setting.enable_cards_global == true"
+      "conditional": "setting.card_padding == 'custom'"
     },
     {
       "type": "checkbox",
