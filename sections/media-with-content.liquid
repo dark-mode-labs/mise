@@ -20,10 +20,11 @@
 {% endunless %}
 
 <section
-  class="section-feature color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
+  class="section-feature color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] px-[var(--px)] limit-width"
   style="
     --pt: {{ s.padding_top }}px;
     --pb: {{ s.padding_bottom }}px;
+    --px: {{ s.padding_horizontal }}px;
     --desktop-gap: {{ s.desktop_gap }}px;
   "
 >
@@ -42,7 +43,7 @@
       </div>
     </div>
 
-    <div class="w-full lg:w-1/2 flex flex-col {{ s.text_align }} {{ animation_class }}">
+    <div class="w-full lg:w-1/2 flex flex-col {{ s.content_align }} {{ s.text_align }} {{ animation_class }}">
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -91,14 +92,25 @@
     },
     {
       "type": "select",
+      "id": "content_align",
+      "label": "Content Alignment",
+      "options": [
+        { "value": "items-start", "label": "Left" },
+        { "value": "items-center", "label": "Center" },
+        { "value": "items-end", "label": "Right" }
+      ],
+      "default": "items-start"
+    },
+    {
+      "type": "select",
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        { "value": "items-start text-left", "label": "Left" },
-        { "value": "items-center text-center", "label": "Center" },
-        { "value": "items-end text-right", "label": "Right" }
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
       ],
-      "default": "items-start text-left"
+      "default": "text-left"
     },
     {
       "type": "checkbox",
@@ -111,7 +123,7 @@
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Top Padding",
+      "label": "Padding Top",
       "min": 0,
       "max": 160,
       "step": 4,
@@ -121,11 +133,21 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Bottom Padding",
+      "label": "Padding Bottom",
       "min": 0,
       "max": 160,
       "step": 4,
       "default": 96,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Padding Horizontal (L/R)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0,
       "unit": "px"
     },
 
