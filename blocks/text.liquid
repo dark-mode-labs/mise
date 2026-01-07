@@ -4,16 +4,12 @@
   {% endunless %}
 {% endcapture %}
 
-{% capture text_classes %}
-  {{ block.settings.text_align }}
-  font-{{ block.settings.font_weight }}
-{% endcapture %}
-
-<div class="w-full max-w-prose {{ text_classes }}" {{ style_override }}>
-  {% render 'typography', 
-     text: block.settings.content, 
-     tag: 'div', 
-     display_size: block.settings.display_size
+<div class="w-full max-w-prose text-align-{{ block.settings.text_align }}" {{ style_override }}>
+  {% render 'typography',
+    text: block.settings.content,
+    tag: 'div',
+    display_size: block.settings.display_size,
+    weight: block.settings.font_weight
   %}
 </div>
 
@@ -47,9 +43,9 @@
       "label": "Alignment",
       "options": [
         { "value": "", "label": "Inherit" },
-        { "value": "text-left", "label": "Left" },
-        { "value": "text-center", "label": "Center" },
-        { "value": "text-right", "label": "Right" }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ],
       "default": ""
     },
