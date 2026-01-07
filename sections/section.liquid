@@ -6,15 +6,16 @@
 {% endif %}
 
 <section
-  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body flex flex-col {{ s.vertical_align }} pt-[var(--pt)] pb-[var(--pb)] min-h-[var(--min-h)] limit-width"
+  class="relative color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ width_class }} bg-body text-body flex flex-col {{ s.vertical_align }} pt-[var(--pt)] pb-[var(--pb)] px-[var(--px)] min-h-[var(--min-h)] limit-width"
   style="
-    --pt: {{ s.padding_top }}px; 
+    --pt: {{ s.padding_top }}px;
     --pb: {{ s.padding_bottom }}px;
+    --px: {{ s.padding_horizontal }}px;
     --min-h: {{ s.min_height }}px;
   "
 >
   <div class="w-full">
-    <div class="flex flex-col gap-6 {{ s.text_align }} {{ animation_class }}">
+    <div class="flex flex-col gap-6 {{ s.content_align }} {{ s.text_align }} {{ animation_class }}">
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -54,21 +55,32 @@
     },
     {
       "type": "select",
-      "id": "text_align",
-      "label": "Alignment",
+      "id": "content_align",
+      "label": "Content Alignment",
       "options": [
-        { "value": "text-left items-start", "label": "Left" },
-        { "value": "text-center items-center", "label": "Center" },
-        { "value": "text-right items-end", "label": "Right" }
+        { "value": "items-start", "label": "Left" },
+        { "value": "items-center", "label": "Center" },
+        { "value": "items-end", "label": "Right" }
       ],
-      "default": "text-center items-center"
+      "default": "items-center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
+      ],
+      "default": "text-center"
     },
 
     { "type": "header", "content": "Spacing" },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Top Padding",
+      "label": "Padding Top",
       "min": 0,
       "max": 160,
       "step": 4,
@@ -78,11 +90,21 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Bottom Padding",
+      "label": "Padding Bottom",
       "min": 0,
       "max": 160,
       "step": 4,
       "default": 96,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Padding Horizontal (L/R)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0,
       "unit": "px"
     },
 
