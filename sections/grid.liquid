@@ -19,18 +19,49 @@
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
+{% assign body_color = 'bg-body' %}
+{% unless s.bg_image == blank %}
+  {% assign body_color = '' %}
+{% endunless %}
+
+{% if s.overlay_color != blank %}
+  {% capture overlay_style %}
+    {% if s.enable_gradient %}
+      background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%);
+    {% else %}
+      background-color: {{ s.overlay_color }};
+    {% endif %}
+    opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+  {% endcapture %}
+{% endif %}
+
 <section
-  class="section-multi-column color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width bg-body"
-  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+  class="section-multi-column relative color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] px-[var(--px)] limit-width {{ body_color }}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px; --px: {{ s.padding_horizontal }}px;"
 >
-  <div class="w-full flex flex-col gap-12">
+  {% if s.bg_image != blank %}
+    <div class="absolute inset-0 -z-10 w-full h-full overflow-hidden bg-surface">
+      <div class="relative w-full h-full">
+        {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
+        <div
+          class="absolute inset-0 pointer-events-none"
+          style="{{ overlay_style }}"
+        ></div>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="w-full flex flex-col">
     {% if s.heading != blank %}
       <div class="w-full text-center mx-auto mb-4 animate-fade-up">
         {% render 'typography', text: s.heading, tag: 'h2', size: 'h2' %}
       </div>
     {% endif %}
 
-    <div class="grid grid-cols-1 {{ mobile_grid_class }} {{ grid_class }} gap-gap gap-y-12 {{ animation_class }}">
+    <div
+      class="grid grid-cols-1 {{ mobile_grid_class }} {{ grid_class }} gap-gap gap-y-12 {{ animation_class }}"
+      style="padding: {{ s.card_padding_global }}px;"
+    >
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -42,7 +73,33 @@
   "settings": [
     { "type": "header", "content": "Content" },
     { "type": "text", "id": "heading", "label": "Section Heading", "default": "Our Process" },
+    { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
+    { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile Background" },
 
+    { "type": "header", "content": "Overlay", "conditional": "setting.bg_image != blank" },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient",
+      "label": "Use Gradient Overlay",
+      "default": false,
+      "conditional": "setting.bg_image != blank"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Tint Color",
+      "default": "",
+      "conditional": "setting.bg_image != blank"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "conditional": "setting.bg_image != blank"
+    },
     { "type": "header", "content": "Layout" },
     {
       "type": "width_scheme",
@@ -68,15 +125,25 @@
     },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 160, "step": 4, "default": 96 },
+    { "type": "range", "id": "padding_top", "label": "Padding Top", "min": 0, "max": 160, "step": 4, "default": 96 },
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Bottom Padding",
+      "label": "Padding Bottom",
       "min": 0,
       "max": 160,
       "step": 4,
       "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Padding Horizontal (L/R)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
     },
 
     { "type": "header", "content": "Theme" },
