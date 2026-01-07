@@ -3,7 +3,7 @@
   - category: The current category object
   - all_categories: Array of all categories
   - depth: Current depth (0-based)
-  - s: Section settings
+  - nav_layout: Sticky nav layout
   - link_base_class: Class for root links
   - sublink_base_class: Class for child links
 {% endcomment %}
@@ -30,14 +30,14 @@
   </a>
 {% endif %}
 
-{% if children.size > 0 and s.nav_layout == 'vertical' %}
+{% if children.size > 0 and nav_layout == 'vertical' %}
   <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-std">
     {% for child in children %}
       {% render 'menu-nav-recursive',
         category: child,
         all_categories: all_categories,
+        nav_layout: nav_layout,
         depth: depth | plus: 1,
-        s: s,
         link_base_class: link_base_class,
         sublink_base_class: sublink_base_class
       %}

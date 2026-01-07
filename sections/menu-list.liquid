@@ -1,26 +1,42 @@
 {% assign s = section.settings %}
 {% assign menu = shop.menu_data[s.menu] %}
 
+{% capture section_spacing_style %}
+  {% if s.padding_vertical == 'custom' %}
+    padding-top: {{ s.padding_vertical_custom }}px;
+    padding-bottom: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     padding-left: {{ s.padding_horizontal_custom }}px;
+     padding-right: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+  {% if s.nav_layout == 'horizontal' %}top: {{ s.nav_sticky_offset }}px;{% endif %}
+{% endcapture %}
+
+{% capture section_spacing_class %}
+  {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
+  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
+{% endcapture %}
+
 {% assign animation_class = '' %}
 {% if s.enable_animation %}
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
-{% capture column_class %}
-  {% case s.column_preset %}
-    {% when '1:2:2' %}grid-cols-1 md:grid-cols-2
-    {% when '1:2:3' %}grid-cols-1 md:grid-cols-2 xl:grid-cols-3
-    {% else %}grid-cols-1
-  {% endcase %}
-{% endcapture %}
+{% assign column_class = 'menu-cols-' | append: s.column_preset | replace: ':', '-' %}
+{% assign grid_gap_x_class = 'menu-gap-x-' | append: s.grid_gap_x %}
+{% assign grid_gap_y_class = 'menu-gap-y-' | append: s.grid_gap_y %}
+{% assign card_padding_class = 'menu-card-p-' | append: s.card_padding %}
+{% assign list_padding_class = 'menu-list-row-' | append: s.list_row_padding %}
+{% assign list_image_class = 'menu-list-img-' | append: s.list_image_size %}
 
 {% assign grid_class = 'grid'
   | append: ' '
   | append: column_class
   | append: ' '
-  | append: s.grid_gap_x
+  | append: grid_gap_x_class
   | append: ' '
-  | append: s.grid_gap_y
+  | append: grid_gap_y_class
 %}
 
 {% assign main_flex_direction = 'flex-col lg:flex-row' %}
@@ -39,8 +55,8 @@
 {% endif %}
 
 <section
-  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] px-[var(--px)] limit-width"
-  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px; --px: {{ s.padding_horizontal }}px;"
+  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ section_spacing_class }} limit-width"
+  style="{{ section_spacing_style }}"
   data-spy-scope
   data-filter-scope
 >
@@ -115,7 +131,7 @@
                   category: parent,
                   all_categories: all_categories,
                   depth: 0,
-                  s: s,
+                  nav_layout: s.nav_layout,
                   link_base_class: link_base_class,
                   sublink_base_class: sublink_base_class
                 %}
@@ -131,10 +147,16 @@
             category: parent,
             all_categories: all_categories,
             depth: 0,
-            s: s,
             grid_class: grid_class,
             animation_class: animation_class,
-            spy_target: parent.uuid
+            spy_target: parent.uuid,
+            card_padding_class: card_padding_class,
+            list_padding_class: list_padding_class,
+            list_image_class: list_image_class,
+            layout_style: s.layout_style,
+            aspect_ratio: s.aspect_ratio,
+            card_image_position: s.image_position,
+            nav_layout: s.nav_layout
           %}
         {% endfor %}
       </div>
@@ -254,7 +276,7 @@
         { "value": "left", "label": "Left" },
         { "value": "right", "label": "Right" }
       ],
-      "default": "right",
+      "default": "left",
       "conditional": "setting.layout_style != 'list'"
     },
     {
@@ -275,37 +297,37 @@
       "id": "grid_gap_x",
       "label": "Horizontal Grid Gap",
       "options": [
-        { "value": "gap-x-4", "label": "Tight (1rem)" },
-        { "value": "gap-x-8", "label": "Normal (2rem)" },
-        { "value": "gap-x-12", "label": "Relaxed (3rem)" },
-        { "value": "gap-x-16", "label": "Loose (4rem)" }
+        { "value": "tight", "label": "Tight" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "relaxed", "label": "Relaxed" },
+        { "value": "loose", "label": "Loose" }
       ],
-      "default": "gap-x-12"
+      "default": "relaxed"
     },
     {
       "type": "select",
       "id": "grid_gap_y",
       "label": "Vertical Grid Gap",
       "options": [
-        { "value": "gap-y-4", "label": "Tight (1rem)" },
-        { "value": "gap-y-8", "label": "Normal (2rem)" },
-        { "value": "gap-y-12", "label": "Relaxed (3rem)" },
-        { "value": "gap-y-16", "label": "Loose (4rem)" }
+        { "value": "tight", "label": "Tight" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "relaxed", "label": "Relaxed" },
+        { "value": "loose", "label": "Loose" }
       ],
-      "default": "gap-y-8"
+      "default": "normal"
     },
     {
       "type": "select",
       "id": "card_padding",
       "label": "Card Internal Padding",
       "options": [
-        { "value": "p-3", "label": "Tight" },
-        { "value": "p-4", "label": "Compact" },
-        { "value": "p-5", "label": "Normal" },
-        { "value": "p-6", "label": "Relaxed" },
-        { "value": "p-8", "label": "Loose" }
+        { "value": "tight", "label": "Tight" },
+        { "value": "compact", "label": "Compact" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "relaxed", "label": "Relaxed" },
+        { "value": "loose", "label": "Loose" }
       ],
-      "default": "p-5",
+      "default": "normal",
       "conditional": "setting.layout_style != 'list'"
     },
     {
@@ -313,12 +335,12 @@
       "id": "list_row_padding",
       "label": "List View Row Height",
       "options": [
-        { "value": "py-2", "label": "Tight" },
-        { "value": "py-4", "label": "Normal" },
-        { "value": "py-6", "label": "Relaxed" },
-        { "value": "py-8", "label": "Loose" }
+        { "value": "tight", "label": "Tight" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "relaxed", "label": "Relaxed" },
+        { "value": "loose", "label": "Loose" }
       ],
-      "default": "py-4",
+      "default": "normal",
       "conditional": "setting.layout_style == 'list'"
     },
     {
@@ -326,11 +348,11 @@
       "id": "list_image_size",
       "label": "List View Image Size",
       "options": [
-        { "value": "w-12 h-12 md:w-16 md:h-16", "label": "Small" },
-        { "value": "w-16 h-16 md:w-20 md:h-20", "label": "Medium" },
-        { "value": "w-20 h-20 md:w-24 md:h-24", "label": "Large" }
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
       ],
-      "default": "w-16 h-16 md:w-20 md:h-20",
+      "default": "medium",
       "conditional": "setting.layout_style == 'list'"
     },
 
@@ -353,25 +375,57 @@
     { "type": "textarea", "id": "subtext", "label": "Description" },
 
     { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 160, "step": 4, "default": 96 },
     {
-      "type": "range",
-      "id": "padding_bottom",
-      "label": "Bottom Padding",
-      "min": 0,
-      "max": 160,
-      "step": 4,
-      "default": 96
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "md"
     },
     {
       "type": "range",
-      "id": "padding_horizontal",
-      "label": "Padding Horizontal (L/R)",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
       "min": 0,
-      "max": 80,
+      "max": 200,
+      "step": 4,
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
       "step": 4,
       "default": 0,
-      "unit": "px"
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
     },
 
     { "type": "header", "content": "Theme" },

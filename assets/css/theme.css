@@ -11,6 +11,11 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .animate-marquee:hover,
+  .animate-marquee-reverse:hover {
+    animation-play-state: paused;
+  }
 }
 
 @layer base {
@@ -121,6 +126,287 @@
   .header-section.is-transparent .logo-inverse {
     opacity: 1;
   }
+
+  .section-py-none {
+    @apply py-0;
+  }
+
+  .section-py-xs {
+    @apply py-4;
+  }
+
+  .section-py-sm {
+    @apply py-8;
+  }
+
+  .section-py-md {
+    @apply py-16;
+  }
+
+  .section-py-lg {
+    @apply py-24;
+  }
+
+  .section-py-xl {
+    @apply py-32;
+  }
+
+  .section-px-none {
+    @apply px-0;
+  }
+
+  .section-px-xs {
+    @apply px-2;
+  }
+
+  .section-px-sm {
+    @apply px-4;
+  }
+
+  .section-px-md {
+    @apply px-8;
+  }
+
+  .section-px-lg {
+    @apply px-12;
+  }
+
+  .section-px-xl {
+    @apply px-20;
+  }
+
+  .section-p-none {
+    @apply p-0;
+  }
+
+  .section-p-xs {
+    @apply p-2;
+  }
+
+  .section-p-sm {
+    @apply p-4;
+  }
+
+  .section-p-md {
+    @apply p-6;
+  }
+
+  .section-p-lg {
+    @apply p-8;
+  }
+
+  .section-p-xl {
+    @apply p-12;
+  }
+
+  /* Semantic Alignment */
+  .section-align-v-top {
+    @apply justify-start;
+  }
+
+  .section-align-v-middle {
+    @apply justify-center;
+  }
+
+  .section-align-v-bottom {
+    @apply justify-end;
+  }
+
+  .section-align-content-left {
+    @apply items-start;
+  }
+
+  .section-align-content-center {
+    @apply items-center;
+  }
+
+  .section-align-content-right {
+    @apply items-end;
+  }
+
+  .section-align-text-left {
+    @apply text-left;
+  }
+
+  .section-align-text-center {
+    @apply text-center;
+  }
+
+  .section-align-text-right {
+    @apply text-right;
+  }
+
+  .section-h-auto {
+    @apply h-auto;
+  }
+
+  .section-h-sm {
+    @apply max-h-[40vh];
+  }
+
+  .section-h-md {
+    @apply max-h-[60vh];
+  }
+
+  .section-h-lg {
+    @apply max-h-[80vh];
+  }
+
+  .section-h-xl {
+    @apply max-h-screen;
+  }
+
+  .menu-gap-x-tight {
+    @apply gap-x-4;
+  }
+
+  .menu-gap-x-normal {
+    @apply gap-x-8;
+  }
+
+  .menu-gap-x-relaxed {
+    @apply gap-x-12;
+  }
+
+  .menu-gap-x-loose {
+    @apply gap-x-16;
+  }
+
+  .menu-gap-y-tight {
+    @apply gap-y-4;
+  }
+
+  .menu-gap-y-normal {
+    @apply gap-y-8;
+  }
+
+  .menu-gap-y-relaxed {
+    @apply gap-y-12;
+  }
+
+  .menu-gap-y-loose {
+    @apply gap-y-16;
+  }
+
+  .menu-card-p-tight {
+    @apply p-3;
+  }
+
+  .menu-card-p-compact {
+    @apply p-4;
+  }
+
+  .menu-card-p-normal {
+    @apply p-5;
+  }
+
+  .menu-card-p-relaxed {
+    @apply p-6;
+  }
+
+  .menu-card-p-loose {
+    @apply p-8;
+  }
+
+  .menu-list-row-tight {
+    @apply py-2;
+  }
+
+  .menu-list-row-normal {
+    @apply py-4;
+  }
+
+  .menu-list-row-relaxed {
+    @apply py-6;
+  }
+
+  .menu-list-row-loose {
+    @apply py-8;
+  }
+
+  .menu-list-img-small {
+    @apply w-12 h-12 md:w-16 md:h-16;
+  }
+
+  .menu-list-img-medium {
+    @apply w-16 h-16 md:w-20 md:h-20;
+  }
+
+  .menu-list-img-large {
+    @apply w-20 h-20 md:w-24 md:h-24;
+  }
+
+  .menu-cols-1-2-2 {
+    @apply grid-cols-1 md:grid-cols-2;
+  }
+
+  .menu-cols-1-2-3 {
+    @apply grid-cols-1 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .menu-cols-default {
+    @apply grid-cols-1;
+  }
+
+  .grid-col-desk-2 {
+    @apply lg:grid-cols-2;
+  }
+
+  .grid-col-desk-3 {
+    @apply lg:grid-cols-3;
+  }
+
+  .grid-col-desk-4 {
+    @apply lg:grid-cols-4;
+  }
+
+  .grid-col-mob-2 {
+    @apply md:grid-cols-2;
+  }
+
+  .menu-cols-1-1-1 {
+    @apply grid-cols-1;
+  }
+
+  .hero-layout-split-right {
+    @apply flex flex-col lg:flex-row-reverse;
+  }
+
+  .hero-layout-split-left {
+    @apply flex flex-col lg:flex-row;
+  }
+
+  .hero-layout-overlay {
+    @apply relative flex flex-col;
+  }
+
+  .hero-media-split {
+    @apply w-full lg:w-1/2 relative h-[50vh] lg:h-auto flex;
+  }
+
+  .hero-media-overlay {
+    @apply absolute inset-0 z-media flex;
+  }
+
+  .hero-content-split {
+    @apply w-full lg:w-1/2 relative bg-body flex flex-col section-align-v-middle;
+  }
+
+  .hero-content-overlay {
+    @apply relative z-content w-full flex flex-col;
+  }
+
+  .media-layout-left {
+    @apply flex flex-col lg:flex-row;
+  }
+
+  .media-layout-right {
+    @apply flex flex-col lg:flex-row-reverse;
+  }
+
+  .mobile-reverse {
+    @apply flex-col-reverse;
+  }
 }
 
 @layer base {
@@ -144,10 +430,5 @@
 
   .rounded-global {
     border-radius: var(--radius-global);
-  }
-
-  .animate-marquee:hover,
-  .animate-marquee-reverse:hover {
-    animation-play-state: paused;
   }
 }
