@@ -1,5 +1,7 @@
 {% assign fit_mode = fit | default: 'cover' %}
 {% assign load_mode = loading | default: 'lazy' %}
+{% assign show_controls = controls | default: false %}
+{% assign can_autoplay = autoplay | default: false %}
 {% assign anim_class = '' %}
 
 {% if animate %}
@@ -21,12 +23,22 @@
 {% endcapture %}
 
 <div class="media-wrapper w-full {{ ratio_class }} overflow-hidden relative group">
-
   {% if video != blank %}
-    <video 
-      autoplay muted loop playsinline 
-      class="w-full h-full object-{{ fit_mode }} pointer-events-none {{ anim_class }}"
-      {% if src %}poster="{{ src | image_url: width: 800 }}"{% endif %}>
+    <video
+      muted
+      loop
+      playsinline
+      {% if can_autoplay %}
+        autoplay
+      {% endif %}
+      {% if show_controls %}
+        controls
+      {% endif %}
+      class="w-full h-full object-{{ fit_mode }} {% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}"
+      {% if src %}
+        poster="{{ src | image_url: width: 800 }}"
+      {% endif %}
+    >
       <source src="{{ video }}" type="video/mp4">
     </video>
 
@@ -35,8 +47,8 @@
       <picture class="w-full h-full block {{ anim_class }}">
         <source media="(max-width: 767px)" srcset="{{ src_mobile | image_url: width: 800 }}">
         <source media="(min-width: 768px)" srcset="{{ src | image_url: width: 1600 }}">
-        <img 
-          src="{{ src | image_url: width: 1600 }}" 
+        <img
+          src="{{ src | image_url: width: 1600 }}"
           alt="{{ src.alt | escape }}"
           loading="{{ load_mode }}"
           width="{{ src.width }}"
@@ -45,8 +57,8 @@
         >
       </picture>
     {% else %}
-      <img 
-        src="{{ src | image_url: width: 1600 }}" 
+      <img
+        src="{{ src | image_url: width: 1600 }}"
         alt="{{ src.alt | escape }}"
         loading="{{ load_mode }}"
         width="{{ src.width }}"
@@ -57,11 +69,11 @@
 
   {% else %}
     {% if placeholder != blank %}
-       {% render 'placeholder', 
-          name: placeholder | default: 'scene-1', 
-          class: 'w-full h-full object-cover' 
-       %}
+      {%
+        render 'placeholder',
+        name: placeholder | default: 'scene-1',
+        class: 'w-full h-full object-cover'
+      %}
     {% endif %}
   {% endif %}
-
 </div>
