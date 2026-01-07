@@ -24,10 +24,11 @@
 {% endif %}
 
 <header
-  class="header-section w-full {{ position_class }} color-{{ s.color_scheme }} text-body bg-body z-header transition-all duration-300 border-b border-std"
+  class="header-section w-full {{ position_class }} color-{{ s.color_scheme }} text-body bg-body z-header transition-all duration-300 border-b border-std px-[var(--px)]"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
   data-transparent="{{ s.enable_transparent }}"
+  style="--px: {{ s.padding_horizontal }}px;"
 >
   <div class="width-{{ s.width_scheme }} h-16 md:h-24 grid grid-cols-3 items-center limit-width">
     <div class="flex items-center justify-start gap-4">
@@ -45,7 +46,9 @@
           {{ slot_logo }}
         </div>
         <div>
-          {{ slot_nav }}
+          {% if s.nav_alignment == 'left' %}
+            {{ slot_nav }}
+          {% endif %}
         </div>
       {% else %}
         <div>
@@ -54,11 +57,19 @@
       {% endif %}
     </div>
 
-    <div class="flex items-center justify-center h-full {% if s.desktop_layout == 'logo_left' %}lg:invisible{% endif %}">
-      {{ slot_logo }}
+    <div class="flex items-center justify-center h-full">
+      {% if s.nav_alignment == 'center' %}
+        {{ slot_nav }}
+      {% endif %}
+      {% if s.desktop_layout == 'logo_left' %}
+        <div class="lg:hidden">{{ slot_logo }}</div>
+      {% endif %}
     </div>
 
     <div class="flex items-center justify-end gap-4">
+      {% if s.nav_alignment == 'right' %}
+        {{ slot_nav }}
+      {% endif %}
       {{ slot_actions }}
     </div>
   </div>
@@ -90,6 +101,28 @@
         { "value": "logo_left", "label": "Left" }
       ],
       "default": "logo_center"
+    },
+    {
+      "type": "select",
+      "id": "nav_alignment",
+      "label": "Navigation Alignment (Desktop)",
+      "options": [
+        { "value": "left", "label": "Left (Next to Logo)" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left",
+      "conditional": "setting.desktop_layout == 'logo_left'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Padding Horizontal (L/R)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
     },
     { "type": "header", "content": "Behavior" },
     {
