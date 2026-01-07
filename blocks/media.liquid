@@ -1,7 +1,7 @@
 {% assign s = block.settings %}
 
 {% capture block_classes %}
-  w-full h-full relative overflow-hidden
+  relative overflow-hidden
   {% unless s.inherit_styles %}
     color-{{ s.color_scheme }}
     {% if s.show_shadow %}shadow-lg{% endif %}
@@ -12,6 +12,8 @@
   {% unless s.inherit_styles %}
     border-radius: {{ s.border_radius }}px;
   {% endunless %}
+  width: {{ s.width }}px;
+  max-width: 100%;
 {% endcapture %}
 
 <div class="media-block {{ block_classes }}" style="{{ block_styles }}">
@@ -21,6 +23,9 @@
     video: s.video_url,
     ratio: s.aspect_ratio,
     fit: s.object_fit,
+    animate_hover: s.enable_hover,
+    controls: s.show_controls,
+    autoplay: s.autoplay,
     placeholder: 'scene-1'
   %}
 </div>
@@ -36,10 +41,22 @@
     { "type": "image_picker", "id": "image", "label": "Desktop Image" },
     { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
     { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
+    { "type": "checkbox", "id": "show_controls", "label": "Show Video Controls", "default": false },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay Video", "default": false },
 
     {
       "type": "header",
       "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Width (Pixels)",
+      "min": 50,
+      "max": 1200,
+      "step": 10,
+      "default": 600,
+      "unit": "px"
     },
     {
       "type": "select",
@@ -68,6 +85,7 @@
       "type": "header",
       "content": "Style"
     },
+    { "type": "checkbox", "id": "enable_hover", "label": "Enable Hover Zoom", "default": false },
     {
       "type": "checkbox",
       "id": "inherit_styles",
