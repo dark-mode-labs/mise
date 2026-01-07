@@ -25,7 +25,7 @@
 {% endif %}
 
 <div
-  class="column-block flex flex-col gap-4 h-full {{ s.text_align }} {{ card_class }} rounded-global"
+  class="column-block flex flex-col gap-4 h-full align-items-{{ s.text_align }} text-align-{{ s.text_align }} {{ card_class }} rounded-global"
   {{ style_override }}
 >
   {% content_for 'blocks' %}
@@ -40,11 +40,11 @@
       "id": "text_align",
       "label": "Alignment",
       "options": [
-        { "value": "items-start text-left", "label": "Left" },
-        { "value": "items-center text-center", "label": "Center" },
-        { "value": "items-end text-right", "label": "Right" }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ],
-      "default": "items-start text-left"
+      "default": "left"
     },
     {
       "type": "header",
