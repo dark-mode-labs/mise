@@ -50,7 +50,7 @@
 
 <section
   class="section-hero overflow-hidden color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ container_layout }} {{ s.height }} limit-width"
-  style="{{ gap_style }}; --pt: {{ s.padding_top }}px; --pb: {{ total_pb }}px;"
+  style="{{ gap_style }}; --pt: {{ s.padding_top }}px; --pb: {{ total_pb }}px; --px: {{ s.padding_horizontal }}px;"
 >
   <div class="{{ media_container_class }} bg-surface overflow-hidden">
     <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-std{% else %}w-full{% endif %}">
@@ -94,7 +94,7 @@
   </div>
 
   <div
-    class="{{ content_container_class }} {{ s.align_x }} {{ s.align_y }} gap-6 transition-all {{ animation_class }} pt-[var(--pt)] pb-[var(--pb)]"
+    class="{{ content_container_class }} {{ s.content_align }} {{ s.vertical_align }} {{ s.text_align }} gap-6 transition-all {{ animation_class }} pt-[var(--pt)] pb-[var(--pb)] px-[var(--px)]"
   >
     {% content_for 'blocks' %}
   </div>
@@ -144,7 +144,6 @@
       "unit": "px",
       "conditional": "setting.layout_mode != 'overlay'"
     },
-
     { "type": "header", "content": "Section Spacing" },
     {
       "type": "range",
@@ -166,7 +165,16 @@
       "default": 80,
       "unit": "px"
     },
-
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Padding Horizontal (L/R)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
     { "type": "header", "content": "Primary Media" },
     { "type": "image_picker", "id": "bg_image", "label": "Image 1 (Desktop)" },
     { "type": "image_picker", "id": "mobile_image", "label": "Image 1 (Mobile)" },
@@ -208,29 +216,39 @@
       "default": 40,
       "conditional": "setting.layout_mode == 'overlay'"
     },
-
     { "type": "header", "content": "Alignment" },
     {
       "type": "select",
-      "id": "align_x",
-      "label": "Horizontal",
-      "default": "items-center text-center",
+      "id": "content_align",
+      "label": "Content Alignment",
       "options": [
-        { "value": "items-start text-left", "label": "Left" },
-        { "value": "items-center text-center", "label": "Center" },
-        { "value": "items-end text-right", "label": "Right" }
-      ]
+        { "value": "items-start", "label": "Left" },
+        { "value": "items-center", "label": "Center" },
+        { "value": "items-end", "label": "Right" }
+      ],
+      "default": "items-center"
     },
     {
       "type": "select",
-      "id": "align_y",
-      "label": "Vertical",
-      "default": "justify-center",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
+      ],
+      "default": "text-center"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
       "options": [
         { "value": "justify-start", "label": "Top" },
         { "value": "justify-center", "label": "Middle" },
         { "value": "justify-end", "label": "Bottom" }
-      ]
+      ],
+      "default": "justify-center"
     },
     {
       "type": "header",
