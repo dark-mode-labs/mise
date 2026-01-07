@@ -4,18 +4,23 @@
   {% endunless %}
 {% endcapture %}
 
-{% capture text_classes %}
-  {{ block.settings.text_align }}
+{% capture text_transform_class %}
   {% if block.settings.uppercase %}uppercase tracking-widest{% endif %}
-  {% if block.settings.italic %}italic{% endif %}
-  font-{{ block.settings.font_weight }}
 {% endcapture %}
 
-<div class="w-full max-w-prose mb-4 {{ text_classes }}" {{ style_override }}>
-  {% render 'typography', 
-     text: block.settings.text, 
-     tag: block.settings.tag, 
-     display_size: block.settings.display_size
+{% capture text_style_class %}
+  {% if block.settings.italic %}italic{% endif %}
+{% endcapture %}
+
+<div
+  class="w-full max-w-prose mb-4 text-align-{{ block.settings.text_align }} {{ text_transform_class }} {{ text_style_class }}"
+  {{ style_override }}
+>
+  {% render 'typography',
+    text: block.settings.text,
+    tag: block.settings.tag,
+    display_size: block.settings.display_size,
+    weight: block.settings.font_weight
   %}
 </div>
 
@@ -61,9 +66,9 @@
       "label": "Alignment",
       "options": [
         { "value": "", "label": "Inherit" },
-        { "value": "text-left", "label": "Left" },
-        { "value": "text-center", "label": "Center" },
-        { "value": "text-right", "label": "Right" }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ],
       "default": ""
     },
