@@ -3,12 +3,14 @@
   {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
 {% endunless %}
 
+{% assign size_class = 'text-size-' | append: block.settings.text_size %}
+
 {% capture rendered_marquee %}
   {% render 'marquee', 
     items: block.settings.text_list, 
     speed: block.settings.speed, 
     direction: block.settings.direction, 
-    size_class: block.settings.text_size,
+    size_class: size_class,
     uppercase: block.settings.uppercase %}
 {% endcapture %}
 
@@ -79,13 +81,13 @@
       "id": "text_size",
       "label": "Text Size",
       "options": [
-        { "value": "text-sm", "label": "Small" },
-        { "value": "text-base", "label": "Medium" },
-        { "value": "text-lg", "label": "Large" },
-        { "value": "text-xl", "label": "Extra Large" },
-        { "value": "text-4xl", "label": "Display" }
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "display", "label": "Display" }
       ],
-      "default": "text-sm"
+      "default": "small"
     },
     {
       "type": "checkbox",
