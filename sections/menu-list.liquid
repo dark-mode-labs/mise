@@ -39,8 +39,8 @@
 {% endif %}
 
 <section
-  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
-  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] px-[var(--px)] limit-width"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px; --px: {{ s.padding_horizontal }}px;"
   data-spy-scope
   data-filter-scope
 >
@@ -362,6 +362,16 @@
       "max": 160,
       "step": 4,
       "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Padding Horizontal (L/R)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
     },
 
     { "type": "header", "content": "Theme" },
