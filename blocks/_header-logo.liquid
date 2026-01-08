@@ -1,10 +1,10 @@
 {% assign s = block.settings %}
 {% assign asset_src = shop.logo_src | default: s.logo %}
 
-<a href="/" class="header-logo flex items-center justify-center relative z-content group-hover:opacity-100 h-full">
+<a href="/" class="header-logo flex items-center justify-center relative z-content group-hover:opacity-100">
   {% if asset_src != blank %}
     <div
-      class="logo-inverse transition-opacity duration-300 block"
+      class="transition-opacity duration-300 block"
       style="width: {{ s.width }}px;"
     >
       {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}

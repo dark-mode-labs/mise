@@ -1,15 +1,15 @@
 {% assign s = block.settings %}
 
-<nav class="header-nav hidden lg:flex items-center h-full">
-  <ul class="flex items-center gap-8 h-full">
+<nav class="header-nav hidden lg:flex items-center">
+  <ul class="flex items-center gap-8">
     {% for link in s.menu.links %}
       {% assign has_mega = false %}
       {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
 
-      <li class="group h-full flex items-center relative">
+      <li class="group flex items-center relative">
         <a
           href="{{ link.url }}"
-          class="text-sm font-bold uppercase tracking-wide hover:opacity-70 flex items-center gap-1 h-full"
+          class="text-sm font-bold uppercase tracking-wide hover:opacity-70 flex items-center gap-1"
         >
           {{ link.title }}
           {% if link.links != blank %}

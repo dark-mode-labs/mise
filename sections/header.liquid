@@ -57,13 +57,14 @@
       {% endif %}
     </div>
 
-    <div class="flex items-center justify-center h-full">
+    <div class="flex items-center justify-center flex-auto">
       {% if s.nav_alignment == 'center' %}
         {{ slot_nav }}
       {% endif %}
       {% if s.desktop_layout == 'logo_left' %}
-        <div class="lg:hidden">{{ slot_logo }}</div>
+        {% assign logo_class = 'lg:hidden' %}
       {% endif %}
+      <div class="{{ logo_class }}">{{ slot_logo }}</div>
     </div>
 
     <div class="flex items-center justify-end gap-4">
