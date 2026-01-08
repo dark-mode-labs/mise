@@ -107,7 +107,7 @@
   </div>
 
   <div
-    class="w-full h-full {{ content_container_class }} section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}"
+    class="{{ content_container_class }} section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}"
   >
     {% content_for 'blocks' %}
   </div>

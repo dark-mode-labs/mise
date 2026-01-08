@@ -1,12 +1,6 @@
 @tailwind base;
 @tailwind utilities;
 
-@layer base {
-  html {
-    font-size: calc(16px * var(--type-scale));
-  }
-}
-
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
@@ -354,11 +348,11 @@
   }
 
   .hero-content-split {
-    @apply w-full lg:w-1/2 relative bg-body flex flex-col section-align-v-middle;
+    @apply w-full lg:w-1/2 relative bg-body flex flex-col flex-auto;
   }
 
   .hero-content-overlay {
-    @apply relative z-content w-full flex flex-col;
+    @apply relative z-content w-full flex flex-col flex-auto;
   }
 
   .media-layout-left {
@@ -369,8 +363,12 @@
     @apply flex flex-col lg:flex-row-reverse;
   }
 
-  .mobile-reverse {
-    @apply flex-col-reverse;
+  .media-media-split {
+    @apply w-full lg:w-1/2 relative h-[50vh] lg:h-auto flex;
+  }
+
+  .media-content-split {
+    @apply w-full lg:w-1/2 relative bg-body flex flex-col flex-auto;
   }
 
   .grid-gap-y-none {
@@ -403,6 +401,9 @@
 }
 
 @layer base {
+  html {
+    font-size: calc(16px * var(--type-scale));
+  }
 
   h1,
   h2,
