@@ -36,10 +36,8 @@
     ></div>
   </div>
 
-  <div class="wrapper absolute inset-0 z-content h-full flex flex-col align-items-{{ s.align_x }} justify-content-{{ s.align_y }}">
-    <div class="w-full flex flex-col gap-4 stagger-load text-align-{{ s.text_align }} align-items-{{ s.text_align }}">
-      {% content_for 'blocks' %}
-    </div>
+  <div class="wrapper absolute inset-0 z-content h-full flex flex-col flex-auto gap-4 section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} stagger-load">
+    {% content_for 'blocks' %}
   </div>
 </div>
 
@@ -68,25 +66,14 @@
     { "type": "header", "content": "Alignment" },
     {
       "type": "select",
-      "id": "align_x",
-      "label": "Horizontal",
+      "id": "content_align",
+      "label": "Content Alignment",
       "options": [
         { "value": "left", "label": "Left" },
         { "value": "center", "label": "Center" },
         { "value": "right", "label": "Right" }
       ],
       "default": "center"
-    },
-    {
-      "type": "select",
-      "id": "align_y",
-      "label": "Vertical",
-      "options": [
-        { "value": "top", "label": "Top" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom" }
-      ],
-      "default": "middle"
     },
     {
       "type": "select",
@@ -99,7 +86,17 @@
       ],
       "default": "center"
     },
-
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "middle"
+    },
     { "type": "header", "content": "Theme" },
     {
       "type": "checkbox",

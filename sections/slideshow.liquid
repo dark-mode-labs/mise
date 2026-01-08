@@ -8,7 +8,7 @@
   section-h-{{ s.height }}
 {% endcapture %}
 
-<div
+<section
   class="section-slideshow relative overflow-hidden bg-surface group select-none color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ section_spacing_class }} limit-width px-0"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
@@ -71,7 +71,7 @@
       </div>
     {% endif %}
   {% endif %}
-</div>
+</section>
 
 {% schema %}
 {
@@ -157,19 +157,20 @@
         { "value": "arrow-left", "label": "Arrow" }
       ],
       "default": "chevron-left",
-      "conditional": "setting.show_arrows"
+      "conditional": "setting.show_arrows",
+      "info": "Controls are middle sides."
     },
     {
       "type": "select",
       "id": "nav_position",
       "label": "Controls Position",
       "options": [
-        { "value": "middle_sides", "label": "Middle Sides (Arrows Only)" },
         { "value": "bottom_center", "label": "Bottom Center" },
         { "value": "bottom_left", "label": "Bottom Left" },
         { "value": "bottom_right", "label": "Bottom Right" }
       ],
-      "default": "middle_sides"
+      "default": "bottom_center",
+      "conditional": "setting.show_dots"
     },
     { "type": "header", "content": "Theme" },
     {
