@@ -271,13 +271,13 @@
     {
       "type": "select",
       "id": "card_image_position",
-      "label": "Card Image Position (Compact)",
+      "label": "Card Image Position",
       "options": [
         { "value": "left", "label": "Left" },
         { "value": "right", "label": "Right" }
       ],
       "default": "left",
-      "conditional": "setting.layout_style != 'list'"
+      "conditional": "setting.layout_style == 'card-compact'"
     },
     {
       "type": "select",
