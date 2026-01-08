@@ -1,13 +1,11 @@
 {% assign s = section.settings %}
 {% if s.image != blank or s.bg_color != blank %}
-  <div class="fixed inset-0 -z-50 w-full h-full pointer-events-none" style="background-color: {{ s.bg_color }};">
+  <section class="fixed inset-0 -z-50 pointer-events-none" style="background-color: {{ s.bg_color }};">
     {% if s.image != blank %}
-      <div class="w-full h-full opacity-100">
-        {% render 'media', src: s.image, fit: 'cover', loading: 'eager' %}
-      </div>
+      {% render 'media', src: s.image, fit: 'cover', loading: 'eager' %}
       <div class="absolute inset-0 bg-black" style="opacity: {{ s.overlay | divided_by: 100.0 }}"></div>
     {% endif %}
-  </div>
+  </section>
 {% endif %}
 
 {% schema %}
