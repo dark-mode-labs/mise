@@ -1,19 +1,11 @@
-<div
-  class="header-drawer fixed inset-0 z-overlay h-screen transform transition-transform duration-300 ease-in-out -translate-x-full pointer-events-none"
-  aria-hidden="true"
->
-  <div
-    class="drawer-backdrop absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 pointer-events-auto"
-    data-action="close"
-  ></div>
-
-  <div class="drawer-panel bg-body relative w-[85%] max-w-md h-full flex flex-col shadow-2xl pointer-events-auto overflow-hidden">
+<div class="header-drawer" aria-hidden="true">
+  <div class="drawer-backdrop" data-action="close"></div>
+  <div class="drawer-panel">
     <div class="flex items-center justify-end px-6 h-16 border-b border-current/10">
       <button type="button" class="p-2 -mr-2 hover:opacity-70" data-action="close" aria-label="Close Menu">
         {% render 'icon', name: 'close', class: 'w-6 h-6' %}
       </button>
     </div>
-
     <nav class="flex-1 overflow-y-auto py-6 px-6">
       <ul class="flex flex-col gap-4">
         {% for link in menu.links %}
@@ -41,7 +33,6 @@
         {% endfor %}
       </ul>
     </nav>
-
     <div class="p-6 border-t border-current/10 bg-black/5">
       <p class="text-xs opacity-60 uppercase tracking-widest text-center">
         {{ shop.name }} &copy; {{ 'now' | date: '%Y' }}
