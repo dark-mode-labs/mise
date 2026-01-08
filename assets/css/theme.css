@@ -19,7 +19,7 @@
   }
 
   .media-wrapper {
-    @apply flex flex-auto h-full w-full;
+    @apply flex flex-auto h-full w-full justify-center;
   }
 
   .media-wrapper picture {

@@ -12,8 +12,6 @@
   {% unless s.inherit_styles %}
     border-radius: {{ s.border_radius }}px;
   {% endunless %}
-  width: {{ s.width }}px;
-  max-width: 100%;
 {% endcapture %}
 
 <div class="media-block {{ block_classes }}" style="{{ block_styles }}">
@@ -47,16 +45,6 @@
     {
       "type": "header",
       "content": "Layout"
-    },
-    {
-      "type": "range",
-      "id": "width",
-      "label": "Width (Pixels)",
-      "min": 50,
-      "max": 1200,
-      "step": 10,
-      "default": 600,
-      "unit": "px"
     },
     {
       "type": "select",
