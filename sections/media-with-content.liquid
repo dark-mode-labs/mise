@@ -18,7 +18,6 @@
      padding-right: {{ s.padding_horizontal_custom }}px;
   {% endif %}
   {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
-    --desktop-gap: {{ s.desktop_gap }}px;
 {% endcapture %}
 
 {% capture section_spacing_class %}
@@ -37,12 +36,12 @@
   {% assign placeholder_name = '' %}
 {% endunless %}
 
-<section
-  class="section-feature overflow-hidden color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ container_layout }} {{ section_spacing_class }} limit-width"
-  style="{{ section_spacing_style }}"
->
-  <div class="{{ media_container_class }} bg-surface overflow-hidden">
-    <div class="relative h-full w-full">
+<section class="section-feature overflow-hidden color-{{ s.color_scheme }}">
+  <div
+    class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }}"
+    style="{{ section_spacing_style }}"
+  >
+    <div class="{{ media_container_class }} overflow-hidden">
       {% render 'media',
         src: s.image,
         src_mobile: s.mobile_image,
@@ -52,12 +51,12 @@
         animate: s.enable_zoom
       %}
     </div>
-  </div>
 
-  <div
-    class="{{ content_container_class }} section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}"
-  >
-    {% content_for 'blocks' %}
+    <div
+      class="{{ content_container_class }} section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}"
+    >
+      {% content_for 'blocks' %}
+    </div>
   </div>
 </section>
 
@@ -106,16 +105,6 @@
         { "value": "image_right", "label": "Media Right" }
       ],
       "default": "image_left"
-    },
-    {
-      "type": "range",
-      "id": "desktop_gap",
-      "label": "Gap (Desktop)",
-      "min": 0,
-      "max": 160,
-      "step": 4,
-      "default": 80,
-      "unit": "px"
     },
     {
       "type": "select",
@@ -180,7 +169,7 @@
         { "value": "xl", "label": "Extra Large" },
         { "value": "custom", "label": "Custom" }
       ],
-      "default": "md"
+      "default": "none"
     },
     {
       "type": "range",
@@ -245,7 +234,7 @@
         "enable_animation": true,
         "padding_top": 96,
         "padding_bottom": 96,
-        "desktop_gap": 80
+        "split_gap": 80
       },
       "blocks": {
         "chef_heading": {

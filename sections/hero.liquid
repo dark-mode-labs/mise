@@ -10,7 +10,6 @@
      padding-right: {{ s.padding_horizontal_custom }}px;
   {% endif %}
   {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
-  {% if s.layout_mode contains 'split' %}gap: {{ s.split_gap }}px;{% endif %}
 {% endcapture %}
 
 {% capture section_spacing_class %}
@@ -161,17 +160,6 @@
       "default": 600,
       "unit": "px",
       "conditional": "setting.height == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "split_gap",
-      "label": "Split Gap (Desktop)",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "default": 0,
-      "unit": "px",
-      "conditional": "setting.layout_mode != 'overlay'"
     },
     { "type": "header", "content": "Section Spacing" },
     {
