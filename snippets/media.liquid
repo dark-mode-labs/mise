@@ -18,11 +18,11 @@
     {% when 'video' %}aspect-video
     {% when 'portrait' %}aspect-[3/4]
     {% when 'landscape' %}aspect-[4/3]
-    {% else %}h-full
+    {% else %}h-auto
   {% endcase %}
 {% endcapture %}
 
-<div class="media-wrapper w-full {{ ratio_class }} overflow-hidden relative group">
+<div class="media-wrapper {{ ratio_class }} overflow-hidden relative group">
   {% if video != blank %}
     <video
       muted
@@ -34,7 +34,7 @@
       {% if show_controls %}
         controls
       {% endif %}
-      class="w-full h-full object-{{ fit_mode }} {% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}"
+      class="object-{{ fit_mode }} {% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}"
       {% if src %}
         poster="{{ src | image_url: width: 800 }}"
       {% endif %}
@@ -44,7 +44,7 @@
 
   {% elsif src != blank %}
     {% if src_mobile != blank %}
-      <picture class="w-full h-full block {{ anim_class }}">
+      <picture class="block {{ anim_class }}">
         <source media="(max-width: 767px)" srcset="{{ src_mobile | image_url: width: 800 }}">
         <source media="(min-width: 768px)" srcset="{{ src | image_url: width: 1600 }}">
         <img
@@ -53,7 +53,7 @@
           loading="{{ load_mode }}"
           width="{{ src.width }}"
           height="{{ src.height }}"
-          class="w-full h-full object-{{ fit_mode }} block transition-opacity duration-500"
+          class="object-{{ fit_mode }} block transition-opacity duration-500"
         >
       </picture>
     {% else %}
@@ -63,7 +63,7 @@
         loading="{{ load_mode }}"
         width="{{ src.width }}"
         height="{{ src.height }}"
-        class="w-full h-full object-{{ fit_mode }} block transition-opacity duration-500 {{ anim_class }}"
+        class="object-{{ fit_mode }} block transition-opacity duration-500 {{ anim_class }}"
       >
     {% endif %}
 
@@ -72,7 +72,7 @@
       {%
         render 'placeholder',
         name: placeholder | default: 'scene-1',
-        class: 'w-full h-full object-cover'
+        class: 'object-cover'
       %}
     {% endif %}
   {% endif %}
