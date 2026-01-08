@@ -10,7 +10,9 @@
       {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}
     </div>
   {% else %}
-    <span class="text-xl font-bold font-heading uppercase tracking-widest whitespace-nowrap">{{ shop.name }}</span>
+    <span class="text-body text-xl font-bold font-heading uppercase tracking-widest whitespace-nowrap">
+      {{ shop.name }}
+    </span>
   {% endif %}
 </a>
 

@@ -33,13 +33,14 @@
      padding-right: {{ s.padding_horizontal_custom }}px;
   {% endif %}
 {% endcapture %}
+
 {% capture section_spacing_class %}
   {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
   {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %} 
 {% endcapture %}
 
-<header
-  class="header-section w-full {{ position_class }} color-{{ s.color_scheme }} text-body bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
+<section
+  class="header-section {{ position_class }} color-{{ s.color_scheme }} bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
   data-transparent="{{ s.enable_transparent }}"
@@ -89,7 +90,7 @@
       {{ slot_actions }}
     </div>
   </div>
-</header>
+</section>
 
 {% if needs_spacer %}
   <div class="w-full h-16 md:h-24"></div>
