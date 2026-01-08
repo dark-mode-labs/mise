@@ -26,7 +26,7 @@ export default class Slideshow {
 
     this.dots.forEach(dot => {
       dot.addEventListener('click', (e) => {
-        this.scrollToIndex(parseInt(e.target.dataset.index));
+        this.scrollToIndex(parseInt(dot.dataset.index));
         this.stopAutoplay();
       });
     });
