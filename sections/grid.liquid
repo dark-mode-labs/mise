@@ -37,11 +37,6 @@
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
-{% assign body_color = 'bg-body' %}
-{% unless s.bg_image == blank %}
-  {% assign body_color = '' %}
-{% endunless %}
-
 {% if s.overlay_color != blank %}
   {% capture overlay_style %}
     {% if s.enable_gradient %}
@@ -53,34 +48,36 @@
   {% endcapture %}
 {% endif %}
 
-<section
-  class="section-multi-column relative color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ body_color }} {{ section_spacing_class }} limit-width"
-  style="{{ section_spacing_style }}"
->
-  {% if s.bg_image != blank %}
-    <div class="absolute inset-0 -z-10 w-full h-full overflow-hidden bg-surface">
-      <div class="relative w-full h-full">
-        {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
-        <div
-          class="absolute inset-0 pointer-events-none"
-          style="{{ overlay_style }}"
-        ></div>
-      </div>
-    </div>
-  {% endif %}
-
-  <div class="w-full flex flex-col">
-    {% if s.heading != blank %}
-      <div class="w-full text-center mx-auto mb-4 animate-fade-up">
-        {% render 'typography', text: s.heading, tag: 'h2', size: 'h2' %}
+<section class="section-multi-column relative color-{{ s.color_scheme }}">
+  <div
+    class="grid-layout-overlay bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"
+    style="{{ section_spacing_style }}"
+  >
+    {% if s.bg_image != blank %}
+      <div class="grid-media-overlay overflow-hidden bg-surface">
+        <div class="flex flex-auto">
+          {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
+          <div
+            class="absolute inset-0 pointer-events-none"
+            style="{{ overlay_style }}"
+          ></div>
+        </div>
       </div>
     {% endif %}
 
-    <div
-      class="grid grid-cols-1 {{ mobile_grid_class }} {{ grid_class }} {{ animation_class }} grid-gap-y-{{ s.card_padding }}"
-      style="{% if s.card_padding == 'custom' %}--grid-gap-y: {{ s.card_padding_custom }}px;{% endif %}"
-    >
-      {% content_for 'blocks' %}
+    <div class="grid-content-overlay">
+      {% if s.heading != blank %}
+        <div class=" text-body text-center mx-auto mb-4 animate-fade-up">
+          {% render 'typography', text: s.heading, tag: 'h2', size: 'h2' %}
+        </div>
+      {% endif %}
+
+      <div
+        class="grid grid-cols-1 {{ mobile_grid_class }} {{ grid_class }} {{ animation_class }} grid-gap-y-{{ s.card_padding }}"
+        style="{% if s.card_padding == 'custom' %}--grid-gap-y: {{ s.card_padding_custom }}px;{% endif %}"
+      >
+        {% content_for 'blocks' %}
+      </div>
     </div>
   </div>
 </section>
