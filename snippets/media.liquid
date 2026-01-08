@@ -43,28 +43,20 @@
     </video>
 
   {% elsif src != blank %}
+    {% capture img %}
+      <img src="{{ src | image_url: width: 1600 }}" alt="{{ src.alt | escape }}"
+          loading="{{ load_mode }}" width="{{ src.width }}" height="{{ src.height }}"
+          class="object-{{ fit_mode }} block transition-opacity duration-500 {{ anim_class }}"
+        >
+    {% endcapture %}
     {% if src_mobile != blank %}
-      <picture class="block {{ anim_class }}">
+      <picture>
         <source media="(max-width: 767px)" srcset="{{ src_mobile | image_url: width: 800 }}">
         <source media="(min-width: 768px)" srcset="{{ src | image_url: width: 1600 }}">
-        <img
-          src="{{ src | image_url: width: 1600 }}"
-          alt="{{ src.alt | escape }}"
-          loading="{{ load_mode }}"
-          width="{{ src.width }}"
-          height="{{ src.height }}"
-          class="object-{{ fit_mode }} block transition-opacity duration-500"
-        >
+        {{ img }}
       </picture>
     {% else %}
-      <img
-        src="{{ src | image_url: width: 1600 }}"
-        alt="{{ src.alt | escape }}"
-        loading="{{ load_mode }}"
-        width="{{ src.width }}"
-        height="{{ src.height }}"
-        class="object-{{ fit_mode }} block transition-opacity duration-500 {{ anim_class }}"
-      >
+      {{ img }}
     {% endif %}
 
   {% else %}
