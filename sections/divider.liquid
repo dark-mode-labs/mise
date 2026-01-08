@@ -1,10 +1,10 @@
 {% assign s = section.settings %}
 
-<section
-  class="section-divider flex items-center justify-center color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body pt-[var(--pt)] pb-[var(--pb)] limit-width h-[var(--max-h)]"
-  style="--max-h: {{ s.height }}px;"
->
-  <div class="w-full">
+<section class="section-divider">
+  <div
+    class="flex flex-auto items-center justify-center color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body pt-[var(--pt)] pb-[var(--pb)] limit-width h-[var(--max-h)]"
+    style="--max-h: {{ s.height }}px;"
+  >
     <div class="relative flex items-center justify-center w-full">
       {% if s.show_line %}
         <div class="absolute inset-0 flex items-center" aria-hidden="true">
