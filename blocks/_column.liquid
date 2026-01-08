@@ -25,7 +25,7 @@
 {% endif %}
 
 <div
-  class="column-block flex flex-col gap-4 h-full align-items-{{ s.text_align }} text-align-{{ s.text_align }} {{ card_class }} rounded-global"
+  class="column-block flex flex-col flex-auto gap-4 section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} {{ card_class }} rounded-global"
   {{ style_override }}
 >
   {% content_for 'blocks' %}
@@ -35,16 +35,39 @@
 {
   "name": "Column",
   "settings": [
+    { "type": "header", "content": "Alignment" },
     {
       "type": "select",
-      "id": "text_align",
-      "label": "Alignment",
+      "id": "content_align",
+      "label": "Content Alignment",
       "options": [
         { "value": "left", "label": "Left" },
         { "value": "center", "label": "Center" },
         { "value": "right", "label": "Right" }
       ],
-      "default": "left"
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "middle"
     },
     {
       "type": "header",
