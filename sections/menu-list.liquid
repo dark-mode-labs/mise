@@ -55,12 +55,14 @@
 {% endif %}
 
 <section
-  class="color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ section_spacing_class }} limit-width"
-  style="{{ section_spacing_style }}"
+  class="color-{{ s.color_scheme }}"
   data-spy-scope
   data-filter-scope
 >
-  <div class="w-full">
+  <div
+    class="bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"
+    style="{{ section_spacing_style }}"
+  >
     <div class="text-center mx-auto mb-16 animate-fade-up">
       {% if s.heading != blank %}
         {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
@@ -388,7 +390,7 @@
         { "value": "xl", "label": "Extra Large" },
         { "value": "custom", "label": "Custom" }
       ],
-      "default": "md"
+      "default": "none"
     },
     {
       "type": "range",
@@ -414,7 +416,7 @@
         { "value": "xl", "label": "Extra Large" },
         { "value": "custom", "label": "Custom" }
       ],
-      "default": "none"
+      "default": "xs"
     },
     {
       "type": "range",
