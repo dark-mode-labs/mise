@@ -62,40 +62,24 @@
 {% endunless %}
 
 <section
-  class="section-hero overflow-hidden color-{{ s.color_scheme }} width-{{ s.width_scheme }} {{ container_layout }} {{ section_spacing_class }} limit-width"
-  style="{{ section_spacing_style }}"
+  class="section-hero overflow-hidden color-{{ s.color_scheme }}"
 >
-  <div class="{{ media_container_class }} bg-surface overflow-hidden">
-    <div class="relative h-full {% if has_media_2 %}w-1/2 border-r border-std{% else %}w-full{% endif %}">
-      {% render 'media',
-        src: s.bg_image,
-        src_mobile: s.mobile_image,
-        video: s.video_url,
-        fit: 'cover',
-        loading: 'eager',
-        placeholder: placeholder_name,
-        animate: s.enable_zoom
-      %}
-
-      {% if s.layout_mode == 'overlay' %}
-        <div
-          class="absolute inset-0 pointer-events-none"
-          style="{{ overlay_style }}"
-        ></div>
-      {% endif %}
-    </div>
-
-    {% if has_media_2 %}
-      <div class="relative h-full w-1/2">
+  <div
+    class="width-{{ s.width_scheme }}  limit-width {{ container_layout }} {{ section_spacing_class }}"
+    style="{{ section_spacing_style }}"
+  >
+    <div class="{{ media_container_class }} bg-surface overflow-hidden">
+      <div class="flex flex-auto {% if has_media_2 %}w-1/2 border-r border-std{% endif %}">
         {% render 'media',
-          src: s.bg_image_2,
-          src_mobile: s.mobile_image_2,
-          video: s.video_url_2,
+          src: s.bg_image,
+          src_mobile: s.mobile_image,
+          video: s.video_url,
           fit: 'cover',
           loading: 'eager',
           placeholder: placeholder_name,
           animate: s.enable_zoom
         %}
+
         {% if s.layout_mode == 'overlay' %}
           <div
             class="absolute inset-0 pointer-events-none"
@@ -103,13 +87,31 @@
           ></div>
         {% endif %}
       </div>
-    {% endif %}
-  </div>
 
-  <div
-    class="{{ content_container_class }} section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}"
-  >
-    {% content_for 'blocks' %}
+      {% if has_media_2 %}
+        <div class="flex flex-auto w-1/2">
+          {% render 'media',
+            src: s.bg_image_2,
+            src_mobile: s.mobile_image_2,
+            video: s.video_url_2,
+            fit: 'cover',
+            loading: 'eager',
+            placeholder: placeholder_name,
+            animate: s.enable_zoom
+          %}
+          {% if s.layout_mode == 'overlay' %}
+            <div
+              class="absolute inset-0 pointer-events-none"
+              style="{{ overlay_style }}"
+            ></div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="{{ content_container_class }} section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}">
+      {% content_for 'blocks' %}
+    </div>
   </div>
 </section>
 
