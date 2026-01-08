@@ -13,11 +13,6 @@
       {% if s.background_color and s.override_card_style %}
         --color-surface: {{ s.background_color }};
       {% endif %}
-      {% if s.padding and s.override_card_style %}
-        padding: {{ s.padding }}px;
-      {% else %}
-        padding: {{ ss.card_padding_global }}px;
-      {% endif %}
     {% endcapture %}
   {% if style_override %}
     {% assign style_override = 'style="{{ style_override }}"' %}
@@ -84,16 +79,6 @@
       "id": "background_color",
       "label": "Background Color",
       "default": "#F5F5F5",
-      "conditional": "setting.override_card_style == true"
-    },
-    {
-      "type": "range",
-      "id": "padding",
-      "label": "Padding",
-      "min": 0,
-      "max": 60,
-      "step": 4,
-      "default": 24,
       "conditional": "setting.override_card_style == true"
     },
     {
