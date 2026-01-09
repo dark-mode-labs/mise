@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
 
 {% capture container_layout %}
-  {% if s.desktop_layout == 'image_right' %}media-layout-left{% else %}media-layout-right{% endif %}
+  {% if s.desktop_layout == 'image_left' %}media-layout-left{% else %}media-layout-right{% endif %}
 {% endcapture %}
 {% assign media_container_class = 'media-media-split' %}
 {% capture content_container_class %}
@@ -23,7 +23,6 @@
 {% capture section_spacing_class %}
   {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
   {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
-  section-h-{{ s.height }}
 {% endcapture %}
 
 {% assign animation_class = '' %}
@@ -38,17 +37,18 @@
 
 <section class="section-feature overflow-hidden color-{{ s.color_scheme }}">
   <div
-    class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }}"
+    class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"
     style="{{ section_spacing_style }}"
   >
-    <div class="{{ media_container_class }} overflow-hidden">
+    <div class="{{ media_container_class }}">
       {% render 'media',
         src: s.image,
         src_mobile: s.mobile_image,
         video: s.video_url,
         fit: 'cover',
         placeholder: placeholder_name,
-        animate: s.enable_zoom
+        animate: s.enable_zoom,
+
       %}
     </div>
 
@@ -74,7 +74,7 @@
     {
       "type": "select",
       "id": "height",
-      "label": "Section Height",
+      "label": "Image Height",
       "options": [
         { "value": "auto", "label": "Auto (Fit Content)" },
         { "value": "sm", "label": "Small" },

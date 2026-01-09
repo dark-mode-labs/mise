@@ -12,17 +12,7 @@
   {% assign anim_class = anim_class | append: ' transition-transform duration-700 ease-out group-hover:scale-110' %}
 {% endif %}
 
-{% capture ratio_class %}
-  {% case ratio %}
-    {% when 'square' %}aspect-square
-    {% when 'video' %}aspect-video
-    {% when 'portrait' %}aspect-[3/4]
-    {% when 'landscape' %}aspect-[4/3]
-    {% else %}h-auto
-  {% endcase %}
-{% endcapture %}
-
-<div class="media-wrapper {{ ratio_class }} overflow-hidden relative group">
+<div class="media-wrapper overflow-hidden relative group" style="--object-fit: {{ fit_mode }}">
   {% if video != blank %}
     <video
       muted
@@ -34,7 +24,7 @@
       {% if show_controls %}
         controls
       {% endif %}
-      class="object-{{ fit_mode }} {% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}"
+      class="{% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}"
       {% if src %}
         poster="{{ src | image_url: width: 800 }}"
       {% endif %}
@@ -46,7 +36,7 @@
     {% capture img %}
       <img src="{{ src | image_url: width: 1600 }}" alt="{{ src.alt | escape }}"
           loading="{{ load_mode }}" width="{{ src.width }}" height="{{ src.height }}"
-          class="object-{{ fit_mode }} block transition-opacity duration-500 {{ anim_class }}"
+          class="transition-opacity duration-500 {{ anim_class }}"
         >
     {% endcapture %}
     {% if src_mobile != blank %}

@@ -14,8 +14,7 @@
 
 {% capture section_spacing_class %}
   {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
-  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %} 
-  section-h-{{ s.height }}
+  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
 {% endcapture %}
 
 {% assign has_media_2 = false %}
@@ -64,11 +63,11 @@
   class="section-hero overflow-hidden color-{{ s.color_scheme }}"
 >
   <div
-    class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }}"
+    class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"
     style="{{ section_spacing_style }}"
   >
-    <div class="{{ media_container_class }} overflow-hidden">
-      <div class="flex flex-auto {% if has_media_2 %}w-1/2 border-r border-std{% endif %}">
+    <div class="{{ media_container_class }}">
+      <div class="hero-media-inner absolute inset-0 {% if has_media_2 %}w-1/2 border-r border-std{% endif %}">
         {% render 'media',
           src: s.bg_image,
           src_mobile: s.mobile_image,
@@ -88,7 +87,7 @@
       </div>
 
       {% if has_media_2 %}
-        <div class="flex flex-auto w-1/2">
+        <div class="hero-media-inner w-1/2">
           {% render 'media',
             src: s.bg_image_2,
             src_mobile: s.mobile_image_2,
@@ -139,7 +138,7 @@
     {
       "type": "select",
       "id": "height",
-      "label": "Section Height",
+      "label": "Image Height",
       "options": [
         { "value": "auto", "label": "Auto (Fit Content)" },
         { "value": "sm", "label": "Small" },

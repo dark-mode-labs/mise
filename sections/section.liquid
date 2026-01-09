@@ -17,8 +17,7 @@
 {% endcapture %}
 {% capture section_spacing_class %}
   {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
-  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %} 
-  section-h-{{ s.height }}
+  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
 {% endcapture %}
 
 <section class="relative color-{{ s.color_scheme }}">

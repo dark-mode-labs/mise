@@ -14,7 +14,7 @@
   {% endunless %}
 {% endcapture %}
 
-<div class="media-block {{ block_classes }}" style="{{ block_styles }}">
+<div class="media-block {{ block_classes }} is-{{ s.height }}" style="{{ block_styles }}">
   {% render 'media',
     src: s.image,
     src_mobile: s.image_mobile,
@@ -45,6 +45,20 @@
     {
       "type": "header",
       "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Image Height",
+      "options": [
+        { "value": "auto", "label": "Auto (Fit Content)" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
     },
     {
       "type": "select",

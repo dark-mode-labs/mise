@@ -15,7 +15,6 @@
 {% capture section_spacing_class %}
   {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
   {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
-  section-h-{{ s.height }}
 {% endcapture %}
 
 {% case s.columns_desktop %}
@@ -50,12 +49,12 @@
 
 <section class="section-multi-column relative color-{{ s.color_scheme }}">
   <div
-    class="grid-layout-overlay bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"
+    class="grid-layout-overlay bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }} is-{{ s.height }}"
     style="{{ section_spacing_style }}"
   >
     {% if s.bg_image != blank %}
       <div class="grid-media-overlay overflow-hidden bg-surface">
-        <div class="flex flex-auto">
+        <div class="grid-media-inner">
           {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
           <div
             class="absolute inset-0 pointer-events-none"
