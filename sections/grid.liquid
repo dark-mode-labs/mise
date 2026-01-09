@@ -19,16 +19,18 @@
 
 {% case s.columns_desktop %}
   {% when 2 %}
-    {% assign grid_class = 'lg:grid-cols-2' %}
+    {% assign width_class = 'lg:w-1/2' %}
   {% when 3 %}
-    {% assign grid_class = 'lg:grid-cols-3' %}
+    {% assign width_class = 'lg:w-1/3' %}
   {% when 4 %}
-    {% assign grid_class = 'lg:grid-cols-4' %}
+    {% assign width_class = 'lg:w-1/4' %}
 {% endcase %}
 
 {% case s.columns_mobile %}
+  {% when 1 %}
+    {% assign width_class = width_class | append: ' w-full' %}
   {% when 2 %}
-    {% assign mobile_grid_class = 'md:grid-cols-2' %}
+    {% assign width_class = width_class | append: ' w-1/2' %}
 {% endcase %}
 
 {% assign animation_class = '' %}
@@ -66,13 +68,14 @@
 
     <div class="grid-content-overlay">
       {% if s.heading != blank %}
-        <div class=" text-body text-center mx-auto mb-4 animate-fade-up">
+        <div class="text-body text-center mx-auto mb-4 animate-fade-up">
           {% render 'typography', text: s.heading, tag: 'h2', size: 'h2' %}
         </div>
       {% endif %}
 
+      {% comment %} FLEX CONTAINER {% endcomment %}
       <div
-        class="grid grid-cols-1 {{ mobile_grid_class }} {{ grid_class }} {{ animation_class }} grid-gap-y-{{ s.card_padding }}"
+        class="flex flex-wrap justify-content-{{ s.justify_content }} {{ animation_class }}"
         style="{% if s.card_padding == 'custom' %}--grid-gap-y: {{ s.card_padding_custom }}px;{% endif %}"
       >
         {% content_for 'blocks' %}
@@ -90,20 +93,19 @@
     { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
     { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile Background" },
 
-    { "type": "header", "content": "Overlay", "conditional": "setting.bg_image != blank" },
+    { "type": "header", "content": "Overlay" },
     {
       "type": "checkbox",
       "id": "enable_gradient",
       "label": "Use Gradient Overlay",
       "default": false,
-      "conditional": "setting.bg_image != blank"
+      "info": "Acts as Overlay if Image exists, otherwise acts as Background."
     },
     {
       "type": "color",
       "id": "overlay_color",
       "label": "Tint Color",
-      "default": "",
-      "conditional": "setting.bg_image != blank"
+      "default": ""
     },
     {
       "type": "range",
@@ -111,10 +113,22 @@
       "label": "Opacity",
       "min": 0,
       "max": 100,
-      "default": 40,
-      "conditional": "setting.bg_image != blank"
+      "default": 40
     },
+
     { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "justify_content",
+      "label": "Alignment",
+      "options": [
+        { "value": "start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Right" },
+        { "value": "between", "label": "Space Between" }
+      ],
+      "default": "center"
+    },
     {
       "type": "width_scheme",
       "id": "width_scheme",
@@ -135,7 +149,7 @@
       "label": "Columns per row (Mobile)",
       "min": 1,
       "max": 2,
-      "default": 2
+      "default": 1
     },
 
     { "type": "header", "content": "Spacing" },
@@ -223,11 +237,10 @@
 
     { "type": "header", "content": "Cards" },
     { "type": "checkbox", "id": "enable_cards_global", "label": "Enable Cards for All Columns", "default": false },
-    { "type": "header", "content": "Card Style", "conditional": "setting.enable_cards_global == true" },
     {
       "type": "select",
       "id": "card_padding",
-      "label": "Card Padding",
+      "label": "Gap / Card Padding",
       "options": [
         { "value": "none", "label": "None" },
         { "value": "xs", "label": "Extra Small" },
@@ -236,16 +249,14 @@
         { "value": "lg", "label": "Large" },
         { "value": "custom", "label": "Custom" }
       ],
-      "default": "md",
-      "conditional": "setting.enable_cards_global == true"
+      "default": "md"
     },
     {
       "type": "range",
       "id": "card_padding_custom",
-      "label": "Custom Card Padding",
+      "label": "Custom Gap",
       "min": 0,
       "max": 100,
-      "step": 4,
       "default": 24,
       "conditional": "setting.card_padding == 'custom'"
     },

@@ -1,0 +1,24 @@
+{% assign s = block.settings %}
+
+<div
+  class="inline-flex items-center justify-center px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest mb-4 animate-fade-down"
+  style="
+    background-color: {{ s.bg_color }};
+    color: {{ s.text_color }};
+    box-shadow: 0 4px 15px {{ s.bg_color | color_modify: 'alpha', 0.3 }};
+  "
+>
+  {{ s.text }}
+</div>
+
+{% schema %}
+{
+  "name": "Badge Pill",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Text", "default": "100% Grass-Fed • Zero Seed Oils" },
+    { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#06d6a0" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#ffffff" }
+  ],
+  "presets": [{ "name": "Badge Pill" }]
+}
+{% endschema %}

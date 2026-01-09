@@ -1,0 +1,72 @@
+{% assign b = block.settings %}
+
+<div
+  class="group relative flex flex-col bg-body rounded-global overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl shadow-md h-full"
+>
+  {% comment %} MEDIA {% endcomment %}
+  <div class="relative w-full aspect-[4/3] overflow-hidden bg-surface">
+    {% if b.image %}
+      {% render 'media', src: b.image %}
+    {% endif %}
+
+    {% comment %} BADGES {% endcomment %}
+    <div class="absolute top-3 left-3 flex flex-wrap gap-2">
+      {% if b.badge_1_text != blank %}
+        <span
+          class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full text-white"
+          style="background-color: {{ b.badge_1_color }};"
+        >
+          {{ b.badge_1_text }}
+        </span>
+      {% endif %}
+      {% if b.badge_2_text != blank %}
+        <span
+          class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full text-white"
+          style="background-color: {{ b.badge_2_color }};"
+        >
+          {{ b.badge_2_text }}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% comment %} CONTENT {% endcomment %}
+  <div class="flex flex-col flex-grow p-6">
+    <div class="flex justify-between items-start mb-2 gap-4">
+      <div class="flex-grow">
+        {% render 'typography', text: b.title, tag: 'h3', display_size: 'h4', font_weight: 'bold' %}
+      </div>
+      <div class="flex-shrink-0 text-accent">
+        {% render 'typography', text: b.price, tag: 'span', display_size: 'h4', font_weight: 'bold' %}
+      </div>
+    </div>
+
+    <div class="mb-6 flex-grow opacity-70">
+      {% render 'typography', text: b.description, tag: 'p', display_size: 'body' %}
+    </div>
+
+    {% if b.button_text != blank %}
+      {% render 'button', label: b.button_text, url: b.link, width: 'full', style: 'primary' %}
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Content Card",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Dish Name" },
+    { "type": "text", "id": "price", "label": "Price", "default": "$14.99" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Dish description goes here." },
+    { "type": "text", "id": "button_text", "label": "Button Label", "default": "Add to Order" },
+    { "type": "url", "id": "link", "label": "Link" },
+    { "type": "header", "content": "Badges" },
+    { "type": "text", "id": "badge_1_text", "label": "Badge 1 Text" },
+    { "type": "color", "id": "badge_1_color", "label": "Badge 1 Color", "default": "#f77f00" },
+    { "type": "text", "id": "badge_2_text", "label": "Badge 2 Text" },
+    { "type": "color", "id": "badge_2_color", "label": "Badge 2 Color", "default": "#06d6a0" }
+  ],
+  "presets": [{ "name": "Content Card" }]
+}
+{% endschema %}
