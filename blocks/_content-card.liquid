@@ -46,7 +46,7 @@
     </div>
 
     {% if b.button_text != blank %}
-      {% render 'button', label: b.button_text, url: b.link, width: 'full', style: 'primary' %}
+      {% render 'button', label: b.button_text, url: b.link, width: 'full', style: 'primary', class_props: 'rounded-global' %}
     {% endif %}
   </div>
 </div>
