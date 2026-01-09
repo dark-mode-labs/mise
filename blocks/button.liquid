@@ -1,6 +1,6 @@
 {% capture style_override %}
   {% unless block.settings.inherit_style %}
-    style="--color-btn-bg: {{ block.settings.custom_bg }}; --color-btn-text: {{ block.settings.custom_text }};"
+    style="--color-btn-bg: {{ block.settings.custom_bg }}; --color-btn-text: {{ block.settings.custom_text }};--radius-global: {{ block.settings.border_radius_custom }}px;"
   {% endunless %}
 {% endcapture %}
 
@@ -10,11 +10,12 @@
 {% endif %}
 
 <div class="{{ width_class }}" {{ style_override }}>
-  {% render 'button', 
-     label: block.settings.label, 
-     url: block.settings.link, 
-     style: block.settings.style,
-     width: block.settings.width
+  {% render 'button',
+    label: block.settings.label,
+    url: block.settings.link,
+    style: block.settings.style,
+    width: block.settings.width,
+    class_props: 'rounded-global'
   %}
 </div>
 
@@ -24,15 +25,27 @@
   "settings": [
     { "type": "text", "id": "label", "label": "Label", "default": "Book Now" },
     { "type": "url", "id": "link", "label": "Link" },
-    { "type": "select", "id": "style", "label": "Style", "default": "primary", "options": [
-      { "value": "primary", "label": "Solid" },
-      { "value": "outline", "label": "Outline" },
-      { "value": "link", "label": "Link" }
-    ]},
-    { "type": "select", "id": "width", "label": "Width", "default": "auto", "options": [
-      { "value": "auto", "label": "Auto" },
-      { "value": "full", "label": "Full Width" }
-    ]},
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "full", "label": "Full Width" }
+      ]
+    },
     {
       "type": "header",
       "content": "Overrides"
@@ -56,6 +69,17 @@
       "id": "custom_text",
       "label": "Custom Text Color",
       "default": "#ffffff",
+      "conditional": "setting.inherit_style != true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius_custom",
+      "label": "Custom Border Radius",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 4,
+      "unit": "px",
       "conditional": "setting.inherit_style != true"
     }
   ]
