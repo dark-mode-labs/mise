@@ -292,16 +292,38 @@
     flex: 1 1 auto;
   }
 
-  /* ===== GOLDEN RATIO MEDIA SIZING SYSTEM ===== */
+  /* FLEXIBLE CONTAINERS (Min-Height) - Grids grow with content */
+  .grid-layout-overlay.is-sm {
+    min-height: clamp(240px, calc(100vh * 0.382), 480px);
+  }
 
-  /* GROUP B: FIXED FRAMES (Height) - Strict sizing (cropping) */
+  .grid-layout-overlay.is-md {
+    min-height: clamp(360px, calc(100vh * 0.618), 720px);
+  }
+
+  .grid-layout-overlay.is-lg {
+    min-height: clamp(480px, calc(100vh * 0.786), 900px);
+  }
+
+  .grid-layout-overlay.is-xl {
+    min-height: clamp(600px, 100vh, 1200px);
+  }
+
+  .grid-layout-overlay.is-custom {
+    min-height: var(--max-h, 600px);
+  }
+
+  .grid-layout-overlay.is-auto {
+    min-height: auto;
+  }
+
+  /* FIXED FRAMES (Height) - Strict sizing (cropping) */
   .hero-layout-overlay.is-sm,
   .hero-layout-split-left.is-sm,
   .hero-layout-split-right.is-sm,
   .media-layout-left.is-sm,
   .media-layout-right.is-sm,
   .section-slideshow.is-sm,
-  .grid-layout-overlay.is-sm,
   .media-block.is-sm {
     height: clamp(240px, calc(100vh * 0.382), 480px);
   }
@@ -312,7 +334,6 @@
   .media-layout-left.is-md,
   .media-layout-right.is-md,
   .section-slideshow.is-md,
-  .grid-layout-overlay.is-md,
   .media-block.is-md {
     height: clamp(360px, calc(100vh * 0.618), 720px);
   }
@@ -323,7 +344,6 @@
   .media-layout-left.is-lg,
   .media-layout-right.is-lg,
   .section-slideshow.is-lg,
-  .grid-layout-overlay.is-lg,
   .media-block.is-lg {
     height: clamp(480px, calc(100vh * 0.786), 900px);
   }
@@ -334,7 +354,6 @@
   .media-layout-left.is-xl,
   .media-layout-right.is-xl,
   .section-slideshow.is-xl,
-  .grid-layout-overlay.is-xl,
   .media-block.is-xl {
     height: clamp(600px, 100vh, 1200px);
   }
@@ -345,7 +364,6 @@
   .media-layout-left.is-custom,
   .media-layout-right.is-custom,
   .section-slideshow.is-custom,
-  .grid-layout-overlay.is-custom,
   .media-block.is-custom {
     height: var(--max-h, 600px);
   }
@@ -356,7 +374,6 @@
   .media-layout-left.is-auto,
   .media-layout-right.is-auto,
   .section-slideshow.is-auto,
-  .grid-layout-overlay.is-auto,
   .media-block.is-auto {
     height: auto;
   }
@@ -382,10 +399,6 @@
   }
 
   /* Grid Overlay */
-  .grid-layout-overlay {
-    @apply relative flex flex-col;
-  }
-
   .grid-media-overlay {
     position: absolute;
     inset: 0;
@@ -393,10 +406,6 @@
     height: 100%;
     z-index: 0;
     pointer-events: none;
-  }
-
-  .grid-content-overlay {
-    @apply relative z-content w-full h-full;
   }
 
   /* Common Inner Wrappers */
@@ -614,8 +623,12 @@
     @apply gap-[var(--grid-gap-y)] mx-[var(--grid-gap-y)];
   }
 
+  .grid-layout-overlay {
+    @apply relative flex flex-col;
+  }
+
   .grid-content-overlay {
-    @apply relative z-content w-full h-full flex flex-col;
+    @apply relative z-content w-full flex flex-col;
   }
 
   .rounded-global {
