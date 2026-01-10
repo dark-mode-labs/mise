@@ -47,8 +47,7 @@
         video: s.video_url,
         fit: 'cover',
         placeholder: placeholder_name,
-        animate: s.enable_zoom,
-
+        animate: s.enable_zoom
       %}
     </div>
 
@@ -224,7 +223,7 @@
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
   ],
-  "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }],
+  "blocks": [{ "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }, { "type": "@theme" }],
   "presets": [
     {
       "name": "Feature (Chef Profile)",
@@ -235,11 +234,12 @@
       },
       "blocks": {
         "chef_heading": {
-          "type": "heading",
+          "type": "text",
           "settings": {
-            "text": "Our Philosophy",
+            "content": "Our Philosophy",
             "tag": "h2",
-            "display_size": "h2"
+            "display_size": "h2",
+            "font_weight": "bold"
           }
         },
         "chef_bio": {

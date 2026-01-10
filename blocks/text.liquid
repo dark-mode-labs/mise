@@ -4,12 +4,30 @@
   {% endunless %}
 {% endcapture %}
 
+{% capture utilities %}
+  {% if block.settings.italic %}italic{% endif %}
+  {% case block.settings.text_transform %}
+    {% when 'uppercase' %}uppercase
+    {% when 'capitalize' %}capitalize
+    {% when 'lowercase' %}lowercase
+  {% endcase %}
+  {% case block.settings.text_wrap %}
+    {% when 'nowrap' %}whitespace-nowrap
+    {% when 'balance' %}text-balance
+  {% endcase %}
+  {% case block.settings.overflow_behavior %}
+    {% when 'hidden' %}overflow-hidden
+    {% when 'ellipsis' %}truncate
+  {% endcase %}
+{% endcapture %}
+
 <div class="w-full max-w-prose text-align-{{ block.settings.text_align }}" {{ style_override }}>
   {% render 'typography',
     text: block.settings.content,
-    tag: 'div',
+    tag: block.settings.tag,
     display_size: block.settings.display_size,
-    weight: block.settings.font_weight
+    weight: block.settings.font_weight,
+    class: utilities
   %}
 </div>
 
@@ -29,10 +47,32 @@
     },
     {
       "type": "select",
+      "id": "tag",
+      "label": "HTML Tag",
+      "default": "div",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "p", "label": "Paragraph" },
+        { "value": "div", "label": "Div" },
+        { "value": "span", "label": "Span" }
+      ]
+    },
+    {
+      "type": "select",
       "id": "display_size",
       "label": "Size",
       "default": "body",
       "options": [
+        { "value": "display", "label": "Display" },
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
         { "value": "body", "label": "Body" },
         { "value": "caption", "label": "Caption" }
       ]
@@ -59,6 +99,50 @@
         { "value": "bold", "label": "Bold" }
       ],
       "default": "normal"
+    },
+    {
+      "type": "checkbox",
+      "id": "italic",
+      "label": "Italic",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout & Style"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text Transform",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "wrap",
+      "options": [
+        { "value": "wrap", "label": "Wrap" },
+        { "value": "nowrap", "label": "No Wrap" },
+        { "value": "balance", "label": "Balance" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "overflow_behavior",
+      "label": "Overflow",
+      "default": "visible",
+      "options": [
+        { "value": "visible", "label": "Visible" },
+        { "value": "hidden", "label": "Hidden (Clip)" },
+        { "value": "ellipsis", "label": "Ellipsis (Truncate)" }
+      ]
     },
     {
       "type": "checkbox",
