@@ -1,136 +1,49 @@
 {% assign s = block.settings %}
 {% assign ss = section.settings %}
 
-{% if ss.enable_cards_global %}
-  {% assign card_class = 'bg-surface' %}
-  {% if s.override_card_style and s.show_shadow %}
-    {% assign card_class = card_class | append: ' shadow-md' %}
-  {% elsif ss.card_shadow_global %}
-    {% assign card_class = card_class | append: ' shadow-md' %}
-  {% endif %}
-
-  {% capture style_override %}
-      {% if s.background_color and s.override_card_style %}
-        --color-surface: {{ s.background_color }};
-      {% endif %}
-    {% endcapture %}
-  {% if style_override %}
-    {% assign style_override = 'style="{{ style_override }}"' %}
-  {% endif %}
-{% endif %}
-
-{% capture column_layout_classes %}
-  direction-{{ s.direction }}
-  text-align-{{ s.text_align }}
-  justify-content-{{ s.content_align }}
-  align-items-{{ s.cross_align }}
-{% endcapture %}
-
 {% capture width_class %}
-  {% case ss.columns_desktop %}
-    {% when 2 %}lg:w-1/2
-    {% when 3 %}lg:w-1/3
-    {% when 4 %}lg:w-1/4
-  {% endcase %}
-  {% case ss.columns_mobile %}
-    {% when 1 %}w-full
-    {% when 2 %}w-1/2
+  {% case s.width %}
+    {% when 'full' %}w-full
+    {% when 'half' %}lg:w-1/2 w-full
+    {% when 'third' %}lg:w-1/3 w-full
+    {% when 'two_thirds' %}lg:w-2/3 w-full
+    {% when 'quarter' %}lg:w-1/4 w-full
+    {% else %}
+      {% case ss.columns_desktop %}
+        {% when 2 %}lg:w-1/2
+        {% when 3 %}lg:w-1/3
+        {% when 4 %}lg:w-1/4
+      {% endcase %}
+      w-full
   {% endcase %}
 {% endcapture %}
 
-<div class="column-wrapper flex-auto {{ width_class }} p-2">
-  <div
-    class="column-block flex flex-auto gap-4 {{ column_layout_classes }} {{ card_class }} rounded-global h-full"
-    {{ style_override }}
-  >
+<div class="column-wrapper flex-auto {{ width_class }} px-4">
+  <div class="h-full w-full">
     {% content_for 'blocks' %}
   </div>
 </div>
 
 {% schema %}
 {
-  "name": "Column",
+  "name": "Column / Item",
   "settings": [
-    { "type": "header", "content": "Layout" },
     {
       "type": "select",
-      "id": "direction",
-      "label": "Flow Direction",
+      "id": "width",
+      "label": "Width",
       "options": [
-        { "value": "column", "label": "Vertical (Column)" },
-        { "value": "row", "label": "Horizontal (Row)" }
+        { "value": "auto", "label": "Auto (Grid Default)" },
+        { "value": "full", "label": "Full (100%)" },
+        { "value": "half", "label": "Half (50%)" },
+        { "value": "third", "label": "Third (33%)" },
+        { "value": "two_thirds", "label": "Two Thirds (66%)" },
+        { "value": "quarter", "label": "Quarter (25%)" }
       ],
-      "default": "column",
-      "info": "Use 'Row' for icon lists."
-    },
-    { "type": "header", "content": "Alignment" },
-    {
-      "type": "select",
-      "id": "content_align",
-      "label": "Main Axis (Vertical in Col, Horiz in Row)",
-      "options": [
-        { "value": "start", "label": "Start / Top" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "End / Bottom" },
-        { "value": "between", "label": "Space Between" }
-      ],
-      "default": "center"
-    },
-    {
-      "type": "select",
-      "id": "cross_align",
-      "label": "Cross Axis (Horizontal in Col, Vertical in Row)",
-      "options": [
-        { "value": "start", "label": "Start / Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "End / Right" },
-        { "value": "stretch", "label": "Stretch" }
-      ],
-      "default": "center"
-    },
-    {
-      "type": "select",
-      "id": "text_align",
-      "label": "Text Alignment",
-      "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
-      ],
-      "default": "center"
-    },
-
-    { "type": "header", "content": "Card Style" },
-    {
-      "type": "checkbox",
-      "id": "override_card_style",
-      "label": "Override Card Style",
-      "default": false
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "Background Color",
-      "default": "#F5F5F5",
-      "conditional": "setting.override_card_style == true"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_shadow",
-      "label": "Show Shadow",
-      "default": false,
-      "conditional": "setting.override_card_style == true"
+      "default": "auto"
     }
   ],
-  "blocks": [{ "type": "@theme" }, { "type": "_content-card" }],
-  "presets": [
-    {
-      "name": "Column",
-      "blocks": {
-        "title": { "type": "heading", "settings": { "text": "Feature", "tag": "h3", "display_size": "h3" } }
-      },
-      "block_order": ["title"]
-    }
-  ]
+  "blocks": [{ "type": "@theme" }],
+  "presets": [{ "name": "Column" }]
 }
 {% endschema %}
