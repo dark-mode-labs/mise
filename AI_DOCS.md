@@ -72,257 +72,321 @@ Links for `social-links` snippet.
 
 ## 3. Sections Reference (ICD)
 
-### **Announcement Bar** (`sections/announcment-bar.liquid`)
-*Top-of-page scrolling or static alerts.*
-- **Presets**: Default setup with 2 announcements.
-- **Settings**:
-  - `width_scheme`: Select (`full`)
-  - `autoplay`: Checkbox (`true`)
-  - `autoplay_speed`: Range (`3`-`10`, default `5`)
-  - `show_arrows`: Checkbox (`true`)
-  - `show_close`: Checkbox (`false`)
-  - `color_scheme`: Color Scheme (`default`)
-- **Blocks**: `_announcement`
+All sections support `blocks` and `presets`. See specific block allowances below.
 
-### **Divider** (`sections/divider.liquid`)
-*Visual separator with optional icon.*
-- **Settings**:
-  - `width_scheme`: Select (`full`)
-  - `show_line`: Checkbox (`true`)
-  - `show_icon`: Checkbox (`true`)
-  - `icon_select`: Select (`star`, `chevron-down`, `menu`, default: `star`)
-
-### **Footer** (`sections/footer.liquid`)
-*Site footer container.*
-- **Settings**:
-  - `width_scheme`: Select (`standard`)
-  - `padding_vertical`: Select (`none`, `xs`, `sm`, `md`, `lg`, `xl`, `custom`)
-  - `padding_vertical_custom`: Range (`0`-`200`px)
-  - `padding_horizontal`: Select (`none`, `xs`... `custom`)
-  - `show_policy`: Checkbox (`true`)
-  - `show_payment`: Checkbox (`true`)
-  - `color_scheme`: Color Scheme (`default`)
-- **Blocks**: `_footer-brand`, `_footer-nav`, `_footer-newsletter`
-
-### **Grid** (`sections/grid.liquid`)
-*Multi-column layout for features, process steps, or cards.*
-- **Settings**:
-  - `justify_content`: Select (`start`, `center`, `end`, `between`, default: `center`)
-  - `width_scheme`: Select (`standard`)
-  - `enable_gradient`: Checkbox (`false`)
-  - `overlay_color`: Color
-  - `overlay_opacity`: Range (`0`-`100`)
-  - `bg_image` / `bg_image_mobile`: Image Picker
-  - `columns_desktop`: Range (`2`-`4`, default `3`)
-  - `columns_mobile`: Range (`1`-`2`, default `2`)
-  - `height`: Select (`auto`, `sm`, `md`, `lg`, `xl`, `custom`)
-  - `height_custom`: Range (`200`-`1000`)
-  - `enable_cards_global`: Checkbox (`false`)
-  - `card_padding`: Select (`none`...`lg`, `custom`, default: `md`)
-  - `card_shadow_global`: Checkbox (`false`)
-- **Blocks**: `_column` (Container for generic blocks)
-
-### **Header** (`sections/header.liquid`)
-*Main site navigation.*
-- **Settings**:
-  - `desktop_layout`: Select (`logo_center`, `logo_left`)
-  - `nav_alignment`: Select (`left`, `center`, `right`, default: `left`)
-  - `sticky_behavior`: Select (`none`, `always`, `on_scroll_up`)
-  - `enable_transparent`: Checkbox (`true`)
-  - `color_scheme`: Color Scheme
-- **Blocks**: `_header-logo` (static), `_header-menu` (static), `_header-actions` (static)
-
-### **Hero** (`sections/hero.liquid`)
-*Primary impact section.*
-- **Settings**:
-  - `layout_mode`: Select (`overlay`, `split_left`, `split_right`)
-  - `height`: Select (`auto`, `sm`... `xl`, `custom`, default: `auto`)
-  - `bg_image` / `mobile_image`: Image Picker
-  - `video_url`: Text (MP4)
-  - `bg_image_2` / `video_url_2`: Secondary media for split mode
-  - `enable_gradient`: Checkbox
-  - `overlay_color`: Color
-  - `overlay_opacity`: Range (`0`-`100`)
-  - `content_align` / `text_align`: Select (`left`, `center`, `right`)
-  - `vertical_align`: Select (`top`, `middle`, `bottom`)
-  - `enable_animation`: Checkbox
-  - `enable_zoom`: Checkbox
-- **Blocks**: `@theme` (Any generic block), `scroll-indicator`
-
-### **Marquee** (`sections/marquee.liquid`)
-*Scrolling text banner.*
-- **Settings**:
-  - `text_list`: Text (Comma separated)
-  - `text_size`: Select (`small`, `medium`, `large`, `xl`, `display`)
-  - `uppercase`: Checkbox (`true`)
-  - `speed`: Range (`5`-`60`, default: `20`)
-  - `direction`: Select (`left`, `right`)
-  - `color_scheme`: Color Scheme
-
-### **Media with Content** (`sections/media-with-content.liquid`)
-*Narrative section (Image + Text).*
-- **Settings**:
-  - `desktop_layout`: Select (`image_left`, `image_right`)
-  - `mobile_layout`: Select (`image_first`, `text_first`)
-  - `content_align` / `text_align` / `vertical_align`: Alignment controls
-  - `show_shadow`: Checkbox
-  - `image` / `video_url`: Media source
-  - `enable_animation`: Checkbox
-  - `enable_zoom`: Checkbox (Ken Burns)
-- **Blocks**: `heading`, `text`, `button`, `logo`, `spacer`
-
-### **Menu List** (`sections/menu-list.liquid`)
-*Complex collection-based menu rendering.*
-- **Settings**:
-  - `menu`: Collection
-  - `display_scope`: Select (`full_menu`, `category`)
-  - `enable_filtering`: Checkbox
-  - `show_nav`: Checkbox (Sticky nav)
-  - `nav_layout`: Select (`vertical`, `horizontal`)
-  - `layout_style`: Select (`list`, `card-standard`, `card-compact`)
-  - `aspect_ratio`: Select (`square`, `landscape`, `portrait`)
-  - `column_preset`: Select (`1:1:1`, `1:2:2`, `1:2:3`)
-  - `grid_gap_x` / `grid_gap_y`: Select (`tight`, `normal`, `relaxed`, `loose`)
-  - `list_image_size`: Select (`small`, `medium`, `large`)
-
-### **Slideshow** (`sections/slideshow.liquid`)
-*Carousel.*
-- **Settings**:
-  - `height`: Select (`sm`...`xl`, `custom`)
-  - `slide_gap`: Range (`0`-`40`px)
-  - `slide_width`: Range (`80`-`100`%)
-  - `show_arrows` / `show_dots`: Checkbox
-  - `dot_style`: Select (`dots`, `bars`, `numbers`)
-  - `autoplay` / `infinite_scroll`: Behavior
-- **Blocks**: `_slide` (Container)
+| Section | Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Announcement Bar** | `width_scheme` | `select` | `full` | `full` | |
+| | `autoplay` | `checkbox` | - | `true` | |
+| | `autoplay_speed` | `range` | `3`-`10` | `5` | |
+| | `show_arrows` | `checkbox` | - | `true` | |
+| | `show_close` | `checkbox` | - | `false` | |
+| | `color_scheme` | `color_scheme` | - | `default` | |
+| **Background** | `image` | `image_picker` | - | - | |
+| | `bg_color` | `color` | - | `#ffffff` | |
+| | `overlay` | `range` | `0`-`90` | `0` | |
+| **Divider** | `width_scheme` | `select` | `full` | `full` | |
+| | `show_line` | `checkbox` | - | `true` | |
+| | `show_icon` | `checkbox` | - | `true` | |
+| | `icon_select` | `select` | `star`, `chevron-down`, `menu` | `star` | |
+| | `height` | `range` | `0`-`600` (px) | `32` | |
+| | `color_scheme` | `color_scheme` | - | `default` | |
+| **Footer** | `width_scheme` | `select` | `standard` | `standard` | |
+| | `padding_vertical` | `select` | `none`, `xs`...`xl`, `custom` | `sm` | |
+| | `padding_vertical_custom` | `range` | `0`-`200` (px) | `80` | `padding_vertical == custom` |
+| | `padding_horizontal` | `select` | `none`, `xs`...`xl`, `custom` | `xs` | |
+| | `padding_horizontal_custom` | `range` | `0`-`200` (px) | `0` | `padding_horizontal == custom` |
+| | `show_policy` | `checkbox` | - | `true` | |
+| | `show_payment` | `checkbox` | - | `true` | |
+| | `color_scheme` | `color_scheme` | - | `default` | |
+| **Grid** | `enable_gradient` | `checkbox` | - | `false` | |
+| | `overlay_color` | `color` | - | - | |
+| | `overlay_opacity` | `range` | `0`-`100` | `40` | |
+| | `bg_image` | `image_picker` | - | - | |
+| | `justify_content` | `select` | `start`, `center`, `end`, `between` | `center` | |
+| | `width_scheme` | `select` | `standard` | `standard` | |
+| | `columns_desktop` | `range` | `2`-`4` | `3` | |
+| | `columns_mobile` | `range` | `1`-`2` | `1` | |
+| | `height` | `select` | `auto`, `sm`...`xl`, `custom` | `auto` | |
+| | `height_custom` | `range` | `200`-`1000` (px) | `400` | `height == custom` |
+| | `enable_cards_global` | `checkbox` | - | `false` | |
+| | `card_padding` | `select` | `none`, `xs`...`lg`, `custom` | `none` | |
+| | `card_padding_custom` | `range` | `0`-`100` | `24` | `card_padding == custom` |
+| | `card_shadow_global` | `checkbox` | - | `false` | `enable_cards_global == true` |
+| | `padding_vertical`... | (See Footer) | | | |
+| **Header** | `width_scheme` | `select` | `standard` | `standard` | |
+| | `desktop_layout` | `select` | `logo_center`, `logo_left` | `logo_center` | |
+| | `nav_alignment` | `select` | `left`, `center`, `right` | `left` | `desktop_layout == logo_left` |
+| | `padding_vertical`... | (See Footer) | | | |
+| | `sticky_behavior` | `select` | `none`, `always`, `on_scroll_up` | `always` | |
+| | `enable_transparent` | `checkbox` | - | `true` | |
+| | `color_scheme` | `color_scheme` | - | `default` | |
+| **Hero** | `width_scheme` | `select` | `standard` | `standard` | |
+| | `layout_mode` | `select` | `overlay`, `split_left`, `split_right` | `overlay` | |
+| | `height` | `select` | `auto`, `sm`...`xl`, `custom` | `auto` | |
+| | `bg_image` / `_2` | `image_picker` | - | - | |
+| | `mobile_image` / `_2` | `image_picker` | - | - | |
+| | `video_url` / `_2` | `text` | MP4 URL | - | |
+| | `show_placeholder` | `checkbox` | - | `true` | No images |
+| | `enable_gradient` | `checkbox` | - | `false` | `layout_mode == overlay` |
+| | `overlay_color` | `color` | - | - | `layout_mode == overlay` |
+| | `overlay_opacity` | `range` | `0`-`100` | `40` | `layout_mode == overlay` |
+| | `content_align` | `select` | `left`, `center`, `right` | `center` | |
+| | `text_align` | `select` | `left`, `center`, `right` | `center` | |
+| | `vertical_align` | `select` | `top`, `middle`, `bottom` | `middle` | |
+| | `enable_animation` | `checkbox` | - | `true` | |
+| | `enable_zoom` | `checkbox` | - | `false` | |
+| **Marquee** | `width_scheme` | `select` | `full` | `full` | |
+| | `text_list` | `text` | CSV string | - | |
+| | `text_size` | `select` | `small`, `medium`, `large`, `xl`, `display` | `small` | |
+| | `uppercase` | `checkbox` | - | `true` | |
+| | `speed` | `range` | `5`-`60` | `20` | |
+| | `direction` | `select` | `left`, `right` | `left` | |
+| | `color_scheme` | `color_scheme` | - | `default` | |
+| | `padding_vertical`... | (See Footer) | | | |
+| **Media w Content** | `width_scheme` | `select` | `standard` | `standard` | |
+| | `height` | `select` | `auto`...`custom` | `auto` | |
+| | `desktop_layout` | `select` | `image_left`, `image_right` | `image_left` | |
+| | `mobile_layout` | `select` | `image_first`, `text_first` | `image_first` | |
+| | `content_align`... | (See Hero) | | | |
+| | `show_shadow` | `checkbox` | - | `true` | |
+| | `padding_vertical`... | (See Footer) | | | |
+| | `image` etc. | (See Hero) | | | |
+| **Menu List** | `menu` | `collection` | - | - | |
+| | `display_scope` | `select` | `full_menu`, `category` | `full_menu` | |
+| | `category` | `collection` | - | - | `display_scope == category` |
+| | `enable_filtering` | `checkbox` | - | `true` | |
+| | `show_nav` | `checkbox` | - | `true` | `display_scope == full` |
+| | `nav_layout` | `select` | `vertical`, `horizontal` | `vertical` | `show_nav == true` |
+| | `nav_sticky_offset` | `range` | `0`-`160` (px) | `80` | `nav == horizontal` |
+| | `layout_style` | `select` | `list`, `card-standard`, `card-compact` | `list` | |
+| | `aspect_ratio` | `select` | `square`, `landscape`, `portrait` | `landscape` | `layout != list` |
+| | `column_preset` | `select` | `1:1:1`, `1:2:2`, `1:2:3` | `1:2:3` | |
+| | `grid_gap` | `select` | `tight`, `normal`, `relaxed`, `loose` | `normal` | |
+| **Slideshow** | `width_scheme` | `select` | `standard` | `standard` | |
+| | `height` | `select` | `sm`...`xl`, `custom` | `sm` | |
+| | `slide_gap` | `range` | `0`-`40` (px) | `0` | |
+| | `slide_width` | `range` | `80`-`100` (%) | `100` | |
+| | `show_arrows` | `checkbox` | - | `true` | |
+| | `show_dots` | `checkbox` | - | `true` | |
+| | `autoplay` | `checkbox` | - | `false` | |
+| | `infinite_scroll` | `checkbox` | - | `true` | |
 
 ---
 
 ## 4. Blocks Reference (ICD)
 
-### A. Generic Blocks (Available in `@theme` slots)
-
-#### **Button** (`blocks/button.liquid`)
-- **Settings**:
-  - `label`: Text
-  - `link`: URL
-  - `style`: Select (`primary`, `outline`, `link`)
-  - `width`: Select (`auto`, `full`)
-  - `inherit_style`: Checkbox (If false, use custom colors)
-  - `custom_bg` / `custom_text`: Color
+### Generic Blocks (Available in `@theme` slots)
 
 #### **Badge Pill** (`blocks/badge.liquid`)
-- **Settings**:
-  - `text`: Text (Default: "100% Grass-Fed...")
-  - `bg_color`: Color (Default: `#06d6a0`)
-  - `text_color`: Color (Default: `#ffffff`)
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `text` | `text` | - | `100% Grass-Fed...` | |
+| `bg_color` | `color` | - | `#06d6a0` | |
+| `text_color` | `color` | - | `#ffffff` | |
+
+#### **Button** (`blocks/button.liquid`)
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `label` | `text` | - | `Book Now` | |
+| `link` | `url` | - | - | |
+| `style` | `select` | `primary`, `outline`, `link` | `primary` | |
+| `width` | `select` | `auto`, `full` | `auto` | |
+| `inherit_style` | `checkbox` | - | `true` | |
+| `custom_bg` | `color` | - | `#000000` | `inherit_style != true` |
+| `custom_text` | `color` | - | `#ffffff` | `inherit_style != true` |
+| `border_radius_custom` | `range` | `0` - `80` px | `4` | `inherit_style != true` |
 
 #### **Group** (`blocks/group.liquid`)
-*Flexbox container for nesting other blocks.*
-- **Settings**:
-  - `direction`: Select (`row`, `col`, default: `col`)
-  - `text_align`: Select (`left`, `center`, `right`)
-  - `content_align`: Select (`left`, `center`, `right`, `between`, `stretch`, default: `start`)
-  - `vertical_align`: Select (`top`, `middle`, `bottom`, `between`, `stretch`, default: `start`)
-  - `wrap_content`: Checkbox
-  - `width`: Select (`fit`, `full`)
-  - `height`: Select (`auto`, `full`, `screen`)
-  - `gap` / `gap_custom`: Range for spacing
-  - `padding_vertical`: Select (`none`...`custom`)
-  - `padding_horizontal`: Select (`none`...`custom`)
-  - `inherit_styles`: Checkbox
-  - `position`: Select (`relative`, `absolute`)
-  - `inset`: Select (e.g., `top-left`, `bottom-right`)
-  - `color_scheme`: Color Scheme
-- **Contains**: `@theme` (Any block)
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `direction` | `select` | `column`, `row` | `column` | |
+| `content_align` | `select` | `left`, `center`, `right`, `between`, `stretch` | `left` | |
+| `vertical_align` | `select` | `top`, `middle`, `bottom`, `between`, `stretch` | `top` | |
+| `text_align` | `select` | `left`, `center`, `right` | `left` | |
+| `wrap_content` | `checkbox` | - | `false` | |
+| `width` | `select` | `full`, `fit` | `full` | |
+| `height` | `select` | `auto`, `full` | `auto` | |
+| `position` | `select` | `relative`, `absolute` | `relative` | |
+| `inset` | `select` | `top-left`, `top-right`, `bottom-left`, `bottom-right`, `cover` | `top-left` | `position == 'absolute'` |
+| `padding_vertical` | `select` | `none`, `xs`, `sm`, `md`, `lg`, `xl`, `custom` | `md` | |
+| `padding_vertical_custom` | `range` | `0` - `128` px | `0` | `padding_vertical == 'custom'` |
+| `padding_horizontal` | `select` | `none`, `xs`, `sm`, `md`, `lg`, `xl`, `custom` | `md` | |
+| `padding_horizontal_custom` | `range` | `0` - `128` px | `0` | `padding_horizontal == 'custom'` |
+| `gap` | `select` | `none`, `xs`, `sm`, `md`, `lg`, `xl`, `custom` | `md` | |
+| `gap_custom` | `range` | `0` - `100` px | `16` | `gap == 'custom'` |
+| `inherit_styles` | `checkbox` | - | `true` | |
+| `color_scheme` | `color_scheme` | - | `default` | `inherit_styles == false` |
+| `bg_color` | `color` | - | - | `inherit_styles == false` |
+| `shadow` | `checkbox` | - | `false` | |
+| `enable_glass` | `checkbox` | - | `false` | |
+| `overflow_hidden` | `checkbox` | - | `false` | |
+| `border_radius` | `range` | `0` - `60` px | `settings.corner_radius` | `inherit_styles == false` |
+| `opacity` | `range` | `0` - `100` % | `100` | |
 
-#### **Heading** (`blocks/heading.liquid`)
-- **Settings**:
-  - `text`: Text
-  - `tag`: Select (`h2`, `h3`, `h4`)
-  - `display_size`: Select (`h2`, `h3`, `body`)
-  - `text_align`: Select (`inherit`, `left`, `center`, `right`)
-  - `font_weight`: Select (`normal`, `medium`, `bold`)
-  - `uppercase` / `italic`: Checkbox
+#### **Logo Icon** (`blocks/logo.liquid`)
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `image` | `image_picker` | - | - | |
+| `width` | `range` | `50` - `300` px | `150` | |
 
-#### **Jumbo Text** (`blocks/jumbo-text.liquid`)
-*Massive typographic element.*
-- **Settings**:
-  - `text`: Textarea
-  - `display_size`: Select (`display`, `h1`)
-  - `custom_color`: Color
+#### **Media (Image/Video)** (`blocks/media.liquid`)
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `image` | `image_picker` | - | - | |
+| `image_mobile` | `image_picker` | - | - | |
+| `video_url` | `text` | MP4 URL | - | |
+| `show_controls` | `checkbox` | - | `false` | |
+| `autoplay` | `checkbox` | - | `false` | |
+| `height` | `select` | `auto`, `sm`, `md`, `lg`, `xl`, `custom` | `auto` | |
+| `aspect_ratio` | `select` | `auto`, `square`, `video`, `portrait`, `landscape` | `auto` | |
+| `object_fit` | `select` | `cover`, `contain` | `cover` | |
+| `enable_hover` | `checkbox` | - | `false` | |
+| `inherit_styles` | `checkbox` | - | `true` | |
+| `color_scheme` | `color_scheme` | - | `default` | `inherit_styles != true` |
+| `border_radius` | `range` | `0` - `100` px | `settings.corner_radius` | `inherit_styles != true` |
+| `show_shadow` | `checkbox` | - | `false` | `inherit_styles != true` |
 
-#### **Media** (`blocks/media.liquid`)
-- **Settings**:
-  - `image` / `image_mobile`: Image Picker
-  - `video_url`: Text
-  - `aspect_ratio`: Select (`auto`, `square`, `video`, `portrait`, `landscape`)
-  - `object_fit`: Select (`cover`, `contain`)
-  - `border_radius`: Range (`0`-`100`px)
+#### **Scroll Indicator** (`blocks/scroll-indicator.liquid`)
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `bottom_offset` | `range` | `0` - `120` px | `32` | |
+| `label` | `text` | - | `Scroll` | |
+| `inherit_color` | `checkbox` | - | `true` | |
+| `custom_color` | `color` | - | `#ffffff` | `inherit_color != true` |
+
+#### **Spacer** (`blocks/spacer.liquid`)
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `height` | `range` | `10` - `150` px | `40` | |
+| `hide_mobile` | `checkbox` | - | `false` | |
 
 #### **Text** (`blocks/text.liquid`)
-- **Settings**:
-  - `content`: Textarea
-  - `display_size`: Select (`body`, `caption`)
-  - `text_align`: Select (`inherit`, `left`, `center`, `right`)
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `content` | `textarea` | - | `Locally sourced ingredients.` | |
+| `tag` | `select` | `h1`...`h6`, `p`, `div`, `span` | `div` | |
+| `display_size` | `select` | `display`, `h1`-`h6`, `body`, `caption` | `body` | |
+| `text_align` | `select` | `inherit`, `left`, `center`, `right` | `inherit` | |
+| `font_weight` | `select` | `normal`, `medium`, `bold` | `normal` | |
+| `italic` | `checkbox` | - | `false` | |
+| `text_transform` | `select` | `none`, `uppercase`, `capitalize`, `lowercase` | `none` | |
+| `text_wrap` | `select` | `wrap`, `nowrap`, `balance` | `wrap` | |
+| `overflow_behavior` | `select` | `visible`, `hidden`, `ellipsis` | `visible` | |
+| `inherit_color_scheme` | `checkbox` | - | `true` | |
+| `custom_color` | `color` | - | `#ffffff` | `inherit_color_scheme != true` |
 
-### B. Scoped / Structural Blocks
+### Scoped / Structural Blocks
 
-#### **_Announcement** (`blocks/_announcement.liquid`)
-- **Context**: `announcement-bar`
-- **Settings**: `text`, `link`, `color_scheme`.
+#### **Message** (`blocks/_announcement.liquid`)
+*Scope: Announcement Bar*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `text` | `text` | - | `Welcome...` | |
+| `link` | `url` | - | - | |
+| `inherit_color_scheme` | `checkbox` | - | `true` | |
+| `color_scheme` | `color_scheme` | - | `default` | `inherit_color_scheme != true` |
 
-#### **_Column** (`blocks/_column.liquid`)
-- **Context**: `grid`
-- **Settings**: `width` (`auto`, `full`, `half`, `third`, `two_thirds`, `quarter`).
-- **Contains**: `@theme`.
+#### **Column** (`blocks/_column.liquid`)
+*Scope: Grid Section*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `width` | `select` | `auto`, `full`, `half`, `third`, `two_thirds`, `quarter` | `auto` | |
 
-#### **_Header-*** Blocks
-- **Context**: `header` (All are `static: true`)
-- **`_header-logo`**: `logo` (Image), `width` (Range).
-- **`_header-menu`**: `menu` (LinkList), `show_promo`, `promo_image`, `promo_heading`.
-- **`_header-actions`**: `show_search`, `show_cart`, `btn_label`, `btn_link`.
+#### **Footer Brand & Socials** (`blocks/_footer-brand.liquid`)
+*Scope: Footer*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `logo` | `image_picker` | - | - | `shop.logo_src == blank` |
+| `text` | `textarea` | - | `Fine dining...` | |
+| `show_socials` | `checkbox` | - | `true` | |
 
-#### **_Marquee** (`blocks/_marquee.liquid`)
-- **Context**: `hero` (Unique block version of the marquee section)
-- **Settings**: `pin_bottom` (Bool), `text_list`, `speed`, `direction`.
+#### **Footer Nav Group** (`blocks/_footer-nav.liquid`)
+*Scope: Footer*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `heading` | `text` | - | `Quick Links` | |
+| `menu` | `link_list` | - | `footer` | |
 
-#### **_Slide** (`blocks/_slide.liquid`)
-- **Context**: `slideshow`
-- **Settings**: `image`, `video_url`, `overlay_color`, `content_align`.
-- **Contains**: `@theme`.
+#### **Footer Newsletter** (`blocks/_footer-newsletter.liquid`)
+*Scope: Footer*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `heading` | `text` | - | `Join the Club` | |
+| `text` | `text` | - | `Exclusive events...` | |
+| `email_placeholder` | `text` | - | `Email Address` | |
+
+#### **Header Actions** (`blocks/_header-actions.liquid`)
+*Scope: Header*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `show_search` | `checkbox` | - | `true` | |
+| `show_cart` | `checkbox` | - | `true` | |
+| `btn_label` | `text` | - | `Book Table` | |
+| `btn_link` | `url` | - | - | |
+
+#### **Header Logo** (`blocks/_header-logo.liquid`)
+*Scope: Header*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `logo` | `image_picker` | - | - | `shop.logo_src == blank` |
+| `width` | `range` | `50` - `400` px | `120` | |
+
+#### **Header Nav** (`blocks/_header-menu.liquid`)
+*Scope: Header*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `menu` | `link_list` | - | `main-menu` | |
+| `show_promo` | `checkbox` | - | `false` | |
+| `promo_image` | `image_picker` | - | - | `show_promo == true` |
+| `promo_heading` | `text` | - | `Featured` | `show_promo == true` |
+| `promo_text` | `text` | - | `Check out our...` | `show_promo == true` |
+
+#### **Scrolling Marquee** (`blocks/_marquee.liquid`)
+*Scope: Marquee Section*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `pin_bottom` | `checkbox` | - | `false` | |
+| `opacity` | `range` | `0` - `100` | `95` | |
+| `text_list` | `text` | - | `Fresh Pasta...` | |
+| `direction` | `select` | `left`, `right` | `left` | |
+| `text_size` | `select` | `small`, `medium`, `large`, `xl`, `display` | `small` | |
+| `uppercase` | `checkbox` | - | `true` | |
+| `speed` | `range` | `5` - `30` | `15` | |
+| `inherit_scheme` | `checkbox` | - | `true` | |
+| `color_scheme` | `color_scheme` | - | `default` | `inherit_scheme != true` |
+
+#### **Slide** (`blocks/_slide.liquid`)
+*Scope: Slideshow Section*
+| Setting | Type | Options / Range | Default | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| `image` | `image_picker` | - | - | |
+| `image_mobile` | `image_picker` | - | - | |
+| `video_url` | `text` | MP4 | - | |
+| `show_placeholder` | `checkbox` | - | `true` | |
+| `enable_zoom` | `checkbox` | - | `false` | |
+| `enable_gradient` | `checkbox` | - | `true` | |
+| `overlay_color` | `color` | - | `#000000` | |
+| `overlay_opacity` | `range` | `0` - `100` | `40` | |
+| `content_align` | `select` | `left`, `center`, `right` | `center` | |
+| `text_align` | `select` | `left`, `center`, `right` | `center` | |
+| `vertical_align` | `select` | `top`, `middle`, `bottom` | `middle` | |
+| `inherit_color_scheme` | `checkbox` | - | `true` | |
+| `color_scheme` | `color_scheme` | - | `default` | `inherit_color_scheme != true` |
 
 ---
 
 ## 5. Snippets Reference
-Atomic rendering units. Arguments are passed as variables.
+Atomic rendering units.
 
-| Snippet | Prop | Type | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| **button** | `label` | String | - | Button text |
-| | `url` | URL | - | HREF |
-| | `style` | String | `primary` | `primary`, `outline`, `link` |
-| | `width` | String | `auto` | `auto`, `full` |
-| | `class_props` | String | - | Additional classes |
-| **header-drawer** | `menu` | LinkList | - | Navigation to render |
-| **icon** | `name` | String | - | Icon name (see list below) |
-| | `class` | String | `w-6 h-6` | Tailwind classes |
-| | **Available Icons**: | | | `chevron-left/right/up/down`, `arrow-left...`, `star`, `bag`, `search`, `user`, `menu`, `close`, `instagram`, `facebook`, `tiktok`, `twitter`, `yelp`, `linkedin`, `youtube`, `credit-card`, `vegan`, `vegan request`, `vegetarian`, `gluten-free`, `gluten-free request`, `dairy-free`, `nut-free`, `spicy` |
-| **media** | `src` | Image | - | Image object or URL |
-| | `src_mobile` | Image | - | Mobile Specific Image |
-| | `video` | URL | - | MP4 URL |
-| | `fit` | String | `cover` | `cover`, `contain` |
-| | `animate` | Bool | `false` | Enable Ken Burns |
-| | `animate_hover` | Bool | `false` | Zoom on Hover |
-| | `loading` | String | `lazy` | `eager` or `lazy` |
-| | `controls` | Bool | `false` | Show video controls |
-| | `autoplay` | Bool | `false` | Autoplay video |
-| **spacer** | `height` | Number | `20` | Desktop Height (px) |
-| | `mobile_height` | Number | - | Mobile Height (px) |
-| **social-links** | `class` | String | - | Container classes |
-| **typography** | `text` | String | - | Content |
-| | `tag` | String | `p` | HTML Tag (`h1`, `p`, `span`) |
-| | `display_size` | String | `body` | `display`, `h1`... `caption` |
-| | `family` | String | - | `heading`, `body` |
-| | `weight` | String | - | Font weight suffix (`bold`, `medium`) |
-| | `color` | String | `text-body` | Text color class |
+| Snippet | Args | Description |
+| :--- | :--- | :--- |
+| **button** | `label`, `url`, `style`, `width`, `class_props` | Standard button |
+| **header-drawer** | `menu` | Mobile side-menu |
+| **icon** | `name`, `class` | Icons: `chevron-*`, `star`, `bag`, `search`, `menu`, `close`, social brands, dietary tags. |
+| **marquee** | `items`, `speed`, `direction`, `size_class`, `uppercase` | Scrolling text |
+| **media** | `src`, `src_mobile`, `video`, `fit`, `ratio`, `load`, `placeholder`, `animate`, `animate_hover`, `controls`, `autoplay` | Unified Media renderer |
+| **menu-*** | `category`, `all_categories`, `depth`, `nav_layout`... | Recursive menu components |
+| **spacer** | `height` | Vertical space |
+| **social-links** | - | Renders icons from settings |
+| **typography** | `text`, `tag`, `display_size`, `family`, `weight`, `color`, `class` | Text renderer |
