@@ -12,7 +12,18 @@
   {% assign anim_class = anim_class | append: ' transition-transform duration-700 ease-out group-hover:scale-110' %}
 {% endif %}
 
-<div class="media-wrapper overflow-hidden relative group" style="--object-fit: {{ fit_mode }}">
+{% case ratio %}
+  {% when 'landscape' %}
+    {% assign ratio_mode = 'landscape' %}
+  {% when 'portrait' %}
+    {% assign ratio_mode = 'portrait' %}
+  {% when 'video' %}
+    {% assign ratio_mode = 'landscape' %}
+  {% else %}
+    {% assign ratio_mode = 'auto' %}
+{% endcase %}
+
+<div class="media-wrapper overflow-hidden relative group" style="--object-fit: {{ fit_mode }}" data-ratio="{{ ratio_mode }}">
   {% if video != blank %}
     <video
       muted

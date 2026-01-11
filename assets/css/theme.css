@@ -87,17 +87,16 @@
   }
 
   /* Golden ratio aspect ratios for consistent proportions */
-  .media-wrapper[data-ratio="golden-landscape"] {
-    aspect-ratio: 1.618 / 1;
+  .media-wrapper[data-ratio="landscape"] {
+    aspect-ratio: var(--golden-ratio);
   }
 
-  .media-wrapper[data-ratio="golden-portrait"] {
-    aspect-ratio: 1 / 1.618;
+  .media-wrapper[data-ratio="portrait"] {
+    aspect-ratio: var(--golden-ratio-inverse);
   }
 
   .media-wrapper[data-ratio="auto"] {
     aspect-ratio: auto;
-    max-height: 100vh;
   }
 
   .scrollbar-hide::-webkit-scrollbar {
