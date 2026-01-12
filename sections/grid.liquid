@@ -2,19 +2,17 @@
 
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
-    padding-top: {{ s.padding_vertical_custom }}px;
-    padding-bottom: {{ s.padding_vertical_custom }}px;
+    --space-py: {{ s.padding_vertical_custom }}px;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     padding-left: {{ s.padding_horizontal_custom }}px;
-     padding-right: {{ s.padding_horizontal_custom }}px;
+     --space-px: {{ s.padding_horizontal_custom }}px;
   {% endif %}
   {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
 {% endcapture %}
 
 {% capture section_spacing_class %}
-  {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
-  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
 {% assign animation_class = '' %}
