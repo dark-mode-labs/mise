@@ -60,13 +60,13 @@
 {% endunless %}
 
 <section
-  class="section-hero overflow-hidden color-{{ s.color_scheme }}"
+  class="section-hero color-{{ s.color_scheme }}"
 >
   <div
-    class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"
+    class="bg-body {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"
     style="{{ section_spacing_style }}"
   >
-    <div class="{{ media_container_class }}">
+    <div class="{{ media_container_class }} width-{{ s.width_bg }} limit-width">
       <div class="hero-media-inner absolute inset-0 {% if has_media_2 %}w-1/2 border-r border-std{% endif %}">
         {% render 'media',
           src: s.bg_image,
@@ -107,7 +107,7 @@
       {% endif %}
     </div>
 
-    <div class="{{ content_container_class }} section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}">
+    <div class="{{ content_container_class }} width-{{ s.width_scheme }} limit-width  section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}">
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -120,8 +120,14 @@
     { "type": "header", "content": "Layout" },
     {
       "type": "width_scheme",
+      "id": "width_bg",
+      "label": "Background Width",
+      "default": "full"
+    },
+    {
+      "type": "width_scheme",
       "id": "width_scheme",
-      "label": "Max Content Width",
+      "label": "Content Width",
       "default": "standard"
     },
     {

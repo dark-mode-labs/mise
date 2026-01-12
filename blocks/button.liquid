@@ -9,7 +9,7 @@
   {% assign width_class = 'w-full block' %}
 {% endif %}
 
-<div class="{{ width_class }}" {{ style_override }}>
+<div class="{{ width_class }} whitespace-nowrap" {{ style_override }}>
   {% render 'button',
     label: block.settings.label,
     url: block.settings.link,

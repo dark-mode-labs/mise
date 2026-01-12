@@ -1,7 +1,7 @@
 {% assign s = block.settings %}
 
 {% capture block_classes %}
-  relative overflow-hidden
+  relative overflow-hidden rounded-global
   {% unless s.inherit_styles %}
     color-{{ s.color_scheme }}
     {% if s.show_shadow %}shadow-lg{% endif %}
@@ -10,11 +10,12 @@
 
 {% capture block_styles %}
   {% unless s.inherit_styles %}
-    border-radius: {{ s.border_radius }}px;
+    --radius-global: {{ s.border_radius }}px;
   {% endunless %}
+  {% if s.height == 'custom' %}
+    --max-h: {{ s.custom_height }}px;
+  {% endif %}
 {% endcapture %}
-
-
 
 <div class="media-block {{ block_classes }} is-{{ s.height }}" style="{{ block_styles }}">
   {% render 'media',
@@ -61,6 +62,16 @@
         { "value": "custom", "label": "Custom" }
       ],
       "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "label": "Custom Height (px)",
+      "min": 20,
+      "max": 800,
+      "step": 10,
+      "default": 300,
+      "conditional": "setting.height == 'custom'"
     },
     {
       "type": "select",

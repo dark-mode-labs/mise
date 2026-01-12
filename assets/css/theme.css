@@ -759,31 +759,8 @@
     @apply antialiased;
   }
 
-  :root {
-    --radius-global: 0px;
-    --golden-ratio: 1.618;
-    --golden-ratio-inverse: 0.618;
-
-    /* Golden ratio based spacing scale */
-    --space-base: 1rem;
-    --space-xs: calc(var(--space-base) * 0.382);
-    /* ~6px */
-    --space-sm: calc(var(--space-base) * 0.618);
-    /* ~10px */
-    --space-md: var(--space-base);
-    /* 16px */
-    --space-lg: calc(var(--space-base) * 1.618);
-    /* ~26px */
-    --space-xl: calc(var(--space-base) * 2.618);
-    /* ~42px */
-    --space-2xl: calc(var(--space-base) * 4.236);
-    /* ~68px */
-    --space-3xl: calc(var(--space-base) * 6.854);
-    /* ~110px */
-  }
-
   section {
-    @apply w-full;
+    @apply relative w-full overflow-hidden;
   }
 
 }

@@ -33,28 +33,27 @@
   {% endcapture %}
 {% endif %}
 
-<section class="section-multi-column relative color-{{ s.color_scheme }}">
+<section class="section-multi-column color-{{ s.color_scheme }}">
+  {% unless s.bg_image == blank and s.overlay_color == blank %}
+    <div class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden bg-surface">
+      <div class="grid-media-inner">
+        {% if s.bg_image != blank %}
+          {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
+        {% endif %}
+
+        {% if s.overlay_color != blank %}
+          <div
+            class="absolute inset-0 pointer-events-none"
+            style="{{ overlay_style }}"
+          ></div>
+        {% endif %}
+      </div>
+    </div>
+  {% endunless %}
   <div
-    class="grid-layout-overlay bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }} is-{{ s.height }}"
+    class="grid-layout-overlay width-{{ s.width_scheme }} limit-width {{ section_spacing_class }} is-{{ s.height }}"
     style="{{ section_spacing_style }}"
   >
-    {% unless s.bg_image == blank and s.overlay_color == blank %}
-      <div class="grid-media-overlay overflow-hidden bg-surface">
-        <div class="grid-media-inner">
-          {% if s.bg_image != blank %}
-            {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
-          {% endif %}
-
-          {% if s.overlay_color != blank %}
-            <div
-              class="absolute inset-0 pointer-events-none"
-              style="{{ overlay_style }}"
-            ></div>
-          {% endif %}
-        </div>
-      </div>
-    {% endunless %}
-
     <div class="grid-content-overlay">
       <div
         class="flex flex-wrap justify-content-{{ s.justify_content }} {{ animation_class }} -mx-4"
@@ -115,8 +114,14 @@
     },
     {
       "type": "width_scheme",
+      "id": "width_bg",
+      "label": "Background Width",
+      "default": "full"
+    },
+    {
+      "type": "width_scheme",
       "id": "width_scheme",
-      "label": "Max Content Width",
+      "label": "Content Width",
       "default": "standard"
     },
     {
@@ -257,7 +262,24 @@
     {
       "name": "Multi-Column",
       "settings": { "columns_desktop": 3 },
-      "blocks": [{ "type": "_column" }, { "type": "_column" }, { "type": "_column" }]
+      "blocks": {
+        "col_1": {
+          "type": "_column",
+          "blocks": { "title": { "type": "text", "settings": { "content": "Sourcing" } } },
+          "block_order": ["title"]
+        },
+        "col_2": {
+          "type": "_column",
+          "blocks": { "title": { "type": "text", "settings": { "content": "Prep" } } },
+          "block_order": ["title"]
+        },
+        "col_3": {
+          "type": "_column",
+          "blocks": { "title": { "type": "text", "settings": { "content": "Plating" } } },
+          "block_order": ["title"]
+        }
+      },
+      "block_order": ["col_1", "col_2", "col_3"]
     }
   ]
 }

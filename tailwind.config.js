@@ -19,9 +19,6 @@ export default {
         body: ['var(--font-body)', 'sans-serif'],
         btn: ['var(--font-button)', 'sans-serif'],
       },
-      spacing: {
-        gap: 'var(--grid-gap)',
-      },
       textColor: {
         body: 'var(--color-text)',
         secondary: 'var(--color-text-secondary)',

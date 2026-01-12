@@ -8,6 +8,7 @@
     {% when 'third' %}lg:w-1/3 w-full
     {% when 'two_thirds' %}lg:w-2/3 w-full
     {% when 'quarter' %}lg:w-1/4 w-full
+    {% when 'fit' %}lg:w-auto w-full
     {% else %}
       {% case ss.columns_desktop %}
         {% when 2 %}lg:w-1/2
@@ -18,7 +19,7 @@
   {% endcase %}
 {% endcapture %}
 
-<div class="column-wrapper flex-auto {{ width_class }} px-4">
+<div class="column-wrapper flex-{{ s.fill }} {{ width_class }} px-4">
   <div class="h-full w-full">
     {% content_for 'blocks' %}
   </div>
@@ -38,9 +39,20 @@
         { "value": "half", "label": "Half (50%)" },
         { "value": "third", "label": "Third (33%)" },
         { "value": "two_thirds", "label": "Two Thirds (66%)" },
-        { "value": "quarter", "label": "Quarter (25%)" }
+        { "value": "quarter", "label": "Quarter (25%)" },
+        { "value": "fit", "label": "Fit to Content (Crisp)" }
       ],
       "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "fill",
+      "label": "Flex Fill",
+      "options": [
+        { "value": "auto", "label": "Fill" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "none"
     }
   ],
   "blocks": [{ "type": "@theme" }],
