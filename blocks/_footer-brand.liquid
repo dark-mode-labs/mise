@@ -4,8 +4,11 @@
 {% else %}
   {% assign asset_src = shop.logo_src %}
 {% endif %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
 
-<div class="footer-block flex flex-col gap-6 items-start">
+<div class="footer-block flex flex-col gap-6 items-start {{ scheme_class }}">
   <a href="/" class="block w-32">
     {% if asset_src != blank %}
       {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent' %}
@@ -31,7 +34,29 @@
   "settings": [
     { "type": "image_picker", "id": "logo", "label": "Footer Logo", "conditional": "shop.logo_src == blank" },
     { "type": "textarea", "id": "text", "label": "Bio", "default": "Fine dining in the heart of the city." },
-    { "type": "checkbox", "id": "show_socials", "label": "Show Social Icons", "default": true }
+    { "type": "checkbox", "id": "show_socials", "label": "Show Social Icons", "default": true },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    }
   ]
 }
 {% endschema %}

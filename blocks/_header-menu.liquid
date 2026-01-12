@@ -1,6 +1,9 @@
 {% assign s = block.settings %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
 
-<nav class="header-nav hidden lg:flex items-center">
+<nav class="header-nav hidden lg:flex items-center {{ scheme_class }}">
   <ul class="flex items-center gap-8">
     {% for link in s.menu.links %}
       {% assign has_mega = false %}
@@ -126,6 +129,28 @@
       "label": "Promo Text",
       "default": "Check out our new seasonal specials.",
       "conditional": "setting.show_promo"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
     }
   ]
 }

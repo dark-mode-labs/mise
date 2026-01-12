@@ -38,7 +38,7 @@
 {% endcapture %}
 
 <section
-  class="header-section {{ position_class }} color-{{ s.color_scheme }} bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
+  class="header-section {{ position_class }} color-{{ s.color_scheme | default: 'none' }} bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
   data-transparent="{{ s.enable_transparent }}"

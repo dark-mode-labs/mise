@@ -19,7 +19,11 @@
   {% endcase %}
 {% endcapture %}
 
-<div class="column-wrapper flex-{{ s.fill }} {{ width_class }} px-4">
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
+
+<div class="column-wrapper flex-{{ s.fill }} {{ width_class }} {{ scheme_class }} px-4">
   <div class="h-full w-full">
     {% content_for 'blocks' %}
   </div>
@@ -53,6 +57,28 @@
         { "value": "none", "label": "None" }
       ],
       "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
     }
   ],
   "blocks": [{ "type": "@theme" }],

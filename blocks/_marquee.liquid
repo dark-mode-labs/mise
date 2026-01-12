@@ -1,23 +1,23 @@
-{% assign scheme_class = '' %}
-{% unless block.settings.inherit_scheme %}
-  {% assign scheme_class = 'color-' | append: block.settings.color_scheme %}
-{% endunless %}
+{% assign s = block.settings %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
 
-{% assign size_class = 'text-size-' | append: block.settings.text_size %}
+{% assign size_class = 'text-size-{{ s.text_size }}' %}
 
 {% capture rendered_marquee %}
   {% render 'marquee', 
-    items: block.settings.text_list, 
-    speed: block.settings.speed, 
-    direction: block.settings.direction, 
+    items: s.text_list, 
+    speed: s.speed, 
+    direction: s.direction, 
     size_class: size_class,
-    uppercase: block.settings.uppercase %}
+    uppercase: s.uppercase %}
 {% endcapture %}
 
-{% if block.settings.pin_bottom %}
+{% if s.pin_bottom %}
   <div
     class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-surface text-body no-stagger"
-    style="opacity: {{ block.settings.opacity | divided_by: 100.0 }};"
+    style="opacity: {{ s.opacity | divided_by: 100.0 }};"
   >
     {{ rendered_marquee }}
   </div>
@@ -26,7 +26,7 @@
   <div class="wrapper relative left-[calc(-50vw+50%)] my-4 z-base no-stagger">
     <div
       class="border-y border-std {{ scheme_class }} bg-body text-body"
-      style="opacity: {{ block.settings.opacity | divided_by: 100.0 }};"
+      style="opacity: {{ s.opacity | divided_by: 100.0 }};"
     >
       {{ rendered_marquee }}
     </div>
@@ -105,20 +105,25 @@
     },
     {
       "type": "header",
-      "content": "Theme"
+      "content": "Style"
     },
     {
       "type": "checkbox",
-      "id": "inherit_scheme",
+      "id": "inherit_styles",
       "label": "Inherit Color Scheme",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_scheme != true"
+      "conditional": "setting.inherit_styles != true"
     }
   ]
 }

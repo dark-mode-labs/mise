@@ -36,6 +36,21 @@
     }
   {% endfor %}
 
+  .color-none {
+      --color-bg: "";
+      --color-text: "";
+      --color-text-secondary: "";
+      --color-accent: "";
+      --color-surface: "";
+      --color-btn-bg: "";
+      --color-btn-text: "";
+      --color-border: "";
+      --color-shadow: "";
+      --color-ui-bg: "";
+      --color-ui-text: "";
+      --color-text-subtle: "";
+    }
+
   {% for scheme in settings.width_schemes %}
     {% assign width = scheme[1].settings.width %}
     {% capture width_scheme %}

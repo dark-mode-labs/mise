@@ -53,7 +53,7 @@
 {% endif %}
 
 <section
-  class="color-{{ s.color_scheme }}"
+  class="color-{{ s.color_scheme | default: 'none' }}"
   data-spy-scope
   data-filter-scope
 >

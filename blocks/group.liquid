@@ -71,8 +71,9 @@
   section-px-{{ s.padding_horizontal }}
   gap-{{ s.gap }}
 
-  {% unless s.inherit_styles %}color-{{ s.color_scheme }}{% endunless %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 
+  {% if s.shadow %}shadow-lg{% endif %}
   {% if s.overflow_hidden %}overflow-hidden{% endif %}
   {% if s.enable_glass %}backdrop-blur-md bg-opacity-80 border border-white/10{% endif %}
   {% if s.position == 'absolute' %}absolute anchor-{{ s.inset }}{% endif %}
@@ -95,11 +96,17 @@
   {% endif %}
 
   {% unless s.inherit_styles %}
-    --radius-global: {{ s.border_radius }}px;
-    {% if s.bg_color != blank %}--color-surface: {{ s.bg_color }};{% endif %}
+    {% if s.border_radius_override %}
+      --radius-global: {{ s.border_radius }}px;
+    {% endif %}
+    {% if s.bg_color_override %}
+      --color-surface: {{ s.bg_color }};
+    {% endif %}
+    {% if s.shadow_color_override %}
+      --color-shadow: {{ s.shadow_color_custom }}
+    {% endif %}
   {% endunless %}
 
-  {% if s.shadow %}box-shadow: 0 4px 20px rgba(0,0,0,0.1);{% endif %}
   {% if s.opacity < 100 %}opacity: {{ s.opacity | divided_by: 100.0 }};{% endif %}
 {% endcapture %}
 
@@ -311,23 +318,47 @@
       "default": 16,
       "conditional": "setting.gap == 'custom'"
     },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
+    { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
+    { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
+    { "type": "range", "id": "opacity", "min": 0, "max": 100, "label": "Opacity", "default": 100 },
     { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
     {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles == false"
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Override Background",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "color",
       "id": "bg_color",
       "label": "Custom Background",
-      "conditional": "setting.inherit_styles == false"
+      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
     },
-    { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
-    { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
-    { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
     {
       "type": "range",
       "id": "border_radius",
@@ -335,11 +366,25 @@
       "max": 60,
       "label": "Radius",
       "default": 0,
-      "conditional": "setting.inherit_styles == false"
+      "unit": "px",
+      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
     },
-    { "type": "range", "id": "opacity", "min": 0, "max": 100, "label": "Opacity", "default": 100 }
+    {
+      "type": "checkbox",
+      "id": "shadow_color_override",
+      "label": "Override Shadow Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color_custom",
+      "label": "Custom Shadow Color",
+      "default": "rgba(0,0,0,1)",
+      "conditional": "setting.inherit_styles != true and setting.shadow_color_override"
+    }
   ],
   "blocks": [{ "type": "@theme" }],
-  "presets": [{ "name": "Group",  "settings": {}, "blocks": {}, "block_order": [] }]
+  "presets": [{ "name": "Group", "settings": {}, "blocks": {}, "block_order": [] }]
 }
 {% endschema %}

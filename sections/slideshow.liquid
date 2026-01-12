@@ -5,7 +5,7 @@
 {% endcapture %}
 
 <section
-  class="section-slideshow color-{{ s.color_scheme }} is-{{ s.height }}"
+  class="section-slideshow color-{{ s.color_scheme | default: 'none' }} is-{{ s.height }}"
 >
   <div
     class="relative width-{{ s.width_scheme }} limit-width  group select-none h-full"
