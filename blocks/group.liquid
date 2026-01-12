@@ -48,7 +48,7 @@
 {% endif %}
 
 {% capture block_classes %}
-  group-block flex transition-all rounded-global bg-surface
+  group-block {% if s.layout_mode == 'grid' %}grid{% else %}flex{% endif %} transition-all rounded-global bg-surface
   
   direction-{{ s.direction }}
   {{ justify_class }}
@@ -89,6 +89,9 @@
 
   {% if s.shadow %}box-shadow: 0 4px 20px rgba(0,0,0,0.1);{% endif %}
   {% if s.opacity < 100 %}opacity: {{ s.opacity | divided_by: 100.0 }};{% endif %}
+  {% if s.layout_mode == 'grid' %}
+    grid-template-columns: repeat(auto-fit, minmax({{ s.min_column_width }}px, 1fr));
+  {% endif %}
 {% endcapture %}
 
 <div class="{{ block_classes }}" style="{{ block_styles }}">
@@ -100,6 +103,27 @@
   "name": "Group",
   "settings": [
     { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout Mode",
+      "options": [
+        { "value": "flex", "label": "Flex (Stack/Row)" },
+        { "value": "grid", "label": "Auto-Fit Grid" }
+      ],
+      "default": "flex"
+    },
+    {
+      "type": "range",
+      "id": "min_column_width",
+      "label": "Min Item Width (Grid Only)",
+      "min": 100,
+      "max": 500,
+      "step": 10,
+      "default": 250,
+      "unit": "px",
+      "conditional": "setting.layout_mode == 'grid'"
+    },
     {
       "type": "select",
       "id": "direction",
