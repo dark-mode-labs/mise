@@ -23,7 +23,10 @@
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
 
-<div class="column-wrapper flex-{{ s.fill }} {{ width_class }} {{ scheme_class }} px-4">
+<div
+  class="column-wrapper flex-{{ s.fill }} {{ width_class }} {{ scheme_class }} px-4"
+  {{ closest.attached_attributes }}
+>
   <div class="h-full w-full">
     {% content_for 'blocks' %}
   </div>

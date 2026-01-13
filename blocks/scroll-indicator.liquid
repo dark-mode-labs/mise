@@ -15,6 +15,7 @@
   class="absolute left-1/2 -translate-x-1/2 z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80 {{ scheme_class }}"
   style="{{ style_override }}"
   onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });"
+  {{ closest.attached_attributes }}
 >
   {% if s.label != blank %}
     {% render 'typography', text: s.label, tag: 'span', display_size: 'caption', weight: 'bold', class: 'uppercase' %}

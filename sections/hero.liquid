@@ -59,6 +59,7 @@
 
 <section
   class="section-hero color-{{ s.color_scheme | default: 'none' }}"
+  {{ closest.attached_attributes }}
 >
   <div
     class="bg-body {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"

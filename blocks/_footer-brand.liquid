@@ -8,7 +8,10 @@
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
 
-<div class="footer-block flex flex-col gap-6 items-start {{ scheme_class }}">
+<div
+  class="footer-block flex flex-col gap-6 items-start {{ scheme_class }}"
+  {{ closest.attached_attributes }}
+>
   <a href="/" class="block w-32">
     {% if asset_src != blank %}
       {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent' %}

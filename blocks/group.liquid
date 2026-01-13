@@ -110,7 +110,11 @@
   {% if s.opacity < 100 %}opacity: {{ s.opacity | divided_by: 100.0 }};{% endif %}
 {% endcapture %}
 
-<div class="{{ block_classes }}" style="{{ block_styles }}">
+<div
+  class="{{ block_classes }}"
+  style="{{ block_styles }}"
+  {{ closest.attached_attributes }}
+>
   {% content_for 'blocks' %}
 </div>
 

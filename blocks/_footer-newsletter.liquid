@@ -3,7 +3,10 @@
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
 
-<div class="footer-block flex flex-col gap-4 {{ scheme_class }}">
+<div
+  class="footer-block flex flex-col gap-4 {{ scheme_class }}"
+  {{ closest.attached_attributes }}
+>
   {% if s.heading != blank %}
     <h4 class="font-bold uppercase tracking-wider text-sm opacity-60">{{ s.heading }}</h4>
   {% endif %}

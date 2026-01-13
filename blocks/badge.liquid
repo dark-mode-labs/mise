@@ -7,6 +7,7 @@
     color: {{ s.text_color }};
     box-shadow: 0 4px 15px {{ s.bg_color | color_modify: 'alpha', 0.3 }};
   "
+  {{ closest.attached_attributes }}
 >
   {{ s.text }}
 </div>

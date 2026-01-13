@@ -1,6 +1,9 @@
 {% assign s = section.settings %}
 
-<section class="section-divider">
+<section
+  class="section-divider"
+  {{ closest.attached_attributes }}
+>
   <div
     class="flex flex-auto items-center justify-center color-{{ s.color_scheme | default: 'none' }} width-{{ s.width_scheme }} bg-body text-body limit-width h-[var(--max-h)]"
     style="--max-h: {{ s.height }}px;"

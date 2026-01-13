@@ -28,7 +28,11 @@
   {% endcase %}
 {% endcapture %}
 
-<div class="w-full max-w-prose text-align-{{ s.text_align }} {{ scheme_class }}" style="{{ style_override }}">
+<div
+  class="w-full max-w-prose text-align-{{ s.text_align }} {{ scheme_class }}"
+  style="{{ style_override }}"
+  {{ closest.attached_attributes }}
+>
   {% render 'typography',
     text: s.content,
     tag: s.tag,

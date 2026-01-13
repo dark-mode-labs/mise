@@ -31,7 +31,10 @@
   {% endcapture %}
 {% endif %}
 
-<section class="section-multi-column color-{{ s.color_scheme | default: 'none' }}">
+<section
+  class="section-multi-column color-{{ s.color_scheme | default: 'none' }}"
+  {{ closest.attached_attributes }}
+>
   {% unless s.bg_image == blank and s.overlay_color == blank %}
     <div class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden bg-surface">
       <div class="grid-media-inner">

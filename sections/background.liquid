@@ -1,6 +1,10 @@
 {% assign s = section.settings %}
 {% if s.image != blank or s.bg_color != blank %}
-  <section class="fixed inset-0 -z-50 pointer-events-none is-auto" style="background-color: {{ s.bg_color }};">
+  <section
+    class="fixed inset-0 -z-50 pointer-events-none is-auto"
+    style="background-color: {{ s.bg_color }};"
+    {{ closest.attached_attributes }}
+  >
     {% if s.image != blank %}
       {% render 'media', src: s.image, fit: 'cover', loading: 'eager' %}
       <div class="absolute inset-0 bg-black" style="opacity: {{ s.overlay | divided_by: 100.0 }}"></div>

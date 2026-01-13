@@ -6,6 +6,7 @@
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
   data-infinite="true"
+  {{ closest.attached_attributes }}
 >
   <div class="width-{{ s.width_scheme }} limit-width">
     <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing">

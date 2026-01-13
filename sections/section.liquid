@@ -18,7 +18,10 @@
   section-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
-<section class="color-{{ s.color_scheme | default: 'none' }}">
+<section
+  class="color-{{ s.color_scheme | default: 'none' }}"
+  {{ closest.attached_attributes }}
+>
   <div
     class="bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }} flex"
     style="{{ section_spacing_style }}"

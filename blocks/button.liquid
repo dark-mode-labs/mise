@@ -22,7 +22,11 @@
   {% assign width_class = 'w-full block' %}
 {% endif %}
 
-<div class="{{ width_class }} whitespace-nowrap {{ scheme_class }}" style="{{ style_override }}">
+<div
+  class="{{ width_class }} whitespace-nowrap {{ scheme_class }}"
+  style="{{ style_override }}"
+  {{ closest.attached_attributes }}
+>
   {% render 'button', label: s.label, url: s.link, style: s.style, width: s.width, class_props: 'rounded-global' %}
 </div>
 

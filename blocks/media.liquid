@@ -22,7 +22,11 @@
   {% endif %}
 {% endcapture %}
 
-<div class="media-block {{ block_classes }} is-{{ s.height }}" style="{{ block_styles }}">
+<div
+  class="media-block {{ block_classes }} is-{{ s.height }}"
+  style="{{ block_styles }}"
+  {{ closest.attached_attributes }}
+>
   {% render 'media',
     src: s.image,
     src_mobile: s.image_mobile,

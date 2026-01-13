@@ -3,7 +3,10 @@
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
 
-<div class="header-actions flex items-center gap-4 {{ scheme_class }}">
+<div
+  class="header-actions flex items-center gap-4 {{ scheme_class }}"
+  {{ closest.attached_attributes }}
+>
   {% if s.show_search %}
     <a href="/search" class="p-2 hover:opacity-70"
       ><span class="sr-only">Search</span>{% render 'icon', name: 'search', class: 'w-5 h-5' %}
