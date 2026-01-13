@@ -5,7 +5,8 @@
 {% endcapture %}
 
 <section
-  class="section-slideshow relative overflow-hidden color-{{ s.color_scheme }} is-{{ s.height }}"
+  class="section-slideshow color-{{ s.color_scheme | default: 'none' }} is-{{ s.height }}"
+  {{ closest.attached_attributes }}
 >
   <div
     class="relative width-{{ s.width_scheme }} limit-width  group select-none h-full"
@@ -211,7 +212,10 @@
         "slide_1": {
           "type": "_slide",
           "blocks": {
-            "heading": { "type": "jumbo-text", "settings": { "text": "Welcome", "display_size": "display" } },
+            "heading": {
+              "type": "text",
+              "settings": { "content": "Welcome", "display_size": "display", "tag": "h1", "font_weight": "bold" }
+            },
             "btn": { "type": "button", "settings": { "label": "View Menu", "style": "primary" } }
           },
           "block_order": ["heading", "btn"]

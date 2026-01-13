@@ -1,21 +1,33 @@
+{% assign s = block.settings %}
 {% capture style_override %}
-  {% unless block.settings.inherit_style %}
-    style="--color-btn-bg: {{ block.settings.custom_bg }}; --color-btn-text: {{ block.settings.custom_text }};"
+  {% unless s.inherit_styles %}
+    {% if s.border_radius_override %}
+      --radius-global: {{ s.border_radius_custom }}px;
+    {% endif %}
+    {% if s.bg_color_override %}
+      --color-btn-bg: {{ s.custom_bg }};
+    {% endif %}
+    {% if s.text_color_override %}
+      --color-btn-text: {{ s.custom_text }};
+    {% endif %}
   {% endunless %}
 {% endcapture %}
 
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
+
 {% assign width_class = 'inline-block' %}
-{% if block.settings.width == 'full' %}
+{% if s.width == 'full' %}
   {% assign width_class = 'w-full block' %}
 {% endif %}
 
-<div class="{{ width_class }}" {{ style_override }}>
-  {% render 'button', 
-     label: block.settings.label, 
-     url: block.settings.link, 
-     style: block.settings.style,
-     width: block.settings.width
-  %}
+<div
+  class="{{ width_class }} whitespace-nowrap {{ scheme_class }}"
+  style="{{ style_override }}"
+  {{ closest.attached_attributes }}
+>
+  {% render 'button', label: s.label, url: s.link, style: s.style, width: s.width, class_props: 'rounded-global' %}
 </div>
 
 {% schema %}
@@ -24,39 +36,95 @@
   "settings": [
     { "type": "text", "id": "label", "label": "Label", "default": "Book Now" },
     { "type": "url", "id": "link", "label": "Link" },
-    { "type": "select", "id": "style", "label": "Style", "default": "primary", "options": [
-      { "value": "primary", "label": "Solid" },
-      { "value": "outline", "label": "Outline" },
-      { "value": "link", "label": "Link" }
-    ]},
-    { "type": "select", "id": "width", "label": "Width", "default": "auto", "options": [
-      { "value": "auto", "label": "Auto" },
-      { "value": "full", "label": "Full Width" }
-    ]},
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Layout",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "full", "label": "Full Width" }
+      ]
+    },
     {
       "type": "header",
-      "content": "Overrides"
+      "content": "Style"
     },
     {
       "type": "checkbox",
-      "id": "inherit_style",
+      "id": "inherit_styles",
       "label": "Inherit Theme Colors",
       "default": true,
       "info": "Uncheck to customize button colors manually."
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Override Background",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "color",
       "id": "custom_bg",
       "label": "Custom Background",
       "default": "#000000",
-      "conditional": "setting.inherit_style != true"
+      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Text Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "color",
       "id": "custom_text",
       "label": "Custom Text Color",
       "default": "#ffffff",
-      "conditional": "setting.inherit_style != true"
+      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius_custom",
+      "label": "Custom Border Radius",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 4,
+      "unit": "px",
+      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
     }
   ]
 }

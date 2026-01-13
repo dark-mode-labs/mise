@@ -10,19 +10,17 @@
 {% endcapture %}
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
-    padding-top: {{ s.padding_vertical_custom }}px;
-    padding-bottom: {{ s.padding_vertical_custom }}px;
+    --space-py: {{ s.padding_vertical_custom }}px;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     padding-left: {{ s.padding_horizontal_custom }}px;
-     padding-right: {{ s.padding_horizontal_custom }}px;
+     --space-px: {{ s.padding_horizontal_custom }}px;
   {% endif %}
   {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
 {% endcapture %}
 
 {% capture section_spacing_class %}
-  {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
-  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
 {% assign animation_class = '' %}
@@ -35,7 +33,10 @@
   {% assign placeholder_name = '' %}
 {% endunless %}
 
-<section class="section-feature overflow-hidden color-{{ s.color_scheme }}">
+<section
+  class="section-feature color-{{ s.color_scheme | default: 'none' }}"
+  {{ closest.attached_attributes }}
+>
   <div
     class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"
     style="{{ section_spacing_style }}"
@@ -47,8 +48,7 @@
         video: s.video_url,
         fit: 'cover',
         placeholder: placeholder_name,
-        animate: s.enable_zoom,
-
+        animate: s.enable_zoom
       %}
     </div>
 
@@ -224,7 +224,7 @@
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
   ],
-  "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }],
+  "blocks": [{ "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }, { "type": "@theme" }],
   "presets": [
     {
       "name": "Feature (Chef Profile)",
@@ -235,11 +235,12 @@
       },
       "blocks": {
         "chef_heading": {
-          "type": "heading",
+          "type": "text",
           "settings": {
-            "text": "Our Philosophy",
+            "content": "Our Philosophy",
             "tag": "h2",
-            "display_size": "h2"
+            "display_size": "h2",
+            "font_weight": "bold"
           }
         },
         "chef_bio": {

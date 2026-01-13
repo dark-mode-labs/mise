@@ -1,104 +1,90 @@
 {% assign s = block.settings %}
 {% assign ss = section.settings %}
 
-{% if ss.enable_cards_global %}
-  {% assign card_class = 'bg-surface' %}
-  {% if s.override_card_style and s.show_shadow %}
-    {% assign card_class = card_class | append: ' shadow-md' %}
-  {% elsif ss.card_shadow_global %}
-    {% assign card_class = card_class | append: ' shadow-md' %}
-  {% endif %}
+{% capture width_class %}
+  {% case s.width %}
+    {% when 'full' %}w-full
+    {% when 'half' %}lg:w-1/2 w-full
+    {% when 'third' %}lg:w-1/3 w-full
+    {% when 'two_thirds' %}lg:w-2/3 w-full
+    {% when 'quarter' %}lg:w-1/4 w-full
+    {% when 'fit' %}lg:w-auto w-full
+    {% else %}
+      {% case ss.columns_desktop %}
+        {% when 2 %}lg:w-1/2
+        {% when 3 %}lg:w-1/3
+        {% when 4 %}lg:w-1/4
+      {% endcase %}
+      w-full
+  {% endcase %}
+{% endcapture %}
 
-  {% capture style_override %}
-      {% if s.background_color and s.override_card_style %}
-        --color-surface: {{ s.background_color }};
-      {% endif %}
-    {% endcapture %}
-  {% if style_override %}
-    {% assign style_override = 'style="{{ style_override }}"' %}
-  {% endif %}
-{% endif %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
 
 <div
-  class="column-block flex flex-col flex-auto gap-4 section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} {{ card_class }} rounded-global"
-  {{ style_override }}
+  class="column-wrapper flex-{{ s.fill }} {{ width_class }} {{ scheme_class }} px-4"
+  {{ closest.attached_attributes }}
 >
-  {% content_for 'blocks' %}
+  <div class="h-full w-full">
+    {% content_for 'blocks' %}
+  </div>
 </div>
 
 {% schema %}
 {
-  "name": "Column",
+  "name": "Column / Item",
   "settings": [
-    { "type": "header", "content": "Alignment" },
     {
       "type": "select",
-      "id": "content_align",
-      "label": "Content Alignment",
+      "id": "width",
+      "label": "Width",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "auto", "label": "Auto (Grid Default)" },
+        { "value": "full", "label": "Full (100%)" },
+        { "value": "half", "label": "Half (50%)" },
+        { "value": "third", "label": "Third (33%)" },
+        { "value": "two_thirds", "label": "Two Thirds (66%)" },
+        { "value": "quarter", "label": "Quarter (25%)" },
+        { "value": "fit", "label": "Fit to Content (Crisp)" }
       ],
-      "default": "center"
+      "default": "auto"
     },
     {
       "type": "select",
-      "id": "text_align",
-      "label": "Text Alignment",
+      "id": "fill",
+      "label": "Flex Fill",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "auto", "label": "Fill" },
+        { "value": "none", "label": "None" }
       ],
-      "default": "center"
-    },
-    {
-      "type": "select",
-      "id": "vertical_align",
-      "label": "Vertical Alignment",
-      "options": [
-        { "value": "top", "label": "Top" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom" }
-      ],
-      "default": "middle"
+      "default": "none"
     },
     {
       "type": "header",
-      "content": "Card Style"
+      "content": "Style"
     },
     {
       "type": "checkbox",
-      "id": "override_card_style",
-      "label": "Override Card Style",
-      "default": false
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "Background Color",
-      "default": "#F5F5F5",
-      "conditional": "setting.override_card_style == true"
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
     },
     {
-      "type": "checkbox",
-      "id": "show_shadow",
-      "label": "Show Shadow",
-      "default": false,
-      "conditional": "setting.override_card_style == true"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
     }
   ],
   "blocks": [{ "type": "@theme" }],
-  "presets": [
-    {
-      "name": "Column",
-      "blocks": {
-        "title": { "type": "heading", "settings": { "text": "Feature", "tag": "h3", "display_size": "h3" } },
-        "desc": { "type": "text", "settings": { "content": "Details about this feature." } }
-      },
-      "block_order": ["title", "desc"]
-    }
-  ]
+  "presets": [{ "name": "Column", "settings": {}, "blocks": {}, "block_order": [] }]
 }
 {% endschema %}

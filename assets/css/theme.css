@@ -2,6 +2,49 @@
 @tailwind utilities;
 
 @layer utilities {
+
+  /* Width & Height */
+  .width-full {
+    width: 100%;
+  }
+
+  .width-fit {
+    width: fit-content;
+  }
+
+  .height-full {
+    height: 100%;
+  }
+
+  .height-auto {
+    height: auto;
+  }
+
+  /* Absolute Positioning Anchors */
+  .anchor-top-left {
+    top: 0;
+    left: 0;
+  }
+
+  .anchor-top-right {
+    top: 0;
+    right: 0;
+  }
+
+  .anchor-bottom-left {
+    bottom: 0;
+    left: 0;
+  }
+
+  .anchor-bottom-right {
+    bottom: 0;
+    right: 0;
+  }
+
+  .anchor-cover {
+    inset: 0;
+  }
+
   .header-drawer {
     @apply fixed inset-0 z-overlay h-screen transform transition-transform duration-300 ease-in-out -translate-x-full pointer-events-none;
   }
@@ -35,7 +78,9 @@
     min-height: 0;
   }
 
-  .media-wrapper img, .media-wrapper video, .media-wrapper .placeholder-svg {
+  .media-wrapper img,
+  .media-wrapper video,
+  .media-wrapper .placeholder-svg {
     width: 100%;
     height: 100%;
     object-fit: var(--object-fit, 'cover');
@@ -43,17 +88,16 @@
   }
 
   /* Golden ratio aspect ratios for consistent proportions */
-  .media-wrapper[data-ratio="golden-landscape"] {
-    aspect-ratio: 1.618 / 1;
+  .media-wrapper[data-ratio="landscape"] {
+    aspect-ratio: var(--golden-ratio);
   }
 
-  .media-wrapper[data-ratio="golden-portrait"] {
-    aspect-ratio: 1 / 1.618;
+  .media-wrapper[data-ratio="portrait"] {
+    aspect-ratio: var(--golden-ratio-inverse);
   }
 
   .media-wrapper[data-ratio="auto"] {
     aspect-ratio: auto;
-    max-height: 100vh;
   }
 
   .scrollbar-hide::-webkit-scrollbar {
@@ -160,6 +204,34 @@
     box-shadow: none !important;
   }
 
+  .gap-none {
+    gap: 0px;
+  }
+
+  .gap-xs {
+    gap: var(--space-xs);
+  }
+
+  .gap-sm {
+    gap: var(--space-sm);
+  }
+
+  .gap-md {
+    gap: var(--space-md);
+  }
+
+  .gap-lg {
+    gap: var(--space-lg);
+  }
+
+  .gap-xl {
+    gap: var(--space-xl);
+  }
+
+  .gap-custom {
+    gap: var(--space-gap);
+  }
+
   .section-py-none {
     padding-top: 0;
     padding-bottom: 0;
@@ -190,6 +262,11 @@
     padding-bottom: var(--space-3xl);
   }
 
+  .section-py-custom {
+    padding-top: var(--space-py);
+    padding-bottom: var(--space-py);
+  }
+
   .section-px-none {
     padding-left: 0;
     padding-right: 0;
@@ -218,6 +295,11 @@
   .section-px-xl {
     padding-left: var(--space-xl);
     padding-right: var(--space-xl);
+  }
+
+  .section-px-custom {
+    padding-left: var(--space-px);
+    padding-right: var(--space-px);
   }
 
   /* Semantic Alignment */
@@ -258,26 +340,26 @@
   }
 
   /* Golden ratio based media constraints */
-  .media-wrapper.mh-sm { 
+  .media-wrapper.mh-sm {
     max-height: clamp(240px, calc(100vh * 0.382), 480px);
     aspect-ratio: 1.618 / 1;
   }
-  
-  .media-wrapper.mh-md { 
+
+  .media-wrapper.mh-md {
     max-height: clamp(360px, calc(100vh * 0.618), 720px);
     aspect-ratio: 1.618 / 1;
   }
-  
-  .media-wrapper.mh-lg { 
+
+  .media-wrapper.mh-lg {
     max-height: clamp(480px, calc(100vh * 0.786), 900px);
     aspect-ratio: 1.618 / 1;
   }
-  
-  .media-wrapper.mh-xl { 
+
+  .media-wrapper.mh-xl {
     max-height: clamp(600px, 100vh, 1100px);
     aspect-ratio: 1.618 / 1;
   }
-  
+
   .media-wrapper.mh-auto {
     max-height: none;
     aspect-ratio: auto;
@@ -393,9 +475,9 @@
   /* Hero Split Media */
   /* Re-defining properly to ensure no conflict */
   .hero-media-split {
-      position: relative;
-      height: 100%;
-      flex-basis: 50%;
+    position: relative;
+    height: 100%;
+    flex-basis: 50%;
   }
 
   /* Grid Overlay */
@@ -410,30 +492,40 @@
 
   /* Common Inner Wrappers */
   /* Ensure inner wrappers fill the container */
-  .hero-media-inner, .grid-media-inner, .slide-block .z-media, .media-block .media-wrapper, .hero-media-overlay .media-wrapper, .grid-media-overlay .media-wrapper, .hero-media-split .media-wrapper, .media-media-split .media-wrapper {
-      height: 100%;
-      width: 100%;
+  .hero-media-inner,
+  .grid-media-inner,
+  .slide-block .z-media,
+  .media-block .media-wrapper,
+  .hero-media-overlay .media-wrapper,
+  .grid-media-overlay .media-wrapper,
+  .hero-media-split .media-wrapper,
+  .media-media-split .media-wrapper {
+    height: 100%;
+    width: 100%;
   }
 
   /* Slideshow Basics */
   .slideshow-track {
     height: 100%;
   }
+
   .slide-block {
     position: relative;
     height: 100%;
     flex-shrink: 0;
     width: var(--slide-width, 100%);
   }
+
   .slide-block .z-media {
     position: absolute;
     inset: 0;
     z-index: 0;
   }
+
   .slide-block .z-media .media-wrapper {
     height: 100%;
   }
-  
+
   /* Media Blocks */
   .media-block {
     position: relative;
@@ -583,46 +675,6 @@
     @apply w-full lg:w-1/2 relative bg-surface flex flex-col flex-auto p-4;
   }
 
-  .grid-gap-y-none {
-    gap: 0;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .grid-gap-y-xs {
-    gap: var(--space-xs);
-    margin-left: var(--space-xs);
-    margin-right: var(--space-xs);
-  }
-
-  .grid-gap-y-sm {
-    gap: var(--space-sm);
-    margin-left: var(--space-sm);
-    margin-right: var(--space-sm);
-  }
-
-  .grid-gap-y-md {
-    gap: var(--space-md);
-    margin-left: var(--space-md);
-    margin-right: var(--space-md);
-  }
-
-  .grid-gap-y-lg {
-    gap: var(--space-lg);
-    margin-left: var(--space-lg);
-    margin-right: var(--space-lg);
-  }
-
-  .grid-gap-y-xl {
-    gap: var(--space-xl);
-    margin-left: var(--space-xl);
-    margin-right: var(--space-xl);
-  }
-
-  .grid-gap-y-custom {
-    @apply gap-[var(--grid-gap-y)] mx-[var(--grid-gap-y)];
-  }
-
   .grid-layout-overlay {
     @apply relative flex flex-col;
   }
@@ -746,24 +798,8 @@
     @apply antialiased;
   }
 
-  :root {
-    --radius-global: 0px;
-    --golden-ratio: 1.618;
-    --golden-ratio-inverse: 0.618;
-    
-    /* Golden ratio based spacing scale */
-    --space-base: 1rem;
-    --space-xs: calc(var(--space-base) * 0.382); /* ~6px */
-    --space-sm: calc(var(--space-base) * 0.618); /* ~10px */
-    --space-md: var(--space-base); /* 16px */
-    --space-lg: calc(var(--space-base) * 1.618); /* ~26px */
-    --space-xl: calc(var(--space-base) * 2.618); /* ~42px */
-    --space-2xl: calc(var(--space-base) * 4.236); /* ~68px */
-    --space-3xl: calc(var(--space-base) * 6.854); /* ~110px */
-  }
-
   section {
-    @apply w-full;
+    @apply relative w-full overflow-hidden;
   }
 
 }

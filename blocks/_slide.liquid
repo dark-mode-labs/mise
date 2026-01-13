@@ -10,16 +10,19 @@
   {% endcapture %}
 {% endif %}
 
-{% unless s.inherit_color_scheme %}
-  {% assign scheme_class = 'color-' | append: s.color_scheme %}
-{% endunless %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
 
 {% assign placeholder_name = 'scene-1' %}
 {% unless s.show_placeholder %}
   {% assign placeholder_name = '' %}
 {% endunless %}
 
-<div class="slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden {{ scheme_class }} bg-surface">
+<div
+  class="slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden {{ scheme_class }} bg-surface"
+  {{ closest.attached_attributes }}
+>
   <div class="absolute inset-0 z-media bg-surface">
     {% render 'media',
       src: s.image,
@@ -97,19 +100,27 @@
       ],
       "default": "middle"
     },
-    { "type": "header", "content": "Theme" },
+    {
+      "type": "header",
+      "content": "Style"
+    },
     {
       "type": "checkbox",
-      "id": "inherit_color_scheme",
+      "id": "inherit_styles",
       "label": "Inherit Color Scheme",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Palette",
       "default": "default",
-      "conditional": "setting.inherit_color_scheme != true"
+      "conditional": "setting.inherit_styles != true"
     }
   ],
   "blocks": [{ "type": "@theme" }],
@@ -118,8 +129,8 @@
       "name": "Slide",
       "blocks": {
         "heading": {
-          "type": "jumbo-text",
-          "settings": { "text": "New Slide", "display_size": "display" }
+          "type": "text",
+          "settings": { "content": "New Slide", "display_size": "display", "tag": "h1", "font_weight": "bold" }
         },
         "button": {
           "type": "button",

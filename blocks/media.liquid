@@ -1,20 +1,32 @@
 {% assign s = block.settings %}
 
 {% capture block_classes %}
-  relative overflow-hidden
+  relative overflow-hidden rounded-global
   {% unless s.inherit_styles %}
-    color-{{ s.color_scheme }}
-    {% if s.show_shadow %}shadow-lg{% endif %}
+    color-{{ s.color_scheme | default: 'none' }}
+    {% if s.show_shadow %}shadow-md{% endif %}
   {% endunless %}
 {% endcapture %}
 
 {% capture block_styles %}
   {% unless s.inherit_styles %}
-    border-radius: {{ s.border_radius }}px;
+    {% if s.border_radius_override %}
+      --radius-global: {{ s.border_radius }}px;
+    {% endif %}
+    {% if s.shadow_color_override %}
+      --color-shadow: {{ s.shadow_color_custom }}
+    {% endif %}
   {% endunless %}
+  {% if s.height == 'custom' %}
+    --max-h: {{ s.custom_height }}px;
+  {% endif %}
 {% endcapture %}
 
-<div class="media-block {{ block_classes }} is-{{ s.height }}" style="{{ block_styles }}">
+<div
+  class="media-block {{ block_classes }} is-{{ s.height }}"
+  style="{{ block_styles }}"
+  {{ closest.attached_attributes }}
+>
   {% render 'media',
     src: s.image,
     src_mobile: s.image_mobile,
@@ -61,6 +73,16 @@
       "default": "auto"
     },
     {
+      "type": "range",
+      "id": "custom_height",
+      "label": "Custom Height (px)",
+      "min": 20,
+      "max": 800,
+      "step": 10,
+      "default": 300,
+      "conditional": "setting.height == 'custom'"
+    },
+    {
       "type": "select",
       "id": "aspect_ratio",
       "label": "Aspect Ratio",
@@ -90,16 +112,34 @@
     { "type": "checkbox", "id": "enable_hover", "label": "Enable Hover Zoom", "default": false },
     {
       "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow",
+      "default": false
+    },
+    {
+      "type": "checkbox",
       "id": "inherit_styles",
       "label": "Inherit Global Styles",
       "default": true,
       "info": "Uncheck to customize Radius and Colors."
     },
     {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Palette",
       "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
       "conditional": "setting.inherit_styles != true"
     },
     {
@@ -111,14 +151,21 @@
       "step": 4,
       "default": 0,
       "unit": "px",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
     },
     {
       "type": "checkbox",
-      "id": "show_shadow",
-      "label": "Show Shadow",
+      "id": "shadow_color_override",
+      "label": "Override Shadow Color",
       "default": false,
       "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color_custom",
+      "label": "Custom Shadow Color",
+      "default": "rgba(0,0,0,1)",
+      "conditional": "setting.inherit_styles != true and setting.shadow_color_override"
     }
   ],
   "presets": [

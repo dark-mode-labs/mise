@@ -3,19 +3,17 @@
 
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
-    padding-top: {{ s.padding_vertical_custom }}px;
-    padding-bottom: {{ s.padding_vertical_custom }}px;
+    --space-py: {{ s.padding_vertical_custom }}px;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     padding-left: {{ s.padding_horizontal_custom }}px;
-     padding-right: {{ s.padding_horizontal_custom }}px;
+     --space-px: {{ s.padding_horizontal_custom }}px;
   {% endif %}
   {% if s.nav_layout == 'horizontal' %}top: {{ s.nav_sticky_offset }}px;{% endif %}
 {% endcapture %}
 
 {% capture section_spacing_class %}
-  {% unless s.padding_vertical == 'custom' %}section-py-{{ s.padding_vertical }}{% endunless %}
-  {% unless s.padding_horizontal == 'custom' %}section-px-{{ s.padding_horizontal }}{% endunless %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
 {% assign animation_class = '' %}
@@ -55,9 +53,10 @@
 {% endif %}
 
 <section
-  class="color-{{ s.color_scheme }}"
+  class="color-{{ s.color_scheme | default: 'none' }}"
   data-spy-scope
   data-filter-scope
+  {{ closest.attached_attributes }}
 >
   <div
     class="bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"

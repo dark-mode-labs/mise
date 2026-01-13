@@ -1,16 +1,29 @@
+{% assign s = block.settings %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
+{% capture style_override %}
+  {% unless s.inherit_styles %}
+    {% if s.text_color_override %}
+      --color-text: {{ s.custom_color }};
+    {% endif %}
+  {% endunless %}
+  bottom: {{ s.bottom_offset }}px;
+{% endcapture %}
+
 <div
-  class="absolute left-1/2 -translate-x-1/2 z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80"
-  style="
-    bottom: {{ block.settings.bottom_offset }}px;
-    color: {% if block.settings.inherit_color %}inherit{% else %}{{ block.settings.custom_color }}{% endif %};
-  "
+  class="absolute left-1/2 -translate-x-1/2 z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80 {{ scheme_class }}"
+  style="{{ style_override }}"
   onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });"
+  {{ closest.attached_attributes }}
 >
-  {% if block.settings.label != blank %}
-    <span class="text-[10px] uppercase tracking-[0.2em] font-bold mb-1">{{ block.settings.label }}</span>
+  {% if s.label != blank %}
+    {% render 'typography', text: s.label, tag: 'span', display_size: 'caption', weight: 'bold', class: 'uppercase' %}
   {% endif %}
 
-  {% render 'icon', name: 'chevron-down', class: 'animate-bounce w-6 h-6' %}
+  <div class="animate-bounce">
+    {% render 'icon', name: 'chevron-down', class: 'w-5 h-5 text-body' %}
+  </div>
 </div>
 
 {% schema %}
@@ -48,16 +61,36 @@
     },
     {
       "type": "checkbox",
-      "id": "inherit_color",
-      "label": "Inherit Text Color",
-      "default": true
+      "id": "inherit_styles",
+      "label": "Inherit Global Styles",
+      "default": true,
+      "info": "Uncheck to customize Radius and Colors."
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Text Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
     },
     {
       "type": "color",
       "id": "custom_color",
       "label": "Custom Color",
       "default": "#ffffff",
-      "conditional": "setting.inherit_color != true"
+      "conditional": "setting.inherit_styles != true and setting.text_color_override"
     }
   ]
 }

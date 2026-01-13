@@ -1,6 +1,12 @@
 {% assign s = block.settings %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
 
-<div class="header-actions flex items-center gap-4">
+<div
+  class="header-actions flex items-center gap-4 {{ scheme_class }}"
+  {{ closest.attached_attributes }}
+>
   {% if s.show_search %}
     <a href="/search" class="p-2 hover:opacity-70"
       ><span class="sr-only">Search</span>{% render 'icon', name: 'search', class: 'w-5 h-5' %}
@@ -17,11 +23,9 @@
     </a>
   {% endif %}
 
-  {% if s.btn_label != blank %}
-    <div class="hidden md:block">
-      {% render 'button', label: s.btn_label, url: s.btn_link, style: 'primary' %}
-    </div>
-  {% endif %}
+  <div class="hidden md:block">
+    {% content_for 'blocks' %}
+  </div>
 </div>
 
 {% schema %}
@@ -30,8 +34,30 @@
   "settings": [
     { "type": "checkbox", "id": "show_search", "label": "Show Search", "default": true },
     { "type": "checkbox", "id": "show_cart", "label": "Show Cart", "default": true },
-    { "type": "text", "id": "btn_label", "label": "Button Label", "default": "Book Table" },
-    { "type": "url", "id": "btn_link", "label": "Button Link" }
-  ]
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    }
+  ],
+  "blocks": [{ "type": "button" }],
+  "presets": [{ "name": "Action Button", "settings": {}, "blocks": {}, "block_order": [] }]
 }
 {% endschema %}
