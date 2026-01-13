@@ -20,7 +20,9 @@
     </a>
   {% endif %}
 
-  {% content_for 'blocks' %}
+  <div class="hidden md:block">
+    {% content_for 'blocks' %}
+  </div>
 </div>
 
 {% schema %}
