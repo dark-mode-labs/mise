@@ -37,7 +37,7 @@
   section-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
-<section
+<header
   class="header-section {{ position_class }} color-{{ s.color_scheme | default: 'none' }} bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
@@ -89,7 +89,7 @@
       {{ slot_actions }}
     </div>
   </div>
-</section>
+</header>
 
 {% if needs_spacer %}
   <div class="w-full h-16 md:h-24"></div>

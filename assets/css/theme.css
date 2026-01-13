@@ -798,8 +798,12 @@
     @apply antialiased;
   }
 
-  section {
+  section,
+  footer {
     @apply relative w-full overflow-hidden;
   }
 
+  header {
+    @apply relative w-full;
+  }
 }

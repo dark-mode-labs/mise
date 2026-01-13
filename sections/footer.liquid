@@ -12,7 +12,7 @@
   section-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
-<section
+<footer
   class="section-footer color-{{ s.color_scheme | default: 'none' }} bg-body text-body border-t border-std {{ section_spacing_class }}"
   style="{{ section_spacing_style }}"
   {{ closest.attached_attributes }}
@@ -43,7 +43,7 @@
       </div>
     </div>
   </div>
-</section>
+</footer>
 
 {% schema %}
 {
