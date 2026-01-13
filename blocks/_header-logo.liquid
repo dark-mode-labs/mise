@@ -4,6 +4,14 @@
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
 
+{% capture style_override %}
+  {% unless s.inherit_styles %}
+    {% if s.text_color_override %}
+      --color-text: {{ s.custom_text_color }};
+    {% endif %}
+  {% endunless %}
+{% endcapture %}
+
 <a
   href="/"
   class="header-logo flex items-center justify-center relative z-content group-hover:opacity-100 {{ scheme_class }}"
@@ -16,7 +24,10 @@
       {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}
     </div>
   {% else %}
-    <span class="text-body text-xl font-bold font-heading uppercase tracking-widest whitespace-nowrap">
+    <span
+      class="text-body text-xl font-bold font-heading uppercase tracking-widest whitespace-nowrap"
+      style="{{ style_override }}"
+    >
       {{ shop.name }}
     </span>
   {% endif %}
@@ -30,25 +41,41 @@
     { "type": "range", "id": "width", "label": "Width", "min": 50, "max": 400, "default": 120, "unit": "px" },
     {
       "type": "header",
-      "content": "Style"
+      "content": "Style",
+      "conditional": "shop.logo_src == blank"
     },
     {
       "type": "checkbox",
       "id": "inherit_styles",
       "label": "Inherit Styles",
-      "default": true
+      "default": true,
+      "conditional": "shop.logo_src == blank"
     },
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Palette",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Text Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom Text Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_styles != true and setting.text_color_override and shop.logo_src == blank"
     }
   ]
 }
