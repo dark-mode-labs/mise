@@ -1,4 +1,7 @@
-<div class="w-full {% if block.settings.hide_mobile %}hidden md:block{% endif %}">
+<div
+  class="w-full {% if block.settings.hide_mobile %}hidden md:block{% endif %}"
+  {{ closest.attached_attributes }}
+>
   {% render 'spacer', height: block.settings.height %}
 </div>
 

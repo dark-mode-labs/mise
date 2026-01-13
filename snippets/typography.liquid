@@ -4,17 +4,35 @@
 
 {% case display_size %}
   {% when 'display' %}
-    {% assign size_class = 'text-5xl md:text-7xl tracking-tight leading-none' %}
+    {% assign size_class = 'text-5xl md:text-7xl tracking-tight leading-none font-heading' %}
   {% when 'h1' %}
-    {% assign size_class = 'text-4xl md:text-5xl font-bold' %}
+    {% assign size_class = 'text-4xl md:text-5xl font-heading' %}
   {% when 'h2' %}
-    {% assign size_class = 'text-3xl md:text-4xl font-semibold' %}
+    {% assign size_class = 'text-3xl md:text-4xl font-heading' %}
+  {% when 'h3' %}
+    {% assign size_class = 'text-2xl md:text-3xl font-heading' %}
+  {% when 'h4' %}
+    {% assign size_class = 'text-xl md:text-2xl font-heading' %}
+  {% when 'h5' %}
+    {% assign size_class = 'text-lg md:text-xl font-heading' %}
+  {% when 'h6' %}
+    {% assign size_class = 'text-base font-heading tracking-wide' %}
   {% when 'body' %}
-    {% assign size_class = 'text-base md:text-lg leading-relaxed' %}
+    {% assign size_class = 'text-base md:text-lg leading-relaxed font-body' %}
   {% when 'caption' %}
-    {% assign size_class = 'text-xs uppercase tracking-widest text-secondary' %}
+    {% assign size_class = 'text-xs tracking-widest font-body' %}
 {% endcase %}
 
-<{{ tag_el }} class="{{ size_class }} font-{{ weight | default: 'normal' }} {{ text_color }}">
+{% assign weight_class = '' %}
+{% if weight != blank %}
+  {% assign weight_class = 'font-' | append: weight %}
+{% endif %}
+
+{% assign family_class = '' %}
+{% if family != blank %}
+  {% assign family_class = 'font-' | append: family %}
+{% endif %}
+
+<{{ tag_el }} class="{{ size_class }} {{ family_class }} {{ weight_class }} {{ text_color }} {{ class }}">
   {{ text }}
 </{{ tag_el }}>

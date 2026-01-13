@@ -12,7 +12,7 @@
 {% assign children = all_categories | where: 'parent_uuid', category.uuid | sort: 'display_order' %}
 
 {% assign current_spy_target = spy_target %}
-{% if s.nav_layout == 'vertical' %}
+{% if nav_layout == 'vertical' %}
   {% assign current_spy_target = category.uuid %}
 {% endif %}
 
@@ -34,35 +34,38 @@
   {% if items.size > 0 %}
     <div class="{{ grid_class }} {% if depth == 0 %}mb-12{% endif %} {{ animation_class }}" data-filter-grid>
       {% for item in items %}
-        {% if s.layout_style contains 'card-' %}
-          {% assign card_style = s.layout_style | replace: 'card-', '' %}
+        {% if layout_style contains 'card-' %}
+          {% assign card_style = layout_style | replace: 'card-', '' %}
           {% render 'menu-item-card',
             item: item,
-            ratio: s.aspect_ratio,
+            ratio: aspect_ratio,
             style: card_style,
-            padding_class: s.card_padding,
-            image_position: s.card_image_position
+            padding_class: card_padding_class,
+            image_position: card_image_position
           %}
         {% else %}
-          {% render 'menu-item-list',
-            item: item,
-            padding_class: s.list_row_padding,
-            image_class: s.list_image_size
-          %}
+          {% render 'menu-item-list', item: item, padding_class: list_padding_class, image_class: list_image_class %}
         {% endif %}
       {% endfor %}
     </div>
   {% endif %}
 
   {% for child in children %}
-    {% render 'menu-category-recursive',
+    {%
+      render 'menu-category-recursive',
       category: child,
       all_categories: all_categories,
       depth: depth | plus: 1,
-      s: s,
       grid_class: grid_class,
       animation_class: animation_class,
-      spy_target: current_spy_target
+      spy_target: current_spy_target,
+      card_padding_class: card_padding_class,
+      list_padding_class: list_padding_class,
+      list_image_class: list_image_class,
+      card_image_position: card_image_position,
+      aspect_ratio: aspect_ratio,
+      nav_layout: nav_layout,
+      layout_style: layout_style
     %}
   {% endfor %}
 </div>

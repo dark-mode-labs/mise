@@ -1,63 +1,72 @@
 {% assign fit_mode = fit | default: 'cover' %}
 {% assign load_mode = loading | default: 'lazy' %}
+{% assign show_controls = controls | default: false %}
+{% assign can_autoplay = autoplay | default: false %}
 {% assign anim_class = '' %}
 
 {% if animate %}
   {% assign anim_class = 'animate-ken-burns' %}
 {% endif %}
 
-{% capture ratio_class %}
-  {% case ratio %}
-    {% when 'square' %}aspect-square
-    {% when 'video' %}aspect-video
-    {% when 'portrait' %}aspect-[3/4]
-    {% when 'landscape' %}aspect-[4/3]
-    {% else %}h-full
-  {% endcase %}
-{% endcapture %}
+{% if animate_hover %}
+  {% assign anim_class = anim_class | append: ' transition-transform duration-700 ease-out group-hover:scale-110' %}
+{% endif %}
 
-<div class="media-wrapper w-full {{ ratio_class }} overflow-hidden relative bg-gray-100">
+{% case ratio %}
+  {% when 'landscape' %}
+    {% assign ratio_mode = 'landscape' %}
+  {% when 'portrait' %}
+    {% assign ratio_mode = 'portrait' %}
+  {% when 'video' %}
+    {% assign ratio_mode = 'landscape' %}
+  {% else %}
+    {% assign ratio_mode = 'auto' %}
+{% endcase %}
 
+<div class="media-wrapper overflow-hidden relative group" style="--object-fit: {{ fit_mode }}" data-ratio="{{ ratio_mode }}">
   {% if video != blank %}
-    <video 
-      autoplay muted loop playsinline 
-      class="w-full h-full object-{{ fit_mode }} pointer-events-none {{ anim_class }}"
-      {% if src %}poster="{{ src | image_url: width: 800 }}"{% endif %}>
+    <video
+      muted
+      loop
+      playsinline
+      {% if can_autoplay %}
+        autoplay
+      {% endif %}
+      {% if show_controls %}
+        controls
+      {% endif %}
+      class="{% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}"
+      {% if src %}
+        poster="{{ src | image_url: width: 800 }}"
+      {% endif %}
+    >
       <source src="{{ video }}" type="video/mp4">
     </video>
 
   {% elsif src != blank %}
+    {% capture img %}
+      <img src="{{ src | image_url: width: 1600 }}" alt="{{ src.alt | escape }}"
+          loading="{{ load_mode }}" width="{{ src.width }}" height="{{ src.height }}"
+          class="transition-opacity duration-500 {{ anim_class }}"
+        >
+    {% endcapture %}
     {% if src_mobile != blank %}
-      <picture class="w-full h-full block {{ anim_class }}">
+      <picture>
         <source media="(max-width: 767px)" srcset="{{ src_mobile | image_url: width: 800 }}">
         <source media="(min-width: 768px)" srcset="{{ src | image_url: width: 1600 }}">
-        <img 
-          src="{{ src | image_url: width: 1600 }}" 
-          alt="{{ src.alt | escape }}"
-          loading="{{ load_mode }}"
-          width="{{ src.width }}"
-          height="{{ src.height }}"
-          class="w-full h-full object-{{ fit_mode }} block transition-opacity duration-500"
-        >
+        {{ img }}
       </picture>
     {% else %}
-      <img 
-        src="{{ src | image_url: width: 1600 }}" 
-        alt="{{ src.alt | escape }}"
-        loading="{{ load_mode }}"
-        width="{{ src.width }}"
-        height="{{ src.height }}"
-        class="w-full h-full object-{{ fit_mode }} block transition-opacity duration-500 {{ anim_class }}"
-      >
+      {{ img }}
     {% endif %}
 
   {% else %}
     {% if placeholder != blank %}
-       {% render 'placeholder', 
-          name: placeholder | default: 'scene-1', 
-          class: 'w-full h-full object-cover' 
-       %}
+      {%
+        render 'placeholder',
+        name: placeholder | default: 'scene-1',
+        class: 'object-cover'
+      %}
     {% endif %}
   {% endif %}
-
 </div>

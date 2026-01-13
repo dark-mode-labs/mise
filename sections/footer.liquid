@@ -1,11 +1,24 @@
 {% assign s = section.settings %}
+{% capture section_spacing_style %}
+   {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+{% endcapture %}
+{% capture section_spacing_class %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
+{% endcapture %}
 
 <footer
-  class="section-footer color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body border-t border-std pt-[var(--pt)] pb-[var(--pb)] limit-width"
-  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+  class="section-footer color-{{ s.color_scheme | default: 'none' }} bg-body text-body border-t border-std {{ section_spacing_class }}"
+  style="{{ section_spacing_style }}"
+  {{ closest.attached_attributes }}
 >
-  <div class="w-full">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-0 md:gap-y-12 gap-x-8 mb-16">
+  <div class="width-{{ s.width_scheme }} limit-width">
+    <div class="flex flex-auto flex-col md:flex-row justify-between mb-16">
       {% content_for 'blocks' %}
     </div>
 
@@ -44,18 +57,59 @@
       "label": "Max Content Width",
       "default": "standard"
     },
-    { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 120, "step": 4, "default": 80 },
+    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "sm"
+    },
     {
       "type": "range",
-      "id": "padding_bottom",
-      "label": "Bottom Padding",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
       "min": 0,
-      "max": 120,
+      "max": 200,
       "step": 4,
-      "default": 40
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
     },
-
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
     { "type": "header", "content": "Bottom Bar" },
     { "type": "checkbox", "id": "show_policy", "label": "Show Policy Links", "default": true },
     { "type": "checkbox", "id": "show_payment", "label": "Show Payment Icons", "default": true },

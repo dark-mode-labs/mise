@@ -1,16 +1,35 @@
 {% assign s = section.settings %}
 
+{% capture section_spacing_style %}
+  {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+{% endcapture %}
+{% capture section_spacing_class %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
+{% endcapture %}
+{% assign size_class = 'text-size-' | append: s.text_size %}
+
 <section
-  class="section-marquee border-y border-std color-{{ s.color_scheme }} width-{{ s.width_scheme }} bg-body text-body overflow-hidden pt-[var(--py)] pb-[var(--py)] limit-width"
-  style="--py: {{ s.padding_vertical }}px;"
+  class="section-marquee color-{{ s.color_scheme | default: 'none' }}"
+  {{ closest.attached_attributes }}
 >
-  {% render 'marquee',
-    items: s.text_list,
-    speed: s.speed,
-    direction: s.direction,
-    size_class: s.text_size,
-    uppercase: s.uppercase
-  %}
+  <div
+    class="bg-body text-body border-y border-std  width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"
+    style="{{ section_spacing_style }}"
+  >
+    {% render 'marquee',
+      items: s.text_list,
+      speed: s.speed,
+      direction: s.direction,
+      size_class: size_class,
+      uppercase: s.uppercase
+    %}
+  </div>
 </section>
 
 {% schema %}
@@ -36,13 +55,13 @@
       "id": "text_size",
       "label": "Text Size",
       "options": [
-        { "value": "text-sm", "label": "Small" },
-        { "value": "text-base", "label": "Medium" },
-        { "value": "text-lg", "label": "Large" },
-        { "value": "text-xl", "label": "Extra Large" },
-        { "value": "text-4xl", "label": "Display" }
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "display", "label": "Display" }
       ],
-      "default": "text-sm"
+      "default": "small"
     },
     {
       "type": "checkbox",
@@ -72,14 +91,58 @@
       "type": "header",
       "content": "Style"
     },
+    { "type": "header", "content": "Section Spacing" },
     {
-      "type": "range",
+      "type": "select",
       "id": "padding_vertical",
       "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
       "min": 0,
-      "max": 60,
+      "max": 200,
       "step": 4,
-      "default": 16
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
       "type": "color_scheme",

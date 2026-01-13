@@ -1,68 +1,82 @@
 {% assign s = section.settings %}
 
-<div
-  class="section-slideshow relative overflow-hidden bg-surface group select-none color-{{ s.color_scheme }} width-{{ s.width_scheme }} limit-width px-0"
-  data-behavior="slideshow"
-  data-autoplay="{{ s.autoplay }}"
-  data-speed="{{ s.autoplay_speed }}"
-  data-infinite="{{ s.infinite_scroll }}"
-  style="
-    --slide-width: {{ s.slide_width_mobile }}%;
-    --slide-width-md: {{ s.slide_width }}%;
-    --slide-gap: {{ s.slide_gap }}px;
-  "
+{% capture section_spacing_style %}
+  {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
+{% endcapture %}
+
+<section
+  class="section-slideshow color-{{ s.color_scheme | default: 'none' }} is-{{ s.height }}"
+  {{ closest.attached_attributes }}
 >
-  <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide {{ s.mobile_height }} {{ s.desktop_height }} cursor-grab active:cursor-grabbing gap-[var(--slide-gap)]">
-    {% content_for 'blocks' %}
-  </div>
+  <div
+    class="relative width-{{ s.width_scheme }} limit-width  group select-none h-full"
+    data-behavior="slideshow"
+    data-autoplay="{{ s.autoplay }}"
+    data-speed="{{ s.autoplay_speed }}"
+    data-infinite="{{ s.infinite_scroll }}"
+    style="
+      --slide-width: {{ s.slide_width_mobile }}%;
+      --slide-width-md: {{ s.slide_width }}%;
+      --slide-gap: {{ s.slide_gap }}px;
+      {{ section_spacing_style }}
+    "
+  >
+    <div class="slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-[var(--slide-gap)]">
+      {% content_for 'blocks' %}
+    </div>
 
-  {% if section.blocks.size > 1 %}
-    {% if s.show_arrows %}
-      {% assign arrow_pos_class = 'absolute top-1/2 -translate-y-1/2 z-floating px-4 w-full flex justify-between pointer-events-none' %}
-      {% if s.nav_position == 'bottom_right' %}
-        {% assign arrow_pos_class = 'absolute bottom-8 right-8 z-floating flex gap-2' %}
-      {% endif %}
+    {% if section.blocks.size > 1 %}
+      {% if s.show_arrows %}
+        {% assign arrow_pos_class = 'absolute top-1/2 -translate-y-1/2 z-floating px-4 w-full flex justify-between pointer-events-none' %}
+        {% if s.nav_position == 'bottom_right' %}
+          {% assign arrow_pos_class = 'absolute bottom-8 right-8 z-floating flex gap-2' %}
+        {% endif %}
 
-      <div class="{{ arrow_pos_class }}">
-        <button type="button" class="slideshow-prev pointer-events-auto p-3 rounded-full btn-nav" aria-label="Previous">
-          {% render 'icon', name: s.arrow_icon, class: 'w-5 h-5' %}
-        </button>
-
-        <button type="button" class="slideshow-next pointer-events-auto p-3 rounded-full btn-nav" aria-label="Next">
-          {% assign icon_name = s.arrow_icon | replace: '-left', '-right' %}
-          {% render 'icon', name: icon_name, class: 'w-5 h-5' %}
-        </button>
-      </div>
-    {% endif %}
-
-    {% if s.show_dots %}
-      {% assign nav_pos_class = 'absolute bottom-6 left-1/2 -translate-x-1/2' %}
-      {% if s.nav_position == 'bottom_left' %} {% assign nav_pos_class = 'absolute bottom-8 left-8' %} {% endif %}
-      {% if s.nav_position == 'bottom_right' %} {% assign nav_pos_class = 'absolute bottom-8 right-8' %} {% endif %}
-
-      <div class="{{ nav_pos_class }} z-floating flex items-center gap-3">
-        {% for block in section.blocks %}
+        <div class="{{ arrow_pos_class }}">
           <button
             type="button"
-            class="slideshow-dot transition-all duration-300"
-            data-index="{{ forloop.index0 }}"
-            aria-label="Go to slide {{ forloop.index }}"
+            class="slideshow-prev pointer-events-auto p-3 rounded-full btn-nav"
+            aria-label="Previous"
           >
-            {% if s.dot_style == 'dots' %}
-              <span
-                class="block w-2.5 h-2.5 rounded-full bg-[var(--color-ui-bg)] opacity-50 hover:opacity-100 ring-1 ring-transparent"
-              ></span>
-            {% elsif s.dot_style == 'bars' %}
-              <span class="block w-8 h-1 rounded-sm bg-[var(--color-ui-bg)] opacity-50 hover:opacity-100"></span>
-            {% elsif s.dot_style == 'numbers' %}
-              <span class="text-sm font-bold text-[var(--color-ui-text)] opacity-50">{{ forloop.index }}</span>
-            {% endif %}
+            {% render 'icon', name: s.arrow_icon, class: 'w-5 h-5' %}
           </button>
-        {% endfor %}
-      </div>
+
+          <button type="button" class="slideshow-next pointer-events-auto p-3 rounded-full btn-nav" aria-label="Next">
+            {% assign icon_name = s.arrow_icon | replace: '-left', '-right' %}
+            {% render 'icon', name: icon_name, class: 'w-5 h-5' %}
+          </button>
+        </div>
+      {% endif %}
+
+      {% if s.show_dots %}
+        {% assign nav_pos_class = 'absolute bottom-6 left-1/2 -translate-x-1/2' %}
+        {% if s.nav_position == 'bottom_left' %} {% assign nav_pos_class = 'absolute bottom-8 left-8' %} {% endif %}
+        {% if s.nav_position == 'bottom_right' %} {% assign nav_pos_class = 'absolute bottom-8 right-8' %} {% endif %}
+
+        <div class="{{ nav_pos_class }} z-floating flex items-center gap-3">
+          {% for block in section.blocks %}
+            <button
+              type="button"
+              class="slideshow-dot transition-all duration-300"
+              data-index="{{ forloop.index0 }}"
+              aria-label="Go to slide {{ forloop.index }}"
+            >
+              {% if s.dot_style == 'dots' %}
+                <span
+                  class="block w-2.5 h-2.5 rounded-full bg-[var(--color-ui-bg)] opacity-50 hover:opacity-100 ring-1 ring-transparent"
+                ></span>
+              {% elsif s.dot_style == 'bars' %}
+                <span class="block w-8 h-1 rounded-sm bg-[var(--color-ui-bg)] opacity-50 hover:opacity-100"></span>
+              {% elsif s.dot_style == 'numbers' %}
+                <span class="text-sm font-bold text-[var(--color-ui-text)] opacity-50">{{ forloop.index }}</span>
+              {% endif %}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endif %}
-  {% endif %}
-</div>
+  </div>
+</section>
 
 {% schema %}
 {
@@ -77,26 +91,16 @@
     },
     {
       "type": "select",
-      "id": "mobile_height",
-      "label": "Mobile Height",
+      "id": "height",
+      "label": "Image Height",
       "options": [
-        { "value": "h-[50vh]", "label": "Compact (50%)" },
-        { "value": "h-[65vh]", "label": "Standard (65%)" },
-        { "value": "h-[80vh]", "label": "Tall (80%)" },
-        { "value": "h-screen", "label": "Full Screen" }
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "custom", "label": "Custom" }
       ],
-      "default": "h-[65vh]"
-    },
-    {
-      "type": "select",
-      "id": "desktop_height",
-      "label": "Desktop Height",
-      "options": [
-        { "value": "md:h-[500px]", "label": "Compact (500px)" },
-        { "value": "md:h-[75vh]", "label": "Standard (75%)" },
-        { "value": "md:h-screen", "label": "Full Screen" }
-      ],
-      "default": "md:h-[75vh]"
+      "default": "sm"
     },
     {
       "type": "range",
@@ -158,19 +162,20 @@
         { "value": "arrow-left", "label": "Arrow" }
       ],
       "default": "chevron-left",
-      "conditional": "setting.show_arrows"
+      "conditional": "setting.show_arrows",
+      "info": "Controls are middle sides."
     },
     {
       "type": "select",
       "id": "nav_position",
       "label": "Controls Position",
       "options": [
-        { "value": "middle_sides", "label": "Middle Sides (Arrows Only)" },
         { "value": "bottom_center", "label": "Bottom Center" },
         { "value": "bottom_left", "label": "Bottom Left" },
         { "value": "bottom_right", "label": "Bottom Right" }
       ],
-      "default": "middle_sides"
+      "default": "bottom_center",
+      "conditional": "setting.show_dots"
     },
     { "type": "header", "content": "Theme" },
     {
@@ -206,9 +211,11 @@
       "blocks": {
         "slide_1": {
           "type": "_slide",
-          "settings": { "align_x": "items-center", "align_y": "justify-center", "color_scheme": "default" },
           "blocks": {
-            "heading": { "type": "jumbo-text", "settings": { "text": "Welcome", "display_size": "display" } },
+            "heading": {
+              "type": "text",
+              "settings": { "content": "Welcome", "display_size": "display", "tag": "h1", "font_weight": "bold" }
+            },
             "btn": { "type": "button", "settings": { "label": "View Menu", "style": "primary" } }
           },
           "block_order": ["heading", "btn"]

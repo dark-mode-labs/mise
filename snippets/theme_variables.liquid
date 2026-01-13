@@ -1,10 +1,21 @@
 <style>
   :root {
+    --golden-ratio: 1.618;
+    --golden-ratio-inverse: 0.618;
+
+    --space-base: 1rem;
+    --space-xs: calc(var(--space-base) * 0.382);
+    --space-sm: calc(var(--space-base) * 0.618);
+    --space-md: var(--space-base);
+    --space-lg: calc(var(--space-base) * 1.618);
+    --space-xl: calc(var(--space-base) * 2.618);
+    --space-2xl: calc(var(--space-base) * 4.236);
+    --space-3xl: calc(var(--space-base) * 6.854);
+
     --font-heading: {{ settings.heading_font }}, sans-serif;
     --font-body: {{ settings.body_font }}, sans-serif;
     --font-button: {{ settings.button_font }}, sans-serif;
     --type-scale: {{ settings.type_scale | divided_by: 100.0 }};
-    --grid-gap: {{ settings.grid_gap }}px;
     --radius-global: {{ settings.corner_radius }}px;
   }
 
@@ -24,6 +35,21 @@
       --color-text-subtle: {{ scheme[1].settings.text | color_modify: 'alpha', 0.7 }};
     }
   {% endfor %}
+
+  .color-none {
+      --color-bg: "";
+      --color-text: "";
+      --color-text-secondary: "";
+      --color-accent: "";
+      --color-surface: "";
+      --color-btn-bg: "";
+      --color-btn-text: "";
+      --color-border: "";
+      --color-shadow: "";
+      --color-ui-bg: "";
+      --color-ui-text: "";
+      --color-text-subtle: "";
+    }
 
   {% for scheme in settings.width_schemes %}
     {% assign width = scheme[1].settings.width %}

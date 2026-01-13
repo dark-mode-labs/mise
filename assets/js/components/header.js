@@ -43,10 +43,10 @@ export default class Header {
     if (!drawer) return;
 
     if (open) {
-      drawer.classList.remove('-translate-x-full', 'pointer-events-none');
+      drawer.classList.add('is-open');
       document.body.classList.add('overflow-hidden');
     } else {
-      drawer.classList.add('-translate-x-full', 'pointer-events-none');
+      drawer.classList.remove('is-open');
       document.body.classList.remove('overflow-hidden');
     }
   }

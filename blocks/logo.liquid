@@ -1,4 +1,6 @@
-<div>
+<div
+  {{ closest.attached_attributes }}
+>
   <div style="max-width: {{ block.settings.width }}px">
     {% render 'media', src: block.settings.image, fit: 'contain' %}
   </div>

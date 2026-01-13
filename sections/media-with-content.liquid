@@ -1,13 +1,27 @@
 {% assign s = section.settings %}
 
-{% capture layout_class %}
-  flex flex-col
-  {% if s.desktop_layout == 'image_right' %}lg:flex-row-reverse{% else %}lg:flex-row{% endif %}
+{% capture container_layout %}
+  {% if s.desktop_layout == 'image_left' %}media-layout-left{% else %}media-layout-right{% endif %}
+{% endcapture %}
+{% assign media_container_class = 'media-media-split' %}
+{% capture content_container_class %}
+  {% if s.mobile_layout == 'text_first' %}order-first md:order-last{% endif %}
+  media-content-split
+{% endcapture %}
+{% capture section_spacing_style %}
+  {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+  {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
 {% endcapture %}
 
-{% if s.mobile_layout == 'text_first' %}
-  {% assign layout_class = layout_class | append: ' flex-col-reverse' %}
-{% endif %}
+{% capture section_spacing_class %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
+{% endcapture %}
 
 {% assign animation_class = '' %}
 {% if s.enable_animation %}
@@ -20,29 +34,27 @@
 {% endunless %}
 
 <section
-  class="section-feature color-{{ s.color_scheme }} width-{{ s.width_scheme }} pt-[var(--pt)] pb-[var(--pb)] limit-width"
-  style="
-    --pt: {{ s.padding_top }}px;
-    --pb: {{ s.padding_bottom }}px;
-    --desktop-gap: {{ s.desktop_gap }}px;
-  "
+  class="section-feature color-{{ s.color_scheme | default: 'none' }}"
+  {{ closest.attached_attributes }}
 >
-  <div class="w-full {{ layout_class }} items-center gap-gap lg:gap-[var(--desktop-gap)]">
-    <div class="w-full lg:w-1/2 relative">
-      <div class="overflow-hidden rounded-global {% if s.show_shadow %}shadow-lg{% endif %}">
-        {% render 'media',
-          src: s.image,
-          src_mobile: s.mobile_image,
-          video: s.video_url,
-          fit: 'cover',
-          ratio: s.media_aspect_ratio,
-          placeholder: placeholder_name,
-          animate: s.enable_zoom
-        %}
-      </div>
+  <div
+    class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"
+    style="{{ section_spacing_style }}"
+  >
+    <div class="{{ media_container_class }}">
+      {% render 'media',
+        src: s.image,
+        src_mobile: s.mobile_image,
+        video: s.video_url,
+        fit: 'cover',
+        placeholder: placeholder_name,
+        animate: s.enable_zoom
+      %}
     </div>
 
-    <div class="w-full lg:w-1/2 flex flex-col {{ s.text_align }} {{ animation_class }}">
+    <div
+      class="{{ content_container_class }} section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}"
+    >
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -61,23 +73,38 @@
     },
     {
       "type": "select",
+      "id": "height",
+      "label": "Image Height",
+      "options": [
+        { "value": "auto", "label": "Auto (Fit Content)" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "height_custom",
+      "label": "Custom Height",
+      "min": 200,
+      "max": 1000,
+      "step": 10,
+      "default": 600,
+      "unit": "px",
+      "conditional": "setting.height == 'custom'"
+    },
+    {
+      "type": "select",
       "id": "desktop_layout",
-      "label": "Desktop Position",
+      "label": "Desktop Stacking",
       "options": [
         { "value": "image_left", "label": "Media Left" },
         { "value": "image_right", "label": "Media Right" }
       ],
       "default": "image_left"
-    },
-    {
-      "type": "range",
-      "id": "desktop_gap",
-      "label": "Gap (Desktop)",
-      "min": 40,
-      "max": 160,
-      "step": 4,
-      "default": 80,
-      "unit": "px"
     },
     {
       "type": "select",
@@ -91,14 +118,36 @@
     },
     {
       "type": "select",
+      "id": "content_align",
+      "label": "Content Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        { "value": "items-start text-left", "label": "Left" },
-        { "value": "items-center text-center", "label": "Center" },
-        { "value": "items-end text-right", "label": "Right" }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ],
-      "default": "items-start text-left"
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "middle"
     },
     {
       "type": "checkbox",
@@ -106,45 +155,63 @@
       "label": "Show Shadow on Media",
       "default": true
     },
-
-    { "type": "header", "content": "Spacing" },
+    { "type": "header", "content": "Section Spacing" },
     {
-      "type": "range",
-      "id": "padding_top",
-      "label": "Top Padding",
-      "min": 0,
-      "max": 160,
-      "step": 4,
-      "default": 96,
-      "unit": "px"
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
     },
     {
       "type": "range",
-      "id": "padding_bottom",
-      "label": "Bottom Padding",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
       "min": 0,
-      "max": 160,
+      "max": 200,
       "step": 4,
-      "default": 96,
-      "unit": "px"
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
     },
-
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
     { "type": "header", "content": "Media" },
     { "type": "image_picker", "id": "image", "label": "Feature Image" },
     { "type": "image_picker", "id": "mobile_image", "label": "Feature Image (Mobile)" },
     { "type": "text", "id": "video_url", "label": "Feature Video" },
-    {
-      "type": "select",
-      "id": "media_aspect_ratio",
-      "label": "Aspect Ratio",
-      "options": [
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "landscape", "label": "Landscape (4:3)" },
-        { "value": "auto", "label": "Natural" }
-      ],
-      "default": "portrait"
-    },
     {
       "type": "checkbox",
       "id": "show_placeholder",
@@ -157,26 +224,23 @@
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
   ],
-  "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }],
+  "blocks": [{ "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }, { "type": "@theme" }],
   "presets": [
     {
       "name": "Feature (Chef Profile)",
       "settings": {
         "desktop_layout": "image_left",
-        "media_aspect_ratio": "portrait",
         "color_scheme": "default",
-        "enable_animation": true,
-        "padding_top": 96,
-        "padding_bottom": 96,
-        "desktop_gap": 80
+        "enable_animation": true
       },
       "blocks": {
         "chef_heading": {
-          "type": "heading",
+          "type": "text",
           "settings": {
-            "text": "Our Philosophy",
+            "content": "Our Philosophy",
             "tag": "h2",
-            "display_size": "h2"
+            "display_size": "h2",
+            "font_weight": "bold"
           }
         },
         "chef_bio": {

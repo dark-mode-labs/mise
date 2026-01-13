@@ -23,11 +23,27 @@
   {% assign position_class = 'absolute top-0' %}
 {% endif %}
 
+{% capture section_spacing_style %}
+   {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+{% endcapture %}
+
+{% capture section_spacing_class %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
+{% endcapture %}
+
 <header
-  class="header-section w-full {{ position_class }} color-{{ s.color_scheme }} text-body bg-body z-header transition-all duration-300 border-b border-std"
+  class="header-section {{ position_class }} color-{{ s.color_scheme | default: 'none' }} bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
   data-transparent="{{ s.enable_transparent }}"
+  style="{{ section_spacing_style }}"
+  {{ closest.attached_attributes }}
 >
   <div class="width-{{ s.width_scheme }} h-16 md:h-24 grid grid-cols-3 items-center limit-width">
     <div class="flex items-center justify-start gap-4">
@@ -45,7 +61,9 @@
           {{ slot_logo }}
         </div>
         <div>
-          {{ slot_nav }}
+          {% if s.nav_alignment == 'left' %}
+            {{ slot_nav }}
+          {% endif %}
         </div>
       {% else %}
         <div>
@@ -54,11 +72,20 @@
       {% endif %}
     </div>
 
-    <div class="flex items-center justify-center h-full {% if s.desktop_layout == 'logo_left' %}lg:invisible{% endif %}">
-      {{ slot_logo }}
+    <div class="flex items-center justify-center flex-auto">
+      {% if s.nav_alignment == 'center' %}
+        {{ slot_nav }}
+      {% endif %}
+      {% if s.desktop_layout == 'logo_left' %}
+        {% assign logo_class = 'lg:hidden' %}
+      {% endif %}
+      <div class="{{ logo_class }}">{{ slot_logo }}</div>
     </div>
 
     <div class="flex items-center justify-end gap-4">
+      {% if s.nav_alignment == 'right' %}
+        {{ slot_nav }}
+      {% endif %}
       {{ slot_actions }}
     </div>
   </div>
@@ -90,6 +117,71 @@
         { "value": "logo_left", "label": "Left" }
       ],
       "default": "logo_center"
+    },
+    {
+      "type": "select",
+      "id": "nav_alignment",
+      "label": "Navigation Alignment (Desktop)",
+      "options": [
+        { "value": "left", "label": "Left (Next to Logo)" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left",
+      "conditional": "setting.desktop_layout == 'logo_left'"
+    },
+    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
     },
     { "type": "header", "content": "Behavior" },
     {

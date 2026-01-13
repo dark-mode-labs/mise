@@ -1,10 +1,20 @@
-Mise Theme
+# Mise Theme
 
 Everything in its place.
 
 Mise is a "Gold Standard" RestaurantOS theme engineered specifically for restaurants, cafes, and hospitality brands. It prioritizes typographic precision, lightning-fast performance, and a robust, "safe" responsive behavior that ensures your menu and brand look pristine on every device, from an iPhone SE to a 4K Menu Board.
 
-The Mise Philosophy
+## Design System
+
+Mise uses the **golden ratio (φ = 1.618)** throughout for mathematically harmonious proportions:
+
+- **Spacing**: All padding/gaps follow golden ratio scale (6px, 10px, 16px, 26px, 42px, 68px, 110px)
+- **Media sizing**: Images use golden ratio aspect-ratios (1.618:1) with responsive constraints
+- **Content-driven layouts**: No artificial whitespace - content determines height naturally
+
+See [GOLDEN-RATIO-SYSTEM.md](GOLDEN-RATIO-SYSTEM.md) for complete documentation.
+
+## The Mise Philosophy
 
 Mise en Place: Code should be as organized as a professional kitchen. Components are modular, self-contained, and purpose-built.
 
@@ -104,17 +114,29 @@ divider (Section): The palate cleanser.
 
 Features: Configurable height and line style (Solid, Dashed, Icon) that respects the global color scheme.
 
-Developer Guidelines
+## Developer Guidelines
 
-CSS & Tailwind
+### Golden Ratio System
+
+Mise uses a mathematically-based design system:
+
+**Spacing**: Uses CSS custom properties based on golden ratio (`var(--space-sm)`, `var(--space-md)`, `var(--space-lg)`, etc.)
+
+**Media Sizing**: Pass `size: 'sm|md|lg|xl'` to media snippet. Defaults to `md` (golden ratio aspect-ratio with responsive max-height).
+
+**Layout**: Content-driven heights. No `section-h-*` classes needed - flex layouts naturally size based on content.
+
+See [GOLDEN-RATIO-SYSTEM.md](GOLDEN-RATIO-SYSTEM.md) for details.
+
+### CSS & Tailwind
 
 Mise relies on a semantic Tailwind configuration.
 
 Z-Index: Strict layer system (z-floating, z-header, z-modal). No magic numbers.
 
-Spacing: Prefer gap over margin to avoid collapsing margin issues.
+Spacing: Uses CSS custom properties based on golden ratio scale (`var(--space-md)`).
 
-Responsive Strategy
+### Responsive Strategy
 
 Always design for the "Uncomfortable Middle" (1024px - 1280px).
 
@@ -122,7 +144,9 @@ The iPad Pro Test: Layouts explicitly downgrade to 2 columns or force vertical s
 
 Defensive CSS: Always use min-w-0 on flex children to prevent text from forcing containers wider than their parent.
 
-Data Attributes
+Golden Ratio Responsive: Media and sections use `clamp()` to scale smoothly between mobile and desktop.
+
+### Data Attributes
 
 data-behavior: Hooks a JS class to an element.
 
@@ -132,7 +156,7 @@ data-spy-trigger: The ID of the link that should light up.
 
 data-tags: Comma-separated list of tags (e.g., v,gf,spicy) for client-side filtering.
 
-Roadmap
+## Roadmap
 
 Modifier Modal: A stateful form for handling complex item customization (Radio/Checkbox validation).
 
