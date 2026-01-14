@@ -6,7 +6,7 @@
 
 <section
   class="section-slideshow color-{{ s.color_scheme | default: 'none' }} is-{{ s.height }}"
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   <div
     class="relative width-{{ s.width_scheme }} limit-width  group select-none h-full"

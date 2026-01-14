@@ -5,7 +5,7 @@
 
 <nav
   class="header-nav hidden lg:flex items-center {{ scheme_class }}"
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   <ul class="flex items-center gap-8">
     {% for link in s.menu.links %}

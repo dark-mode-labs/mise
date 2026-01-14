@@ -18,7 +18,7 @@
   <div
     class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-surface text-body no-stagger"
     style="opacity: {{ s.opacity | divided_by: 100.0 }};"
-    {{ closest.attached_attributes }}
+    {{ context.attached_attributes }}
   >
     {{ rendered_marquee }}
   </div>
@@ -26,7 +26,7 @@
 {% else %}
   <div
     class="wrapper relative left-[calc(-50vw+50%)] my-4 z-base no-stagger"
-    {{ closest.attached_attributes }}
+    {{ context.attached_attributes }}
   >
     <div
       class="border-y border-std {{ scheme_class }} bg-body text-body"

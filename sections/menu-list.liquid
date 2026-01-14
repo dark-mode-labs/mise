@@ -56,7 +56,7 @@
   class="color-{{ s.color_scheme | default: 'none' }}"
   data-spy-scope
   data-filter-scope
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   <div
     class="bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"

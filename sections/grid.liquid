@@ -32,8 +32,8 @@
 {% endif %}
 
 <section
-  class="section-multi-column color-{{ s.color_scheme | default: 'none' }}"
-  {{ closest.attached_attributes }}
+  class="section-flex color-{{ s.color_scheme | default: 'none' }}"
+  {{ context.attached_attributes }}
 >
   {% unless s.bg_image == blank and s.overlay_color == blank %}
     <div class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden bg-surface">
@@ -74,7 +74,7 @@
 
 {% schema %}
 {
-  "name": "Grid",
+  "name": "Flex Container",
   "settings": [
     { "type": "header", "content": "Overlay" },
     {
@@ -124,22 +124,6 @@
       "id": "width_scheme",
       "label": "Content Width",
       "default": "standard"
-    },
-    {
-      "type": "range",
-      "id": "columns_desktop",
-      "label": "Default Columns (Desktop)",
-      "min": 2,
-      "max": 4,
-      "default": 3
-    },
-    {
-      "type": "range",
-      "id": "columns_mobile",
-      "label": "Default Columns (Mobile)",
-      "min": 1,
-      "max": 2,
-      "default": 1
     },
 
     { "type": "header", "content": "Spacing" },
@@ -258,29 +242,63 @@
       "conditional": "setting.enable_cards_global == true"
     }
   ],
-  "blocks": [{ "type": "_column" }],
+  "blocks": [{ "type": "group" }],
   "presets": [
     {
       "name": "Multi-Column",
-      "settings": { "columns_desktop": 3 },
+      "settings": {},
       "blocks": {
-        "col_1": {
-          "type": "_column",
-          "blocks": { "title": { "type": "text", "settings": { "content": "Sourcing" } } },
-          "block_order": ["title"]
-        },
-        "col_2": {
-          "type": "_column",
-          "blocks": { "title": { "type": "text", "settings": { "content": "Prep" } } },
-          "block_order": ["title"]
-        },
-        "col_3": {
-          "type": "_column",
-          "blocks": { "title": { "type": "text", "settings": { "content": "Plating" } } },
-          "block_order": ["title"]
+        "group": {
+          "type": "group",
+          "blocks": {
+            "grp_1": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Sourcing"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            },
+            "grp_2": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Prep"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            },
+            "grp_3": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Plating"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            }
+          },
+          "block_order": ["grp_1", "grp_2", "grp_3"],
+          "settings": {
+            "content_align": "center",
+            "direction": "row"
+          }
         }
       },
-      "block_order": ["col_1", "col_2", "col_3"]
+      "block_order": ["group"]
     }
   ]
 }

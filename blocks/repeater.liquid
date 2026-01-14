@@ -1,0 +1,25 @@
+{% assign s = block.settings %}
+{% assign items = s.data_source | decode_json %}
+
+<div class="contents" {{ context.attached_attributes }}>
+  {% for item in items %}
+    {% content_for 'blocks', context.item: item %}
+  {% endfor %}
+</div>
+
+{% schema %}
+{
+  "name": "Repeater Template",
+  "settings": [
+    { "type": "header", "content": "Data Source" },
+    {
+      "type": "datasource",
+      "id": "data_source",
+      "label": "JSON",
+      "default": "{}"
+    }
+  ],
+  "blocks": [{ "type": "@theme" }],
+  "presets": [{ "name": "Repeater Template", "settings": {}, "blocks": {}, "block_order": [] }]
+}
+{% endschema %}
