@@ -1,0 +1,342 @@
+{
+  "schema": [
+    {
+      "name": "Color Schemes",
+      "type": "group",
+      "id": "color_schemes",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Default Color Scheme"
+        },
+        {
+          "type": "header",
+          "content": "Base Colors"
+        },
+        {
+          "type": "color",
+          "id": "background",
+          "label": "Background",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "text",
+          "label": "Text",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "text_secondary",
+          "label": "Secondary Text",
+          "default": "rgba(102, 102, 102, 1)"
+        },
+        {
+          "type": "color",
+          "id": "accent",
+          "label": "Accent / Links",
+          "default": "rgba(0, 0, 0, 1)"
+        },
+        {
+          "type": "color",
+          "id": "surface",
+          "label": "Surface / Card Background",
+          "default": "rgba(245, 245, 245, 1)"
+        },
+        {
+          "type": "color",
+          "id": "border",
+          "label": "Borders",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "shadow",
+          "label": "Shadows",
+          "default": "rgba(0, 0, 0, 1)"
+        },
+        {
+          "type": "header",
+          "content": "Buttons"
+        },
+        {
+          "type": "color",
+          "id": "button_bg",
+          "label": "Solid Button Background",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "button_text",
+          "label": "Solid Button Label",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "header",
+          "content": "UI Controls (Arrows/Dots)"
+        },
+        {
+          "type": "color",
+          "id": "ui_bg",
+          "label": "Control Background",
+          "default": "rgba(255, 255, 255, 1)"
+        },
+        {
+          "type": "color",
+          "id": "ui_text",
+          "label": "Control Icon/Text",
+          "default": "rgba(0, 0, 0, 1)"
+        }
+      ]
+    },
+    {
+      "name": "Typography",
+      "id": "typography",
+      "settings": [
+        {
+          "type": "font_picker",
+          "id": "heading_font",
+          "label": "Headings",
+          "default": "sans-serif"
+        },
+        {
+          "type": "font_picker",
+          "id": "body_font",
+          "label": "Body Text",
+          "default": "sans-serif"
+        },
+        {
+          "type": "font_picker",
+          "id": "button_font",
+          "label": "Buttons & UI",
+          "default": "sans-serif"
+        },
+        {
+          "type": "range",
+          "id": "type_scale",
+          "label": "Type Scale",
+          "min": 80,
+          "max": 120,
+          "step": 5,
+          "default": 100,
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "name": "Max Width Schemes",
+      "type": "group",
+      "id": "width_schemes",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Default Width Scheme"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Width",
+          "options": [
+            {
+              "value": "sm",
+              "label": "Small"
+            },
+            {
+              "value": "md",
+              "label": "Medium"
+            },
+            {
+              "value": "lg",
+              "label": "Large"
+            },
+            {
+              "value": "xl",
+              "label": "x-Large"
+            },
+            {
+              "value": "2xl",
+              "label": "2x-Large"
+            },
+            {
+              "value": "3xl",
+              "label": "3x-Large"
+            },
+            {
+              "value": "4xl",
+              "label": "4x-Large"
+            },
+            {
+              "value": "fit",
+              "label": "Fit Content"
+            },
+            {
+              "value": "full",
+              "label": "Full"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
+            }
+          ],
+          "default": "1240px"
+        },
+        {
+          "type": "text",
+          "id": "custom_width",
+          "label": "Width",
+          "default": "1496px",
+          "conditional": "setting.width == 'custom'"
+        }
+      ]
+    },
+    {
+      "name": "Layout",
+      "id": "layout",
+      "settings": [
+        {
+          "type": "range",
+          "id": "grid_gap",
+          "label": "Grid Gap",
+          "min": 0,
+          "max": 64,
+          "step": 4,
+          "default": 32,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "corner_radius",
+          "label": "Global Corner Radius",
+          "min": 0,
+          "max": 40,
+          "step": 4,
+          "default": 0,
+          "unit": "px",
+          "info": "Affects buttons, cards, and media."
+        }
+      ]
+    },
+    {
+      "name": "Social Media",
+      "id": "social-media",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Accounts"
+        },
+        {
+          "type": "text",
+          "id": "social_instagram_link",
+          "label": "Instagram",
+          "info": "https://instagram.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "social_facebook_link",
+          "label": "Facebook",
+          "info": "https://facebook.com/yourpage"
+        },
+        {
+          "type": "text",
+          "id": "social_tiktok_link",
+          "label": "TikTok",
+          "info": "https://tiktok.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "social_twitter_link",
+          "label": "X (Twitter)",
+          "info": "https://x.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "social_yelp_link",
+          "label": "Yelp",
+          "info": "https://yelp.com/biz/your-biz"
+        },
+        {
+          "type": "text",
+          "id": "social_linkedin_link",
+          "label": "LinkedIn",
+          "info": "https://linkedin.com/company/your-company"
+        },
+        {
+          "type": "text",
+          "id": "social_youtube_link",
+          "label": "YouTube",
+          "info": "https://youtube.com/@yourhandle"
+        }
+      ]
+    }
+  ],
+  "presets": {
+    "default": {
+      "grid_gap": 40,
+      "type_scale": 105,
+      "typography": {
+        "body_font": "sans-serif",
+        "button_font": "sans-serif",
+        "heading_font": "sans-serif"
+      },
+      "color_schemes": {
+        "default": {
+          "settings": {
+            "text": "#1A3A4A",
+            "ui_bg": "#FFFFFF",
+            "accent": "#0891B2",
+            "border": "#BAE6FD",
+            "shadow": "rgba(8, 145, 178, 0.15)",
+            "surface": "#F0F9FF",
+            "ui_text": "#1A3A4A",
+            "button_bg": "#0891B2",
+            "background": "#FDFEFE",
+            "button_text": "#FFFFFF",
+            "text_secondary": "#5B7C8D"
+          }
+        }
+      },
+      "corner_radius": 12,
+      "width_schemes": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit",
+            "custom_width": "1496px"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full",
+            "custom_width": "1496px"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "width": "3xl",
+            "custom_width": "1496px"
+          }
+        },
+        "narrow": {
+          "settings": {
+            "title": "Narrow",
+            "width": "md",
+            "custom_width": "1496px"
+          }
+        },
+        "standard": {
+          "settings": {
+            "title": "Standard",
+            "width": "2xl",
+            "custom_width": "1496px"
+          }
+        }
+      }
+    }
+  }
+}

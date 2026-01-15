@@ -1,0 +1,119 @@
+{% assign modifier_count = 0 %}
+{% assign group_count = item.modifier_groups.size %}
+
+{% for group in item.modifier_groups %}
+  {% assign modifier_count = modifier_count | plus: group.modifiers.size %}
+{% endfor %}
+
+{% assign use_body_layout = false %}
+{% if modifier_count > 4 or group_count > 2 %}{% assign use_body_layout = true %}{% endif %}
+
+{% assign padding = padding_class | default: 'py-4' %}
+
+{% capture tag_string %}{% for flag in item.dietary_flags %}{{ flag.name | downcase }},{% endfor %}{% endcapture %}
+
+<div
+  class="menu-item group w-full {{ padding }} border-b border-dashed border-body/10 last:border-0 break-inside-avoid overflow-hidden"
+  data-filter-item
+  data-tags="{{ tag_string }}"
+>
+  <div class="flex gap-4 md:gap-6 items-start">
+    <div class="flex-grow flex flex-col w-full min-w-0">
+      <div class="flex flex-nowrap items-start justify-between gap-x-4 w-full">
+        <div class="flex-1 min-w-0 flex flex-wrap items-center gap-2 pr-2">
+          <h4 class="font-heading font-bold text-lg md:text-xl leading-tight">
+            {{ item.name }}
+          </h4>
+          {% if item.dietary_flags.size > 0 %}
+            <div class="inline-flex gap-1 relative -top-[1px]">
+              {% for flag in item.dietary_flags %}
+                <span class="badge-pill" title="{{ flag.name }}">
+                  {% assign tag_name = flag.name | downcase %}
+                  {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
+                </span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="flex-none w-auto text-right font-bold font-heading text-lg leading-tight">
+          {% if use_body_layout %}
+            <span class="whitespace-nowrap">
+              {% comment %} {% if item.modifier_groups.size > 0 %}From {% endif %} {% endcomment %}
+              {{ item.amount | plus: 0 | money }}
+            </span>
+          {% else %}
+            <div class="flex flex-col xl:flex-row items-end xl:items-center justify-end gap-x-4 gap-y-1">
+              {% if modifier_count == 0 %}
+                <span class="whitespace-nowrap">{{ item.amount | plus: 0 | money }}</span>
+              {% else %}
+                {% for group in item.modifier_groups %}
+                  {% assign modifiers = group.modifiers | sort: 'amount_delta' %}
+                  {% for mod in modifiers %}
+                    <div class="whitespace-nowrap flex items-center justify-end">
+                      <span class="text-xs opacity-70 uppercase tracking-wide mr-2">{{ mod.name }}</span>
+                      <span>
+                        {{ item.amount | plus: mod.amount_delta | money }}
+                      </span>
+                    </div>
+                  {% endfor %}
+                {% endfor %}
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if item.description != blank %}
+        <div class="opacity-70 text-sm mt-1 max-w-prose leading-relaxed">
+          {{ item.description }}
+        </div>
+      {% endif %}
+
+      {% if use_body_layout %}
+        <div class="mt-4 pt-4 border-t border-dashed border-body/10 w-full">
+          {% if group_count > 1 %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+              {% for group in item.modifier_groups %}
+                {% if group.modifiers.size > 0 %}
+                  <div class="flex flex-col gap-2">
+                    <h5 class="text-[10px] font-bold uppercase tracking-widest opacity-50 border-b border-body/10 pb-1 mb-1">
+                      {{ group.name }}
+                    </h5>
+                    <ul class="flex flex-col gap-1">
+                      {% for mod in group.modifiers %}
+                        <li class="flex justify-between text-sm opacity-80">
+                          <span>{{ mod.name }}</span>
+                          {% if mod.amount_delta > 0 %}
+                            <span class="opacity-60 font-bold text-xs">+{{ mod.amount_delta | money }}</span>
+                          {% endif %}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            {% assign group = item.modifier_groups.first %}
+            <div class="flex flex-col gap-2">
+              <h5 class="text-[10px] font-bold uppercase tracking-widest opacity-50 mb-1">
+                {{ group.name | default: 'Options' }}
+              </h5>
+              <div class="flex flex-col gap-1 text-sm opacity-80">
+                {% for mod in group.modifiers %}
+                  <div class="flex justify-between items-baseline">
+                    <span>{{ mod.name }}</span>
+                    {% if mod.amount_delta > 0 %}
+                      <span class="opacity-60 font-bold text-xs">+{{ mod.amount_delta | money }}</span>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
