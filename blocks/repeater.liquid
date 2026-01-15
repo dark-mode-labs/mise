@@ -1,12 +1,18 @@
 {% assign s = block.settings %}
 {% case s.data_source_type %}
   {% when 'json' %}
-    {% assign items = s.data_json | decode_json | values %}
+    {% if s.data_json != blank %}
+      {% assign items = s.data_json | decode_json | values %}
+    {% endif %}
   {% when 'inherit' %}
-    {% assign items = context.item[s.data_field] %}
+    {% if s.data_field != blank %}
+      {% assign items = context.item[s.data_field] %}
+    {% endif %}
   {% when 'item_collection' %}
-    {% assign args = 'source:item_collection, item_collection_identifier:' | append: s.item_collection | parse_kv %}
-    {% assign items = 'item' | data_source: 'list', args %}
+    {% if s.item_collection != blank %}
+      {% assign args = 'source:item_collection, item_collection_identifier:' | append: s.item_collection | parse_kv %}
+      {% assign items = 'item' | data_source: 'list', args %}
+    {% endif %}
 {% endcase %}
 
 <div class="contents" {{ context.attached_attributes }}>
@@ -32,8 +38,7 @@
         { "value": "json", "label": "JSON" },
         { "value": "inherit", "label": "Inherit" },
         { "value": "item_collection", "label": "Item Collection" }
-      ],
-      "default": "left"
+      ]
     },
     {
       "type": "json",
