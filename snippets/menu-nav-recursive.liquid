@@ -8,7 +8,7 @@
   - sublink_base_class: Class for child links
 {% endcomment %}
 
-{% assign children = all_categories | where: 'parent_uuid', category.uuid | sort: 'display_order' %}
+{% assign children = category_assignments | where: 'category.parent_uuid', category.uuid %}
 
 {% if depth == 0 %}
   <a
@@ -34,8 +34,8 @@
   <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-std">
     {% for child in children %}
       {% render 'menu-nav-recursive',
-        category: child,
-        all_categories: all_categories,
+        category: child.category,
+        category_assignments: category_assignments,
         nav_layout: nav_layout,
         depth: depth | plus: 1,
         link_base_class: link_base_class,

@@ -9,7 +9,7 @@
   - spy_target: The UUID for the spy target (inherited if horizontal)
 {% endcomment %}
 
-{% assign children = all_categories | where: 'parent_uuid', category.uuid | sort: 'display_order' %}
+{% assign children = category_assignments | where: 'category.parent_uuid', category.uuid %}
 
 {% assign current_spy_target = spy_target %}
 {% if nav_layout == 'vertical' %}
@@ -53,8 +53,8 @@
   {% for child in children %}
     {%
       render 'menu-category-recursive',
-      category: child,
-      all_categories: all_categories,
+      category: child.category,
+      category_assignments: category_assignments,
       depth: depth | plus: 1,
       grid_class: grid_class,
       animation_class: animation_class,
