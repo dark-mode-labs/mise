@@ -1,0 +1,61 @@
+{% assign s = block.settings %}
+{% case s.data_source_type %}
+  {% when 'json' %}
+    {% assign items = s.data_json | decode_json | values %}
+  {% when 'inherit' %}
+    {% assign items = context.item[s.data_field] %}
+  {% when 'item_collection' %}
+    {% assign args = 'source:item_collection, item_collection_identifier:' | append: s.item_collection | parse_kv %}
+    {% assign items = 'item' | data_source: 'list', args %}
+{% endcase %}
+
+<div class="contents" {{ context.attached_attributes }}>
+  {% if items == blank %}
+    {% content_for 'blocks' %}
+  {% else %}
+    {% for item in items %}
+      {% content_for 'blocks', context.item: item %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Repeater Template",
+  "settings": [
+    { "type": "header", "content": "Data Source" },
+    {
+      "type": "select",
+      "id": "data_source_type",
+      "label": "Type",
+      "options": [
+        { "value": "json", "label": "JSON" },
+        { "value": "inherit", "label": "Inherit" },
+        { "value": "item_collection", "label": "Item Collection" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "json",
+      "id": "data_json",
+      "label": "JSON",
+      "default": "{}",
+      "conditional": "setting.data_source_type == 'json'"
+    },
+    {
+      "type": "text",
+      "id": "data_field",
+      "label": "Context Field",
+      "conditional": "setting.data_source_type == 'inherit'"
+    },
+    {
+      "type": "collection",
+      "id": "item_collection",
+      "label": "Select Item Collection",
+      "conditional": "setting.data_source_type == 'item_collection'"
+    }
+  ],
+  "blocks": [{ "type": "@theme" }],
+  "presets": [{ "name": "Repeater Template", "settings": {}, "blocks": {}, "block_order": [] }]
+}
+{% endschema %}

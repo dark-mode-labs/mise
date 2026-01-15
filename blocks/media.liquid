@@ -25,7 +25,7 @@
 <div
   class="media-block {{ block_classes }} is-{{ s.height }}"
   style="{{ block_styles }}"
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   {% render 'media',
     src: s.image,

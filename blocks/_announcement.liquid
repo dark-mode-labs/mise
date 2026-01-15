@@ -6,7 +6,7 @@
 
 <div
   class="w-full flex-shrink-0 snap-center py-2.5 px-4 flex items-center justify-center {{ scheme_class }} text-body bg-body"
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   {% if s.link != blank %}
     <a href="{{ s.link }}" class="hover:opacity-70 transition-opacity flex items-center gap-2">

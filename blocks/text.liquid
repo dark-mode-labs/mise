@@ -31,7 +31,7 @@
 <div
   class="w-full max-w-prose text-align-{{ s.text_align }} {{ scheme_class }}"
   style="{{ style_override }}"
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   {% render 'typography',
     text: s.content,

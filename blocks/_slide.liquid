@@ -21,7 +21,7 @@
 
 <div
   class="slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden {{ scheme_class }} bg-surface"
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   <div class="absolute inset-0 z-media bg-surface">
     {% render 'media',

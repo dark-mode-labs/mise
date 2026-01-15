@@ -35,7 +35,7 @@
 
 <section
   class="section-feature color-{{ s.color_scheme | default: 'none' }}"
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   <div
     class="bg-body width-{{ s.width_scheme }} limit-width {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"

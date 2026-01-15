@@ -1,5 +1,22 @@
 {% assign s = section.settings %}
-{% assign menu = shop.menu_data[s.menu] %}
+{% if s.display_scope == 'full_menu' %}
+  {% assign args = 'source:menu, menu_identifier:' | append: s.menu | parse_kv %}
+{% elsif s.display_scope == 'category' %}
+  {% assign args = 'source:menu_category, menu_identifier:'
+    | append: s.menu
+    | append: ', category_identifier:'
+    | append: s.category
+    | parse_kv
+  %}
+{% endif %}
+{% assign category_assignments = 'category_assignment' | data_source: 'list', args %}
+{% assign dietary_flags = category_assignments | map: 'category.items.dietary_flags' | uniq %}
+{% assign disclaimers = category_assignments | map: 'menu.disclaimers' | uniq %}
+{% if s.display_scope == 'full_menu' %}
+  {% assign root_categories = category_assignments | where_blank: 'category.parent_uuid' %}
+{% elsif s.display_scope == 'category' %}
+  {% assign root_categories = category_assignments | list %}
+{% endif %}
 
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
@@ -56,7 +73,7 @@
   class="color-{{ s.color_scheme | default: 'none' }}"
   data-spy-scope
   data-filter-scope
-  {{ closest.attached_attributes }}
+  {{ context.attached_attributes }}
 >
   <div
     class="bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"
@@ -75,12 +92,6 @@
     </div>
 
     <div class="flex {{ main_flex_direction }} relative">
-      {% assign all_categories = menu.categories | map_values | sort: 'display_order' %}
-      {% if s.display_scope == 'full_menu' %}
-        {% assign root_categories = all_categories | where: 'parent_uuid', null %}
-      {% elsif s.display_scope == 'category' %}
-        {% assign root_categories = menu.categories[s.category] | sort %}
-      {% endif %}
       {% if s.show_nav and root_categories != blank %}
         <div
           class="{{ nav_container_class }}"
@@ -104,12 +115,12 @@
                 %}
               </div>
             {% endif %}
-            {% if s.enable_filtering and menu.dietary_flags.size > 0 %}
+            {% if s.enable_filtering and dietary_flags.size > 0 %}
               <div
                 class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-std pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
                 data-filter-tags
               >
-                {% for tag in menu.dietary_flags %}
+                {% for tag in dietary_flags %}
                   {% assign tag_name = tag.name | downcase %}
                   <button
                     type="button"
@@ -129,8 +140,8 @@
             >
               {% for parent in root_categories %}
                 {% render 'menu-nav-recursive',
-                  category: parent,
-                  all_categories: all_categories,
+                  category: parent.category,
+                  category_assignments: category_assignments,
                   depth: 0,
                   nav_layout: s.nav_layout,
                   link_base_class: link_base_class,
@@ -145,8 +156,8 @@
       <div class="flex-grow flex flex-col gap-20" data-filter-container>
         {% for parent in root_categories %}
           {% render 'menu-category-recursive',
-            category: parent,
-            all_categories: all_categories,
+            category: parent.category,
+            category_assignments: category_assignments,
             depth: 0,
             grid_class: grid_class,
             animation_class: animation_class,
@@ -170,9 +181,9 @@
       </button>
     </div>
 
-    {% if menu.disclaimers.size > 0 %}
+    {% if disclaimers.size > 0 %}
       <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest mx-auto border-t border-body/10 pt-8">
-        {% for disclaimer in menu.disclaimers %}
+        {% for disclaimer in disclaimers %}
           <p>{{ disclaimer.text }}</p>
         {% endfor %}
       </div>
@@ -370,8 +381,7 @@
       "type": "text",
       "id": "heading",
       "label": "Section Heading",
-      "info": "Defaults to Menu Name or override",
-      "default": "{{ menu.name }}"
+      "default": "Menu"
     },
     { "type": "textarea", "id": "subtext", "label": "Description" },
 

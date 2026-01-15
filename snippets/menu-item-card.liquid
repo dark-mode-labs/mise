@@ -8,8 +8,8 @@
 
 {% assign padding = padding_class | default: 'p-4' %}
 {% assign img_pos = image_position | default: 'left' %}
-{% unless item.asset_assignment == blank %}
-  {% assign asset_src = item.asset_assignment.asset_uuid %}
+{% unless item.asset == blank %}
+  {% assign asset_src = item.asset.url %}
 {% endunless %}
 
 {% capture tag_string %}{% for flag in item.dietary_flags %}{{ flag.name | downcase }},{% endfor %}{% endcapture %}
