@@ -806,4 +806,8 @@
   header {
     @apply relative w-full;
   }
+
+  .menu-list {
+    @apply relative w-full overflow-visible;
+  }
 }

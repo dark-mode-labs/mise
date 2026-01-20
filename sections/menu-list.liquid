@@ -1,7 +1,7 @@
 {% assign s = section.settings %}
-{% if s.display_scope == 'full_menu' %}
+{% if s.display_scope == 'full_menu' and s.menu != blank %}
   {% assign args = 'source:menu, menu_identifier:' | append: s.menu | parse_kv %}
-{% elsif s.display_scope == 'category' %}
+{% elsif s.display_scope == 'category' and s.category != blank %}
   {% assign args = 'source:menu_category, menu_identifier:'
     | append: s.menu
     | append: ', category_identifier:'
@@ -9,13 +9,15 @@
     | parse_kv
   %}
 {% endif %}
-{% assign category_assignments = 'category_assignment' | data_source: 'list', args %}
-{% assign dietary_flags = category_assignments | map: 'category.items.dietary_flags' | uniq %}
-{% assign disclaimers = category_assignments | map: 'menu.disclaimers' | uniq %}
-{% if s.display_scope == 'full_menu' %}
-  {% assign root_categories = category_assignments | where_blank: 'category.parent_uuid' %}
-{% elsif s.display_scope == 'category' %}
-  {% assign root_categories = category_assignments | list %}
+{% if args != blank %}
+  {% assign category_assignments = 'category_assignment' | data_source: 'list', args %}
+  {% assign dietary_flags = category_assignments | map: 'category.items.dietary_flags' | uniq %}
+  {% assign disclaimers = category_assignments | map: 'menu.disclaimers' | uniq %}
+  {% if s.display_scope == 'full_menu' %}
+    {% assign root_categories = category_assignments | where_blank: 'category.parent_uuid' %}
+  {% elsif s.display_scope == 'category' %}
+    {% assign root_categories = category_assignments | list %}
+  {% endif %}
 {% endif %}
 
 {% capture section_spacing_style %}
@@ -70,7 +72,7 @@
 {% endif %}
 
 <section
-  class="color-{{ s.color_scheme | default: 'none' }}"
+  class="menu-list color-{{ s.color_scheme | default: 'none' }}"
   data-spy-scope
   data-filter-scope
   {{ context.attached_attributes }}
