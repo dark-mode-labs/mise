@@ -23,7 +23,11 @@
     {% assign ratio_mode = 'auto' %}
 {% endcase %}
 
-<div class="media-wrapper overflow-hidden relative group" style="--object-fit: {{ fit_mode }}" data-ratio="{{ ratio_mode }}">
+<div
+  class="media-wrapper overflow-hidden relative group"
+  style="--object-fit: {{ fit_mode }}"
+  data-ratio="{{ ratio_mode }}"
+>
   {% if video != blank %}
     <video
       muted
