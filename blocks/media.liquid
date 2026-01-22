@@ -23,7 +23,7 @@
 {% endcapture %}
 
 <div
-  class="media-block {{ block_classes }} is-{{ s.height }}"
+  class="media-block w-full h-full {{ block_classes }} is-{{ s.height }}"
   style="{{ block_styles }}"
   {{ context.attached_attributes }}
 >
@@ -68,6 +68,7 @@
         { "value": "md", "label": "Medium" },
         { "value": "lg", "label": "Large" },
         { "value": "xl", "label": "Fullscreen" },
+        { "value": "thumbnail", "label": "Thumbnail" },
         { "value": "custom", "label": "Custom" }
       ],
       "default": "auto"

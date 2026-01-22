@@ -13,6 +13,7 @@
 
 {% capture utilities %}
   {% if s.italic %}italic{% endif %}
+  {% if s.enable_hyphens %}hyphens-auto{% endif %}
   {% case s.text_transform %}
     {% when 'uppercase' %}uppercase
     {% when 'capitalize' %}capitalize
@@ -29,7 +30,7 @@
 {% endcapture %}
 
 <div
-  class="w-full max-w-prose text-align-{{ s.text_align }} {{ scheme_class }}"
+  class="max-w-prose text-align-{{ s.text_align }} {{ scheme_class }}"
   style="{{ style_override }}"
   {{ context.attached_attributes }}
 >
@@ -87,7 +88,8 @@
         { "value": "h6", "label": "H6" },
         { "value": "display", "label": "Display" },
         { "value": "body", "label": "Body" },
-        { "value": "caption", "label": "Caption" }
+        { "value": "caption", "label": "Caption" },
+        { "value": "small", "label": "Small" }
       ]
     },
     {
@@ -117,6 +119,12 @@
       "type": "checkbox",
       "id": "italic",
       "label": "Italic",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hyphens",
+      "label": "Hyphenate",
       "default": false
     },
     {

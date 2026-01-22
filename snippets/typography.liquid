@@ -21,6 +21,8 @@
     {% assign size_class = 'text-base md:text-lg leading-relaxed font-body' %}
   {% when 'caption' %}
     {% assign size_class = 'text-xs tracking-widest font-body' %}
+  {% when 'small' %}
+    {% assign size_class = 'text-xs leading-relaxed font-body' %}
 {% endcase %}
 
 {% assign weight_class = '' %}

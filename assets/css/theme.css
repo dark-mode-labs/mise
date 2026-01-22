@@ -460,6 +460,10 @@
     height: auto;
   }
 
+  .media-block.is-thumbnail {
+    height: clamp(72px, 20vw, 130px);
+  }
+
   /* MEDIA & CONTENT OVERLAY/SPLIT SYSTEMS */
 
   /* Hero Overlay */
