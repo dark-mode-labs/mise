@@ -22,12 +22,31 @@
   {% assign width_class = 'w-full block' %}
 {% endif %}
 
+{% assign style_class = 'btn-primary' %}
+
+{% case s.style %}
+  {% when 'outline' %}
+    {% assign style_class = 'btn-outline' %}
+  {% when 'link' %}
+    {% assign style_class = 'btn-link' %}
+{% endcase %}
+
 <div
   class="{{ width_class }} whitespace-nowrap {{ scheme_class }}"
   style="{{ style_override }}"
   {{ context.attached_attributes }}
 >
-  {% render 'button', label: s.label, url: s.link, style: s.style, width: s.width, class_props: 'rounded-global' %}
+  <a
+    href="{{ s.link }}"
+    class="
+      rounded-global w-full flex justify-center
+      section-py-{{ s.padding_vertical }}
+      section-px-{{ s.padding_horizontal }}
+      {{ style_class }}
+    "
+  >
+    {{ s.label }}
+  </a>
 </div>
 
 {% schema %}
@@ -56,6 +75,56 @@
         { "value": "auto", "label": "Auto" },
         { "value": "full", "label": "Full Width" }
       ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom",
+      "label": "Custom V-Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom H-Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
       "type": "header",
