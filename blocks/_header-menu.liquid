@@ -2,7 +2,6 @@
 {% capture scheme_class %}
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
-
 <nav
   class="header-nav hidden lg:flex items-center {{ scheme_class }}"
   {{ context.attached_attributes }}

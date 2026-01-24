@@ -30,7 +30,7 @@
 {% endcapture %}
 
 <div
-  class="max-w-prose text-align-{{ s.text_align }} {{ scheme_class }}"
+  class="text-align-{{ s.text_align }} {{ scheme_class }}"
   style="{{ style_override }}"
   {{ context.attached_attributes }}
 >
@@ -89,7 +89,8 @@
         { "value": "display", "label": "Display" },
         { "value": "body", "label": "Body" },
         { "value": "caption", "label": "Caption" },
-        { "value": "small", "label": "Small" }
+        { "value": "small", "label": "Small" },
+        { "value": "jumbo", "label": "Jumbo" }
       ]
     },
     {

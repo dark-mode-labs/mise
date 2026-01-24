@@ -2,7 +2,7 @@
 {% if s.image != blank or s.bg_color != blank %}
   <section
     class="fixed inset-0 -z-50 pointer-events-none is-auto"
-    style="background-color: {{ s.bg_color }};"
+    style="background: {{ s.bg_color }};"
     {{ context.attached_attributes }}
   >
     {% if s.image != blank %}

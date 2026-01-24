@@ -25,12 +25,6 @@ export default {
         accent: 'var(--color-accent)',
         btn: 'var(--color-btn-text)',
       },
-      backgroundColor: {
-        body: 'var(--color-bg)',
-        surface: 'var(--color-surface)',
-        accent: 'var(--color-accent)',
-        btn: 'var(--color-btn-bg)',
-      },
       borderColor: {
         std: 'var(--color-border)',
         body: 'var(--color-text)',

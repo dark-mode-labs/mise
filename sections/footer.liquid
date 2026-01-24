@@ -22,11 +22,11 @@
       {% content_for 'blocks' %}
     </div>
 
-    <div class="pt-8 border-t border-std flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-secondary uppercase tracking-widest">
+    <div class="pt-8 border-t border-std flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-secondary tracking-widest">
       <div class="flex flex-col md:flex-row gap-4 text-center md:text-left items-center">
         <span
           >&copy; {{ 'now' | date: '%Y' }}
-          {{ shop.name }}
+          {{ s.copyright_text }}
         </span>
         {% if s.show_policy %}
           <a href="/policies/privacy-policy" class="hover:underline">Privacy</a>
@@ -111,6 +111,7 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     { "type": "header", "content": "Bottom Bar" },
+    { "type": "textarea", "id": "copyright_text", "label": "Copyright Text", "default": "{{ shop.name }}" },
     { "type": "checkbox", "id": "show_policy", "label": "Show Policy Links", "default": true },
     { "type": "checkbox", "id": "show_payment", "label": "Show Payment Icons", "default": true },
 
