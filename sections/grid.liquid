@@ -20,14 +20,10 @@
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
-{% if s.overlay_color != blank %}
+{% if s.enable_overlay != blank %}
   {% capture overlay_style %}
-    {% if s.enable_gradient %}
-      background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%);
-    {% else %}
-      background-color: {{ s.overlay_color }};
-    {% endif %}
-    opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+      background: {{ s.overlay_color }};
+      opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
   {% endcapture %}
 {% endif %}
 
@@ -42,7 +38,7 @@
           {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
         {% endif %}
 
-        {% if s.overlay_color != blank %}
+        {% if s.enable_overlay != blank %}
           <div
             class="absolute inset-0 pointer-events-none"
             style="{{ overlay_style }}"
@@ -76,18 +72,22 @@
 {
   "name": "Flex Container",
   "settings": [
-    { "type": "header", "content": "Overlay" },
+    {
+      "type": "header",
+      "content": "Overlay Style"
+    },
     {
       "type": "checkbox",
-      "id": "enable_gradient",
-      "label": "Use Gradient Overlay",
+      "id": "enable_overlay",
+      "label": "Use Overlay",
       "default": false
     },
     {
       "type": "color",
       "id": "overlay_color",
       "label": "Tint / Background Color",
-      "default": ""
+      "default": "",
+      "conditional": "setting.enable_overlay == true"
     },
     {
       "type": "range",
@@ -95,7 +95,8 @@
       "label": "Opacity",
       "min": 0,
       "max": 100,
-      "default": 40
+      "default": 40,
+      "conditional": "setting.enable_overlay == true"
     },
     { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
     { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile Background" },

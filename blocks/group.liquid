@@ -2,7 +2,7 @@
 
 {% assign layout_class = 'flex' %}
 {% if s.layout_mode == 'grid' %}
-  {% assign layout_class = 'grid' %}
+  {% assign layout_class = 'grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(var(--width-grid-col),1fr))]' %}
 {% endif %}
 
 {% assign justify_class = 'justify-start' %}
@@ -92,7 +92,7 @@
   {% endif %}
 
   {% if s.layout_mode == 'grid' %}
-    grid-template-columns: repeat(auto-fit, minmax({{ s.min_column_width }}px, 1fr));
+    --width-grid-col: {{ s.min_column_width }}px;
   {% endif %}
 
   {% unless s.inherit_styles %}
@@ -107,7 +107,12 @@
     {% endif %}
   {% endunless %}
 
-  {% if s.opacity < 100 %}opacity: {{ s.opacity | divided_by: 100.0 }};{% endif %}
+  {% if s.enable_overlay %}
+    {% capture overlay_style %}
+        background: {{ s.overlay_color }};
+        opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+    {% endcapture %}
+  {% endif %}
 {% endcapture %}
 
 <div
@@ -115,6 +120,12 @@
   style="{{ block_styles }}"
   {{ context.attached_attributes }}
 >
+  {% if s.enable_overlay %}
+    <div
+      class="rounded-global absolute inset-0 pointer-events-none z-content"
+      style="{{ overlay_style }}"
+    ></div>
+  {% endif %}
   {% content_for 'blocks' %}
 </div>
 
@@ -191,7 +202,6 @@
       "default": false,
       "conditional": "setting.layout_mode == 'flex'"
     },
-
     { "type": "header", "content": "General Styles" },
     {
       "type": "select",
@@ -330,8 +340,33 @@
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
     { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
     { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
-    { "type": "range", "id": "opacity", "min": 0, "max": 100, "label": "Opacity", "default": 100 },
     { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
+    {
+      "type": "header",
+      "content": "Overlay Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Use Overlay",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Tint / Background Color",
+      "default": "",
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "conditional": "setting.enable_overlay == true"
+    },
     {
       "type": "header",
       "content": "Overrides",

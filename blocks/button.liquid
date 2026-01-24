@@ -1,5 +1,11 @@
 {% assign s = block.settings %}
 {% capture style_override %}
+  {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
   {% unless s.inherit_styles %}
     {% if s.border_radius_override %}
       --radius-global: {{ s.border_radius_custom }}px;
@@ -89,6 +95,7 @@
         { "value": "xs", "label": "XS" },
         { "value": "sm", "label": "Small" },
         { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
         { "value": "custom", "label": "Custom" }
       ],
       "default": "xs"
@@ -112,6 +119,7 @@
         { "value": "xs", "label": "XS" },
         { "value": "sm", "label": "Small" },
         { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
         { "value": "custom", "label": "Custom" }
       ],
       "default": "md"

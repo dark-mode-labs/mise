@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
 @tailwind base;
 @tailwind utilities;
 
@@ -154,7 +157,7 @@
   }
 
   .btn-primary {
-    @apply btn-base bg-[var(--color-btn-bg)] text-[var(--color-btn-text)] font-btn border border-transparent hover:opacity-90;
+    @apply btn-base bg-btn text-[var(--color-btn-text)] font-btn border border-transparent hover:opacity-90;
   }
 
   .btn-outline {
@@ -162,11 +165,11 @@
   }
 
   .btn-link {
-    @apply btn-base bg-transparent text-[var(--color-btn-text)] font-btn border-none underline underline-offset-4 p-0 hover:no-underline;
+    @apply btn-base bg-transparent text-[var(--color-btn-text)] font-btn border-none p-0 hover:underline hover:underline-offset-4 ;
   }
 
   .btn-nav {
-    @apply btn-base bg-[var(--color-ui-bg)] text-[var(--color-ui-text)] font-btn shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply btn-base bg-nav text-[var(--color-ui-text)] font-btn shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .slideshow-dot span {
@@ -176,12 +179,12 @@
   .slideshow-dot.is-active span {
     opacity: 1;
     transform: scale(1.2);
-    background-color: var(--color-ui-bg);
+    background: var(--color-ui-bg);
   }
 
   .slideshow-dot.is-active span.text-sm {
     opacity: 1;
-    background-color: transparent;
+    background: transparent;
     color: var(--color-ui-bg);
   }
 
@@ -190,8 +193,8 @@
   }
 
   .header-section {
-    transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s;
-    will-change: transform, background-color;
+    transition: transform 0.3s ease-in-out, background 0.3s ease-in-out, box-shadow 0.3s;
+    will-change: transform, background;
   }
 
   .header-section.-translate-y-full {
@@ -199,7 +202,7 @@
   }
 
   .header-section.is-transparent {
-    background-color: transparent !important;
+    background: transparent !important;
     border-bottom-color: transparent !important;
     box-shadow: none !important;
   }
@@ -813,5 +816,25 @@
 
   .menu-list {
     @apply relative w-full overflow-visible;
+  }
+
+  .bg-body {
+    background: var(--color-bg);
+  }
+
+  .bg-surface {
+    background: var(--color-surface);
+  }
+
+  .bg-accent {
+    background: var(--color-accent);
+  }
+
+  .bg-btn {
+    background: var(--color-btn-bg);
+  }
+
+  .bg-nav {
+    background: var(--color-ui-bg);
   }
 }

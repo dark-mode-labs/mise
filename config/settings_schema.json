@@ -96,21 +96,75 @@
       "id": "typography",
       "settings": [
         {
-          "type": "font_picker",
+          "type": "select",
           "id": "heading_font",
           "label": "Headings",
+          "options": [
+            {
+              "value": "serif",
+              "label": "Serif"
+            },
+            {
+              "value": "sans-serif",
+              "label": "Sans-serif"
+            },
+            {
+              "value": "Inter",
+              "label": "Inter"
+            },
+            {
+              "value": "Roboto",
+              "label": "Roboto"
+            }
+          ],
           "default": "sans-serif"
         },
         {
-          "type": "font_picker",
+          "type": "select",
           "id": "body_font",
           "label": "Body Text",
+          "options": [
+            {
+              "value": "serif",
+              "label": "Serif"
+            },
+            {
+              "value": "sans-serif",
+              "label": "Sans-serif"
+            },
+            {
+              "value": "Inter",
+              "label": "Inter"
+            },
+            {
+              "value": "Roboto",
+              "label": "Roboto"
+            }
+          ],
           "default": "sans-serif"
         },
         {
-          "type": "font_picker",
+          "type": "select",
           "id": "button_font",
           "label": "Buttons & UI",
+          "options": [
+            {
+              "value": "serif",
+              "label": "Serif"
+            },
+            {
+              "value": "sans-serif",
+              "label": "Sans-serif"
+            },
+            {
+              "value": "Inter",
+              "label": "Inter"
+            },
+            {
+              "value": "Roboto",
+              "label": "Roboto"
+            }
+          ],
           "default": "sans-serif"
         },
         {
@@ -277,11 +331,9 @@
     "default": {
       "grid_gap": 40,
       "type_scale": 105,
-      "typography": {
-        "body_font": "sans-serif",
-        "button_font": "sans-serif",
-        "heading_font": "sans-serif"
-      },
+      "body_font": "sans-serif",
+      "button_font": "sans-serif",
+      "heading_font": "sans-serif",
       "color_schemes": {
         "default": {
           "settings": {

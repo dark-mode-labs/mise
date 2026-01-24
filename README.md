@@ -24,95 +24,74 @@ Safety First: A restaurant website cannot break during a lunch rush. Our layouts
 
 Native Performance: We use lightweight, vanilla JavaScript and efficient Liquid rendering. No heavy frameworks, no layout thrashing.
 
-Architecture Overview
+## Architecture Overview
 
 Mise is structured around three pillars: Global Utility, Transactional (Menu), and Narrative (Storytelling).
 
-1. Global Utility (Site-Wide)
+### 1. Global Utility (Site-Wide)
 
 Essential navigation and communication layers.
 
-header (Section): The command center.
+**`header` (Section)**: The command center.
+- **Settings**: Configurable Desktop Layout (Logo Left/Center), Navigation Alignment, and Sticky Behavior (Static, Always, or "Show on Scroll Up").
+- **Features**: Supports Transparent Mode over Hero sections, Mobile Drawer navigation, and integrated Search/Cart actions.
 
-Transparent Mode: Automatically detects Hero sections to overlay cleanly with inverted text colors.
+**`announcement-bar` (Section)**: The daily special.
+- **Purpose**: Urgent notices (Holiday Hours, Sold Out items).
+- **Features**: Supports Marquee mode (scrolling text) or static centered text. Closable state is remembered via local storage.
 
-Sticky Behavior: Configurable "Hide on Scroll / Show on Up" logic to maximize screen real estate while keeping navigation accessible.
+**`footer` (Section)**: The anchor.
+- **Content**: Configurable Brand area, Multi-column navigation, and Newsletter signup form.
 
-Mobile Drawer: A performant, accessible slide-out menu that handles nested navigation without layout shifts.
+**`background` (Section)**: Global atmosphere.
+- **Purpose**: Sets a fixed background image or color that persists across the site (`z-index: -50`) with optional overlay opacity.
 
-announcement-bar (Section): The daily special.
+**`divider` (Section)**: The palate cleanser.
+- **Features**: Configurable height and line style (Solid, Dashed, Icon: Star, Diamond, Utensils) that respects the global color scheme.
 
-Purpose: Urgent notices (Holiday Hours, Sold Out items).
-
-Features: Supports Marquee mode (scrolling text) or static centered text. Closable state is remembered via local storage.
-
-footer (Section): The anchor.
-
-Content: Cleanly organizes Hours, Address (with Map link), and Newsletter signup.
-
-Grid Logic: Uses a responsive grid that stacks gracefully on mobile but utilizes full width on desktop.
-
-2. The Menu System (Transactional Core)
+### 2. The Menu System (Transactional Core)
 
 The engine of the theme. Designed to handle complex data with elegance.
 
-menu-list (Section): The controller.
+**`menu-list` (Section)**: The controller.
+- **Smart Grid Logic**: Safely toggles column counts (1:2:2 vs 1:2:3) to prevent text crushing on tablets.
+- **Navigation**: Supports "Sidebar" (Vertical) or "Topbar" (Horizontal) layouts with sticky "Spy" navigation.
+- **Data**: Populated via `repeater` blocks (inheriting from Collection/JSON) or manual `group` blocks.
 
-Smart Grid Logic: Safely toggles column counts (1:2:2 vs 1:2:3) to prevent text crushing on tablets.
+**`grid` (Section)**: Flexible Layouts (aka Multi-Column).
+- **Purpose**: A generic flex container for grouping content manually (e.g., "Sourcing", "Prep", "Plating").
+- **Settings**: Control alignment (Start, Center, End, Between), Width Schemes, and Card usage.
 
-Sticky Navigation: Features a high-performance "Spy" that tracks scroll position across Vertical (Sidebar) and Horizontal (Top Bar) layouts.
+**`snippets/menu-item-list`**: The high-density view.
+- **Top-Aligned Pricing**: Anchors prices to the first line of text, preventing the "sinking ship" effect.
+- **No Dots**: Replaces noisy leaders with calculated whitespace gutters for a premium aesthetic.
 
-Auto-Scrolling: The nav container automatically scrolls to keep the active category in view.
+**`snippets/menu-item-card`**: The visual view.
+- **Unified Headers**: Complex items display "From $X" in the header instead of hiding pricing in buttons.
+- **Layouts**: Supports Standard (Stack) and Compact (Row) modes.
 
-menu-item-list (Snippet): The high-density view.
-
-Top-Aligned Pricing: Anchors prices to the first line of text (items-start), preventing the "sinking ship" effect.
-
-No Dots: Replaces noisy leaders with calculated whitespace gutters for a premium aesthetic.
-
-Safety: Uses min-w-0 and flex-wrap logic to ensure long item names never overlap prices.
-
-menu-item-card (Snippet): The visual view.
-
-Unified Headers: Complex items display "From $X" in the header instead of hiding pricing in buttons, ensuring visual consistency with Simple items.
-
-Layouts: Supports Standard (Stack) and Compact (Row) modes with configurable image positioning.
-
-3. Narrative Sections (Brand Storytelling)
+### 3. Narrative Sections (Brand Storytelling)
 
 Tools to communicate ethos, sourcing, and atmosphere.
 
-slideshow (Section): The visual carousel.
+**`hero` (Section)**: The first impression.
+- **Technical**: Supports Full Height (`100svh`) to prevent mobile browser bar jumps.
+- **Media**: Handles HTML5 background video with seamless poster fallbacks and automatic dimming layers for text legibility.
 
-Performance: Uses native scroll snapping (CSS Scroll Snap) instead of heavy JS libraries for buttery smooth touch interactions.
+**`media-with-content` (Section)**: The versatile storyteller.
+- **Layout**: Robust 50/50 grid that stacks vertically on mobile.
+- **Rhythm**: Supports alternating alignment (Image Left / Image Right) to create visual flow.
 
-Content: Supports mixed media (Video/Image) slides with independent text overlay positioning.
+**`slideshow` (Section)**: The visual carousel.
+- **Performance**: Uses native scroll snapping (CSS Scroll Snap) instead of heavy JS libraries.
+- **Content**: Supports mixed media (Video/Image) slides with independent text overlay positioning.
 
-hero (Section): The static anchor.
+**`marquee` (Section)**: The vibe setter.
+- **Purpose**: Continuous scrolling text or images for brand values ("Organic • Local • Sustainable").
+- **Tech**: Pure CSS animation for 60fps performance without JS overhead.
 
-Technical: Supports 100svh to prevent mobile browser bar jumps. Handles HTML5 background video with seamless poster fallbacks.
-
-Overlay Safety: Automatic dimming layers ensure text legibility against busy backgrounds.
-
-content-with-media (Section): The versatile storyteller.
-
-Layout: Robust 50/50 grid that stacks vertically on mobile.
-
-Rhythm: Supports alternating alignment (Image Left / Image Right) to create visual flow.
-
-rich-text (Section): The editorial block.
-
-Typography: Optimized line-lengths (max-width ~65ch) for comfortable reading. Supports headers, body text, and call-to-action buttons.
-
-marquee (Section): The vibe setter.
-
-Purpose: Continuous scrolling text for brand values ("Organic • Local • Sustainable") or critical updates.
-
-Tech: Pure CSS animation for 60fps performance without JS overhead.
-
-divider (Section): The palate cleanser.
-
-Features: Configurable height and line style (Solid, Dashed, Icon) that respects the global color scheme.
+**`section` (Section)**: Generic Container.
+- **Purpose**: A blank canvas section that accepts standard blocks (`heading`, `text`, `image`, `video`, `button`) for custom layouts.
 
 ## Developer Guidelines
 

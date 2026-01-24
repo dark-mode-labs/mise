@@ -23,6 +23,8 @@
     {% assign size_class = 'text-xs tracking-widest font-body' %}
   {% when 'small' %}
     {% assign size_class = 'text-xs leading-relaxed font-body' %}
+  {% when 'jumbo' %}
+    {% assign size_class = 'text-5xl md:text-7xl xl:text-8xl tracking-tight leading-none font-heading' %}
 {% endcase %}
 
 {% assign weight_class = '' %}

@@ -1,12 +1,8 @@
 {% assign s = block.settings %}
-{% if s.overlay_color != blank %}
+{% if s.enable_overlay %}
   {% capture overlay_style %}
-    {% if s.enable_gradient %}
-      background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%);
-    {% else %}
-      background-color: {{ s.overlay_color }};
-    {% endif %}
-    opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+      background: {{ s.overlay_color }};
+      opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
   {% endcapture %}
 {% endif %}
 
@@ -61,10 +57,32 @@
     },
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns (Zoom)", "default": false },
 
-    { "type": "header", "content": "Overlay" },
-    { "type": "checkbox", "id": "enable_gradient", "label": "Use Gradient Overlay", "default": true },
-    { "type": "color", "id": "overlay_color", "label": "Tint Color", "default": "#000000" },
-    { "type": "range", "id": "overlay_opacity", "label": "Opacity", "min": 0, "max": 100, "default": 40 },
+    {
+      "type": "header",
+      "content": "Overlay Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Use Overlay",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Tint Color",
+      "default": "#000000",
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "conditional": "setting.enable_overlay == true"
+    },
 
     { "type": "header", "content": "Alignment" },
     {

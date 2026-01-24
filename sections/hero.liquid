@@ -36,14 +36,10 @@
   {% else %}hero-content-overlay{% endif %}
 {% endcapture %}
 
-{% if s.overlay_color != blank %}
+{% if s.layout_mode == 'overlay' and s.enable_overlay %}
   {% capture overlay_style %}
-    {% if s.enable_gradient %}
-      background: linear-gradient(to top, {{ s.overlay_color }} 0%, transparent 100%);
-    {% else %}
-      background-color: {{ s.overlay_color }};
-    {% endif %}
-    opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+      background: {{ s.overlay_color }};
+      opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
   {% endcapture %}
 {% endif %}
 
@@ -77,7 +73,7 @@
           animate: s.enable_zoom
         %}
 
-        {% if s.layout_mode == 'overlay' %}
+        {% if s.layout_mode == 'overlay' and s.enable_overlay %}
           <div
             class="absolute inset-0 pointer-events-none"
             style="{{ overlay_style }}"
@@ -96,7 +92,7 @@
             placeholder: placeholder_name,
             animate: s.enable_zoom
           %}
-          {% if s.layout_mode == 'overlay' %}
+          {% if s.layout_mode == 'overlay' and s.enable_overlay %}
             <div
               class="absolute inset-0 pointer-events-none"
               style="{{ overlay_style }}"
@@ -235,11 +231,11 @@
       "info": "Show a pattern when no image is selected.",
       "conditional": "setting.bg_image == blank and setting.bg_image_2 == blank"
     },
-    { "type": "header", "content": "Overlay", "conditional": "setting.layout_mode == 'overlay'" },
+    { "type": "header", "content": "Overlay Style", "conditional": "setting.layout_mode == 'overlay'" },
     {
       "type": "checkbox",
-      "id": "enable_gradient",
-      "label": "Use Gradient Overlay",
+      "id": "enable_overlay",
+      "label": "Use Overlay",
       "default": false,
       "conditional": "setting.layout_mode == 'overlay'"
     },
@@ -248,7 +244,7 @@
       "id": "overlay_color",
       "label": "Tint Color",
       "default": "",
-      "conditional": "setting.layout_mode == 'overlay'"
+      "conditional": "setting.layout_mode == 'overlay' and setting.enable_overlay == true"
     },
     {
       "type": "range",
@@ -257,7 +253,7 @@
       "min": 0,
       "max": 100,
       "default": 40,
-      "conditional": "setting.layout_mode == 'overlay'"
+      "conditional": "setting.layout_mode == 'overlay' and setting.enable_overlay == true"
     },
     { "type": "header", "content": "Alignment" },
     {
@@ -313,8 +309,7 @@
       "name": "Hero (Fine Dining)",
       "settings": {
         "layout_mode": "overlay",
-        "color_scheme": "default",
-        "enable_gradient": true
+        "color_scheme": "default"
       },
       "blocks": {
         "hero_heading": {
