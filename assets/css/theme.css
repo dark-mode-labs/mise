@@ -5,6 +5,9 @@
 @tailwind utilities;
 
 @layer utilities {
+  .rotate-custom {
+    @apply rotate-[var(--rotation)];
+  }
 
   /* Width & Height */
   .width-full {
@@ -165,7 +168,7 @@
   }
 
   .btn-link {
-    @apply btn-base bg-transparent text-[var(--color-btn-text)] font-btn border-none p-0 hover:underline hover:underline-offset-4 ;
+    @apply btn-base bg-transparent text-[var(--color-btn-text)] font-btn border-none p-0 hover:underline hover:underline-offset-4;
   }
 
   .btn-nav {
@@ -784,6 +787,22 @@
 
   .direction-responsive {
     @apply flex-col md:flex-row;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
   }
 }
 

@@ -55,7 +55,7 @@
 {% endif %}
 
 {% capture block_classes %}
-  group-block {{ layout_class }} transition-all rounded-global bg-surface
+  group-block {{ layout_class }} transition-all rounded-global bg-surface rotate-custom
   
   {% if s.layout_mode != 'grid' %}
     direction-{{ s.direction }}
@@ -63,6 +63,7 @@
     {{ align_class }}
     {% if s.wrap_content %}flex-wrap{% endif %}
   {% endif %}
+  {% if s.animate_float %}float-animation{% endif %}
 
   text-align-{{ s.text_align }}
   width-{{ s.width }}
@@ -90,10 +91,10 @@
   {% if s.gap == 'custom' %}
     --space-gap: {{ s.gap_custom }}px;
   {% endif %}
-
   {% if s.layout_mode == 'grid' %}
     --width-grid-col: {{ s.min_column_width }}px;
   {% endif %}
+  --rotation: {{ s.rotation }}deg;
 
   {% unless s.inherit_styles %}
     {% if s.border_radius_override %}
@@ -116,13 +117,13 @@
 {% endcapture %}
 
 <div
-  class="{{ block_classes }}"
+  class="isolate {{ block_classes }}"
   style="{{ block_styles }}"
   {{ context.attached_attributes }}
 >
   {% if s.enable_overlay %}
     <div
-      class="rounded-global absolute inset-0 pointer-events-none z-content"
+      class="rounded-global absolute inset-0 pointer-events-none z-negative"
       style="{{ overlay_style }}"
     ></div>
   {% endif %}
@@ -335,12 +336,27 @@
     },
     {
       "type": "header",
+      "content": "Animation"
+    },
+    { "type": "checkbox", "id": "animate_float", "label": "Float", "default": false },
+    {
+      "type": "header",
       "content": "Style"
     },
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
     { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
     { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
     { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
+    {
+      "type": "range",
+      "id": "rotation",
+      "label": "Rotation",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "default": 0,
+      "unit": "deg"
+    },
     {
       "type": "header",
       "content": "Overlay Style"
