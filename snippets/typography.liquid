@@ -27,10 +27,20 @@
     {% assign size_class = 'text-5xl md:text-7xl xl:text-8xl tracking-tight leading-none font-heading' %}
 {% endcase %}
 
-{% assign weight_class = '' %}
-{% if weight != blank %}
-  {% assign weight_class = 'font-' | append: weight %}
-{% endif %}
+{% capture weight_class %}
+  {% case weight %}
+    {% when 'normal' %}
+      font-normal
+    {% when 'medium' %}
+      font-medium
+    {% when 'bold' %}
+      font-bold
+    {% when 'extrabold' %}
+      font-extrabold
+    {% when 'black' %}
+      font-black
+  {% endcase %}
+{% endcapture %}
 
 {% assign family_class = '' %}
 {% if family != blank %}
