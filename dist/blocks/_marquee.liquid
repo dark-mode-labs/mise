@@ -1,0 +1,134 @@
+{% assign s = block.settings %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
+
+{% assign size_class = 'text-size-{{ s.text_size }}' %}
+
+{% capture rendered_marquee %}
+  {% render 'marquee', 
+    items: s.text_list, 
+    speed: s.speed, 
+    direction: s.direction, 
+    size_class: size_class,
+    uppercase: s.uppercase %}
+{% endcapture %}
+
+{% if s.pin_bottom %}
+  <div
+    class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-surface text-body no-stagger"
+    style="opacity: {{ s.opacity | divided_by: 100.0 }};"
+    {{ context.attached_attributes }}
+  >
+    {{ rendered_marquee }}
+  </div>
+
+{% else %}
+  <div
+    class="wrapper relative left-[calc(-50vw+50%)] my-4 z-base no-stagger"
+    {{ context.attached_attributes }}
+  >
+    <div
+      class="border-y border-std {{ scheme_class }} bg-body text-body"
+      style="opacity: {{ s.opacity | divided_by: 100.0 }};"
+    >
+      {{ rendered_marquee }}
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Scrolling Marquee",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "pin_bottom",
+      "label": "Pin to Bottom",
+      "default": false,
+      "info": "Fixes the marquee to the bottom of the section."
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 95
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "text_list",
+      "label": "Items",
+      "default": "Fresh Pasta, Live Music"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "Text Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "display", "label": "Display" }
+      ],
+      "default": "small"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "min": 5,
+      "max": 30,
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Color Scheme",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    }
+  ]
+}
+{% endschema %}

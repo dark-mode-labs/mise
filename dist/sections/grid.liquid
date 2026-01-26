@@ -1,0 +1,306 @@
+{% assign s = section.settings %}
+
+{% capture section_spacing_style %}
+  {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+  {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
+{% endcapture %}
+
+{% capture section_spacing_class %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
+{% endcapture %}
+
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+{% if s.enable_overlay != blank %}
+  {% capture overlay_style %}
+      background: {{ s.overlay_color }};
+      opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+  {% endcapture %}
+{% endif %}
+
+<section
+  class="section-flex color-{{ s.color_scheme | default: 'none' }}"
+  {{ context.attached_attributes }}
+>
+  {% unless s.bg_image == blank and s.overlay_color == blank %}
+    <div class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden bg-surface">
+      <div class="grid-media-inner">
+        {% if s.bg_image != blank %}
+          {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
+        {% endif %}
+
+        {% if s.enable_overlay != blank %}
+          <div
+            class="absolute inset-0 pointer-events-none"
+            style="{{ overlay_style }}"
+          ></div>
+        {% endif %}
+      </div>
+    </div>
+  {% endunless %}
+  <div
+    class="grid-layout-overlay width-{{ s.width_scheme }} limit-width {{ section_spacing_class }} is-{{ s.height }}"
+    style="{{ section_spacing_style }}"
+  >
+    <div class="grid-content-overlay">
+      <div
+        class="flex flex-wrap justify-content-{{ s.justify_content }} {{ animation_class }} -mx-4"
+        style="
+          {% if s.card_padding == 'custom' %}
+            row-gap: {{ s.card_padding_custom }}px;
+          {% else %}
+            row-gap: var(--space-{{ s.card_padding }});
+          {% endif %}
+        "
+      >
+        {% content_for 'blocks' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Flex Container",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Overlay Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Use Overlay",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Tint / Background Color",
+      "default": "",
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "conditional": "setting.enable_overlay == true"
+    },
+    { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
+    { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile Background" },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "justify_content",
+      "label": "Alignment",
+      "options": [
+        { "value": "start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Right" },
+        { "value": "between", "label": "Space Between" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "width_scheme",
+      "id": "width_bg",
+      "label": "Background Width",
+      "default": "full"
+    },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Content Width",
+      "default": "standard"
+    },
+
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Section Height",
+      "options": [
+        { "value": "auto", "label": "Auto (Fit Content)" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "height_custom",
+      "label": "Custom Height",
+      "min": 200,
+      "max": 1000,
+      "step": 10,
+      "default": 400,
+      "unit": "px",
+      "conditional": "setting.height == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+
+    { "type": "header", "content": "Theme" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Animation", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" },
+
+    { "type": "header", "content": "Gap & Cards" },
+    { "type": "checkbox", "id": "enable_cards_global", "label": "Enable Cards for All Columns", "default": false },
+    {
+      "type": "select",
+      "id": "card_padding",
+      "label": "Gap / Card Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 100,
+      "default": 24,
+      "conditional": "setting.card_padding == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow_global",
+      "label": "Show Shadow",
+      "default": false,
+      "conditional": "setting.enable_cards_global == true"
+    }
+  ],
+  "blocks": [{ "type": "group" }],
+  "presets": [
+    {
+      "name": "Multi-Column",
+      "settings": {},
+      "blocks": {
+        "group": {
+          "type": "group",
+          "blocks": {
+            "grp_1": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Sourcing"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            },
+            "grp_2": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Prep"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            },
+            "grp_3": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Plating"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            }
+          },
+          "block_order": ["grp_1", "grp_2", "grp_3"],
+          "settings": {
+            "content_align": "center",
+            "direction": "row"
+          }
+        }
+      },
+      "block_order": ["group"]
+    }
+  ]
+}
+{% endschema %}

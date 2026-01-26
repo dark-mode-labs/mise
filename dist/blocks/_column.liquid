@@ -1,0 +1,90 @@
+{% assign s = block.settings %}
+{% assign ss = section.settings %}
+
+{% capture width_class %}
+  {% case s.width %}
+    {% when 'full' %}w-full
+    {% when 'half' %}lg:w-1/2 w-full
+    {% when 'third' %}lg:w-1/3 w-full
+    {% when 'two_thirds' %}lg:w-2/3 w-full
+    {% when 'quarter' %}lg:w-1/4 w-full
+    {% when 'fit' %}lg:w-auto w-full
+    {% else %}
+      {% case ss.columns_desktop %}
+        {% when 2 %}lg:w-1/2
+        {% when 3 %}lg:w-1/3
+        {% when 4 %}lg:w-1/4
+      {% endcase %}
+      w-full
+  {% endcase %}
+{% endcapture %}
+
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
+
+<div
+  class="column-wrapper flex-{{ s.fill }} {{ width_class }} {{ scheme_class }} px-4"
+  {{ context.attached_attributes }}
+>
+  <div class="h-full w-full">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Column / Item",
+  "settings": [
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "auto", "label": "Auto (Grid Default)" },
+        { "value": "full", "label": "Full (100%)" },
+        { "value": "half", "label": "Half (50%)" },
+        { "value": "third", "label": "Third (33%)" },
+        { "value": "two_thirds", "label": "Two Thirds (66%)" },
+        { "value": "quarter", "label": "Quarter (25%)" },
+        { "value": "fit", "label": "Fit to Content (Crisp)" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "fill",
+      "label": "Flex Fill",
+      "options": [
+        { "value": "auto", "label": "Fill" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    }
+  ],
+  "blocks": [{ "type": "@theme" }],
+  "presets": [{ "name": "Column", "settings": {}, "blocks": {}, "block_order": [] }]
+}
+{% endschema %}
