@@ -1,0 +1,17 @@
+<div
+  {{ context.attached_attributes }}
+>
+  <div style="max-width: {{ block.settings.width }}px">
+    {% render 'media', src: block.settings.image, fit: 'contain' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Logo Icon",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "range", "id": "width", "label": "Width", "min": 50, "max": 300, "default": 150 }
+  ]
+}
+{% endschema %}

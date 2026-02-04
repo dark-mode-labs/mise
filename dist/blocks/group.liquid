@@ -1,0 +1,447 @@
+{% assign s = block.settings %}
+
+{% assign layout_class = 'flex flex-wrap' %}
+{% if s.layout_mode == 'grid' %}
+  {% assign layout_class = 'grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(var(--width-grid-col),1fr))]' %}
+{% endif %}
+
+{% assign justify_class = 'justify-start' %}
+{% assign align_class = 'items-start' %}
+
+{% if s.layout_mode != 'grid' %}
+  {% if s.direction == 'row' %}
+    {% case s.content_align %}
+      {% when 'left' %}
+        {% assign justify_class = 'justify-content-start' %}
+      {% when 'center' %}
+        {% assign justify_class = 'justify-content-center' %}
+      {% when 'right' %}
+        {% assign justify_class = 'justify-content-end' %}
+      {% when 'between' %}
+        {% assign justify_class = 'justify-content-between' %}
+    {% endcase %}
+    {% case s.vertical_align %}
+      {% when 'top' %}
+        {% assign align_class = 'align-items-start' %}
+      {% when 'middle' %}
+        {% assign align_class = 'align-items-center' %}
+      {% when 'bottom' %}
+        {% assign align_class = 'align-items-end' %}
+      {% when 'stretch' %}
+        {% assign align_class = 'align-items-stretch' %}
+    {% endcase %}
+  {% else %}
+    {% assign layout_class = layout_class | append: 'flex-col' %}
+    {% case s.vertical_align %}
+      {% when 'top' %}
+        {% assign justify_class = 'justify-content-start' %}
+      {% when 'middle' %}
+        {% assign justify_class = 'justify-content-center' %}
+      {% when 'bottom' %}
+        {% assign justify_class = 'justify-content-end' %}
+      {% when 'between' %}
+        {% assign justify_class = 'justify-content-between' %}
+    {% endcase %}
+    {% case s.content_align %}
+      {% when 'left' %}
+        {% assign align_class = 'align-items-start' %}
+      {% when 'center' %}
+        {% assign align_class = 'align-items-center' %}
+      {% when 'right' %}
+        {% assign align_class = 'align-items-end' %}
+      {% when 'stretch' %}
+        {% assign align_class = 'align-items-stretch' %}
+    {% endcase %}
+  {% endif %}
+{% endif %}
+
+{% capture block_classes %}
+  group-block {{ layout_class }} transition-all rounded-global bg-surface rotate-custom
+  
+  {% if s.layout_mode != 'grid' %}
+    direction-{{ s.direction }}
+    {{ justify_class }}
+    {{ align_class }}
+    {% if s.wrap_content %}flex-wrap{% endif %}
+  {% endif %}
+  {% if s.animate_float %}float-animation{% endif %}
+
+  text-align-{{ s.text_align }}
+  width-{{ s.width }}
+  height-{{ s.height }}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
+  gap-{{ s.gap }}
+
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+
+  {% if s.shadow %}shadow-lg{% endif %}
+  {% if s.overflow_hidden %}overflow-hidden{% endif %}
+  {% if s.enable_glass %}backdrop-blur-md bg-opacity-80 border border-white/10{% endif %}
+  {% if s.position == 'absolute' %}absolute anchor-{{ s.inset }}{% endif %}
+  {% if s.position == 'relative' %}relative{% endif %}
+{% endcapture %}
+
+{% capture block_styles %}
+  {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+  {% if s.gap == 'custom' %}
+    --space-gap: {{ s.gap_custom }}px;
+  {% endif %}
+  {% if s.layout_mode == 'grid' %}
+    --width-grid-col: {{ s.min_column_width }}px;
+  {% endif %}
+  --rotation: {{ s.rotation }}deg;
+
+  {% unless s.inherit_styles %}
+    {% if s.border_radius_override %}
+      --radius-global: {{ s.border_radius }}px;
+    {% endif %}
+    {% if s.bg_color_override %}
+      --color-surface: {{ s.bg_color }};
+    {% endif %}
+    {% if s.shadow_color_override %}
+      --color-shadow: {{ s.shadow_color_custom }}
+    {% endif %}
+  {% endunless %}
+
+  {% if s.enable_overlay %}
+    {% capture overlay_style %}
+        background: {{ s.overlay_color }};
+        opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+    {% endcapture %}
+  {% endif %}
+{% endcapture %}
+
+<div
+  class="isolate {{ block_classes }}"
+  style="{{ block_styles }}"
+  {{ context.attached_attributes }}
+>
+  {% if s.enable_overlay %}
+    <div
+      class="rounded-global absolute inset-0 pointer-events-none z-negative"
+      style="{{ overlay_style }}"
+    ></div>
+  {% endif %}
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Group",
+  "settings": [
+    { "type": "header", "content": "Layout Mode" },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Mode",
+      "options": [
+        { "value": "flex", "label": "Flex (Standard)" },
+        { "value": "grid", "label": "CSS Grid (Auto-Fit)" }
+      ],
+      "default": "flex"
+    },
+    {
+      "type": "range",
+      "id": "min_column_width",
+      "label": "Min Item Width (Grid Only)",
+      "min": 100,
+      "max": 500,
+      "step": 10,
+      "default": 250,
+      "unit": "px",
+      "conditional": "setting.layout_mode == 'grid'"
+    },
+    { "type": "header", "content": "Flex Settings", "conditional": "setting.layout_mode == 'flex'" },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "column", "label": "Vertical (Column)" },
+        { "value": "row", "label": "Horizontal (Row)" }
+      ],
+      "default": "column",
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ],
+      "default": "left",
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top / Start" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ],
+      "default": "top",
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "checkbox",
+      "id": "wrap_content",
+      "label": "Wrap Content",
+      "default": false,
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    { "type": "header", "content": "General Styles" },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "full", "label": "Full Width" },
+        { "value": "fit", "label": "Fit Content" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Height",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "full", "label": "Full Height" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position Type",
+      "options": [
+        { "value": "relative", "label": "Relative" },
+        { "value": "absolute", "label": "Absolute" }
+      ],
+      "default": "relative"
+    },
+    {
+      "type": "select",
+      "id": "inset",
+      "label": "Anchor",
+      "options": [
+        { "value": "top-left", "label": "Top Left" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "bottom-left", "label": "Bottom Left" },
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "cover", "label": "Cover" }
+      ],
+      "default": "top-left",
+      "conditional": "setting.position == 'absolute'"
+    },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "XL" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom",
+      "label": "Custom V-Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "XL" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom H-Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "gap",
+      "label": "Gap",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "XL" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 16,
+      "conditional": "setting.gap == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    { "type": "checkbox", "id": "animate_float", "label": "Float", "default": false },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
+    { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
+    { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
+    { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
+    {
+      "type": "range",
+      "id": "rotation",
+      "label": "Rotation",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "default": 0,
+      "unit": "deg"
+    },
+    {
+      "type": "header",
+      "content": "Overlay Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Use Overlay",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Tint / Background Color",
+      "default": "",
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Override Background",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background",
+      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 60,
+      "label": "Radius",
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow_color_override",
+      "label": "Override Shadow Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color_custom",
+      "label": "Custom Shadow Color",
+      "default": "rgba(0,0,0,1)",
+      "conditional": "setting.inherit_styles != true and setting.shadow_color_override"
+    }
+  ],
+  "blocks": [{ "type": "@theme" }],
+  "presets": [{ "name": "Group", "settings": {}, "blocks": {}, "block_order": [] }]
+}
+{% endschema %}

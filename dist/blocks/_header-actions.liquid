@@ -1,0 +1,63 @@
+{% assign s = block.settings %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
+
+<div
+  class="header-actions flex items-center gap-4 {{ scheme_class }}"
+  {{ context.attached_attributes }}
+>
+  {% if s.show_search %}
+    <a href="/search" class="p-2 hover:opacity-70"
+      ><span class="sr-only">Search</span>{% render 'icon', name: 'search', class: 'w-5 h-5' %}
+    </a>
+  {% endif %}
+
+  {% if s.show_cart %}
+    <a href="/cart" class="p-2 hover:opacity-70 relative group">
+      <span class="sr-only">Cart</span>
+      {% render 'icon', name: 'bag', class: 'w-5 h-5' %}
+      <span
+        class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white group-empty:hidden"
+      ></span>
+    </a>
+  {% endif %}
+
+  <div class="hidden md:block">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Header Actions",
+  "settings": [
+    { "type": "checkbox", "id": "show_search", "label": "Show Search", "default": true },
+    { "type": "checkbox", "id": "show_cart", "label": "Show Cart", "default": true },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    }
+  ],
+  "blocks": [{ "type": "button" }],
+  "presets": [{ "name": "Action Button", "settings": {}, "blocks": {}, "block_order": [] }]
+}
+{% endschema %}
