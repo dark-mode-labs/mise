@@ -51,8 +51,8 @@
     { "type": "image_picker", "id": "image", "label": "Desktop Image" },
     { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
     { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
-    { "type": "checkbox", "id": "show_controls", "label": "Show Video Controls", "default": false },
-    { "type": "checkbox", "id": "autoplay", "label": "Autoplay Video", "default": false },
+    { "type": "checkbox", "id": "show_controls", "label": "Show Video Controls", "default": false, "conditional": "setting.video_url != blank" },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay Video", "default": false, "conditional": "setting.video_url != blank" },
 
     {
       "type": "header",

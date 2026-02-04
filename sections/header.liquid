@@ -15,12 +15,12 @@
 {% assign needs_spacer = false %}
 {% assign position_class = 'relative' %}
 {% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
-  {% assign position_class = 'fixed top-0' %}
+  {% assign position_class = 'fixed top-[var(--top-nav, 0)]' %}
   {% unless s.enable_transparent %}
     {% assign needs_spacer = true %}
   {% endunless %}
 {% elsif s.enable_transparent %}
-  {% assign position_class = 'absolute top-0' %}
+  {% assign position_class = 'absolute top-[var(--top-nav, 0)]' %}
 {% endif %}
 
 {% capture section_spacing_style %}
@@ -121,13 +121,14 @@
     {
       "type": "select",
       "id": "nav_alignment",
-      "label": "Navigation Alignment (Desktop)",
+      "label": "Alignment",
       "options": [
-        { "value": "left", "label": "Left (Next to Logo)" },
+        { "value": "left", "label": "Left" },
         { "value": "center", "label": "Center" },
         { "value": "right", "label": "Right" }
       ],
       "default": "left",
+      "info": "Desktop only.",
       "conditional": "setting.desktop_layout == 'logo_left'"
     },
     { "type": "header", "content": "Section Spacing" },
@@ -190,8 +191,8 @@
       "label": "Sticky Mode",
       "options": [
         { "value": "none", "label": "Static" },
-        { "value": "always", "label": "Always Sticky" },
-        { "value": "on_scroll_up", "label": "Show on Scroll Up" }
+        { "value": "always", "label": "Always" },
+        { "value": "on_scroll_up", "label": "Scroll" }
       ],
       "default": "always"
     },
