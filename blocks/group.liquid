@@ -1,6 +1,6 @@
 {% assign s = block.settings %}
 
-{% assign layout_class = 'flex' %}
+{% assign layout_class = 'flex flex-wrap' %}
 {% if s.layout_mode == 'grid' %}
   {% assign layout_class = 'grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(var(--width-grid-col),1fr))]' %}
 {% endif %}

@@ -236,7 +236,7 @@
               "label": "Custom"
             }
           ],
-          "default": "1240px"
+          "default": "fit"
         },
         {
           "type": "text",
