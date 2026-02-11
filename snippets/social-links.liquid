@@ -2,8 +2,8 @@
 
 <div class="flex gap-4 {{ class }}">
   {% for network in networks %}
-    {% assign setting_key = 'social_' | append: network | append: '_link' %}
-    {% assign link_url = settings[setting_key] %}
+    {% assign setting_key = network | append: '_link' %}
+    {% assign link_url = settings.social_media[setting_key] %}
 
     {% if link_url != blank %}
       {% liquid

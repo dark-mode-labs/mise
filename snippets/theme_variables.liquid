@@ -12,11 +12,11 @@
     --space-2xl: calc(var(--space-base) * 4.236);
     --space-3xl: calc(var(--space-base) * 6.854);
 
-    --font-heading: {{ settings.heading_font }}, sans-serif;
-    --font-body: {{ settings.body_font }}, sans-serif;
-    --font-button: {{ settings.button_font }}, sans-serif;
-    --type-scale: {{ settings.type_scale | divided_by: 100.0 }};
-    --radius-global: {{ settings.corner_radius }}px;
+    --font-heading: {{ settings.typography.heading_font }}, sans-serif;
+    --font-body: {{ settings.typography.body_font }}, sans-serif;
+    --font-button: {{ settings.typography.button_font }}, sans-serif;
+    --type-scale: {{ settings.typography.type_scale | divided_by: 100.0 }};
+    --radius-global: {{ settings.layout.corner_radius }}px;
   }
 
   {% for scheme in settings.color_schemes %}
