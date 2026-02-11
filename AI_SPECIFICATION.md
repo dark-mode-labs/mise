@@ -68,22 +68,21 @@
       "name": "Layout",
       "id": "layout",
       "settings": [
-        { "type": "range", "id": "grid_gap", "label": "Grid Gap", "min": 0, "max": 64, "step": 4, "default": 32, "unit": "px" },
         { "type": "range", "id": "corner_radius", "label": "Global Corner Radius", "min": 0, "max": 40, "step": 4, "default": 0, "unit": "px", "info": "Affects buttons, cards, and media." }
       ]
     },
     {
       "name": "Social Media",
-      "id": "social-media",
+      "id": "social_media",
       "settings": [
         { "type": "header", "content": "Accounts" },
-        { "type": "text", "id": "social_instagram_link", "label": "Instagram" },
-        { "type": "text", "id": "social_facebook_link", "label": "Facebook" },
-        { "type": "text", "id": "social_tiktok_link", "label": "TikTok" },
-        { "type": "text", "id": "social_twitter_link", "label": "X (Twitter)" },
-        { "type": "text", "id": "social_yelp_link", "label": "Yelp" },
-        { "type": "text", "id": "social_linkedin_link", "label": "LinkedIn" },
-        { "type": "text", "id": "social_youtube_link", "label": "YouTube" }
+        { "type": "text", "id": "instagram_link", "label": "Instagram" },
+        { "type": "text", "id": "facebook_link", "label": "Facebook" },
+        { "type": "text", "id": "tiktok_link", "label": "TikTok" },
+        { "type": "text", "id": "twitter_link", "label": "X (Twitter)" },
+        { "type": "text", "id": "yelp_link", "label": "Yelp" },
+        { "type": "text", "id": "linkedin_link", "label": "LinkedIn" },
+        { "type": "text", "id": "youtube_link", "label": "YouTube" }
       ]
     }
   ]

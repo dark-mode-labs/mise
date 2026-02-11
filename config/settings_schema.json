@@ -253,16 +253,6 @@
       "settings": [
         {
           "type": "range",
-          "id": "grid_gap",
-          "label": "Grid Gap",
-          "min": 0,
-          "max": 64,
-          "step": 4,
-          "default": 32,
-          "unit": "px"
-        },
-        {
-          "type": "range",
           "id": "corner_radius",
           "label": "Global Corner Radius",
           "min": 0,
@@ -276,7 +266,7 @@
     },
     {
       "name": "Social Media",
-      "id": "social-media",
+      "id": "social_media",
       "settings": [
         {
           "type": "header",
@@ -284,43 +274,43 @@
         },
         {
           "type": "text",
-          "id": "social_instagram_link",
+          "id": "instagram_link",
           "label": "Instagram",
           "info": "https://instagram.com/@yourhandle"
         },
         {
           "type": "text",
-          "id": "social_facebook_link",
+          "id": "facebook_link",
           "label": "Facebook",
           "info": "https://facebook.com/yourpage"
         },
         {
           "type": "text",
-          "id": "social_tiktok_link",
+          "id": "tiktok_link",
           "label": "TikTok",
           "info": "https://tiktok.com/@yourhandle"
         },
         {
           "type": "text",
-          "id": "social_twitter_link",
+          "id": "twitter_link",
           "label": "X (Twitter)",
           "info": "https://x.com/@yourhandle"
         },
         {
           "type": "text",
-          "id": "social_yelp_link",
+          "id": "yelp_link",
           "label": "Yelp",
           "info": "https://yelp.com/biz/your-biz"
         },
         {
           "type": "text",
-          "id": "social_linkedin_link",
+          "id": "linkedin_link",
           "label": "LinkedIn",
           "info": "https://linkedin.com/company/your-company"
         },
         {
           "type": "text",
-          "id": "social_youtube_link",
+          "id": "youtube_link",
           "label": "YouTube",
           "info": "https://youtube.com/@yourhandle"
         }
@@ -329,14 +319,19 @@
   ],
   "presets": {
     "default": {
-      "grid_gap": 40,
-      "type_scale": 105,
-      "body_font": "sans-serif",
-      "button_font": "sans-serif",
-      "heading_font": "sans-serif",
+      "layout": {
+        "corner_radius": 12
+      },
+      "typography": {
+        "type_scale": 105,
+        "body_font": "sans-serif",
+        "button_font": "sans-serif",
+        "heading_font": "sans-serif"
+      },
       "color_schemes": {
         "default": {
           "settings": {
+            "title": "Default Color Scheme",
             "text": "#1A3A4A",
             "ui_bg": "#FFFFFF",
             "accent": "#0891B2",
@@ -351,7 +346,6 @@
           }
         }
       },
-      "corner_radius": 12,
       "width_schemes": {
         "fit": {
           "settings": {
