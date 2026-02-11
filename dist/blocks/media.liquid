@@ -1,0 +1,178 @@
+{% assign s = block.settings %}
+
+{% capture block_classes %}
+  relative overflow-hidden rounded-global
+  {% unless s.inherit_styles %}
+    color-{{ s.color_scheme | default: 'none' }}
+    {% if s.show_shadow %}shadow-md{% endif %}
+  {% endunless %}
+{% endcapture %}
+
+{% capture block_styles %}
+  {% unless s.inherit_styles %}
+    {% if s.border_radius_override %}
+      --radius-global: {{ s.border_radius }}px;
+    {% endif %}
+    {% if s.shadow_color_override %}
+      --color-shadow: {{ s.shadow_color_custom }}
+    {% endif %}
+  {% endunless %}
+  {% if s.height == 'custom' %}
+    --max-h: {{ s.custom_height }}px;
+  {% endif %}
+{% endcapture %}
+
+<div
+  class="media-block w-full h-full {{ block_classes }} is-{{ s.height }}"
+  style="{{ block_styles }}"
+  {{ context.attached_attributes }}
+>
+  {% render 'media',
+    src: s.image,
+    src_mobile: s.image_mobile,
+    video: s.video_url,
+    ratio: s.aspect_ratio,
+    fit: s.object_fit,
+    animate_hover: s.enable_hover,
+    controls: s.show_controls,
+    autoplay: s.autoplay,
+    placeholder: 'scene-1'
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "Media (Image/Video)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    { "type": "image_picker", "id": "image", "label": "Desktop Image" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
+    { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
+    { "type": "checkbox", "id": "show_controls", "label": "Show Video Controls", "default": false, "conditional": "setting.video_url != blank" },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay Video", "default": false, "conditional": "setting.video_url != blank" },
+
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Image Height",
+      "options": [
+        { "value": "auto", "label": "Auto (Fit Content)" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "thumbnail", "label": "Thumbnail" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "label": "Custom Height (px)",
+      "min": 20,
+      "max": 800,
+      "step": 10,
+      "default": 300,
+      "conditional": "setting.height == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect Ratio",
+      "options": [
+        { "value": "auto", "label": "Natural" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "video", "label": "Video (16:9)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "object_fit",
+      "label": "Object Fit",
+      "options": [
+        { "value": "cover", "label": "Cover (Fill)" },
+        { "value": "contain", "label": "Contain (Fit)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    { "type": "checkbox", "id": "enable_hover", "label": "Enable Hover Zoom", "default": false },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Shadow",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Global Styles",
+      "default": true,
+      "info": "Uncheck to customize Radius and Colors."
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Custom Radius",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow_color_override",
+      "label": "Override Shadow Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color_custom",
+      "label": "Custom Shadow Color",
+      "default": "rgba(0,0,0,1)",
+      "conditional": "setting.inherit_styles != true and setting.shadow_color_override"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Media"
+    }
+  ]
+}
+{% endschema %}

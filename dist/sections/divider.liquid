@@ -1,0 +1,92 @@
+{% assign s = section.settings %}
+
+<section
+  class="section-divider"
+  {{ context.attached_attributes }}
+>
+  <div
+    class="flex flex-auto items-center justify-center color-{{ s.color_scheme | default: 'none' }} width-{{ s.width_scheme }} bg-body text-body limit-width h-[var(--max-h)]"
+    style="--max-h: {{ s.height }}px;"
+  >
+    <div class="relative flex items-center justify-center w-full">
+      {% if s.show_line %}
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+          <div class="w-full border-t border-std opacity-50"></div>
+        </div>
+      {% endif %}
+
+      {% if s.show_icon %}
+        <div class="relative bg-body px-4">
+          {% render 'icon', name: s.icon_select, class: 'w-6 h-6 text-secondary' %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Divider",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "full"
+    },
+    {
+      "type": "header",
+      "content": "Visuals"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_line",
+      "label": "Show Line",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show Icon",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon_select",
+      "label": "Icon",
+      "options": [
+        { "value": "star", "label": "Star" },
+        { "value": "chevron-down", "label": "Diamond/Arrow" },
+        { "value": "menu", "label": "Utensils" }
+      ],
+      "default": "star"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Height",
+      "min": 0,
+      "max": 600,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default"
+    }
+  ],
+  "presets": [{ "name": "Divider" }]
+}
+{% endschema %}

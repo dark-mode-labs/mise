@@ -1,0 +1,84 @@
+<style>
+  :root {
+    --golden-ratio: 1.618;
+    --golden-ratio-inverse: 0.618;
+
+    --space-base: 1rem;
+    --space-xs: calc(var(--space-base) * 0.382);
+    --space-sm: calc(var(--space-base) * 0.618);
+    --space-md: var(--space-base);
+    --space-lg: calc(var(--space-base) * 1.618);
+    --space-xl: calc(var(--space-base) * 2.618);
+    --space-2xl: calc(var(--space-base) * 4.236);
+    --space-3xl: calc(var(--space-base) * 6.854);
+
+    --font-heading: {{ settings.typography.heading_font }}, sans-serif;
+    --font-body: {{ settings.typography.body_font }}, sans-serif;
+    --font-button: {{ settings.typography.button_font }}, sans-serif;
+    --type-scale: {{ settings.typography.type_scale | divided_by: 100.0 }};
+    --radius-global: {{ settings.layout.corner_radius }}px;
+  }
+
+  {% for scheme in settings.color_schemes %}
+    .color-{{ scheme[0] }} {
+      --color-bg: {{ scheme[1].settings.background }};
+      --color-text: {{ scheme[1].settings.text }};
+      --color-text-secondary: {{ scheme[1].settings.text_secondary }};
+      --color-accent: {{ scheme[1].settings.accent }};
+      --color-surface: {{ scheme[1].settings.surface }};
+      --color-btn-bg: {{ scheme[1].settings.button_bg }};
+      --color-btn-text: {{ scheme[1].settings.button_text }};
+      --color-border: {{ scheme[1].settings.border }};
+      --color-shadow: {{ scheme[1].settings.shadow }};
+      --color-ui-bg: {{ scheme[1].settings.ui_bg }};
+      --color-ui-text: {{ scheme[1].settings.ui_text }};
+      --color-text-subtle: {{ scheme[1].settings.text | color_modify: 'alpha', 0.7 }};
+    }
+  {% endfor %}
+
+  .color-none {
+      --color-bg: "";
+      --color-text: "";
+      --color-text-secondary: "";
+      --color-accent: "";
+      --color-surface: "";
+      --color-btn-bg: "";
+      --color-btn-text: "";
+      --color-border: "";
+      --color-shadow: "";
+      --color-ui-bg: "";
+      --color-ui-text: "";
+      --color-text-subtle: "";
+    }
+
+  {% for scheme in settings.width_schemes %}
+    {% assign width = scheme[1].settings.width %}
+    {% capture width_scheme %}
+      {% case width %}
+        {% when 'sm' %}
+          --limit-width: 600px;
+        {% when 'md' %}
+          --limit-width: 720px;
+        {% when 'lg' %}
+          --limit-width: 984px;
+        {% when 'xl' %}
+          --limit-width: 1240px;
+        {% when '2xl' %}
+          --limit-width: 1440px;
+        {% when '3xl' %}
+          --limit-width: 1600px;
+        {% when '4xl' %}
+          --limit-width: 1920px;
+        {% when 'fit' %}
+          --limit-width: fit-content;
+        {% when 'full' %}
+          --limit-width: 100%;
+        {% when 'custom' %}
+          --limit-width: {{ scheme[1].settings.custom_width }}
+        {% else %}
+          --limit-width: {{ width }};
+      {% endcase %}
+    {% endcapture %}
+    .width-{{ scheme[0] }} { {{ width_scheme }} }
+  {% endfor %}
+</style>

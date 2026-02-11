@@ -1,0 +1,16 @@
+<div
+  class="w-full {% if block.settings.hide_mobile %}hidden md:block{% endif %}"
+  {{ context.attached_attributes }}
+>
+  {% render 'spacer', height: block.settings.height %}
+</div>
+
+{% schema %}
+{
+  "name": "Spacer",
+  "settings": [
+    { "type": "range", "id": "height", "label": "Height (px)", "min": 10, "max": 150, "default": 40 },
+    { "type": "checkbox", "id": "hide_mobile", "label": "Hide on Mobile", "default": false }
+  ]
+}
+{% endschema %}

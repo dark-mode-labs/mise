@@ -1,0 +1,97 @@
+{% assign s = block.settings %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
+{% capture style_override %}
+  {% unless s.inherit_styles %}
+    {% if s.text_color_override %}
+      --color-text: {{ s.custom_color }};
+    {% endif %}
+  {% endunless %}
+  bottom: {{ s.bottom_offset }}px;
+{% endcapture %}
+
+<div
+  class="absolute w-full -translate-x-1/2 z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80 {{ scheme_class }}"
+  style="{{ style_override }}"
+  onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });"
+  {{ context.attached_attributes }}
+>
+  {% if s.label != blank %}
+    {% render 'typography', text: s.label, tag: 'span', display_size: 'caption', weight: 'bold', class: 'uppercase' %}
+  {% endif %}
+
+  <div class="animate-bounce">
+    {% render 'icon', name: 'chevron-down', class: 'w-5 h-5 text-body' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Scroll Indicator",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "bottom_offset",
+      "label": "Bottom Offset",
+      "info": "Lift up to clear marquees.",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Scroll"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Global Styles",
+      "default": true,
+      "info": "Uncheck to customize Radius and Colors."
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Text Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "custom_color",
+      "label": "Custom Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+    }
+  ]
+}
+{% endschema %}

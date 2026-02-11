@@ -1,0 +1,227 @@
+{% assign s = section.settings %}
+
+{% capture slot_logo %}
+    {% content_for 'block', type: '_header-logo', id: 'header-logo' %}
+{% endcapture %}
+
+{% capture slot_nav %}
+    {% content_for 'block', type: '_header-menu', id: 'header-menu' %}
+{% endcapture %}
+
+{% capture slot_actions %}
+    {% content_for 'block', type: '_header-actions', id: 'header-actions' %}
+{% endcapture %}
+
+{% assign needs_spacer = false %}
+{% assign position_class = 'relative' %}
+{% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
+  {% assign position_class = 'fixed top-[var(--top-nav, 0)]' %}
+  {% unless s.enable_transparent %}
+    {% assign needs_spacer = true %}
+  {% endunless %}
+{% elsif s.enable_transparent %}
+  {% assign position_class = 'absolute top-[var(--top-nav, 0)]' %}
+{% endif %}
+
+{% capture section_spacing_style %}
+   {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+{% endcapture %}
+
+{% capture section_spacing_class %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
+{% endcapture %}
+
+<header
+  class="header-section {{ position_class }} color-{{ s.color_scheme | default: 'none' }} bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
+  data-behavior="header"
+  data-sticky="{{ s.sticky_behavior }}"
+  data-transparent="{{ s.enable_transparent }}"
+  style="{{ section_spacing_style }}"
+  {{ context.attached_attributes }}
+>
+  <div class="width-{{ s.width_scheme }} h-16 grid grid-cols-3 items-center limit-width">
+    <div class="flex items-center justify-start gap-4">
+      <button
+        type="button"
+        class="lg:hidden p-2 -ml-2 text-current hover:opacity-70"
+        data-action="toggle-drawer"
+        aria-label="Menu"
+      >
+        {% render 'icon', name: 'menu', class: 'w-6 h-6' %}
+      </button>
+
+      {% if s.desktop_layout == 'logo_left' %}
+        <div class="mr-8 flex-shrink-0 hidden lg:block">
+          {{ slot_logo }}
+        </div>
+        <div>
+          {% if s.nav_alignment == 'left' %}
+            {{ slot_nav }}
+          {% endif %}
+        </div>
+      {% else %}
+        <div>
+          {{ slot_nav }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="flex items-center justify-center flex-auto">
+      {% if s.nav_alignment == 'center' %}
+        {{ slot_nav }}
+      {% endif %}
+      {% if s.desktop_layout == 'logo_left' %}
+        {% assign logo_class = 'lg:hidden' %}
+      {% endif %}
+      <div class="{{ logo_class }}">{{ slot_logo }}</div>
+    </div>
+
+    <div class="flex items-center justify-end gap-4">
+      {% if s.nav_alignment == 'right' %}
+        {{ slot_nav }}
+      {% endif %}
+      {{ slot_actions }}
+    </div>
+  </div>
+</header>
+
+{% if needs_spacer %}
+  <div class="w-full h-16"></div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "restriction": { "groups": [] },
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Logo placement",
+      "options": [
+        { "value": "logo_center", "label": "Center" },
+        { "value": "logo_left", "label": "Left" }
+      ],
+      "default": "logo_center"
+    },
+    {
+      "type": "select",
+      "id": "nav_alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left",
+      "info": "Desktop only.",
+      "conditional": "setting.desktop_layout == 'logo_left'"
+    },
+    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    { "type": "header", "content": "Behavior" },
+    {
+      "type": "select",
+      "id": "sticky_behavior",
+      "label": "Sticky Mode",
+      "options": [
+        { "value": "none", "label": "Static" },
+        { "value": "always", "label": "Always" },
+        { "value": "on_scroll_up", "label": "Scroll" }
+      ],
+      "default": "always"
+    },
+    { "type": "checkbox", "id": "enable_transparent", "label": "Transparent on Top", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "blocks": {
+        "header-logo": {
+          "type": "_header-logo",
+          "static": true
+        },
+        "header-menu": {
+          "type": "_header-menu",
+          "static": true,
+          "settings": { "menu": { "links": [{ "url": "/", "title": "Home" }] } }
+        },
+        "header-actions": {
+          "type": "_header-actions",
+          "static": true,
+          "settings": { "show_search": false, "show_cart": false, "btn_label": "" }
+        }
+      },
+      "settings": {
+        "enable_transparent": false
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,30 @@
+{% assign dir = direction | default: 'left' %}
+{% assign anim_class = 'animate-marquee' %}
+{% assign size_class = size_class | default: 'text-sm' %}
+{% assign case_class = 'uppercase tracking-widest' %}
+{% unless uppercase %}
+  {% assign case_class = '' %}
+{% endunless %}
+
+{% if dir == 'right' %}
+  {% assign anim_class = 'animate-marquee-reverse' %}
+{% endif %}
+
+<div class="overflow-hidden py-3">
+  <div
+    class="flex w-max gap-12 {{ anim_class }}"
+    style="animation-duration: {{ speed | default: 15 }}s;"
+  >
+    {% for i in (1..4) %}
+      <div class="flex gap-12 shrink-0">
+        {% assign list = items | split: ',' %}
+        {% for item in list %}
+          <div class="flex items-center gap-4">
+            <span class="{{ size_class }} font-bold {{ case_class }} whitespace-nowrap">{{ item }}</span>
+            <span class="opacity-25">•</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

@@ -1,0 +1,332 @@
+{% assign s = section.settings %}
+
+{% capture section_spacing_style %}
+  {% if s.padding_vertical == 'custom' %}
+    --space-py: {{ s.padding_vertical_custom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-px: {{ s.padding_horizontal_custom }}px;
+  {% endif %}
+  {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
+{% endcapture %}
+
+{% capture section_spacing_class %}
+  section-py-{{ s.padding_vertical }}
+  section-px-{{ s.padding_horizontal }}
+{% endcapture %}
+
+{% assign has_media_2 = false %}
+{% if s.bg_image_2 != blank or s.video_url_2 != blank %}
+  {% assign has_media_2 = true %}
+{% endif %}
+
+{% capture container_layout %}
+  {% if s.layout_mode == 'split_right' %}hero-layout-split-right
+  {% elsif s.layout_mode == 'split_left' %}hero-layout-split-left
+  {% else %}hero-layout-overlay{% endif %} 
+{% endcapture %}
+
+{% capture media_container_class %}
+  {% if s.layout_mode contains 'split' %}hero-media-split
+  {% else %}hero-media-overlay{% endif %}
+{% endcapture %}
+
+{% capture content_container_class %}
+  {% if s.layout_mode contains 'split' %}hero-content-split
+  {% else %}hero-content-overlay{% endif %}
+{% endcapture %}
+
+{% if s.layout_mode == 'overlay' and s.enable_overlay %}
+  {% capture overlay_style %}
+      background: {{ s.overlay_color }};
+      opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+  {% endcapture %}
+{% endif %}
+
+{% assign animation_class = '' %}
+{% if s.enable_animation %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+{% assign placeholder_name = 'scene-3' %}
+{% unless s.show_placeholder %}
+  {% assign placeholder_name = '' %}
+{% endunless %}
+
+<section
+  class="section-hero color-{{ s.color_scheme | default: 'none' }}"
+  {{ context.attached_attributes }}
+>
+  <div
+    class="bg-body {{ container_layout }} {{ section_spacing_class }} overflow-hidden is-{{ s.height }}"
+    style="{{ section_spacing_style }}"
+  >
+    <div class="{{ media_container_class }} width-{{ s.width_bg }} limit-width">
+      <div class="hero-media-inner absolute inset-0 {% if has_media_2 %}w-1/2 border-r border-std{% endif %}">
+        {% render 'media',
+          src: s.bg_image,
+          src_mobile: s.mobile_image,
+          video: s.video_url,
+          fit: 'cover',
+          loading: 'eager',
+          placeholder: placeholder_name,
+          animate: s.enable_zoom
+        %}
+
+        {% if s.layout_mode == 'overlay' and s.enable_overlay %}
+          <div
+            class="absolute inset-0 pointer-events-none"
+            style="{{ overlay_style }}"
+          ></div>
+        {% endif %}
+      </div>
+
+      {% if has_media_2 %}
+        <div class="hero-media-inner w-1/2">
+          {% render 'media',
+            src: s.bg_image_2,
+            src_mobile: s.mobile_image_2,
+            video: s.video_url_2,
+            fit: 'cover',
+            loading: 'eager',
+            placeholder: placeholder_name,
+            animate: s.enable_zoom
+          %}
+          {% if s.layout_mode == 'overlay' and s.enable_overlay %}
+            <div
+              class="absolute inset-0 pointer-events-none"
+              style="{{ overlay_style }}"
+            ></div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="{{ content_container_class }} width-{{ s.width_scheme }} limit-width  section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} gap-6 transition-all {{ animation_class }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_bg",
+      "label": "Background Width",
+      "default": "full"
+    },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Content Width",
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout Style",
+      "options": [
+        { "value": "overlay", "label": "Overlay (Classic)" },
+        { "value": "split_left", "label": "Split (Media Left)" },
+        { "value": "split_right", "label": "Split (Media Right)" }
+      ],
+      "default": "overlay"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Image Height",
+      "options": [
+        { "value": "auto", "label": "Auto (Fit Content)" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "height_custom",
+      "label": "Custom Height",
+      "min": 200,
+      "max": 1000,
+      "step": 10,
+      "default": 600,
+      "unit": "px",
+      "conditional": "setting.height == 'custom'"
+    },
+    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom",
+      "label": "Custom Vertical Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 80,
+      "unit": "px",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom",
+      "label": "Custom Horizontal Padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    { "type": "header", "content": "Primary Media" },
+    { "type": "image_picker", "id": "bg_image", "label": "Image 1 (Desktop)" },
+    { "type": "image_picker", "id": "mobile_image", "label": "Image 1 (Mobile)" },
+    { "type": "text", "id": "video_url", "label": "Video 1 (MP4)" },
+
+    { "type": "header", "content": "Secondary Media" },
+    { "type": "image_picker", "id": "bg_image_2", "label": "Image 2 (Desktop)" },
+    { "type": "image_picker", "id": "mobile_image_2", "label": "Image 2 (Mobile)" },
+    { "type": "text", "id": "video_url_2", "label": "Video 2 (MP4)" },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show Placeholder",
+      "default": true,
+      "info": "Show a pattern when no image is selected.",
+      "conditional": "setting.bg_image == blank and setting.bg_image_2 == blank"
+    },
+    { "type": "header", "content": "Overlay Style", "conditional": "setting.layout_mode == 'overlay'" },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Use Overlay",
+      "default": false,
+      "conditional": "setting.layout_mode == 'overlay'"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Tint Color",
+      "default": "",
+      "conditional": "setting.layout_mode == 'overlay' and setting.enable_overlay == true"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "conditional": "setting.layout_mode == 'overlay' and setting.enable_overlay == true"
+    },
+    { "type": "header", "content": "Alignment" },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Content Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "middle"
+    },
+    { "type": "header", "content": "Theme" },
+    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
+    { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+  ],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "scroll-indicator" },
+    { "type": "text" },
+    { "type": "spacer" },
+    { "type": "_marquee" },
+    { "type": "media" },
+    { "type": "group" },
+    { "type": "button" }
+  ],
+  "presets": [
+    {
+      "name": "Hero (Fine Dining)",
+      "settings": {
+        "layout_mode": "overlay",
+        "color_scheme": "default"
+      },
+      "blocks": {
+        "hero_heading": {
+          "type": "text",
+          "settings": { "content": "Taste the Season", "display_size": "display", "tag": "h1", "font_weight": "bold" }
+        },
+        "hero_subtext": {
+          "type": "text",
+          "settings": { "content": "Locally sourced ingredients.", "display_size": "body" }
+        },
+        "hero_cta": {
+          "type": "button",
+          "settings": { "label": "Reserve Table", "style": "primary" }
+        }
+      },
+      "block_order": ["hero_heading", "hero_subtext", "hero_cta"]
+    }
+  ]
+}
+{% endschema %}

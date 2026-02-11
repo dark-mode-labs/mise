@@ -1,0 +1,93 @@
+<div class="placeholder-svg bg-gray-50 text-gray-400 overflow-hidden relative {{ class }}">
+  <svg
+    class="absolute inset-0"
+    preserveAspectRatio="xMidYMid meet"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1600 900"
+  >
+
+    <defs>
+      <pattern id="p-dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="1" fill="currentColor" fill-opacity="0.3"/>
+      </pattern>
+      <pattern id="p-hatch" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.2"/>
+      </pattern>
+    </defs>
+
+    {% case name %}
+      {% when 'scene-1' %}
+        <circle cx="800" cy="450" r="220" stroke="currentColor" stroke-width="2"/>
+        <circle cx="800" cy="450" r="150" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+
+          <path d="M700 500 Q 800 350 900 500" stroke="currentColor" stroke-width="40" stroke-opacity="0.05" stroke-linecap="round" fill="none"/>
+        <circle cx="800" cy="450" r="60" fill="url(#p-dots)"/>
+
+        <rect x="1100" y="250" width="20" height="400" rx="5" fill="currentColor" fill-opacity="0.05"/> <path d="M1110 250 V 650" stroke="currentColor" stroke-width="2"/>
+
+        <rect x="480" y="250" width="20" height="400" rx="5" fill="currentColor" fill-opacity="0.05"/> <path d="M490 250 V 450" stroke="currentColor" stroke-width="2"/>
+        <path d="M470 250 V 400 M510 250 V 400" stroke="currentColor" stroke-width="2"/>
+
+        <circle cx="1250" cy="350" r="50" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M1250 400 V 550 M1220 550 H 1280" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M1220 350 Q 1250 380 1280 350" fill="currentColor" fill-opacity="0.1"/>
+
+        <circle cx="350" cy="300" r="80" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="360" cy="290" r="40" fill="url(#p-hatch)"/>
+
+
+      {% when 'scene-2' %}
+        <rect x="0" y="600" width="1600" height="300" fill="currentColor" fill-opacity="0.03"/>
+        <line x1="0" y1="600" x2="1600" y2="600" stroke="currentColor" stroke-width="2"/>
+
+        <line x1="0" y1="100" x2="1600" y2="100" stroke="currentColor" stroke-width="4"/>
+        <line x1="400" y1="100" x2="400" y2="200" stroke="currentColor" stroke-width="2"/>
+        <path d="M350 250 Q 400 200 450 250 L 440 260 Q 400 220 360 260 Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="2"/>
+
+        <line x1="1200" y1="100" x2="1200" y2="200" stroke="currentColor" stroke-width="2"/>
+        <path d="M1150 250 Q 1200 200 1250 250 L 1240 260 Q 1200 220 1160 260 Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="2"/>
+
+        <rect x="600" y="80" width="400" height="40" fill="currentColor" fill-opacity="0.1"/>
+        <rect x="650" y="120" width="80" height="120" fill="white" stroke="currentColor" stroke-width="1"/>
+        <line x1="660" y1="140" x2="720" y2="140" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4"/>
+        <rect x="750" y="120" width="80" height="120" fill="white" stroke="currentColor" stroke-width="1"/>
+        <rect x="850" y="120" width="80" height="120" fill="white" stroke="currentColor" stroke-width="1"/>
+
+        <ellipse cx="200" cy="700" rx="100" ry="30" fill="white" stroke="currentColor" stroke-width="1.5"/>
+        <ellipse cx="200" cy="680" rx="100" ry="30" fill="white" stroke="currentColor" stroke-width="1.5"/>
+        <ellipse cx="200" cy="660" rx="100" ry="30" fill="white" stroke="currentColor" stroke-width="1.5"/>
+
+
+      {% when 'scene-3' %}
+        <line x1="100" y1="300" x2="1500" y2="300" stroke="currentColor" stroke-width="2"/>
+        <line x1="100" y1="600" x2="1500" y2="600" stroke="currentColor" stroke-width="2"/>
+
+        <rect x="300" y="350" width="60" height="250" fill="url(#p-dots)" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="310" y="300" width="40" height="50" fill="currentColor" fill-opacity="0.1"/>
+
+        <rect x="400" y="450" width="80" height="150" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="430" y="420" width="20" height="30" fill="currentColor" fill-opacity="0.2"/>
+
+        <rect x="520" y="320" width="50" height="280" fill="url(#p-hatch)" stroke="currentColor" stroke-width="1.5"/>
+
+        <path d="M800 200 V 250 M780 250 Q 800 290 820 250 Z" stroke="currentColor" stroke-width="1.5" transform="translate(0,0)"/>
+        <path d="M850 200 V 250 M830 250 Q 850 290 870 250 Z" stroke="currentColor" stroke-width="1.5" transform="translate(0,0)"/>
+        <path d="M900 200 V 250 M880 250 Q 900 290 920 250 Z" stroke="currentColor" stroke-width="1.5" transform="translate(0,0)"/>
+
+        <rect x="1100" y="200" width="300" height="500" fill="white" stroke="currentColor" stroke-width="1"/>
+        <line x1="1150" y1="250" x2="1350" y2="250" stroke="currentColor" stroke-width="2" stroke-opacity="0.2"/>
+        <line x1="1150" y1="300" x2="1300" y2="300" stroke="currentColor" stroke-width="1" stroke-opacity="0.1"/>
+        <line x1="1150" y1="320" x2="1300" y2="320" stroke="currentColor" stroke-width="1" stroke-opacity="0.1"/>
+
+      {% else %}
+        <rect width="100%" height="100%" fill="url(#p-dots)"/>
+    {% endcase %}
+  </svg>
+
+  <div class="absolute bottom-6 right-6">
+    <span class="px-3 py-1 bg-white/80 backdrop-blur border border-gray-200 text-xs uppercase tracking-[0.2em] font-bold text-gray-400 rounded">
+      {{ name | replace: '-', ' ' | upcase }}
+    </span>
+  </div>
+</div>
