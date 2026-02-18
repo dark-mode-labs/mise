@@ -6,7 +6,7 @@
 >
   <div
     class="flex flex-auto items-center justify-center color-{{ s.color_scheme | default: 'none' }} width-{{ s.width_scheme }} bg-body text-body limit-width h-[var(--max-h)]"
-    style="--max-h: {{ s.height }}px;"
+    style="--max-h: {{ s.divider_height }}px;"
   >
     <div class="relative flex items-center justify-center w-full">
       {% if s.show_line %}
@@ -68,7 +68,7 @@
     },
     {
       "type": "range",
-      "id": "height",
+      "id": "divider_height",
       "label": "Height",
       "min": 0,
       "max": 600,

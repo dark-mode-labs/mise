@@ -7,7 +7,7 @@
   {{ context.attached_attributes }}
 >
   <ul class="flex items-center gap-8">
-    {% for link in s.menu.links %}
+    {% for link in s.nav.links %}
       {% assign has_mega = false %}
       {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
 
@@ -89,7 +89,7 @@
   </ul>
 </nav>
 
-{% render 'header-drawer', menu: s.menu %}
+{% render 'header-drawer', menu: s.nav %}
 
 {% schema %}
 {
@@ -97,7 +97,7 @@
   "settings": [
     {
       "type": "link_list",
-      "id": "menu",
+      "id": "nav",
       "label": "Menu",
       "default": "main-menu"
     },

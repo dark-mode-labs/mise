@@ -20,9 +20,9 @@
     {% endif %}
   </a>
 
-  {% if s.text != blank %}
+  {% if s.content != blank %}
     <div class="opacity-80 max-w-sm">
-      {% render 'typography', text: s.text, tag: 'p', size: 'body' %}
+      {% render 'typography', text: s.content, tag: 'p', size: 'body' %}
     </div>
   {% endif %}
 
@@ -36,7 +36,7 @@
   "name": "Brand & Socials",
   "settings": [
     { "type": "image_picker", "id": "logo", "label": "Footer Logo", "conditional": "shop.logo_src == blank" },
-    { "type": "textarea", "id": "text", "label": "Bio", "default": "Fine dining in the heart of the city." },
+    { "type": "textarea", "id": "content", "label": "Bio", "default": "Fine dining in the heart of the city." },
     { "type": "checkbox", "id": "show_socials", "label": "Show Social Icons", "default": true },
     {
       "type": "header",
