@@ -1,20 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const components = document.querySelectorAll('[data-behavior]');
+  const elements = document.querySelectorAll('[data-behavior], .fade-up, .fade-in, .scale-in, .stagger-load');
+
+   const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px",
+        };
 
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const element = entry.target;
-        const behavior = element.dataset.behavior;
+      if (!entry.isIntersecting) return;
 
-        loadComponent(behavior, element);
+      const element = entry.target;
 
-        observer.unobserve(element);
+      if (element.matches('[class*="fade-"], [class*="scale-"], .float, .stagger-load')) {
+        element.classList.add('animate');
       }
-    });
-  }, { rootMargin: '200px' }); // Pre-load when 200px away from view
 
-  components.forEach(el => observer.observe(el));
+      const behavior = element.dataset.behavior;
+      if (behavior && !element.dataset.loaded) {
+        loadComponent(behavior, element);
+      }
+
+      observer.unobserve(element);
+    });
+  }, observerOptions);
+
+  elements.forEach(el => observer.observe(el));
 });
 
 // Cache loaded modules to prevent double-fetching
