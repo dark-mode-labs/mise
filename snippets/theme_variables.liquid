@@ -1,11 +1,17 @@
 <style>
   :root {
-    --space-base: 1rem;
-    --space-xs: 0.5rem;
-    --space-sm: 1rem;
-    --space-md: 1.5rem;
-    --space-lg: 2rem;
-    --space-xl: 2.5rem;
+    --space-base: 1rem;       /* 16px - Base reference */
+
+    /* Micro UI (Components, Text Gaps) - Rigid */
+    --space-xs: 0.5rem;       /* 8px  */
+    --space-sm: 1rem;         /* 16px */
+    --space-md: 1.5rem;       /* 24px */
+
+    /* Macro Layout (Cards, Grids, Sections) - Fluid via Clamp */
+    --space-lg: clamp(2rem, 4vw, 2.5rem);       /* Scales from 32px to 40px */
+    --space-xl: clamp(2.5rem, 5vw, 4rem);       /* Scales from 40px to 64px */
+    --space-2xl: clamp(3.5rem, 7vw, 6rem);      /* Scales from 56px to 96px */
+    --space-3xl: clamp(4.5rem, 9vw, 8rem);      /* Scales from 72px to 128px */
 
     --font-heading: {{ settings.typography.heading_font }}, sans-serif;
     --font-body: {{ settings.typography.body_font }}, sans-serif;
@@ -62,7 +68,7 @@
         {% when 'half' %}
           --limit-width: 50%;
         {% when 'third' %}
-          --limit-width: 33%;
+          --limit-width: 33.333%;
         {% when 'custom' %}
           --limit-width: {{ scheme[1].settings.custom_width }}px;
         {% when 'auto' %}
@@ -72,5 +78,21 @@
       {% endcase %}
     {% endcapture %}
     .width-{{ scheme[0] }} { {{ width_scheme }} }
+
+    {% if width == 'half' or width == 'third' %}
+      @media (max-width: 767px) {
+        .width-{{ scheme[0] }} {
+          --limit-width: 100%;
+        }
+      }
+    {% endif %}
+
+    {% if width == 'fit' %}
+      @media (max-width: 767px) {
+        .direction-responsive > .width-fit {
+          --limit-width: 100%;
+        }
+      }
+    {% endif %}
   {% endfor %}
 </style>
