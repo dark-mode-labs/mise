@@ -1052,6 +1052,32 @@
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
+  @media (max-width: 767px) {
+    .padding-py-custom {
+      padding-top: max(calc(var(--space-pt) * 0.6), min(var(--space-pt), 24px));
+      padding-bottom: max(calc(var(--space-pb) * 0.6), min(var(--space-pb), 24px));
+    }
+
+    .padding-px-custom {
+      padding-left: max(calc(var(--space-pl) * 0.6), min(var(--space-pl), 24px));
+      padding-right: max(calc(var(--space-pr) * 0.6), min(var(--space-pr), 24px));
+    }
+
+    .margin-my-custom {
+      margin-top: max(calc(var(--space-mt) * 0.6), min(var(--space-mt), 24px));
+      margin-bottom: max(calc(var(--space-mb) * 0.6), min(var(--space-mb), 24px));
+    }
+
+    .margin-mx-custom {
+      margin-left: max(calc(var(--space-ml) * 0.6), min(var(--space-ml), 24px));
+      margin-right: max(calc(var(--space-mr) * 0.6), min(var(--space-mr), 24px));
+    }
+
+    .gap-custom {
+      gap: max(calc(var(--space-gap) * 0.6), min(var(--space-gap), 24px));
+    }
+  }
+
   @keyframes fadeUp {
     from {
       opacity: 0;
