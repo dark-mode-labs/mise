@@ -1,46 +1,29 @@
 {% assign s = section.settings %}
 {% capture section_spacing_style %}
-   {% if s.padding_vertical == 'custom' %}
-    --space-py: {{ s.padding_vertical_custom }}px;
+  {% if s.padding_vertical == 'custom' %}
+    --space-pt: {{ s.padding_vertical_custom_top }}px;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-px: {{ s.padding_horizontal_custom }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}px;
+     --space-pr: {{ s.padding_horizontal_custom_right }}px;
   {% endif %}
 {% endcapture %}
 {% capture section_spacing_class %}
-  section-py-{{ s.padding_vertical }}
-  section-px-{{ s.padding_horizontal }}
+  padding-py-{{ s.padding_vertical }}
+  padding-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
 <footer
-  class="section-footer color-{{ s.color_scheme | default: 'none' }} bg-body text-body border-t border-std {{ section_spacing_class }}"
-  style="{{ section_spacing_style }}"
+  class="section-footer color-{{ s.color_scheme | default: 'none' }} bg-body text-body"
   {{ context.attached_attributes }}
 >
-  <div class="width-{{ s.width_scheme }} limit-width">
-    <div class="flex flex-auto flex-col md:flex-row justify-between mb-16">
+  <div
+    class="width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"
+    style="{{ section_spacing_style }}"
+  >
+    <div class="flex flex-auto flex-col md:flex-row justify-content-{{ s.justify_content }}">
       {% content_for 'blocks' %}
-    </div>
-
-    <div class="pt-8 border-t border-std flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-secondary tracking-widest">
-      <div class="flex flex-col md:flex-row gap-4 text-center md:text-left items-center">
-        <span
-          >&copy; {{ 'now' | date: '%Y' }}
-          {{ s.copyright_text }}
-        </span>
-        {% if s.show_policy %}
-          <a href="/policies/privacy-policy" class="hover:underline">Privacy</a>
-          <a href="/policies/terms-of-service" class="hover:underline">Terms</a>
-        {% endif %}
-      </div>
-
-      <div class="flex flex-col md:flex-row items-center gap-6">
-        {% if s.show_payment %}
-          <div class="flex gap-2 items-center">
-            {% render 'icon', name: 'credit-card', class: 'w-6 h-6 text-secondary' %}
-          </div>
-        {% endif %}
-      </div>
     </div>
   </div>
 </footer>
@@ -52,9 +35,21 @@
   "settings": [
     { "type": "header", "content": "Layout" },
     {
+      "type": "select",
+      "id": "justify_content",
+      "label": "Alignment",
+      "options": [
+        { "value": "start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Right" },
+        { "value": "between", "label": "Space Between" }
+      ],
+      "default": "center"
+    },
+    {
       "type": "width_scheme",
       "id": "width_scheme",
-      "label": "Max Content Width",
+      "label": "Content Width",
       "default": "standard"
     },
     { "type": "header", "content": "Section Spacing" },
@@ -75,13 +70,22 @@
     },
     {
       "type": "range",
-      "id": "padding_vertical_custom",
-      "label": "Custom Vertical Padding",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
       "min": 0,
-      "max": 200,
+      "max": 128,
       "step": 4,
-      "default": 80,
-      "unit": "px",
+      "default": 0,
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -101,13 +105,22 @@
     },
     {
       "type": "range",
-      "id": "padding_horizontal_custom",
-      "label": "Custom Horizontal Padding",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
       "min": 0,
-      "max": 200,
+      "max": 128,
       "step": 4,
       "default": 0,
-      "unit": "px",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     { "type": "header", "content": "Bottom Bar" },
@@ -118,18 +131,10 @@
     { "type": "header", "content": "Theme" },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
   ],
-  "blocks": [{ "type": "_footer-brand" }, { "type": "_footer-nav" }, { "type": "_footer-newsletter" }],
-  "presets": [
-    {
-      "name": "Footer",
-      "blocks": {
-        "brand": { "type": "_footer-brand" },
-        "nav_1": { "type": "_footer-nav", "settings": { "heading": "Discover" } },
-        "nav_2": { "type": "_footer-nav", "settings": { "heading": "Visit" } },
-        "news": { "type": "_footer-newsletter" }
-      },
-      "block_order": ["brand", "nav_1", "nav_2", "news"]
-    }
+  "blocks": [
+    { "type": "group" },
+    { "type": "_footer-nav" },
+    { "type": "_footer-newsletter" }
   ]
 }
 {% endschema %}

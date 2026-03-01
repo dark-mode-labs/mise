@@ -1,7 +1,7 @@
 <div
   {{ context.attached_attributes }}
 >
-  <div style="max-width: {{ block.settings.width }}px">
+  <div style="max-width: {{ block.settings.logo_width }}px">
     {% render 'media', src: block.settings.image, fit: 'contain' %}
   </div>
 </div>
@@ -11,7 +11,7 @@
   "name": "Logo Icon",
   "settings": [
     { "type": "image_picker", "id": "image", "label": "Image" },
-    { "type": "range", "id": "width", "label": "Width", "min": 50, "max": 300, "default": 150 }
+    { "type": "range", "id": "logo_width", "label": "Width", "min": 50, "max": 300, "default": 150 }
   ]
 }
 {% endschema %}

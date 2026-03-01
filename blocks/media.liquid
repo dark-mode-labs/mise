@@ -14,7 +14,7 @@
       --radius-global: {{ s.border_radius }}px;
     {% endif %}
     {% if s.shadow_color_override %}
-      --color-shadow: {{ s.shadow_color_custom }}
+      --color-shadow: {{ s.shadow_color }}
     {% endif %}
   {% endunless %}
   {% if s.height == 'custom' %}
@@ -163,7 +163,7 @@
     },
     {
       "type": "color",
-      "id": "shadow_color_custom",
+      "id": "shadow_color",
       "label": "Custom Shadow Color",
       "default": "rgba(0,0,0,1)",
       "conditional": "setting.inherit_styles != true and setting.shadow_color_override"

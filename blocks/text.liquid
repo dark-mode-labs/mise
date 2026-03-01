@@ -1,12 +1,28 @@
 {% assign s = block.settings %}
 {% capture scheme_class %}
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+  margin-my-{{ s.margin_vertical }}
+  margin-mx-{{ s.margin_horizontal }}
 {% endcapture %}
 
 {% capture style_override %}
+  {% if s.margin_vertical == 'custom' %}
+    --space-mt: {{ s.margin_vertical_custom_top }}px;
+    --space-mb: {{ s.margin_vertical_custom_bottom }}px;
+  {% endif %}
+  {% if s.margin_horizontal == 'custom' %}
+     --space-ml: {{ s.margin_horizontal_custom_left }}px;
+     --space-mr: {{ s.margin_horizontal_custom_right }}px;
+  {% endif %}
+  {% if s.text_tracking == 'custom' %}
+    --text-tracking: {{ s.text_tracking_custom }}px;
+  {% endif %}
+  {% if s.text_leading == 'custom' %}
+    --text-leading: {{ s.text_leading_custom }}px;
+  {% endif %}
   {% unless s.inherit_styles %}
     {% if s.text_color_override %}
-      --color-text: {{ s.custom_color }};
+      --color-text: {{ s.text_color }};
     {% endif %}
   {% endunless %}
 {% endcapture %}
@@ -39,7 +55,9 @@
     tag: s.tag,
     display_size: s.display_size,
     weight: s.font_weight,
-    class: utilities
+    class: utilities,
+    tracking: s.text_tracking,
+    leading: s.text_leading
   %}
 </div>
 
@@ -78,7 +96,7 @@
       "type": "select",
       "id": "display_size",
       "label": "Size",
-      "default": "body",
+      "default": "base",
       "options": [
         { "value": "h1", "label": "H1" },
         { "value": "h2", "label": "H2" },
@@ -90,7 +108,8 @@
         { "value": "body", "label": "Body" },
         { "value": "caption", "label": "Caption" },
         { "value": "small", "label": "Small" },
-        { "value": "jumbo", "label": "Jumbo" }
+        { "value": "jumbo", "label": "Jumbo" },
+        { "value": "base", "label": "Base" }
       ]
     },
     {
@@ -117,6 +136,56 @@
         { "value": "black", "label": "Black" }
       ],
       "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "text_tracking",
+      "label": "Tracking",
+      "options": [
+        { "value": "tighter", "label": "Tighter" },
+        { "value": "tight", "label": "Tight" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "wider", "label": "Wider" },
+        { "value": "widest", "label": "Widest" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "text_tracking_custom",
+      "label": "Custom Tracking",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.text_tracking == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "text_leading",
+      "label": "Leading",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "tight", "label": "Tight" },
+        { "value": "snug", "label": "Snug" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "relaxed", "label": "Relaxed" },
+        { "value": "loose", "label": "Loose" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "text_leading_custom",
+      "label": "Custom Leading",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.text_leading == 'custom'"
     },
     {
       "type": "checkbox",
@@ -170,6 +239,80 @@
     },
     {
       "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "margin_vertical",
+      "label": "Vertical margin",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "auto", "label": "Auto" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top margin",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom margin",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "margin_horizontal",
+      "label": "Horizontal margin",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "auto", "label": "Auto" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left margin",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right margin",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
       "content": "Style"
     },
     {
@@ -199,7 +342,7 @@
     },
     {
       "type": "color",
-      "id": "custom_color",
+      "id": "text_color",
       "label": "Custom Color",
       "default": "#ffffff",
       "conditional": "setting.inherit_styles != true and setting.text_color_override"

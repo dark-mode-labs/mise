@@ -115,6 +115,14 @@
             {
               "value": "Roboto",
               "label": "Roboto"
+            },
+            {
+              "value": "DM+Serif+Display",
+              "label": "DM Serif"
+            },
+            {
+              "value": "Noto+Sans+JP",
+              "label": "Noto Sans JP"
             }
           ],
           "default": "sans-serif"
@@ -232,6 +240,14 @@
               "label": "Full"
             },
             {
+              "value": "half",
+              "label": "Half"
+            },
+            {
+              "value": "third",
+              "label": "Third"
+            },
+            {
               "value": "custom",
               "label": "Custom"
             }
@@ -344,42 +360,100 @@
             "button_text": "#FFFFFF",
             "text_secondary": "#5B7C8D"
           }
+        },
+        "none": {
+          "settings": {
+            "title": "No Color Scheme",
+            "text": "",
+            "ui_bg": "",
+            "accent": "",
+            "border": "",
+            "shadow": "",
+            "surface": "",
+            "ui_text": "",
+            "button_bg": "",
+            "background": "",
+            "button_text": "",
+            "text_secondary": ""
+          }
         }
       },
       "width_schemes": {
         "fit": {
           "settings": {
             "title": "Fit Content",
-            "width": "fit",
-            "custom_width": "1496px"
+            "width": "fit-content",
+            "custom_width": "fit-content"
           }
         },
         "full": {
           "settings": {
             "title": "Full",
             "width": "full",
-            "custom_width": "1496px"
+            "custom_width": "100%"
           }
         },
-        "wide": {
+        "half": {
           "settings": {
-            "title": "Wide",
-            "width": "3xl",
-            "custom_width": "1496px"
+            "title": "half",
+            "width": "half",
+            "custom_width": "50%"
           }
         },
-        "narrow": {
+        "third": {
           "settings": {
-            "title": "Narrow",
-            "width": "md",
-            "custom_width": "1496px"
+            "title": "third",
+            "width": "third",
+            "custom_width": "33%"
           }
         },
-        "standard": {
+        "wide-6xl": {
           "settings": {
-            "title": "Standard",
+            "title": "Wide 6XL",
+            "width": "6xl",
+            "custom_width": "1024"
+          }
+        },
+        "wide-7xl": {
+          "settings": {
+            "title": "Wide 7XL",
+            "width": "7xl",
+            "custom_width": "1280"
+          }
+        },
+        "narrow-xl": {
+          "settings": {
+            "title": "Narrow XL",
+            "width": "xl",
+            "custom_width": "576"
+          }
+        },
+        "narrow-2xl": {
+          "settings": {
+            "title": "Narrow 2XL",
             "width": "2xl",
-            "custom_width": "1496px"
+            "custom_width": "672"
+          }
+        },
+        "narrow-3xl": {
+          "settings": {
+            "title": "Narrow 3XL",
+            "width": "3xl",
+            "custom_width": "768"
+          }
+        },
+        "standard-4xl": {
+          "settings": {
+            "title": "Standard 4XL",
+            "width": "4xl",
+            "custom_width": "896"
+          }
+        },
+        "standard-5xl": {
+          "settings": {
+            "title": "Standard 5XL",
+            "width": "5xl",
+            "custom_width": "1024"
           }
         }
       }

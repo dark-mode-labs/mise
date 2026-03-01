@@ -4,7 +4,7 @@
 
 {% case display_size %}
   {% when 'display' %}
-    {% assign size_class = 'text-5xl md:text-7xl tracking-tight leading-none font-heading' %}
+    {% assign size_class = 'text-5xl md:text-7xl font-heading' %}
   {% when 'h1' %}
     {% assign size_class = 'text-4xl md:text-5xl font-heading' %}
   {% when 'h2' %}
@@ -16,15 +16,15 @@
   {% when 'h5' %}
     {% assign size_class = 'text-lg md:text-xl font-heading' %}
   {% when 'h6' %}
-    {% assign size_class = 'text-base font-heading tracking-wide' %}
+    {% assign size_class = 'text-base md:text-lg font-heading ' %}
   {% when 'body' %}
-    {% assign size_class = 'text-base md:text-lg leading-relaxed font-body' %}
+    {% assign size_class = 'text-base font-body' %}
   {% when 'caption' %}
-    {% assign size_class = 'text-xs tracking-widest font-body' %}
+    {% assign size_class = 'text-xs font-body' %}
   {% when 'small' %}
-    {% assign size_class = 'text-xs leading-relaxed font-body' %}
+    {% assign size_class = 'text-sm font-body' %}
   {% when 'jumbo' %}
-    {% assign size_class = 'text-5xl md:text-7xl xl:text-8xl tracking-tight leading-none font-heading' %}
+    {% assign size_class = 'text-5xl md:text-7xl xl:text-8xl font-heading' %}
 {% endcase %}
 
 {% capture weight_class %}
@@ -42,11 +42,49 @@
   {% endcase %}
 {% endcapture %}
 
+{% capture tracking_class %}
+  {% case tracking %}
+    {% when 'tighter' %}
+      tracking-tighter
+    {% when 'tight' %}
+      tracking-tight
+    {% when 'wide' %}
+      tracking-wide
+    {% when 'wider' %}
+      tracking-wider
+    {% when 'widest' %}
+      tracking-widest
+    {% when 'custom' %}
+      tracking-custom
+    {% else %}
+      tracking-normal
+  {% endcase %}
+{% endcapture %}
+
+{% capture leading_class %}
+  {% case leading %}
+    {% when 'none' %}
+      leading-none
+    {% when 'tight' %}
+      leading-tight
+    {% when 'snug' %}
+      leading-snug
+    {% when 'relaxed' %}
+      leading-relaxed
+    {% when 'loose' %}
+      leading-loose
+    {% when 'custom' %}
+      leading-custom
+    {% else %}
+      leading-normal
+  {% endcase %}
+{% endcapture %}
+
 {% assign family_class = '' %}
 {% if family != blank %}
   {% assign family_class = 'font-' | append: family %}
 {% endif %}
 
-<{{ tag_el }} class="{{ size_class }} {{ family_class }} {{ weight_class }} {{ text_color }} {{ class }}">
+<{{ tag_el }} class="{{ size_class }} {{ family_class }} {{ weight_class }} {{ text_color }} {{ class }} {{ tracking_class }} {{ leading_class }}">
   {{ text }}
 </{{ tag_el }}>

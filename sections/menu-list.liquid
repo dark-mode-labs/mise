@@ -22,21 +22,23 @@
 
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
-    --space-py: {{ s.padding_vertical_custom }}px;
+    --space-pt: {{ s.padding_vertical_custom_top }}px;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-px: {{ s.padding_horizontal_custom }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}px;
+     --space-pr: {{ s.padding_horizontal_custom_right }}px;
   {% endif %}
   {% if s.nav_layout == 'horizontal' %}top: {{ s.nav_sticky_offset }}px;{% endif %}
 {% endcapture %}
 
 {% capture section_spacing_class %}
-  section-py-{{ s.padding_vertical }}
-  section-px-{{ s.padding_horizontal }}
+  padding-py-{{ s.padding_vertical }}
+  padding-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
 {% assign animation_class = '' %}
-{% if s.enable_animation %}
+{% if s.animate_stagger %}
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
@@ -81,7 +83,7 @@
     class="bg-body width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"
     style="{{ section_spacing_style }}"
   >
-    <div class="text-center mx-auto mb-16 animate-fade-up">
+    <div class="text-center mx-auto mb-16 fade-up">
       {% if s.heading != blank %}
         {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
       {% endif %}
@@ -405,13 +407,22 @@
     },
     {
       "type": "range",
-      "id": "padding_vertical_custom",
-      "label": "Custom Vertical Padding",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
       "min": 0,
-      "max": 200,
+      "max": 128,
       "step": 4,
-      "default": 80,
-      "unit": "px",
+      "default": 0,
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -431,18 +442,30 @@
     },
     {
       "type": "range",
-      "id": "padding_horizontal_custom",
-      "label": "Custom Horizontal Padding",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
       "min": 0,
-      "max": 200,
+      "max": 128,
       "step": 4,
       "default": 0,
-      "unit": "px",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
-
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
     { "type": "header", "content": "Theme" },
-    { "type": "checkbox", "id": "enable_animation", "label": "Enable Entry Animation", "default": true },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
   ],
   "presets": [{ "name": "Menu View" }]

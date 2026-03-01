@@ -9,24 +9,15 @@
 {% endif %}
 
 {% if animate_hover %}
-  {% assign anim_class = anim_class | append: ' transition-transform duration-700 ease-out group-hover:scale-110' %}
+  {% assign anim_class = anim_class
+    | append: ' '
+    | append: 'transition-transform duration-700 ease-out group-hover:scale-110'
+  %}
 {% endif %}
 
-{% case ratio %}
-  {% when 'landscape' %}
-    {% assign ratio_mode = 'landscape' %}
-  {% when 'portrait' %}
-    {% assign ratio_mode = 'portrait' %}
-  {% when 'video' %}
-    {% assign ratio_mode = 'landscape' %}
-  {% else %}
-    {% assign ratio_mode = 'auto' %}
-{% endcase %}
-
 <div
-  class="media-wrapper overflow-hidden relative group"
+  class="media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}"
   style="--object-fit: {{ fit_mode }}"
-  data-ratio="{{ ratio_mode }}"
 >
   {% if video != blank %}
     <video

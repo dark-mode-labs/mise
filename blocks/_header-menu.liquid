@@ -2,21 +2,34 @@
 {% capture scheme_class %}
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
+{% capture wrap_style %}
+  {% case s.text_wrap %}
+    {% when 'nowrap' %}whitespace-nowrap
+    {% when 'balance' %}text-balance
+  {% endcase %}
+{% endcapture %}
 <nav
   class="header-nav hidden lg:flex items-center {{ scheme_class }}"
   {{ context.attached_attributes }}
 >
   <ul class="flex items-center gap-8">
-    {% for link in s.menu.links %}
+    {% for link in s.nav.links %}
       {% assign has_mega = false %}
       {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
 
       <li class="group flex items-center relative">
         <a
           href="{{ link.url }}"
-          class="text-sm font-bold uppercase whitespace-nowrap tracking-wide hover:opacity-70 flex items-center gap-1"
+          class="hover:opacity-70 flex items-center gap-1"
         >
-          {{ link.title }}
+          {% render 'typography',
+            text: link.title,
+            display_size: s.display_size,
+            weight: s.font_weight,
+            color: 'text-btn',
+            family: 'btn',
+            class: wrap_style
+          %}
           {% if link.links != blank %}
             {% render 'icon',
               name: 'chevron-down',
@@ -38,37 +51,38 @@
                   <div>
                     <a
                       href="{{ child.url }}"
-                      class="block font-heading font-bold text-lg mb-4 hover:underline underline-offset-4"
+                      class="block mb-4 hover:underline underline-offset-4"
                     >
-                      {{ child.title }}
+                      {% render 'typography',
+                        text: child.title,
+                        display_size: s.display_size,
+                        weight: s.font_weight,
+                        color: 'text-btn',
+                        family: 'btn',
+                        class: wrap_style
+                      %}
                     </a>
                     <ul class="space-y-2">
                       {% for grandchild in child.links %}
                         <li>
-                          <a href="{{ grandchild.url }}" class="text-sm opacity-70 hover:opacity-100 block">
-                            {{ grandchild.title }}
+                          <a
+                            href="{{ grandchild.url }}"
+                            class="opacity-70 hover:opacity-100 block"
+                          >
+                            {% render 'typography',
+                              text: grandchild.title,
+                              display_size: s.display_size,
+                              weight: s.font_weight,
+                              color: 'text-btn',
+                              family: 'btn',
+                              class: wrap_style
+                            %}
                           </a>
                         </li>
                       {% endfor %}
                     </ul>
                   </div>
                 {% endfor %}
-
-                {% if s.show_promo %}
-                  <div class="col-span-1 bg-gray-50/5 p-6 rounded-global border border-std">
-                    {% if s.promo_image %}
-                      <div class="mb-4 rounded-global overflow-hidden">
-                        {% render 'media', src: s.promo_image, ratio: 'landscape', fit: 'cover' %}
-                      </div>
-                    {% endif %}
-                    {% if s.promo_heading != blank %}
-                      <h4 class="font-bold mb-1">{{ s.promo_heading }}</h4>
-                    {% endif %}
-                    {% if s.promo_text != blank %}
-                      <p class="text-sm opacity-70">{{ s.promo_text }}</p>
-                    {% endif %}
-                  </div>
-                {% endif %}
               </div>
 
             {% else %}
@@ -89,7 +103,7 @@
   </ul>
 </nav>
 
-{% render 'header-drawer', menu: s.menu %}
+{% render 'header-drawer', menu: s.nav %}
 
 {% schema %}
 {
@@ -97,44 +111,60 @@
   "settings": [
     {
       "type": "link_list",
-      "id": "menu",
+      "id": "nav",
       "label": "Menu",
       "default": "main-menu"
     },
     {
       "type": "header",
-      "content": "Mega Menu Promo"
+      "content": "Nav Style"
     },
     {
-      "type": "checkbox",
-      "id": "show_promo",
-      "label": "Show Promo Block",
-      "default": false,
-      "info": "Appears on the right side of multi-column menus."
+      "type": "select",
+      "id": "display_size",
+      "label": "Size",
+      "default": "body",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "display", "label": "Display" },
+        { "value": "body", "label": "Body" },
+        { "value": "caption", "label": "Caption" },
+        { "value": "small", "label": "Small" },
+        { "value": "jumbo", "label": "Jumbo" }
+      ]
     },
     {
-      "type": "image_picker",
-      "id": "promo_image",
-      "label": "Promo Image",
-      "conditional": "setting.show_promo"
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "bold", "label": "Bold" },
+        { "value": "extrabold", "label": "Extra Bold" },
+        { "value": "black", "label": "Black" }
+      ],
+      "default": "normal"
     },
     {
-      "type": "text",
-      "id": "promo_heading",
-      "label": "Promo Heading",
-      "default": "Featured",
-      "conditional": "setting.show_promo"
-    },
-    {
-      "type": "text",
-      "id": "promo_text",
-      "label": "Promo Text",
-      "default": "Check out our new seasonal specials.",
-      "conditional": "setting.show_promo"
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "nowrap",
+      "options": [
+        { "value": "wrap", "label": "Wrap" },
+        { "value": "nowrap", "label": "No Wrap" },
+        { "value": "balance", "label": "Balance" }
+      ]
     },
     {
       "type": "header",
-      "content": "Style"
+      "content": "General Style"
     },
     {
       "type": "checkbox",

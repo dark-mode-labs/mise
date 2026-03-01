@@ -1,9 +1,4 @@
 {% assign s = block.settings %}
-{% if shop.logo_src == blank %}
-  {% assign asset_src = shop.logo_transparent %}
-{% else %}
-  {% assign asset_src = shop.logo_src %}
-{% endif %}
 {% capture scheme_class %}
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
@@ -12,32 +7,14 @@
   class="footer-block flex flex-col gap-6 items-start {{ scheme_class }}"
   {{ context.attached_attributes }}
 >
-  <a href="/" class="block w-32">
-    {% if asset_src != blank %}
-      {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent' %}
-    {% else %}
-      <span class="font-heading font-bold text-2xl tracking-wide">{{ shop.name }}</span>
-    {% endif %}
-  </a>
-
-  {% if s.text != blank %}
-    <div class="opacity-80 max-w-sm">
-      {% render 'typography', text: s.text, tag: 'p', size: 'body' %}
-    </div>
-  {% endif %}
-
-  {% if s.show_socials %}
-    {% render 'social-links' %}
-  {% endif %}
+  {% content_for 'blocks' %}
 </div>
 
 {% schema %}
 {
   "name": "Brand & Socials",
+  "blocks": [{ "type": "@theme" }],
   "settings": [
-    { "type": "image_picker", "id": "logo", "label": "Footer Logo", "conditional": "shop.logo_src == blank" },
-    { "type": "textarea", "id": "text", "label": "Bio", "default": "Fine dining in the heart of the city." },
-    { "type": "checkbox", "id": "show_socials", "label": "Show Social Icons", "default": true },
     {
       "type": "header",
       "content": "Style"

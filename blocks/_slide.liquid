@@ -7,7 +7,7 @@
 {% endif %}
 
 {% capture scheme_class %}
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }} bg-surface{% endunless %}
 {% endcapture %}
 
 {% assign placeholder_name = 'scene-1' %}
@@ -16,10 +16,10 @@
 {% endunless %}
 
 <div
-  class="slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden {{ scheme_class }} bg-surface"
+  class="slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden {{ scheme_class }}"
   {{ context.attached_attributes }}
 >
-  <div class="absolute inset-0 z-media bg-surface">
+  <div class="absolute inset-0 z-media">
     {% render 'media',
       src: s.image,
       src_mobile: s.image_mobile,
@@ -35,7 +35,7 @@
     ></div>
   </div>
 
-  <div class="wrapper absolute inset-0 z-content flex flex-col flex-auto gap-4 section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }} stagger-load">
+  <div class="wrapper absolute inset-0 z-content flex flex-col flex-auto gap-4 section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }}">
     {% content_for 'blocks' %}
   </div>
 </div>
@@ -80,7 +80,7 @@
       "label": "Opacity",
       "min": 0,
       "max": 100,
-      "default": 40,
+      "default": 100,
       "conditional": "setting.enable_overlay == true"
     },
 

@@ -2,21 +2,23 @@
 
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
-    --space-py: {{ s.padding_vertical_custom }}px;
+    --space-pt: {{ s.padding_vertical_custom_top }}px;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-px: {{ s.padding_horizontal_custom }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}px;
+     --space-pr: {{ s.padding_horizontal_custom_right }}px;
   {% endif %}
   {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
 {% endcapture %}
 
 {% capture section_spacing_class %}
-  section-py-{{ s.padding_vertical }}
-  section-px-{{ s.padding_horizontal }}
+  padding-py-{{ s.padding_vertical }}
+  padding-px-{{ s.padding_horizontal }}
 {% endcapture %}
 
 {% assign animation_class = '' %}
-{% if s.enable_animation %}
+{% if s.animate_stagger %}
   {% assign animation_class = 'stagger-load' %}
 {% endif %}
 
@@ -28,25 +30,34 @@
 {% endif %}
 
 <section
-  class="section-flex color-{{ s.color_scheme | default: 'none' }}"
+  class="section-flex color-{{ s.color_scheme | default: 'none' }} bg-body"
   {{ context.attached_attributes }}
 >
-  {% unless s.bg_image == blank and s.overlay_color == blank %}
-    <div class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden bg-surface">
+  {% if s.bg_image != blank %}
+    <div class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden">
       <div class="grid-media-inner">
         {% if s.bg_image != blank %}
           {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
-        {% endif %}
 
-        {% if s.enable_overlay != blank %}
-          <div
-            class="absolute inset-0 pointer-events-none"
-            style="{{ overlay_style }}"
-          ></div>
+          {% if s.enable_overlay and s.overlay_color != blank %}
+            <div
+              class="absolute inset-0 pointer-events-none"
+              style="{{ overlay_style }}"
+            ></div>
+          {% endif %}
         {% endif %}
       </div>
     </div>
-  {% endunless %}
+  {% elsif s.enable_overlay and s.overlay_color != blank %}
+    <div class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden">
+      <div class="grid-media-inner">
+        <div
+          class="absolute inset-0 pointer-events-none"
+          style="{{ overlay_style }}"
+        ></div>
+      </div>
+    </div>
+  {% endif %}
   <div
     class="grid-layout-overlay width-{{ s.width_scheme }} limit-width {{ section_spacing_class }} is-{{ s.height }}"
     style="{{ section_spacing_style }}"
@@ -95,7 +106,7 @@
       "label": "Opacity",
       "min": 0,
       "max": 100,
-      "default": 40,
+      "default": 100,
       "conditional": "setting.enable_overlay == true"
     },
     { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
@@ -170,13 +181,22 @@
     },
     {
       "type": "range",
-      "id": "padding_vertical_custom",
-      "label": "Custom Vertical Padding",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
       "min": 0,
-      "max": 200,
+      "max": 128,
       "step": 4,
-      "default": 80,
-      "unit": "px",
+      "default": 0,
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -196,18 +216,30 @@
     },
     {
       "type": "range",
-      "id": "padding_horizontal_custom",
-      "label": "Custom Horizontal Padding",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
       "min": 0,
-      "max": 200,
+      "max": 128,
       "step": 4,
       "default": 0,
-      "unit": "px",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
-
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
     { "type": "header", "content": "Theme" },
-    { "type": "checkbox", "id": "enable_animation", "label": "Enable Animation", "default": true },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" },
 
     { "type": "header", "content": "Gap & Cards" },
@@ -224,7 +256,8 @@
         { "value": "lg", "label": "Large" },
         { "value": "custom", "label": "Custom" }
       ],
-      "default": "none"
+      "default": "none",
+      "conditional": "setting.enable_cards_global == true"
     },
     {
       "type": "range",
@@ -233,14 +266,7 @@
       "min": 0,
       "max": 100,
       "default": 24,
-      "conditional": "setting.card_padding == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "card_shadow_global",
-      "label": "Show Shadow",
-      "default": false,
-      "conditional": "setting.enable_cards_global == true"
+      "conditional": "setting.enable_cards_global == true and setting.card_padding == 'custom'"
     }
   ],
   "blocks": [{ "type": "group" }],
