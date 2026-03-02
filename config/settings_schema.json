@@ -395,14 +395,14 @@
         },
         "half": {
           "settings": {
-            "title": "half",
+            "title": "Half",
             "width": "half",
             "custom_width": "50%"
           }
         },
         "third": {
           "settings": {
-            "title": "third",
+            "title": "Third",
             "width": "third",
             "custom_width": "33%"
           }
