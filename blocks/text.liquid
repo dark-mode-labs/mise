@@ -18,7 +18,7 @@
     --text-tracking: {{ s.text_tracking_custom }}px;
   {% endif %}
   {% if s.text_leading == 'custom' %}
-    --text-leading: {{ s.text_leading_custom }}px;
+    --text-leading: {{ s.text_leading_custom | divided_by: 100.0 }};
   {% endif %}
   {% unless s.inherit_styles %}
     {% if s.text_color_override %}
@@ -181,10 +181,11 @@
       "type": "range",
       "id": "text_leading_custom",
       "label": "Custom Leading",
-      "min": 0,
-      "max": 40,
-      "step": 4,
-      "default": 0,
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
       "conditional": "setting.text_leading == 'custom'"
     },
     {
