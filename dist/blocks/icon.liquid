@@ -1,0 +1,245 @@
+{% assign s = block.settings %}
+
+{% capture style_override %}
+  {% if s.padding_vertical == 'custom' %}
+    --space-pt: {{ s.padding_vertical_custom_top }}px;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-pl: {{ s.padding_horizontal_custom_left }}px;
+     --space-pr: {{ s.padding_horizontal_custom_right }}px;
+  {% endif %}
+  {% if s.margin_vertical == 'custom' %}
+    --space-mt: {{ s.margin_vertical_custom_top }}px;
+    --space-mb: {{ s.margin_vertical_custom_bottom }}px;
+  {% endif %}
+  {% if s.margin_horizontal == 'custom' %}
+     --space-ml: {{ s.margin_horizontal_custom_left }}px;
+     --space-mr: {{ s.margin_horizontal_custom_right }}px;
+  {% endif %}
+  --icon-size: {{ s.icon_size }}px;
+  {% unless s.inherit_styles %}
+    {% if s.text_color_override %}
+      --color-text: {{ s.text_color }};
+    {% endif %}
+  {% endunless %}
+{% endcapture %}
+
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+  text-body
+  margin-my-{{ s.margin_vertical }}
+  margin-mx-{{ s.margin_horizontal }}
+  padding-py-{{ s.padding_vertical }}
+  padding-px-{{ s.padding_horizontal }}
+{% endcapture %}
+
+<div
+  class="icon icon-size inline-flex items-center justify-center flex-shrink-0 {{ scheme_class }}"
+  style="{{ style_override }}"
+  {{ context.attached_attributes }}
+>
+  {{ s.svg }}
+</div>
+
+{% schema %}
+{
+  "name": "Icon",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "svg",
+      "label": "SVG",
+      "default": "<svg fill=\"currentColor\" stroke=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"/></svg>"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon Size",
+      "min": 12,
+      "max": 128,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "margin_vertical",
+      "label": "Vertical Margin",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "auto", "label": "Auto" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top Margin",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom Margin",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "margin_horizontal",
+      "label": "Horizontal Margin",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "auto", "label": "Auto" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left Margin",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right Margin",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "default": 0,
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Theme Colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Icon Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Custom Color",
+      "default": "#000000",
+      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+    }
+  ]
+}
+{% endschema %}
