@@ -94,3 +94,9 @@
 {% if page.keywords %}
   <meta name="keywords" content="{{ page.keywords | escape }}">
 {% endif %}
+
+{% if page.structured_data %}
+  <script type="application/ld+json">
+    {{ page.structured_data | structured_data }}
+  </script>
+{% endif %}
