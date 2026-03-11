@@ -12,29 +12,55 @@
           <li>
             {% if link.links != blank %}
               <details class="group">
-                <summary class="flex items-center justify-between text-xl font-bold py-2 cursor-pointer list-none select-none">
-                  {{ link.title }}
+                <summary class="flex items-center justify-between py-2 cursor-pointer list-none select-none">
+                  {% render 'typography',
+                    text: link.title,
+                    display_size: 'h4',
+                    weight: font_weight,
+                    color: 'text-btn',
+                    family: 'btn',
+                    class: wrap_style
+                  %}
                   {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90' %}
                 </summary>
                 <ul class="pl-4 mt-2 space-y-3 border-l border-current/20">
                   {% for child in link.links %}
                     <li>
                       <a href="{{ child.url }}" class="block text-base opacity-80 hover:opacity-100 py-1">
-                        {{ child.title }}
+                        {% render 'typography',
+                          text: link.title,
+                          display_size: 'h4',
+                          weight: font_weight,
+                          color: 'text-btn',
+                          family: 'btn',
+                          class: wrap_style
+                        %}
                       </a>
                     </li>
                   {% endfor %}
                 </ul>
               </details>
             {% else %}
-              <a href="{{ link.url }}" class="text-xl font-bold block py-2">{{ link.title }}</a>
+              <a
+                href="{{ link.url }}"
+                class="hover:opacity-70 flex items-center gap-1"
+              >
+                {% render 'typography',
+                  text: link.title,
+                  display_size: 'h4',
+                  weight: font_weight,
+                  color: 'text-btn',
+                  family: 'btn',
+                  class: wrap_style
+                %}
+              </a>
             {% endif %}
           </li>
         {% endfor %}
       </ul>
     </nav>
     <div class="p-6 border-t border-current/10 bg-black/5">
-      <p class="text-xs opacity-60 uppercase tracking-widest text-center">
+      <p class="text-xs text-btn opacity-60 uppercase tracking-widest text-center">
         {{ shop.name }} &copy; {{ 'now' | date: '%Y' }}
       </p>
     </div>
