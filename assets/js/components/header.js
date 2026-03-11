@@ -61,10 +61,8 @@ export default class Header {
       const isTop = y < 20;
       if (isTop) {
         this.el.classList.add('is-transparent');
-        this.el.classList.remove('bg-body', 'shadow-sm');
       } else {
         this.el.classList.remove('is-transparent');
-        this.el.classList.add('bg-body', 'shadow-sm');
       }
     }
 
