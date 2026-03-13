@@ -1,0 +1,98 @@
+<style>
+  :root {
+    --space-base: 1rem;       /* 16px - Base reference */
+
+    /* Micro UI (Components, Text Gaps) - Rigid */
+    --space-xs: 0.5rem;       /* 8px  */
+    --space-sm: 1rem;         /* 16px */
+    --space-md: 1.5rem;       /* 24px */
+
+    /* Macro Layout (Cards, Grids, Sections) - Fluid via Clamp */
+    --space-lg: clamp(2rem, 4vw, 2.5rem);       /* Scales from 32px to 40px */
+    --space-xl: clamp(2.5rem, 5vw, 4rem);       /* Scales from 40px to 64px */
+    --space-2xl: clamp(3.5rem, 7vw, 6rem);      /* Scales from 56px to 96px */
+    --space-3xl: clamp(4.5rem, 9vw, 8rem);      /* Scales from 72px to 128px */
+
+    --font-heading: {{ settings.typography.heading_font }}, sans-serif;
+    --font-body: {{ settings.typography.body_font }}, sans-serif;
+    --font-button: {{ settings.typography.button_font }}, sans-serif;
+    --type-scale: {{ settings.typography.type_scale | divided_by: 100.0 }};
+    --radius-global: {{ settings.layout.corner_radius }}px;
+  }
+
+  {% for scheme in settings.color_schemes %}
+    .color-{{ scheme[0] }} {
+      --color-bg: {{ scheme[1].settings.background }};
+      --color-text: {{ scheme[1].settings.text }};
+      --color-text-secondary: {{ scheme[1].settings.text_secondary }};
+      --color-accent: {{ scheme[1].settings.accent }};
+      --color-surface: {{ scheme[1].settings.surface }};
+      --color-btn-bg: {{ scheme[1].settings.button_bg }};
+      --color-btn-text: {{ scheme[1].settings.button_text }};
+      --color-border: {{ scheme[1].settings.border }};
+      --color-shadow: {{ scheme[1].settings.shadow }};
+      --color-ui-bg: {{ scheme[1].settings.ui_bg }};
+      --color-ui-text: {{ scheme[1].settings.ui_text }};
+      --color-text-subtle: {{ scheme[1].settings.text | color_modify: 'alpha', 0.7 }};
+    }
+  {% endfor %}
+
+  {% for scheme in settings.width_schemes %}
+    {% assign width = scheme[1].settings.width %}
+    {% capture width_scheme %}
+      {% case width %}
+        {% when 'sm' %}
+          --limit-width: 384px;
+        {% when 'md' %}
+          --limit-width: 448px;
+        {% when 'lg' %}
+          --limit-width: 512px;
+        {% when 'xl' %}
+          --limit-width: 576px;
+        {% when '2xl' %}
+          --limit-width: 672px;
+        {% when '3xl' %}
+          --limit-width: 768px;
+        {% when '4xl' %}
+          --limit-width: 896px;
+        {% when '5xl' %}
+          --limit-width: 1024px;
+        {% when '6xl' %}
+          --limit-width: 1152px;
+        {% when '7xl' %}
+          --limit-width: 1280px;
+        {% when 'fit' %}
+          --limit-width: fit-content;
+        {% when 'full' %}
+          --limit-width: 100%;
+        {% when 'half' %}
+          --limit-width: 50%;
+        {% when 'third' %}
+          --limit-width: 33.333%;
+        {% when 'custom' %}
+          --limit-width: {{ scheme[1].settings.custom_width }}px;
+        {% when 'auto' %}
+          --limit-width: auto;
+        {% else %}
+          --limit-width: {{ width }};
+      {% endcase %}
+    {% endcapture %}
+    .width-{{ scheme[0] }} { {{ width_scheme }} }
+
+    {% if width == 'half' or width == 'third' %}
+      @media (max-width: 767px) {
+        .width-{{ scheme[0] }} {
+          --limit-width: 100%;
+        }
+      }
+    {% endif %}
+
+    {% if width == 'fit' %}
+      @media (max-width: 767px) {
+        .direction-responsive > .width-fit {
+          --limit-width: 100%;
+        }
+      }
+    {% endif %}
+  {% endfor %}
+</style>
