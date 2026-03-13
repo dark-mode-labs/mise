@@ -421,6 +421,27 @@
             "custom_width": "1280"
           }
         },
+        "narrow-sm": {
+          "settings": {
+            "title": "Narrow SM",
+            "width": "sm",
+            "custom_width": "384"
+          }
+        },
+        "narrow-md": {
+          "settings": {
+            "title": "Narrow MD",
+            "width": "md",
+            "custom_width": "448"
+          }
+        },
+        "narrow-lg": {
+          "settings": {
+            "title": "Narrow LG",
+            "width": "lg",
+            "custom_width": "512"
+          }
+        },
         "narrow-xl": {
           "settings": {
             "title": "Narrow XL",

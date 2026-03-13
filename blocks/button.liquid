@@ -18,7 +18,7 @@
   {% endif %}
   {% unless s.border_mode == 'none' %}
     {% if s.border_color_override %}
-      --border-color: {{  s.border_color }};
+      --color-border: {{  s.border_color }};
     {% endif %}
     --border-style: {{ s.border_style }};
   {% endunless %}
@@ -441,6 +441,20 @@
       "default": 4,
       "unit": "px",
       "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_color_override",
+      "label": "Override Border Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Custom Border Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_styles != true and setting.border_color_override and setting.border_mode != 'none'"
     }
   ]
 }
