@@ -72,6 +72,31 @@
   {% endif %}
 {% endcapture %}
 
+{% case s.content_align %}
+  {% when 'left' -%}
+    {%- assign justify_class = 'justify-content-start' %}
+  {% when 'center' -%}
+    {%- assign justify_class = 'justify-content-center' %}
+  {% when 'right' -%}
+    {%- assign justify_class = 'justify-content-end' %}
+  {% when 'between' -%}
+    {%- assign justify_class = 'justify-content-between' %}
+  {% else -%}
+    {%- assign justify_class = 'justify-content-start' %}
+{% endcase %}
+{% case s.vertical_align %}
+  {% when 'top' -%}
+    {%- assign align_class = 'align-items-start' %}
+  {% when 'middle' -%}
+    {%- assign align_class = 'align-items-center' %}
+  {% when 'bottom' -%}
+    {%- assign align_class = 'align-items-end' %}
+  {% when 'stretch' -%}
+    {%- assign align_class = 'align-items-stretch' %}
+  {% else -%}
+    {%- assign align_class = 'align-items-stretch' %}
+{% endcase %}
+
 <div
   class="rounded-global {{ width_class }} whitespace-nowrap {{ scheme_class }}"
   style="{{ style_override }}"
@@ -81,13 +106,21 @@
     href="{{ s.link }}"
     {{ inert }}
     class="
-      rounded-global w-full flex justify-center
+      rounded-global w-full flex
+      {{ justify_class }}
+      {{ align_class }}
       padding-py-{{ s.padding_vertical }}
       padding-px-{{ s.padding_horizontal }}
       {{ style_class }}
     "
   >
-    {% render 'typography', text: s.label, display_size: s.display_size, weight: s.font_weight, color: 'text-btn', family: 'btn' %}
+    {% render 'typography',
+      text: s.label,
+      display_size: s.display_size,
+      weight: s.font_weight,
+      color: 'text-btn',
+      family: 'btn'
+    %}
   </a>
 </div>
 
@@ -139,15 +172,27 @@
     },
     {
       "type": "select",
-      "id": "text_align",
-      "label": "Alignment",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
       "options": [
-        { "value": "", "label": "Inherit" },
-        { "value": "left", "label": "Left" },
+        { "value": "left", "label": "Left / Start" },
         { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
-      ],
-      "default": ""
+        { "value": "right", "label": "Right / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top / Start" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
     },
     {
       "type": "select",
@@ -436,8 +481,7 @@
       "id": "border_radius",
       "label": "Custom Border Radius",
       "min": 0,
-      "max": 80,
-      "step": 4,
+      "max": 1000,
       "default": 4,
       "unit": "px",
       "conditional": "setting.inherit_styles != true and setting.border_radius_override"
