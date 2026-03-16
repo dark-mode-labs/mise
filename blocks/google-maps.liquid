@@ -1,0 +1,81 @@
+{% assign s = block.settings %}
+
+{% if s.location %}
+  {% assign args = 'location_identifier:' | append: s.location | parse_kv %}
+  {% assign location = 'location' | data_source: 'fetch', args %}
+  {% if location %}
+    {% assign address = location.formatted_address | url_encode %}
+    {% assign api_key = shop.config.maps_api_key %}
+    {% assign map_src = 'https://www.google.com/maps/embed/v1/place?key='
+      | append: api_key
+      | append: '&q='
+      | append: address
+    %}
+  {% endif %}
+{% endif %}
+
+{% capture block_styles %}
+  {% if s.height == 'custom' %}
+    --max-h: {{ s.custom_height }}px;
+  {% endif %}
+{% endcapture %}
+
+<div
+  class="media-block w-full h-full is-{{ s.height }}"
+  style="{{ block_styles }}"
+  {{ context.attached_attributes }}
+>
+  {% if map_src %}
+    <iframe
+      width="100%"
+      height="100%"
+      style="border:0;"
+      loading="lazy"
+      allowfullscreen=""
+      referrerpolicy="no-referrer-when-downgrade"
+      src="{{ map_src }}"
+    >
+    </iframe>
+  {% endif %}
+</div>
+{% schema %}
+{
+  "name": "Google Map Embed",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Location"
+    },
+    { "type": "collection", "id": "location", "label": "Select Location" },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Image Height",
+      "options": [
+        { "value": "auto", "label": "Auto (Fit Content)" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "thumbnail", "label": "Thumbnail" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "label": "Custom Height (px)",
+      "min": 20,
+      "max": 800,
+      "step": 10,
+      "default": 300,
+      "conditional": "setting.height == 'custom'"
+    }
+  ]
+}
+{% endschema %}
