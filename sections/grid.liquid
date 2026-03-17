@@ -34,10 +34,19 @@
   {{ context.attached_attributes }}
 >
   {% if s.bg_image != blank %}
-    <div class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden">
+    <div
+      class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden"
+      style="clip: rect(0, auto, auto, 0);"
+    >
       <div class="grid-media-inner">
         {% if s.bg_image != blank %}
-          {% render 'media', src: s.bg_image, src_mobile: s.bg_image_mobile, fit: 'cover', loading: 'lazy' %}
+          {% render 'media',
+            src: s.bg_image,
+            src_mobile: s.bg_image_mobile,
+            fit: 'cover',
+            loading: 'lazy',
+            curtain_reveal_parallax: s.enable_curtain_parallax
+          %}
 
           {% if s.enable_overlay and s.overlay_color != blank %}
             <div
@@ -111,6 +120,12 @@
     },
     { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
     { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile Background" },
+    {
+      "type": "checkbox",
+      "id": "enable_curtain_parallax",
+      "label": "Curtain Reveal Parallax",
+      "conditional": "setting.bg_image != blank"
+    },
 
     { "type": "header", "content": "Layout" },
     {
