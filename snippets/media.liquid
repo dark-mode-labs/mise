@@ -15,6 +15,10 @@
   %}
 {% endif %}
 
+{% if curtain_reveal_parallax %}
+  {% assign anim_class = anim_class | append: ' ' | append: 'fixed inset-0' %}
+{% endif %}
+
 <div
   class="media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}"
   style="--object-fit: {{ fit_mode }}"

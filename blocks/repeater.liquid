@@ -6,7 +6,7 @@
     {% endif %}
   {% when 'inherit' %}
     {% if s.data_field != blank %}
-      {% assign items = context.item[s.data_field] %}
+      {% assign items = context.item | map: s.data_field %}
     {% endif %}
   {% when 'item_collection' %}
     {% if s.item_collection != blank %}
