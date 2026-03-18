@@ -14,12 +14,16 @@
 
 {% assign needs_spacer = false %}
 {% assign position_class = 'relative' %}
+{% assign is_overlay = false %}
+{% if s.header_overlay_mode == 'overlay' or s.header_overlay_mode == 'transparent' %}
+  {% assign is_overlay = true %}
+{% endif %}
 {% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
   {% assign position_class = 'fixed top-[var(--top-nav, 0)]' %}
-  {% unless s.enable_transparent %}
+  {% unless is_overlay %}
     {% assign needs_spacer = true %}
   {% endunless %}
-{% elsif s.enable_transparent %}
+{% elsif is_overlay %}
   {% assign position_class = 'absolute top-[var(--top-nav, 0)]' %}
 {% endif %}
 
@@ -43,7 +47,7 @@
   class="header-section {{ position_class }} color-{{ s.color_scheme | default: 'none' }} bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
-  data-transparent="{{ s.enable_transparent }}"
+  data-transparent="{% if s.header_overlay_mode == 'transparent' %}true{% else %}false{% endif %}"
   style="{{ section_spacing_style }}"
   {{ context.attached_attributes }}
 >
@@ -215,7 +219,18 @@
       ],
       "default": "always"
     },
-    { "type": "checkbox", "id": "enable_transparent", "label": "Transparent on Top", "default": true },
+    {
+      "type": "select",
+      "id": "header_overlay_mode",
+      "label": "Header Overlay",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "overlay", "label": "Top of Content" },
+        { "value": "transparent", "label": "Transparent on Top" }
+      ],
+      "default": "none"
+    },
+    { "type": "header", "content": "Style" },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
   ],
   "presets": [
@@ -238,7 +253,7 @@
         }
       },
       "settings": {
-        "enable_transparent": false
+        "overlay_mode": "none"
       }
     }
   ]

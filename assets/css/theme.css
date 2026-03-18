@@ -217,8 +217,14 @@
   }
 
   .header-section {
-    transition: transform 0.3s ease-in-out, background 0.3s ease-in-out, box-shadow 0.3s;
+    transition: transform 0.3s ease-in-out, background 0.3s ease-in-out, box-shadow 0.3s, border-color 0.3s;
     will-change: transform, background;
+  }
+
+  .header-section.is-transparent {
+    background: transparent;
+    box-shadow: none;
+    border-color: transparent;
   }
 
   .header-section.-translate-y-full {
