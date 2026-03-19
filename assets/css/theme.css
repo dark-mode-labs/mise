@@ -30,6 +30,8 @@
 
   .height-full {
     height: 100%;
+    flex: 1 1 0%;
+    min-height: 0;
   }
 
   .height-auto {
@@ -408,7 +410,6 @@
     width: var(--icon-size);
   }
 
-  /* Semantic Alignment */
   .section-align-v-top {
     @apply justify-start;
   }
@@ -480,40 +481,16 @@
     flex: 1 1 auto;
   }
 
-  /* FLEXIBLE CONTAINERS (Min-Height) - Grids grow with content */
-  .grid-layout-overlay.is-sm {
-    min-height: 38.2vh;
-  }
 
-  .grid-layout-overlay.is-md {
-    min-height: 61.8vh;
-  }
-
-  .grid-layout-overlay.is-lg {
-    min-height: 78.6vh;
-  }
-
-  .grid-layout-overlay.is-xl {
-    min-height: 100vh;
-  }
-
-  .grid-layout-overlay.is-custom {
-    min-height: var(--max-h, 61.8vh);
-  }
-
-  .grid-layout-overlay.is-auto {
-    min-height: auto;
-  }
-
-  /* FIXED FRAMES (Height) - Strict sizing (cropping) */
   .hero-layout-overlay.is-sm,
   .hero-layout-split-left.is-sm,
   .hero-layout-split-right.is-sm,
   .media-layout-left.is-sm,
   .media-layout-right.is-sm,
-  .section-slideshow.is-sm,
-  .media-block.is-sm {
-    height: 38.2vh;
+  .grid-layout-overlay.is-sm,
+  .section-layout.is-sm {
+    min-height: 38.2vh;
+    min-height: 38.2svh;
   }
 
   .hero-layout-overlay.is-md,
@@ -521,9 +498,10 @@
   .hero-layout-split-right.is-md,
   .media-layout-left.is-md,
   .media-layout-right.is-md,
-  .section-slideshow.is-md,
-  .media-block.is-md {
-    height: 61.8vh;
+  .grid-layout-overlay.is-md,
+  .section-layout.is-md {
+    min-height: 61.8vh;
+    min-height: 61.8svh;
   }
 
   .hero-layout-overlay.is-lg,
@@ -531,9 +509,10 @@
   .hero-layout-split-right.is-lg,
   .media-layout-left.is-lg,
   .media-layout-right.is-lg,
-  .section-slideshow.is-lg,
-  .media-block.is-lg {
-    height: 78.6vh;
+  .grid-layout-overlay.is-lg,
+  .section-layout.is-lg {
+    min-height: 78.6vh;
+    min-height: 78.6svh;
   }
 
   .hero-layout-overlay.is-xl,
@@ -541,9 +520,10 @@
   .hero-layout-split-right.is-xl,
   .media-layout-left.is-xl,
   .media-layout-right.is-xl,
-  .section-slideshow.is-xl,
-  .media-block.is-xl {
-    height: 100vh;
+  .grid-layout-overlay.is-xl,
+  .section-layout.is-xl {
+    min-height: 100vh;
+    min-height: 100svh;
   }
 
   .hero-layout-overlay.is-custom,
@@ -551,9 +531,40 @@
   .hero-layout-split-right.is-custom,
   .media-layout-left.is-custom,
   .media-layout-right.is-custom,
+  .grid-layout-overlay.is-custom,
+  .section-layout.is-custom {
+    min-height: var(--max-h, 61.8vh);
+    min-height: var(--max-h, 61.8svh);
+  }
+
+  .section-slideshow.is-sm,
+  .media-block.is-sm {
+    height: 38.2vh;
+    height: 38.2svh;
+  }
+
+  .section-slideshow.is-md,
+  .media-block.is-md {
+    height: 61.8vh;
+    height: 61.8svh;
+  }
+
+  .section-slideshow.is-lg,
+  .media-block.is-lg {
+    height: 78.6vh;
+    height: 78.6svh;
+  }
+
+  .section-slideshow.is-xl,
+  .media-block.is-xl {
+    height: 100vh;
+    height: 100svh;
+  }
+
   .section-slideshow.is-custom,
   .media-block.is-custom {
     height: var(--max-h, 61.8vh);
+    height: var(--max-h, 61.8svh);
   }
 
   .hero-layout-overlay.is-auto,
@@ -756,7 +767,6 @@
   .hero-media-split {
     @apply w-full lg:w-1/2 flex;
     position: relative;
-    height: 100%;
     flex-basis: 50%;
   }
 
@@ -765,7 +775,7 @@
   }
 
   .hero-content-overlay {
-    @apply relative z-content w-full h-full flex flex-col;
+    @apply relative z-content w-full flex-1 flex flex-col;
   }
 
   .media-layout-left {
@@ -788,8 +798,12 @@
     @apply relative flex flex-col;
   }
 
+  .section-layout {
+    @apply relative flex flex-col;
+  }
+
   .grid-content-overlay {
-    @apply relative z-content w-full flex flex-col;
+    @apply relative z-content w-full flex-1 flex flex-col;
   }
 
   .rounded-global {
@@ -1052,6 +1066,43 @@
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
+  /* ── Fluid Typography Scale ─────────────────────────────────────────────
+     Semantic size classes used by typography.liquid. Each level interpolates
+     continuously from its mobile floor to its desktop ceiling via clamp().
+     All rem values scale with the fluid root font-size defined in :root.
+     ─────────────────────────────────────────────────────────────────────── */
+  .fs-jumbo {
+    font-size: clamp(2.5rem, -1rem + 10vw, 6rem);
+  }
+
+  .fs-display {
+    font-size: clamp(2.5rem, -0.25rem + 7.5vw, 4.5rem);
+  }
+
+  .fs-h1 {
+    font-size: clamp(2.25rem, 0.3rem + 5vw, 3rem);
+  }
+
+  .fs-h2 {
+    font-size: clamp(1.875rem, 0.5rem + 3.5vw, 2.25rem);
+  }
+
+  .fs-h3 {
+    font-size: clamp(1.5rem, 0.5rem + 2.5vw, 1.875rem);
+  }
+
+  .fs-h4 {
+    font-size: clamp(1.25rem, 0.55rem + 1.8vw, 1.5rem);
+  }
+
+  .fs-h5 {
+    font-size: clamp(1.125rem, 0.75rem + 0.95vw, 1.25rem);
+  }
+
+  .fs-h6 {
+    font-size: clamp(1rem, 0.7rem + 0.8vw, 1.125rem);
+  }
+
   @keyframes fadeUp {
     from {
       opacity: 0;
@@ -1117,6 +1168,10 @@
   }
 
   header {
+    @apply relative w-full;
+  }
+
+  section {
     @apply relative w-full;
   }
 
