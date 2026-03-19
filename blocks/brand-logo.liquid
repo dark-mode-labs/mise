@@ -20,7 +20,7 @@
   {% if asset_src != blank %}
     <div
       class="transition-opacity duration-300 block"
-      style="width: {{ s.logo_width }}px;"
+      style="width: {{ s.logo_width }}rem;"
     >
       {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}
     </div>
@@ -39,7 +39,7 @@
   "name": "Brand Logo",
   "settings": [
     { "type": "image_picker", "id": "logo", "label": "Logo", "conditional": "shop.logo_src == blank" },
-    { "type": "range", "id": "logo_width", "label": "Width", "min": 50, "max": 400, "default": 120, "unit": "px" },
+    { "type": "range", "id": "logo_width", "label": "Width", "min": 3, "max": 25, "step": 0.5, "default": 8, "unit": "rem" },
     {
       "type": "header",
       "content": "Style",

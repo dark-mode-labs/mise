@@ -2,12 +2,12 @@
 
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
-    --space-pt: {{ s.padding_vertical_custom_top }}px;
-    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
+    --space-pt: {{ s.padding_vertical_custom_top }}rem;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-pl: {{ s.padding_horizontal_custom_left }}px;
-     --space-pr: {{ s.padding_horizontal_custom_right }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
+     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
   {% endif %}
 {% endcapture %}
 {% capture section_spacing_class %}
@@ -114,9 +114,10 @@
       "id": "padding_vertical_custom_top",
       "label": "Custom Top Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -124,9 +125,10 @@
       "id": "padding_vertical_custom_bottom",
       "label": "Custom Bottom Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -149,9 +151,10 @@
       "id": "padding_horizontal_custom_left",
       "label": "Custom Left Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -159,9 +162,10 @@
       "id": "padding_horizontal_custom_right",
       "label": "Custom Right Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {

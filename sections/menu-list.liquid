@@ -22,14 +22,14 @@
 
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
-    --space-pt: {{ s.padding_vertical_custom_top }}px;
-    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
+    --space-pt: {{ s.padding_vertical_custom_top }}rem;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-pl: {{ s.padding_horizontal_custom_left }}px;
-     --space-pr: {{ s.padding_horizontal_custom_right }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
+     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
   {% endif %}
-  {% if s.nav_layout == 'horizontal' %}top: {{ s.nav_sticky_offset }}px;{% endif %}
+  {% if s.nav_layout == 'horizontal' %}top: {{ s.nav_sticky_offset }}rem;{% endif %}
 {% endcapture %}
 
 {% capture section_spacing_class %}
@@ -61,11 +61,11 @@
 {% assign main_flex_direction = 'flex-col lg:flex-row' %}
 {% assign nav_container_class = 'hidden lg:block w-64 flex-shrink-0 sticky self-start z-floating top-32' %}
 {% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-body/10 pl-4 overflow-y-auto no-scrollbar' %}
-{% assign link_base_class = 'block border-l-2 border-transparent -ml-[18px] pl-[14px] [&.is-active]:border-body [&.is-active]:pl-4' %}
+{% assign link_base_class = 'block border-l-2 border-transparent -ml-[1.125rem] pl-[0.875rem] [&.is-active]:border-body [&.is-active]:pl-4' %}
 {% assign sublink_base_class = 'block' %}
 
 {% if s.nav_layout == 'horizontal' %}
-  {% capture sticky_style %}top: {{ s.nav_sticky_offset }}px;{% endcapture %}
+  {% capture sticky_style %}top: {{ s.nav_sticky_offset }}rem;{% endcapture %}
   {% assign main_flex_direction = 'flex-col' %}
   {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--color-bg)] border-b border-body/10 mb-8 transition-[top] duration-200' %}
   {% assign nav_wrapper_class = 'flex flex-row items-center gap-6 overflow-x-auto no-scrollbar py-3 px-1' %}
@@ -130,7 +130,7 @@
                     type="button"
                     data-filter-tag="{{ tag_name }}"
                     title="Filter by {{ tag.name }}"
-                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[10px] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[10px] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
+                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[0.625rem] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[0.625rem] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
                   >
                     {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
                   </button>
@@ -253,10 +253,10 @@
       "label": "Sticky Top Offset (Horizontal Nav Layout)",
       "info": "Adjust this to clear your site header if the menu is being covered.",
       "min": 0,
-      "max": 160,
-      "step": 4,
-      "default": 80,
-      "unit": "px",
+      "max": 10,
+      "step": 0.25,
+      "default": 5,
+      "unit": "rem",
       "conditional": "setting.show_nav and setting.nav_layout == 'horizontal'"
     },
 
@@ -410,9 +410,10 @@
       "id": "padding_vertical_custom_top",
       "label": "Custom Top Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -420,9 +421,10 @@
       "id": "padding_vertical_custom_bottom",
       "label": "Custom Bottom Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -445,9 +447,10 @@
       "id": "padding_horizontal_custom_left",
       "label": "Custom Left Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -455,9 +458,10 @@
       "id": "padding_horizontal_custom_right",
       "label": "Custom Right Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {

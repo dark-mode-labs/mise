@@ -232,7 +232,7 @@
   }
 
   .gap-none {
-    gap: 0px;
+    gap: 0;
   }
 
   .gap-xs {
@@ -447,22 +447,22 @@
 
   /* Golden ratio based media constraints */
   .media-wrapper.mh-sm {
-    max-height: clamp(240px, calc(100vh * 0.382), 480px);
+    max-height: 38.2vh;
     aspect-ratio: 1.618 / 1;
   }
 
   .media-wrapper.mh-md {
-    max-height: clamp(360px, calc(100vh * 0.618), 720px);
+    max-height: 61.8vh;
     aspect-ratio: 1.618 / 1;
   }
 
   .media-wrapper.mh-lg {
-    max-height: clamp(480px, calc(100vh * 0.786), 900px);
+    max-height: 78.6vh;
     aspect-ratio: 1.618 / 1;
   }
 
   .media-wrapper.mh-xl {
-    max-height: clamp(600px, 100vh, 1100px);
+    max-height: 100vh;
     aspect-ratio: 1.618 / 1;
   }
 
@@ -482,23 +482,23 @@
 
   /* FLEXIBLE CONTAINERS (Min-Height) - Grids grow with content */
   .grid-layout-overlay.is-sm {
-    min-height: clamp(240px, calc(100vh * 0.382), 480px);
+    min-height: 38.2vh;
   }
 
   .grid-layout-overlay.is-md {
-    min-height: clamp(360px, calc(100vh * 0.618), 720px);
+    min-height: 61.8vh;
   }
 
   .grid-layout-overlay.is-lg {
-    min-height: clamp(480px, calc(100vh * 0.786), 900px);
+    min-height: 78.6vh;
   }
 
   .grid-layout-overlay.is-xl {
-    min-height: clamp(600px, 100vh, 1200px);
+    min-height: 100vh;
   }
 
   .grid-layout-overlay.is-custom {
-    min-height: var(--max-h, 600px);
+    min-height: var(--max-h, 61.8vh);
   }
 
   .grid-layout-overlay.is-auto {
@@ -513,7 +513,7 @@
   .media-layout-right.is-sm,
   .section-slideshow.is-sm,
   .media-block.is-sm {
-    height: clamp(240px, calc(100vh * 0.382), 480px);
+    height: 38.2vh;
   }
 
   .hero-layout-overlay.is-md,
@@ -523,7 +523,7 @@
   .media-layout-right.is-md,
   .section-slideshow.is-md,
   .media-block.is-md {
-    height: clamp(360px, calc(100vh * 0.618), 720px);
+    height: 61.8vh;
   }
 
   .hero-layout-overlay.is-lg,
@@ -533,7 +533,7 @@
   .media-layout-right.is-lg,
   .section-slideshow.is-lg,
   .media-block.is-lg {
-    height: clamp(480px, calc(100vh * 0.786), 900px);
+    height: 78.6vh;
   }
 
   .hero-layout-overlay.is-xl,
@@ -543,7 +543,7 @@
   .media-layout-right.is-xl,
   .section-slideshow.is-xl,
   .media-block.is-xl {
-    height: clamp(600px, 100vh, 1200px);
+    height: 100vh;
   }
 
   .hero-layout-overlay.is-custom,
@@ -553,7 +553,7 @@
   .media-layout-right.is-custom,
   .section-slideshow.is-custom,
   .media-block.is-custom {
-    height: var(--max-h, 600px);
+    height: var(--max-h, 61.8vh);
   }
 
   .hero-layout-overlay.is-auto,
@@ -567,7 +567,7 @@
   }
 
   .media-block.is-thumbnail {
-    height: clamp(72px, 20vw, 130px);
+    height: clamp(4.5rem, 20vw, 8.125rem);
   }
 
   /* MEDIA & CONTENT OVERLAY/SPLIT SYSTEMS */
@@ -1052,32 +1052,6 @@
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
-  @media (max-width: 767px) {
-    .padding-py-custom {
-      padding-top: max(calc(var(--space-pt) * 0.6), min(var(--space-pt), 24px));
-      padding-bottom: max(calc(var(--space-pb) * 0.6), min(var(--space-pb), 24px));
-    }
-
-    .padding-px-custom {
-      padding-left: max(calc(var(--space-pl) * 0.6), min(var(--space-pl), 24px));
-      padding-right: max(calc(var(--space-pr) * 0.6), min(var(--space-pr), 24px));
-    }
-
-    .margin-my-custom {
-      margin-top: max(calc(var(--space-mt) * 0.6), min(var(--space-mt), 24px));
-      margin-bottom: max(calc(var(--space-mb) * 0.6), min(var(--space-mb), 24px));
-    }
-
-    .margin-mx-custom {
-      margin-left: max(calc(var(--space-ml) * 0.6), min(var(--space-ml), 24px));
-      margin-right: max(calc(var(--space-mr) * 0.6), min(var(--space-mr), 24px));
-    }
-
-    .gap-custom {
-      gap: max(calc(var(--space-gap) * 0.6), min(var(--space-gap), 24px));
-    }
-  }
-
   @keyframes fadeUp {
     from {
       opacity: 0;
@@ -1127,7 +1101,10 @@
 
 @layer base {
   html {
-    font-size: calc(16px * var(--type-scale));
+    /* Fluid root: scales between 87.5%–112.5% of user's browser default across viewport widths.
+       All rem values in the codebase inherit this fluid scale automatically.
+       --type-scale acts as a fine-tuning multiplier on top. */
+    font-size: calc(clamp(0.875em, 0.75em + 0.5vw, 1.125em) * var(--type-scale));
   }
 
   body {
@@ -1143,8 +1120,19 @@
     @apply relative w-full;
   }
 
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
   .menu-list {
-    @apply relative w-full overflow-visible;
+    @apply relative w-full overflow-hidden;
   }
 
   .bg-body {

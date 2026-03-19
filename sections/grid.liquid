@@ -2,14 +2,14 @@
 
 {% capture section_spacing_style %}
   {% if s.padding_vertical == 'custom' %}
-    --space-pt: {{ s.padding_vertical_custom_top }}px;
-    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
+    --space-pt: {{ s.padding_vertical_custom_top }}rem;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-pl: {{ s.padding_horizontal_custom_left }}px;
-     --space-pr: {{ s.padding_horizontal_custom_right }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
+     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
   {% endif %}
-  {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}px;{% endif %}
+  {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}vh;{% endif %}
 {% endcapture %}
 
 {% capture section_spacing_class %}
@@ -76,7 +76,7 @@
         class="flex flex-wrap justify-content-{{ s.justify_content }} {{ animation_class }} -mx-4"
         style="
           {% if s.card_padding == 'custom' %}
-            row-gap: {{ s.card_padding_custom }}px;
+            row-gap: {{ s.card_padding_custom }}rem;
           {% else %}
             row-gap: var(--space-{{ s.card_padding }});
           {% endif %}
@@ -172,11 +172,11 @@
       "type": "range",
       "id": "height_custom",
       "label": "Custom Height",
-      "min": 200,
-      "max": 1000,
-      "step": 10,
-      "default": 400,
-      "unit": "px",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "vh",
       "conditional": "setting.height == 'custom'"
     },
     {
@@ -199,9 +199,10 @@
       "id": "padding_vertical_custom_top",
       "label": "Custom Top Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -209,9 +210,10 @@
       "id": "padding_vertical_custom_bottom",
       "label": "Custom Bottom Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -234,9 +236,10 @@
       "id": "padding_horizontal_custom_left",
       "label": "Custom Left Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -244,9 +247,10 @@
       "id": "padding_horizontal_custom_right",
       "label": "Custom Right Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -279,8 +283,10 @@
       "id": "card_padding_custom",
       "label": "Custom Gap",
       "min": 0,
-      "max": 100,
-      "default": 24,
+      "max": 6,
+      "step": 0.25,
+      "default": 1.5,
+      "unit": "rem",
       "conditional": "setting.enable_cards_global == true and setting.card_padding == 'custom'"
     }
   ],

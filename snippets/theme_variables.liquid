@@ -42,25 +42,25 @@
     {% capture width_scheme %}
       {% case width %}
         {% when 'sm' %}
-          --limit-width: 384px;
+          --limit-width: min(30vw, 24rem);
         {% when 'md' %}
-          --limit-width: 448px;
+          --limit-width: min(35vw, 28rem);
         {% when 'lg' %}
-          --limit-width: 512px;
+          --limit-width: min(40vw, 32rem);
         {% when 'xl' %}
-          --limit-width: 576px;
+          --limit-width: min(45vw, 36rem);
         {% when '2xl' %}
-          --limit-width: 672px;
+          --limit-width: min(52.5vw, 42rem);
         {% when '3xl' %}
-          --limit-width: 768px;
+          --limit-width: min(60vw, 48rem);
         {% when '4xl' %}
-          --limit-width: 896px;
+          --limit-width: min(70vw, 56rem);
         {% when '5xl' %}
-          --limit-width: 1024px;
+          --limit-width: min(80vw, 64rem);
         {% when '6xl' %}
-          --limit-width: 1152px;
+          --limit-width: min(90vw, 72rem);
         {% when '7xl' %}
-          --limit-width: 1280px;
+          --limit-width: min(95vw, 80rem);
         {% when 'fit' %}
           --limit-width: fit-content;
         {% when 'full' %}
@@ -70,7 +70,7 @@
         {% when 'third' %}
           --limit-width: 33.333%;
         {% when 'custom' %}
-          --limit-width: {{ scheme[1].settings.custom_width }}px;
+          --limit-width: {{ scheme[1].settings.custom_width }}rem;
         {% when 'auto' %}
           --limit-width: auto;
         {% else %}

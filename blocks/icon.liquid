@@ -2,22 +2,22 @@
 
 {% capture style_override %}
   {% if s.padding_vertical == 'custom' %}
-    --space-pt: {{ s.padding_vertical_custom_top }}px;
-    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
+    --space-pt: {{ s.padding_vertical_custom_top }}rem;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-pl: {{ s.padding_horizontal_custom_left }}px;
-     --space-pr: {{ s.padding_horizontal_custom_right }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
+     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
   {% endif %}
   {% if s.margin_vertical == 'custom' %}
-    --space-mt: {{ s.margin_vertical_custom_top }}px;
-    --space-mb: {{ s.margin_vertical_custom_bottom }}px;
+    --space-mt: {{ s.margin_vertical_custom_top }}rem;
+    --space-mb: {{ s.margin_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.margin_horizontal == 'custom' %}
-     --space-ml: {{ s.margin_horizontal_custom_left }}px;
-     --space-mr: {{ s.margin_horizontal_custom_right }}px;
+     --space-ml: {{ s.margin_horizontal_custom_left }}rem;
+     --space-mr: {{ s.margin_horizontal_custom_right }}rem;
   {% endif %}
-  --icon-size: {{ s.icon_size }}px;
+  --icon-size: {{ s.icon_size }}rem;
   {% unless s.inherit_styles %}
     {% if s.text_color_override %}
       --color-text: {{ s.text_color }};
@@ -56,11 +56,11 @@
       "type": "range",
       "id": "icon_size",
       "label": "Icon Size",
-      "min": 12,
-      "max": 128,
-      "step": 4,
-      "default": 24,
-      "unit": "px"
+      "min": 0.75,
+      "max": 8,
+      "step": 0.25,
+      "default": 1.5,
+      "unit": "rem"
     },
     {
       "type": "header",
@@ -85,9 +85,10 @@
       "id": "padding_vertical_custom_top",
       "label": "Custom Top Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -95,9 +96,10 @@
       "id": "padding_vertical_custom_bottom",
       "label": "Custom Bottom Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -119,9 +121,10 @@
       "id": "padding_horizontal_custom_left",
       "label": "Custom Left Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -129,9 +132,10 @@
       "id": "padding_horizontal_custom_right",
       "label": "Custom Right Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -154,9 +158,10 @@
       "id": "margin_vertical_custom_top",
       "label": "Custom Top Margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
@@ -164,9 +169,10 @@
       "id": "margin_vertical_custom_bottom",
       "label": "Custom Bottom Margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
@@ -189,9 +195,10 @@
       "id": "margin_horizontal_custom_left",
       "label": "Custom Left Margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
@@ -199,9 +206,10 @@
       "id": "margin_horizontal_custom_right",
       "label": "Custom Right Margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
