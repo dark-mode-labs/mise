@@ -1152,10 +1152,10 @@
 
 @layer base {
   html {
-    /* Fluid root: scales between 87.5%–112.5% of user's browser default across viewport widths.
+    /* Fluid root: scales between 87.5%–100% of user's browser default across viewport widths.
        All rem values in the codebase inherit this fluid scale automatically.
        --type-scale acts as a fine-tuning multiplier on top. */
-    font-size: calc(clamp(0.875em, 0.75em + 0.5vw, 1.125em) * var(--type-scale));
+    font-size: calc(clamp(0.875em, 0.75em + 0.5vw, 1em) * var(--type-scale));
   }
 
   body {
