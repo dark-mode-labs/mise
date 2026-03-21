@@ -15,11 +15,11 @@
                 <summary class="flex items-center justify-between py-2 cursor-pointer list-none select-none">
                   {% render 'typography',
                     text: link.title,
-                    display_size: 'h4',
+                    display_size: display_size,
                     weight: font_weight,
-                    color: 'text-btn',
-                    family: 'btn',
-                    class: wrap_style
+                    color: text_color,
+                    family: font_family,
+                    class: utilities
                   %}
                   {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90' %}
                 </summary>
@@ -29,11 +29,11 @@
                       <a href="{{ child.url }}" class="block text-base opacity-80 hover:opacity-100 py-1">
                         {% render 'typography',
                           text: link.title,
-                          display_size: 'h4',
+                          display_size: display_size,
                           weight: font_weight,
-                          color: 'text-btn',
-                          family: 'btn',
-                          class: wrap_style
+                          color: text_color,
+                          family: font_family,
+                          class: utilities
                         %}
                       </a>
                     </li>
@@ -47,11 +47,11 @@
               >
                 {% render 'typography',
                   text: link.title,
-                  display_size: 'h4',
+                  display_size: display_size,
                   weight: font_weight,
-                  color: 'text-btn',
-                  family: 'btn',
-                  class: wrap_style
+                  color: text_color,
+                  family: font_family,
+                  class: utilities
                 %}
               </a>
             {% endif %}

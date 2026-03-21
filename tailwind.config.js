@@ -14,11 +14,6 @@ export default {
       height: {
         'screen-dvh': '100dvh',
       },
-      fontFamily: {
-        heading: ['var(--font-heading)', 'sans-serif'],
-        body: ['var(--font-body)', 'sans-serif'],
-        btn: ['var(--font-button)', 'sans-serif'],
-      },
       textColor: {
         body: 'var(--color-text)',
         secondary: 'var(--color-text-secondary)',

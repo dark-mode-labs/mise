@@ -10,9 +10,16 @@
     {% endif %}
 
     {% render 'meta-tags' %}
-    {% render 'stylesheets' %}
+    {% render 'preconnects', preconnect_schemes: settings.preconnect_schemes %}
+    {% render 'stylesheets', font_schemes: settings.font_schemes %}
     {% render 'scripts' %}
-    {% render 'theme_variables' %}
+    {% render 'theme_variables',
+      typography: settings.typography,
+      layout: settings.layout,
+      color_schemes: settings.color_schemes,
+      width_schemes: settings.width_schemes,
+      font_schemes: settings.font_schemes
+    %}
 
     {{ content_for_header }}
   </head>

@@ -92,88 +92,52 @@
       ]
     },
     {
+      "name": "Font Schemes",
+      "type": "group",
+      "id": "font_schemes",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "New Font Scheme"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Font Family",
+          "info": "CSS font-family value used for --font-heading, --font-body, --font-button. E.g. 'Inter', 'Playfair Display', sans-serif.",
+          "default": "sans-serif"
+        },
+        {
+          "type": "text",
+          "id": "url",
+          "label": "Google Fonts URL",
+          "info": "Full stylesheet URL from Google Fonts (e.g. https://fonts.googleapis.com/css2?family=Inter…). Leave blank for system fonts."
+        }
+      ]
+    },
+    {
       "name": "Typography",
       "id": "typography",
       "settings": [
         {
-          "type": "select",
-          "id": "heading_font",
-          "label": "Headings",
-          "options": [
-            {
-              "value": "serif",
-              "label": "Serif"
-            },
-            {
-              "value": "sans-serif",
-              "label": "Sans-serif"
-            },
-            {
-              "value": "Inter",
-              "label": "Inter"
-            },
-            {
-              "value": "Roboto",
-              "label": "Roboto"
-            },
-            {
-              "value": "DM+Serif+Display",
-              "label": "DM Serif"
-            },
-            {
-              "value": "Noto+Sans+JP",
-              "label": "Noto Sans JP"
-            }
-          ],
-          "default": "sans-serif"
+          "type": "font_scheme",
+          "id": "heading_font_scheme",
+          "label": "Heading Font",
+          "default": "default"
         },
         {
-          "type": "select",
-          "id": "body_font",
-          "label": "Body Text",
-          "options": [
-            {
-              "value": "serif",
-              "label": "Serif"
-            },
-            {
-              "value": "sans-serif",
-              "label": "Sans-serif"
-            },
-            {
-              "value": "Inter",
-              "label": "Inter"
-            },
-            {
-              "value": "Roboto",
-              "label": "Roboto"
-            }
-          ],
-          "default": "sans-serif"
+          "type": "font_scheme",
+          "id": "body_font_scheme",
+          "label": "Body Font",
+          "default": "default"
         },
         {
-          "type": "select",
-          "id": "button_font",
-          "label": "Buttons & UI",
-          "options": [
-            {
-              "value": "serif",
-              "label": "Serif"
-            },
-            {
-              "value": "sans-serif",
-              "label": "Sans-serif"
-            },
-            {
-              "value": "Inter",
-              "label": "Inter"
-            },
-            {
-              "value": "Roboto",
-              "label": "Roboto"
-            }
-          ],
-          "default": "sans-serif"
+          "type": "font_scheme",
+          "id": "button_font_scheme",
+          "label": "Button / UI Font",
+          "default": "default"
         },
         {
           "type": "range",
@@ -332,18 +296,79 @@
           "info": "https://youtube.com/@yourhandle"
         }
       ]
+    },
+    {
+      "name": "Preconnect Schemes",
+      "type": "group",
+      "id": "preconnect_schemes",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "New Preconnect URL"
+        },
+        {
+          "type": "text",
+          "id": "url",
+          "label": "Preconnect URL"
+        },
+        {
+          "type": "text",
+          "id": "attributes",
+          "label": "Additional Attributes"
+        }
+      ]
     }
   ],
   "presets": {
     "default": {
       "layout": {
-        "corner_radius": 12
+        "corner_radius": 0
       },
       "typography": {
-        "type_scale": 105,
-        "body_font": "sans-serif",
-        "button_font": "sans-serif",
-        "heading_font": "sans-serif"
+        "type_scale": 100,
+        "heading_font_scheme": "heading",
+        "body_font_scheme": "body",
+        "button_font_scheme": "button"
+      },
+      "font_schemes": {
+        "heading": {
+          "settings": {
+            "title": "Inter",
+            "name": "Inter",
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          }
+        },
+        "body": {
+          "settings": {
+            "title": "Inter",
+            "name": "Inter",
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          }
+        },
+        "button": {
+          "settings": {
+            "title": "Inter",
+            "name": "Inter",
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          }
+        }
+      },
+      "preconnect_schemes": {
+        "fonts-google-apis": {
+          "settings": {
+            "title": "Fonts GoogleApis",
+            "url": "https://fonts.googleapis.com"
+          }
+        },
+        "fonts-gstatic": {
+          "settings": {
+            "title": "Fonts GStatic",
+            "url": "https://fonts.gstatic.com",
+            "attributes": "crossorigin"
+          }
+        }
       },
       "color_schemes": {
         "default": {

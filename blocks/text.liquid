@@ -30,11 +30,9 @@
 {% capture utilities %}
   {% if s.italic %}italic{% endif %}
   {% if s.enable_hyphens %}hyphens-auto{% endif %}
-  {% case s.text_transform %}
-    {% when 'uppercase' %}uppercase
-    {% when 'capitalize' %}capitalize
-    {% when 'lowercase' %}lowercase
-  {% endcase %}
+  {% unless s.text_transform == 'none' %}
+    {{ s.text_transform }}
+  {% endunless %}
   {% case s.text_wrap %}
     {% when 'nowrap' %}whitespace-nowrap
     {% when 'balance' %}text-balance
@@ -44,6 +42,10 @@
     {% when 'ellipsis' %}truncate
   {% endcase %}
 {% endcapture %}
+
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
 
 <div
   class="text-align-{{ s.text_align }} {{ scheme_class }}"
@@ -57,7 +59,8 @@
     weight: s.font_weight,
     class: utilities,
     tracking: s.text_tracking,
-    leading: s.text_leading
+    leading: s.text_leading,
+    family: font_family
   %}
 </div>
 
@@ -200,6 +203,19 @@
       "id": "enable_hyphens",
       "label": "Hyphenate",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
     },
     {
       "type": "header",

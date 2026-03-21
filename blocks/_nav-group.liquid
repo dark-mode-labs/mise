@@ -7,12 +7,21 @@
     --space-gap: {{ s.gap_custom }}rem;
   {% endif %}
 {% endcapture %}
-{% capture wrap_style %}
+{% capture utilities %}
   {% case s.text_wrap %}
     {% when 'nowrap' %}whitespace-nowrap
     {% when 'balance' %}text-balance
   {% endcase %}
+  {% unless s.text_transform == 'none' %}
+    {{ s.text_transform }}
+  {% endunless %}
 {% endcapture %}
+
+{% assign font_family = 'btn' %}
+
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
 
 <ul
   class="flex-col gap-{{ s.gap }} hidden group-open:flex md:flex {{ scheme_class }}"
@@ -30,8 +39,8 @@
           display_size: s.display_size,
           weight: s.font_weight,
           color: 'text-btn',
-          family: 'btn',
-          class: wrap_style
+          family: font_family,
+          class: utilities
         %}
       </a>
     </li>
@@ -44,13 +53,7 @@
     { "type": "link_list", "id": "nav", "label": "Menu", "default": "footer" },
     {
       "type": "header",
-      "content": "Style"
-    },
-    {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Styles",
-      "default": true
+      "content": "Typography"
     },
     {
       "type": "select",
@@ -97,6 +100,41 @@
     },
     {
       "type": "select",
+      "id": "text_transform",
+      "label": "Text Transform",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "select",
       "id": "gap",
       "label": "Gap",
       "options": [
@@ -120,6 +158,16 @@
       "default": 1,
       "unit": "rem",
       "conditional": "setting.gap == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
     },
     {
       "type": "header",

@@ -13,14 +13,11 @@
     --space-2xl: clamp(3.5rem, 7vw, 6rem);      /* Scales from 56px to 96px */
     --space-3xl: clamp(4.5rem, 9vw, 8rem);      /* Scales from 72px to 128px */
 
-    --font-heading: {{ settings.typography.heading_font }}, sans-serif;
-    --font-body: {{ settings.typography.body_font }}, sans-serif;
-    --font-button: {{ settings.typography.button_font }}, sans-serif;
-    --type-scale: {{ settings.typography.type_scale | divided_by: 100.0 }};
-    --radius-global: {{ settings.layout.corner_radius }}px;
+    --type-scale: {{ typography.type_scale | divided_by: 100.0 }};
+    --radius-global: {{ layout.corner_radius }}px;
   }
 
-  {% for scheme in settings.color_schemes %}
+  {% for scheme in color_schemes %}
     .color-{{ scheme[0] }} {
       --color-bg: {{ scheme[1].settings.background }};
       --color-text: {{ scheme[1].settings.text }};
@@ -37,7 +34,7 @@
     }
   {% endfor %}
 
-  {% for scheme in settings.width_schemes %}
+  {% for scheme in width_schemes %}
     {% assign width = scheme[1].settings.width %}
     {% capture width_scheme %}
       {% case width %}
@@ -93,6 +90,18 @@
           --limit-width: 100%;
         }
       }
+    {% endif %}
+  {% endfor %}
+
+  {% for scheme in font_schemes %}
+    {% if scheme[0] == typography.heading_font_scheme %}
+      .font-heading { font-family: {{ scheme[1].settings.name }}; }
+    {% elsif scheme[0] == typography.body_font_scheme %}
+      .font-body { font-family: {{ scheme[1].settings.name }}; }
+    {% elsif scheme[0] == typography.button_font_scheme %}
+      .font-button { font-family: {{ scheme[1].settings.name }}; }
+    {% else %}
+      .font-{{ scheme[0] }} { font-family: {{ scheme[1].settings.name }}; }
     {% endif %}
   {% endfor %}
 </style>
