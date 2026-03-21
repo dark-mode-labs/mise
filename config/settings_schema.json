@@ -1,6 +1,109 @@
 {
   "schema": [
     {
+      "name": "Typography",
+      "id": "typography",
+      "settings": [
+        {
+          "type": "font_scheme",
+          "id": "heading_font_scheme",
+          "label": "Heading Font",
+          "default": "default"
+        },
+        {
+          "type": "font_scheme",
+          "id": "body_font_scheme",
+          "label": "Body Font",
+          "default": "default"
+        },
+        {
+          "type": "font_scheme",
+          "id": "button_font_scheme",
+          "label": "Button / UI Font",
+          "default": "default"
+        },
+        {
+          "type": "range",
+          "id": "type_scale",
+          "label": "Type Scale",
+          "min": 80,
+          "max": 120,
+          "step": 5,
+          "default": 100,
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "name": "Layout",
+      "id": "layout",
+      "settings": [
+        {
+          "type": "range",
+          "id": "corner_radius",
+          "label": "Global Corner Radius",
+          "min": 0,
+          "max": 40,
+          "step": 4,
+          "default": 0,
+          "unit": "px",
+          "info": "Affects buttons, cards, and media."
+        }
+      ]
+    },
+    {
+      "name": "Social Media",
+      "id": "social_media",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Accounts"
+        },
+        {
+          "type": "text",
+          "id": "instagram_link",
+          "label": "Instagram",
+          "info": "https://instagram.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "facebook_link",
+          "label": "Facebook",
+          "info": "https://facebook.com/yourpage"
+        },
+        {
+          "type": "text",
+          "id": "tiktok_link",
+          "label": "TikTok",
+          "info": "https://tiktok.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "twitter_link",
+          "label": "X (Twitter)",
+          "info": "https://x.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "yelp_link",
+          "label": "Yelp",
+          "info": "https://yelp.com/biz/your-biz"
+        },
+        {
+          "type": "text",
+          "id": "linkedin_link",
+          "label": "LinkedIn",
+          "info": "https://linkedin.com/company/your-company"
+        },
+        {
+          "type": "text",
+          "id": "youtube_link",
+          "label": "YouTube",
+          "info": "https://youtube.com/@yourhandle"
+        }
+      ]
+    },
+    {
       "name": "Color Schemes",
       "type": "group",
       "id": "color_schemes",
@@ -118,40 +221,6 @@
       ]
     },
     {
-      "name": "Typography",
-      "id": "typography",
-      "settings": [
-        {
-          "type": "font_scheme",
-          "id": "heading_font_scheme",
-          "label": "Heading Font",
-          "default": "default"
-        },
-        {
-          "type": "font_scheme",
-          "id": "body_font_scheme",
-          "label": "Body Font",
-          "default": "default"
-        },
-        {
-          "type": "font_scheme",
-          "id": "button_font_scheme",
-          "label": "Button / UI Font",
-          "default": "default"
-        },
-        {
-          "type": "range",
-          "id": "type_scale",
-          "label": "Type Scale",
-          "min": 80,
-          "max": 120,
-          "step": 5,
-          "default": 100,
-          "unit": "%"
-        }
-      ]
-    },
-    {
       "name": "Max Width Schemes",
       "type": "group",
       "id": "width_schemes",
@@ -225,75 +294,6 @@
           "info": "Enter a number in rem units (e.g. 80 for 80rem ≈ 1280px at base font size).",
           "default": "93.5",
           "conditional": "setting.width == 'custom'"
-        }
-      ]
-    },
-    {
-      "name": "Layout",
-      "id": "layout",
-      "settings": [
-        {
-          "type": "range",
-          "id": "corner_radius",
-          "label": "Global Corner Radius",
-          "min": 0,
-          "max": 40,
-          "step": 4,
-          "default": 0,
-          "unit": "px",
-          "info": "Affects buttons, cards, and media."
-        }
-      ]
-    },
-    {
-      "name": "Social Media",
-      "id": "social_media",
-      "settings": [
-        {
-          "type": "header",
-          "content": "Accounts"
-        },
-        {
-          "type": "text",
-          "id": "instagram_link",
-          "label": "Instagram",
-          "info": "https://instagram.com/@yourhandle"
-        },
-        {
-          "type": "text",
-          "id": "facebook_link",
-          "label": "Facebook",
-          "info": "https://facebook.com/yourpage"
-        },
-        {
-          "type": "text",
-          "id": "tiktok_link",
-          "label": "TikTok",
-          "info": "https://tiktok.com/@yourhandle"
-        },
-        {
-          "type": "text",
-          "id": "twitter_link",
-          "label": "X (Twitter)",
-          "info": "https://x.com/@yourhandle"
-        },
-        {
-          "type": "text",
-          "id": "yelp_link",
-          "label": "Yelp",
-          "info": "https://yelp.com/biz/your-biz"
-        },
-        {
-          "type": "text",
-          "id": "linkedin_link",
-          "label": "LinkedIn",
-          "info": "https://linkedin.com/company/your-company"
-        },
-        {
-          "type": "text",
-          "id": "youtube_link",
-          "label": "YouTube",
-          "info": "https://youtube.com/@yourhandle"
         }
       ]
     },
