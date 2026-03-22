@@ -13,14 +13,11 @@
     --space-2xl: clamp(3.5rem, 7vw, 6rem);      /* Scales from 56px to 96px */
     --space-3xl: clamp(4.5rem, 9vw, 8rem);      /* Scales from 72px to 128px */
 
-    --font-heading: {{ settings.typography.heading_font }}, sans-serif;
-    --font-body: {{ settings.typography.body_font }}, sans-serif;
-    --font-button: {{ settings.typography.button_font }}, sans-serif;
-    --type-scale: {{ settings.typography.type_scale | divided_by: 100.0 }};
-    --radius-global: {{ settings.layout.corner_radius }}px;
+    --type-scale: {{ typography.type_scale | divided_by: 100.0 }};
+    --radius-global: {{ layout.corner_radius }}px;
   }
 
-  {% for scheme in settings.color_schemes %}
+  {% for scheme in color_schemes %}
     .color-{{ scheme[0] }} {
       --color-bg: {{ scheme[1].settings.background }};
       --color-text: {{ scheme[1].settings.text }};
@@ -37,30 +34,30 @@
     }
   {% endfor %}
 
-  {% for scheme in settings.width_schemes %}
+  {% for scheme in width_schemes %}
     {% assign width = scheme[1].settings.width %}
     {% capture width_scheme %}
       {% case width %}
         {% when 'sm' %}
-          --limit-width: 384px;
+          --limit-width: 24rem;
         {% when 'md' %}
-          --limit-width: 448px;
+          --limit-width: 28rem;
         {% when 'lg' %}
-          --limit-width: 512px;
+          --limit-width: 32rem;
         {% when 'xl' %}
-          --limit-width: 576px;
+          --limit-width: 36rem;
         {% when '2xl' %}
-          --limit-width: 672px;
+          --limit-width: 42rem;
         {% when '3xl' %}
-          --limit-width: 768px;
+          --limit-width: 48rem;
         {% when '4xl' %}
-          --limit-width: 896px;
+          --limit-width: 56rem;
         {% when '5xl' %}
-          --limit-width: 1024px;
+          --limit-width: 64rem;
         {% when '6xl' %}
-          --limit-width: 1152px;
+          --limit-width: 72rem;
         {% when '7xl' %}
-          --limit-width: 1280px;
+          --limit-width: 80rem;
         {% when 'fit' %}
           --limit-width: fit-content;
         {% when 'full' %}
@@ -70,7 +67,7 @@
         {% when 'third' %}
           --limit-width: 33.333%;
         {% when 'custom' %}
-          --limit-width: {{ scheme[1].settings.custom_width }}px;
+          --limit-width: {{ scheme[1].settings.custom_width }}rem;
         {% when 'auto' %}
           --limit-width: auto;
         {% else %}
@@ -93,6 +90,18 @@
           --limit-width: 100%;
         }
       }
+    {% endif %}
+  {% endfor %}
+
+  {% for scheme in font_schemes %}
+    {% if scheme[0] == typography.heading_font_scheme %}
+      .font-heading { font-family: {{ scheme[1].settings.name }}; }
+    {% elsif scheme[0] == typography.body_font_scheme %}
+      .font-body { font-family: {{ scheme[1].settings.name }}; }
+    {% elsif scheme[0] == typography.button_font_scheme %}
+      .font-button { font-family: {{ scheme[1].settings.name }}; }
+    {% else %}
+      .font-{{ scheme[0] }} { font-family: {{ scheme[1].settings.name }}; }
     {% endif %}
   {% endfor %}
 </style>

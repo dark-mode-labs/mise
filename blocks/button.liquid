@@ -1,20 +1,26 @@
 {% assign s = block.settings %}
 {% capture style_override %}
   {% if s.padding_vertical == 'custom' %}
-    --space-pt: {{ s.padding_vertical_custom_top }}px;
-    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
+    --space-pt: {{ s.padding_vertical_custom_top }}rem;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-pl: {{ s.padding_horizontal_custom_left }}px;
-     --space-pr: {{ s.padding_horizontal_custom_right }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
+     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
   {% endif %}
   {% if s.margin_vertical == 'custom' %}
-    --space-mt: {{ s.margin_vertical_custom_top }}px;
-    --space-mb: {{ s.margin_vertical_custom_bottom }}px;
+    --space-mt: {{ s.margin_vertical_custom_top }}rem;
+    --space-mb: {{ s.margin_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.margin_horizontal == 'custom' %}
-     --space-ml: {{ s.margin_horizontal_custom_left }}px;
-     --space-mr: {{ s.margin_horizontal_custom_right }}px;
+     --space-ml: {{ s.margin_horizontal_custom_left }}rem;
+     --space-mr: {{ s.margin_horizontal_custom_right }}rem;
+  {% endif %}
+  {% if s.text_tracking == 'custom' %}
+    --text-tracking: {{ s.text_tracking_custom }}em;
+  {% endif %}
+  {% if s.text_leading == 'custom' %}
+    --text-leading: {{ s.text_leading_custom | divided_by: 100.0 }};
   {% endif %}
   {% unless s.border_mode == 'none' %}
     {% if s.border_color_override %}
@@ -50,6 +56,20 @@
     {% endcapture %}
     group-border-{{ s.border_mode }} group-border-size-{{ s.border_size }} {{ border_flags }}
   {% endunless %}
+{% endcapture %}
+
+{% capture utilities %}
+  {% unless s.text_transform == 'none' %}
+    {{ s.text_transform }}
+  {% endunless %}
+  {% case s.text_wrap %}
+    {% when 'nowrap' %}whitespace-nowrap
+    {% when 'balance' %}text-balance
+  {% endcase %}
+  {% case s.overflow_behavior %}
+    {% when 'hidden' %}overflow-hidden
+    {% when 'ellipsis' %}truncate
+  {% endcase %}
 {% endcapture %}
 
 {% assign width_class = 'inline-block' %}
@@ -97,6 +117,12 @@
     {%- assign align_class = 'align-items-stretch' %}
 {% endcase %}
 
+{% assign font_family = 'btn' %}
+
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
+
 <div
   class="rounded-global {{ width_class }} whitespace-nowrap {{ scheme_class }}"
   style="{{ style_override }}"
@@ -119,7 +145,8 @@
       display_size: s.display_size,
       weight: s.font_weight,
       color: 'text-btn',
-      family: 'btn'
+      family: font_family,
+      class: utilities
     %}
   </a>
 </div>
@@ -153,25 +180,6 @@
     },
     {
       "type": "select",
-      "id": "display_size",
-      "label": "Size",
-      "default": "body",
-      "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" },
-        { "value": "h3", "label": "H3" },
-        { "value": "h4", "label": "H4" },
-        { "value": "h5", "label": "H5" },
-        { "value": "h6", "label": "H6" },
-        { "value": "display", "label": "Display" },
-        { "value": "body", "label": "Body" },
-        { "value": "caption", "label": "Caption" },
-        { "value": "small", "label": "Small" },
-        { "value": "jumbo", "label": "Jumbo" }
-      ]
-    },
-    {
-      "type": "select",
       "id": "content_align",
       "label": "Horizontal Alignment",
       "options": [
@@ -195,6 +203,29 @@
       ]
     },
     {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "display_size",
+      "label": "Size",
+      "default": "body",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "display", "label": "Display" },
+        { "value": "body", "label": "Body" },
+        { "value": "caption", "label": "Caption" },
+        { "value": "small", "label": "Small" },
+        { "value": "jumbo", "label": "Jumbo" }
+      ]
+    },
+    {
       "type": "select",
       "id": "font_weight",
       "label": "Weight",
@@ -206,6 +237,105 @@
         { "value": "black", "label": "Black" }
       ],
       "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "text_tracking",
+      "label": "Tracking",
+      "options": [
+        { "value": "tighter", "label": "Tighter" },
+        { "value": "tight", "label": "Tight" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "wider", "label": "Wider" },
+        { "value": "widest", "label": "Widest" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "text_tracking_custom",
+      "label": "Custom Tracking",
+      "min": -0.1,
+      "max": 0.5,
+      "step": 0.025,
+      "default": 0,
+      "unit": "em",
+      "conditional": "setting.text_tracking == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "text_leading",
+      "label": "Leading",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "tight", "label": "Tight" },
+        { "value": "snug", "label": "Snug" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "relaxed", "label": "Relaxed" },
+        { "value": "loose", "label": "Loose" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "text_leading_custom",
+      "label": "Custom Leading",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "conditional": "setting.text_leading == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text Transform",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "wrap",
+      "options": [
+        { "value": "wrap", "label": "Wrap" },
+        { "value": "nowrap", "label": "No Wrap" },
+        { "value": "balance", "label": "Balance" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "overflow_behavior",
+      "label": "Overflow",
+      "default": "visible",
+      "options": [
+        { "value": "visible", "label": "Visible" },
+        { "value": "hidden", "label": "Hidden (Clip)" },
+        { "value": "ellipsis", "label": "Ellipsis (Truncate)" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
     },
     {
       "type": "header",
@@ -299,9 +429,10 @@
       "id": "padding_vertical_custom_top",
       "label": "Custom Top Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -309,9 +440,10 @@
       "id": "padding_vertical_custom_bottom",
       "label": "Custom Bottom Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -333,9 +465,10 @@
       "id": "padding_horizontal_custom_left",
       "label": "Custom Left Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -343,9 +476,10 @@
       "id": "padding_horizontal_custom_right",
       "label": "Custom Right Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -368,9 +502,10 @@
       "id": "margin_vertical_custom_top",
       "label": "Custom Top margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
@@ -378,9 +513,10 @@
       "id": "margin_vertical_custom_bottom",
       "label": "Custom Bottom margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
@@ -403,9 +539,10 @@
       "id": "margin_horizontal_custom_left",
       "label": "Custom Left margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
@@ -413,9 +550,10 @@
       "id": "margin_horizontal_custom_right",
       "label": "Custom Right margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {

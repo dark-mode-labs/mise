@@ -8,7 +8,7 @@
       --color-text: {{ s.text_color }};
     {% endif %}
   {% endunless %}
-  bottom: {{ s.bottom_offset }}px;
+  bottom: {{ s.bottom_offset }}rem;
 {% endcapture %}
 
 <div
@@ -40,10 +40,10 @@
       "label": "Bottom Offset",
       "info": "Lift up to clear marquees.",
       "min": 0,
-      "max": 120,
-      "step": 4,
-      "default": 32,
-      "unit": "px"
+      "max": 8,
+      "step": 0.25,
+      "default": 2,
+      "unit": "rem"
     },
     {
       "type": "header",

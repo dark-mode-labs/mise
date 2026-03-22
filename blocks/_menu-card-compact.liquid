@@ -30,26 +30,26 @@
 {% endcapture %}
 
 {% capture block_styles %}
-  grid-template-columns: {{ s.image_width }}px minmax(0, 1fr);
+  grid-template-columns: {{ s.image_width }}rem minmax(0, 1fr);
 
   {% if s.padding_vertical == 'custom' %}
-    --space-pt: {{ s.padding_vertical_custom_top }}px;
-    --space-pb: {{ s.padding_vertical_custom_bottom }}px;
+    --space-pt: {{ s.padding_vertical_custom_top }}rem;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.padding_horizontal == 'custom' %}
-     --space-pl: {{ s.padding_horizontal_custom_left }}px;
-     --space-pr: {{ s.padding_horizontal_custom_right }}px;
+     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
+     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
   {% endif %}
   {% if s.margin_vertical == 'custom' %}
-    --space-mt: {{ s.margin_vertical_custom_top }}px;
-    --space-mb: {{ s.margin_vertical_custom_bottom }}px;
+    --space-mt: {{ s.margin_vertical_custom_top }}rem;
+    --space-mb: {{ s.margin_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.margin_horizontal == 'custom' %}
-     --space-ml: {{ s.margin_horizontal_custom_left }}px;
-     --space-mr: {{ s.margin_horizontal_custom_right }}px;
+     --space-ml: {{ s.margin_horizontal_custom_left }}rem;
+     --space-mr: {{ s.margin_horizontal_custom_right }}rem;
   {% endif %}
   {% if s.gap == 'custom' %}
-    --space-gap: {{ s.gap_custom }}px;
+    --space-gap: {{ s.gap_custom }}rem;
   {% endif %}
 
   {% unless s.inherit_styles %}
@@ -96,11 +96,11 @@
       "type": "range",
       "id": "image_width",
       "label": "Image Column Width",
-      "min": 60,
-      "max": 200,
-      "step": 5,
-      "default": 120,
-      "unit": "px"
+      "min": 4,
+      "max": 12,
+      "step": 0.25,
+      "default": 7.5,
+      "unit": "rem"
     },
     { "type": "header", "content": "General Styles" },
     {
@@ -154,9 +154,10 @@
       "id": "padding_vertical_custom_top",
       "label": "Custom Top Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -164,9 +165,10 @@
       "id": "padding_vertical_custom_bottom",
       "label": "Custom Bottom Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -189,9 +191,10 @@
       "id": "padding_horizontal_custom_left",
       "label": "Custom Left Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -199,9 +202,10 @@
       "id": "padding_horizontal_custom_right",
       "label": "Custom Right Padding",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
@@ -224,9 +228,10 @@
       "id": "margin_vertical_custom_top",
       "label": "Custom Top margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
@@ -234,9 +239,10 @@
       "id": "margin_vertical_custom_bottom",
       "label": "Custom Bottom margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
@@ -259,9 +265,10 @@
       "id": "margin_horizontal_custom_left",
       "label": "Custom Left margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
@@ -269,9 +276,10 @@
       "id": "margin_horizontal_custom_right",
       "label": "Custom Right margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
@@ -294,9 +302,10 @@
       "id": "gap_custom",
       "label": "Custom Gap",
       "min": 0,
-      "max": 100,
-      "step": 4,
-      "default": 16,
+      "max": 6,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
       "conditional": "setting.gap == 'custom'"
     },
     {

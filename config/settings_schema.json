@@ -1,6 +1,109 @@
 {
   "schema": [
     {
+      "name": "Typography",
+      "id": "typography",
+      "settings": [
+        {
+          "type": "font_scheme",
+          "id": "heading_font_scheme",
+          "label": "Heading Font",
+          "default": "default"
+        },
+        {
+          "type": "font_scheme",
+          "id": "body_font_scheme",
+          "label": "Body Font",
+          "default": "default"
+        },
+        {
+          "type": "font_scheme",
+          "id": "button_font_scheme",
+          "label": "Button / UI Font",
+          "default": "default"
+        },
+        {
+          "type": "range",
+          "id": "type_scale",
+          "label": "Type Scale",
+          "min": 80,
+          "max": 120,
+          "step": 5,
+          "default": 100,
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "name": "Layout",
+      "id": "layout",
+      "settings": [
+        {
+          "type": "range",
+          "id": "corner_radius",
+          "label": "Global Corner Radius",
+          "min": 0,
+          "max": 40,
+          "step": 4,
+          "default": 0,
+          "unit": "px",
+          "info": "Affects buttons, cards, and media."
+        }
+      ]
+    },
+    {
+      "name": "Social Media",
+      "id": "social_media",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Accounts"
+        },
+        {
+          "type": "text",
+          "id": "instagram_link",
+          "label": "Instagram",
+          "info": "https://instagram.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "facebook_link",
+          "label": "Facebook",
+          "info": "https://facebook.com/yourpage"
+        },
+        {
+          "type": "text",
+          "id": "tiktok_link",
+          "label": "TikTok",
+          "info": "https://tiktok.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "twitter_link",
+          "label": "X (Twitter)",
+          "info": "https://x.com/@yourhandle"
+        },
+        {
+          "type": "text",
+          "id": "yelp_link",
+          "label": "Yelp",
+          "info": "https://yelp.com/biz/your-biz"
+        },
+        {
+          "type": "text",
+          "id": "linkedin_link",
+          "label": "LinkedIn",
+          "info": "https://linkedin.com/company/your-company"
+        },
+        {
+          "type": "text",
+          "id": "youtube_link",
+          "label": "YouTube",
+          "info": "https://youtube.com/@yourhandle"
+        }
+      ]
+    },
+    {
       "name": "Color Schemes",
       "type": "group",
       "id": "color_schemes",
@@ -92,98 +195,28 @@
       ]
     },
     {
-      "name": "Typography",
-      "id": "typography",
+      "name": "Font Schemes",
+      "type": "group",
+      "id": "font_schemes",
       "settings": [
         {
-          "type": "select",
-          "id": "heading_font",
-          "label": "Headings",
-          "options": [
-            {
-              "value": "serif",
-              "label": "Serif"
-            },
-            {
-              "value": "sans-serif",
-              "label": "Sans-serif"
-            },
-            {
-              "value": "Inter",
-              "label": "Inter"
-            },
-            {
-              "value": "Roboto",
-              "label": "Roboto"
-            },
-            {
-              "value": "DM+Serif+Display",
-              "label": "DM Serif"
-            },
-            {
-              "value": "Noto+Sans+JP",
-              "label": "Noto Sans JP"
-            }
-          ],
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "New Font Scheme"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Font Family",
+          "info": "CSS font-family value used for --font-heading, --font-body, --font-button. E.g. 'Inter', 'Playfair Display', sans-serif.",
           "default": "sans-serif"
         },
         {
-          "type": "select",
-          "id": "body_font",
-          "label": "Body Text",
-          "options": [
-            {
-              "value": "serif",
-              "label": "Serif"
-            },
-            {
-              "value": "sans-serif",
-              "label": "Sans-serif"
-            },
-            {
-              "value": "Inter",
-              "label": "Inter"
-            },
-            {
-              "value": "Roboto",
-              "label": "Roboto"
-            }
-          ],
-          "default": "sans-serif"
-        },
-        {
-          "type": "select",
-          "id": "button_font",
-          "label": "Buttons & UI",
-          "options": [
-            {
-              "value": "serif",
-              "label": "Serif"
-            },
-            {
-              "value": "sans-serif",
-              "label": "Sans-serif"
-            },
-            {
-              "value": "Inter",
-              "label": "Inter"
-            },
-            {
-              "value": "Roboto",
-              "label": "Roboto"
-            }
-          ],
-          "default": "sans-serif"
-        },
-        {
-          "type": "range",
-          "id": "type_scale",
-          "label": "Type Scale",
-          "min": 80,
-          "max": 120,
-          "step": 5,
-          "default": 100,
-          "unit": "%"
+          "type": "text",
+          "id": "url",
+          "label": "Google Fonts URL",
+          "info": "Full stylesheet URL from Google Fonts (e.g. https://fonts.googleapis.com/css2?family=Inter…). Leave blank for system fonts."
         }
       ]
     },
@@ -257,78 +290,33 @@
         {
           "type": "text",
           "id": "custom_width",
-          "label": "Width",
-          "default": "1496px",
+          "label": "Width (rem)",
+          "info": "Enter a number in rem units (e.g. 80 for 80rem ≈ 1280px at base font size).",
+          "default": "93.5",
           "conditional": "setting.width == 'custom'"
         }
       ]
     },
     {
-      "name": "Layout",
-      "id": "layout",
+      "name": "Preconnect Schemes",
+      "type": "group",
+      "id": "preconnect_schemes",
       "settings": [
         {
-          "type": "range",
-          "id": "corner_radius",
-          "label": "Global Corner Radius",
-          "min": 0,
-          "max": 40,
-          "step": 4,
-          "default": 0,
-          "unit": "px",
-          "info": "Affects buttons, cards, and media."
-        }
-      ]
-    },
-    {
-      "name": "Social Media",
-      "id": "social_media",
-      "settings": [
-        {
-          "type": "header",
-          "content": "Accounts"
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "New Preconnect URL"
         },
         {
           "type": "text",
-          "id": "instagram_link",
-          "label": "Instagram",
-          "info": "https://instagram.com/@yourhandle"
+          "id": "url",
+          "label": "Preconnect URL"
         },
         {
           "type": "text",
-          "id": "facebook_link",
-          "label": "Facebook",
-          "info": "https://facebook.com/yourpage"
-        },
-        {
-          "type": "text",
-          "id": "tiktok_link",
-          "label": "TikTok",
-          "info": "https://tiktok.com/@yourhandle"
-        },
-        {
-          "type": "text",
-          "id": "twitter_link",
-          "label": "X (Twitter)",
-          "info": "https://x.com/@yourhandle"
-        },
-        {
-          "type": "text",
-          "id": "yelp_link",
-          "label": "Yelp",
-          "info": "https://yelp.com/biz/your-biz"
-        },
-        {
-          "type": "text",
-          "id": "linkedin_link",
-          "label": "LinkedIn",
-          "info": "https://linkedin.com/company/your-company"
-        },
-        {
-          "type": "text",
-          "id": "youtube_link",
-          "label": "YouTube",
-          "info": "https://youtube.com/@yourhandle"
+          "id": "attributes",
+          "label": "Additional Attributes"
         }
       ]
     }
@@ -336,13 +324,51 @@
   "presets": {
     "default": {
       "layout": {
-        "corner_radius": 12
+        "corner_radius": 0
       },
       "typography": {
-        "type_scale": 105,
-        "body_font": "sans-serif",
-        "button_font": "sans-serif",
-        "heading_font": "sans-serif"
+        "type_scale": 100,
+        "heading_font_scheme": "heading",
+        "body_font_scheme": "body",
+        "button_font_scheme": "button"
+      },
+      "font_schemes": {
+        "heading": {
+          "settings": {
+            "title": "Inter",
+            "name": "Inter",
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          }
+        },
+        "body": {
+          "settings": {
+            "title": "Inter",
+            "name": "Inter",
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          }
+        },
+        "button": {
+          "settings": {
+            "title": "Inter",
+            "name": "Inter",
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          }
+        }
+      },
+      "preconnect_schemes": {
+        "fonts-google-apis": {
+          "settings": {
+            "title": "Fonts GoogleApis",
+            "url": "https://fonts.googleapis.com"
+          }
+        },
+        "fonts-gstatic": {
+          "settings": {
+            "title": "Fonts GStatic",
+            "url": "https://fonts.gstatic.com",
+            "attributes": "crossorigin"
+          }
+        }
       },
       "color_schemes": {
         "default": {
@@ -411,70 +437,70 @@
           "settings": {
             "title": "Wide 6XL",
             "width": "6xl",
-            "custom_width": "1024"
+            "custom_width": "64"
           }
         },
         "wide-7xl": {
           "settings": {
             "title": "Wide 7XL",
             "width": "7xl",
-            "custom_width": "1280"
+            "custom_width": "80"
           }
         },
         "narrow-sm": {
           "settings": {
             "title": "Narrow SM",
             "width": "sm",
-            "custom_width": "384"
+            "custom_width": "24"
           }
         },
         "narrow-md": {
           "settings": {
             "title": "Narrow MD",
             "width": "md",
-            "custom_width": "448"
+            "custom_width": "28"
           }
         },
         "narrow-lg": {
           "settings": {
             "title": "Narrow LG",
             "width": "lg",
-            "custom_width": "512"
+            "custom_width": "32"
           }
         },
         "narrow-xl": {
           "settings": {
             "title": "Narrow XL",
             "width": "xl",
-            "custom_width": "576"
+            "custom_width": "36"
           }
         },
         "narrow-2xl": {
           "settings": {
             "title": "Narrow 2XL",
             "width": "2xl",
-            "custom_width": "672"
+            "custom_width": "42"
           }
         },
         "narrow-3xl": {
           "settings": {
             "title": "Narrow 3XL",
             "width": "3xl",
-            "custom_width": "768"
+            "custom_width": "48"
           }
         },
         "standard-4xl": {
           "settings": {
             "title": "Standard 4XL",
             "width": "4xl",
-            "custom_width": "896"
+            "custom_width": "56"
           }
         },
         "standard-5xl": {
           "settings": {
             "title": "Standard 5XL",
             "width": "5xl",
-            "custom_width": "1024"
+            "custom_width": "64"
           }
         }
       }

@@ -30,6 +30,8 @@
 
   .height-full {
     height: 100%;
+    flex: 1 1 0%;
+    min-height: 0;
   }
 
   .height-auto {
@@ -232,7 +234,7 @@
   }
 
   .gap-none {
-    gap: 0px;
+    gap: 0;
   }
 
   .gap-xs {
@@ -408,7 +410,6 @@
     width: var(--icon-size);
   }
 
-  /* Semantic Alignment */
   .section-align-v-top {
     @apply justify-start;
   }
@@ -447,22 +448,22 @@
 
   /* Golden ratio based media constraints */
   .media-wrapper.mh-sm {
-    max-height: clamp(240px, calc(100vh * 0.382), 480px);
+    max-height: 38.2vh;
     aspect-ratio: 1.618 / 1;
   }
 
   .media-wrapper.mh-md {
-    max-height: clamp(360px, calc(100vh * 0.618), 720px);
+    max-height: 61.8vh;
     aspect-ratio: 1.618 / 1;
   }
 
   .media-wrapper.mh-lg {
-    max-height: clamp(480px, calc(100vh * 0.786), 900px);
+    max-height: 78.6vh;
     aspect-ratio: 1.618 / 1;
   }
 
   .media-wrapper.mh-xl {
-    max-height: clamp(600px, 100vh, 1100px);
+    max-height: 100vh;
     aspect-ratio: 1.618 / 1;
   }
 
@@ -480,40 +481,16 @@
     flex: 1 1 auto;
   }
 
-  /* FLEXIBLE CONTAINERS (Min-Height) - Grids grow with content */
-  .grid-layout-overlay.is-sm {
-    min-height: clamp(240px, calc(100vh * 0.382), 480px);
-  }
 
-  .grid-layout-overlay.is-md {
-    min-height: clamp(360px, calc(100vh * 0.618), 720px);
-  }
-
-  .grid-layout-overlay.is-lg {
-    min-height: clamp(480px, calc(100vh * 0.786), 900px);
-  }
-
-  .grid-layout-overlay.is-xl {
-    min-height: clamp(600px, 100vh, 1200px);
-  }
-
-  .grid-layout-overlay.is-custom {
-    min-height: var(--max-h, 600px);
-  }
-
-  .grid-layout-overlay.is-auto {
-    min-height: auto;
-  }
-
-  /* FIXED FRAMES (Height) - Strict sizing (cropping) */
   .hero-layout-overlay.is-sm,
   .hero-layout-split-left.is-sm,
   .hero-layout-split-right.is-sm,
   .media-layout-left.is-sm,
   .media-layout-right.is-sm,
-  .section-slideshow.is-sm,
-  .media-block.is-sm {
-    height: clamp(240px, calc(100vh * 0.382), 480px);
+  .grid-layout-overlay.is-sm,
+  .section-layout.is-sm {
+    min-height: 38.2vh;
+    min-height: 38.2svh;
   }
 
   .hero-layout-overlay.is-md,
@@ -521,9 +498,10 @@
   .hero-layout-split-right.is-md,
   .media-layout-left.is-md,
   .media-layout-right.is-md,
-  .section-slideshow.is-md,
-  .media-block.is-md {
-    height: clamp(360px, calc(100vh * 0.618), 720px);
+  .grid-layout-overlay.is-md,
+  .section-layout.is-md {
+    min-height: 61.8vh;
+    min-height: 61.8svh;
   }
 
   .hero-layout-overlay.is-lg,
@@ -531,9 +509,10 @@
   .hero-layout-split-right.is-lg,
   .media-layout-left.is-lg,
   .media-layout-right.is-lg,
-  .section-slideshow.is-lg,
-  .media-block.is-lg {
-    height: clamp(480px, calc(100vh * 0.786), 900px);
+  .grid-layout-overlay.is-lg,
+  .section-layout.is-lg {
+    min-height: 78.6vh;
+    min-height: 78.6svh;
   }
 
   .hero-layout-overlay.is-xl,
@@ -541,9 +520,10 @@
   .hero-layout-split-right.is-xl,
   .media-layout-left.is-xl,
   .media-layout-right.is-xl,
-  .section-slideshow.is-xl,
-  .media-block.is-xl {
-    height: clamp(600px, 100vh, 1200px);
+  .grid-layout-overlay.is-xl,
+  .section-layout.is-xl {
+    min-height: 100vh;
+    min-height: 100svh;
   }
 
   .hero-layout-overlay.is-custom,
@@ -551,9 +531,40 @@
   .hero-layout-split-right.is-custom,
   .media-layout-left.is-custom,
   .media-layout-right.is-custom,
+  .grid-layout-overlay.is-custom,
+  .section-layout.is-custom {
+    min-height: var(--max-h, 61.8vh);
+    min-height: var(--max-h, 61.8svh);
+  }
+
+  .section-slideshow.is-sm,
+  .media-block.is-sm {
+    height: 38.2vh;
+    height: 38.2svh;
+  }
+
+  .section-slideshow.is-md,
+  .media-block.is-md {
+    height: 61.8vh;
+    height: 61.8svh;
+  }
+
+  .section-slideshow.is-lg,
+  .media-block.is-lg {
+    height: 78.6vh;
+    height: 78.6svh;
+  }
+
+  .section-slideshow.is-xl,
+  .media-block.is-xl {
+    height: 100vh;
+    height: 100svh;
+  }
+
   .section-slideshow.is-custom,
   .media-block.is-custom {
-    height: var(--max-h, 600px);
+    height: var(--max-h, 61.8vh);
+    height: var(--max-h, 61.8svh);
   }
 
   .hero-layout-overlay.is-auto,
@@ -567,7 +578,7 @@
   }
 
   .media-block.is-thumbnail {
-    height: clamp(72px, 20vw, 130px);
+    height: clamp(4.5rem, 20vw, 8.125rem);
   }
 
   /* MEDIA & CONTENT OVERLAY/SPLIT SYSTEMS */
@@ -756,7 +767,6 @@
   .hero-media-split {
     @apply w-full lg:w-1/2 flex;
     position: relative;
-    height: 100%;
     flex-basis: 50%;
   }
 
@@ -765,7 +775,7 @@
   }
 
   .hero-content-overlay {
-    @apply relative z-content w-full h-full flex flex-col;
+    @apply relative z-content w-full flex-1 flex flex-col;
   }
 
   .media-layout-left {
@@ -788,8 +798,12 @@
     @apply relative flex flex-col;
   }
 
+  .section-layout {
+    @apply relative flex flex-col;
+  }
+
   .grid-content-overlay {
-    @apply relative z-content w-full flex flex-col;
+    @apply relative z-content w-full flex-1 flex flex-col;
   }
 
   .rounded-global {
@@ -1052,30 +1066,41 @@
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
-  @media (max-width: 767px) {
-    .padding-py-custom {
-      padding-top: max(calc(var(--space-pt) * 0.6), min(var(--space-pt), 24px));
-      padding-bottom: max(calc(var(--space-pb) * 0.6), min(var(--space-pb), 24px));
-    }
+  /* ── Fluid Typography Scale ─────────────────────────────────────────────
+     Semantic size classes used by typography.liquid. Each level interpolates
+     continuously from its mobile floor to its desktop ceiling via clamp().
+     All rem values scale with the fluid root font-size defined in :root.
+     ─────────────────────────────────────────────────────────────────────── */
+  .fs-jumbo {
+    font-size: clamp(2.5rem, -1rem + 10vw, 6rem);
+  }
 
-    .padding-px-custom {
-      padding-left: max(calc(var(--space-pl) * 0.6), min(var(--space-pl), 24px));
-      padding-right: max(calc(var(--space-pr) * 0.6), min(var(--space-pr), 24px));
-    }
+  .fs-display {
+    font-size: clamp(2.5rem, -0.25rem + 7.5vw, 4.5rem);
+  }
 
-    .margin-my-custom {
-      margin-top: max(calc(var(--space-mt) * 0.6), min(var(--space-mt), 24px));
-      margin-bottom: max(calc(var(--space-mb) * 0.6), min(var(--space-mb), 24px));
-    }
+  .fs-h1 {
+    font-size: clamp(2.25rem, 0.3rem + 5vw, 3rem);
+  }
 
-    .margin-mx-custom {
-      margin-left: max(calc(var(--space-ml) * 0.6), min(var(--space-ml), 24px));
-      margin-right: max(calc(var(--space-mr) * 0.6), min(var(--space-mr), 24px));
-    }
+  .fs-h2 {
+    font-size: clamp(1.875rem, 0.5rem + 3.5vw, 2.25rem);
+  }
 
-    .gap-custom {
-      gap: max(calc(var(--space-gap) * 0.6), min(var(--space-gap), 24px));
-    }
+  .fs-h3 {
+    font-size: clamp(1.5rem, 0.5rem + 2.5vw, 1.875rem);
+  }
+
+  .fs-h4 {
+    font-size: clamp(1.25rem, 0.55rem + 1.8vw, 1.5rem);
+  }
+
+  .fs-h5 {
+    font-size: clamp(1.125rem, 0.75rem + 0.95vw, 1.25rem);
+  }
+
+  .fs-h6 {
+    font-size: clamp(1rem, 0.7rem + 0.8vw, 1.125rem);
   }
 
   @keyframes fadeUp {
@@ -1127,7 +1152,10 @@
 
 @layer base {
   html {
-    font-size: calc(16px * var(--type-scale));
+    /* Fluid root: scales between 87.5%–100% of user's browser default across viewport widths.
+       All rem values in the codebase inherit this fluid scale automatically.
+       --type-scale acts as a fine-tuning multiplier on top. */
+    font-size: calc(clamp(0.875em, 0.75em + 0.5vw, 1em) * var(--type-scale));
   }
 
   body {
@@ -1143,8 +1171,23 @@
     @apply relative w-full;
   }
 
+  section {
+    @apply relative w-full;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
   .menu-list {
-    @apply relative w-full overflow-visible;
+    @apply relative w-full overflow-hidden;
   }
 
   .bg-body {

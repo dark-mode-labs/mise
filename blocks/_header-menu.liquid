@@ -2,12 +2,22 @@
 {% capture scheme_class %}
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
-{% capture wrap_style %}
+{% capture utilities %}
   {% case s.text_wrap %}
     {% when 'nowrap' %}whitespace-nowrap
     {% when 'balance' %}text-balance
   {% endcase %}
+  {% unless s.text_transform == 'none' %}
+    {{ s.text_transform }}
+  {% endunless %}
 {% endcapture %}
+
+{% assign font_family = 'btn' %}
+
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
+
 <nav
   class="header-nav hidden lg:flex items-center {{ scheme_class }}"
   {{ context.attached_attributes }}
@@ -27,8 +37,8 @@
             display_size: s.display_size,
             weight: s.font_weight,
             color: 'text-btn',
-            family: 'btn',
-            class: wrap_style
+            family: font_family,
+            class: utilities
           %}
           {% if link.links != blank %}
             {% render 'icon',
@@ -58,8 +68,8 @@
                         display_size: s.display_size,
                         weight: s.font_weight,
                         color: 'text-btn',
-                        family: 'btn',
-                        class: wrap_style
+                        family: font_family,
+                        class: utilities
                       %}
                     </a>
                     <ul class="space-y-2">
@@ -74,8 +84,8 @@
                               display_size: s.display_size,
                               weight: s.font_weight,
                               color: 'text-btn',
-                              family: 'btn',
-                              class: wrap_style
+                              family: font_family,
+                              class: utilities
                             %}
                           </a>
                         </li>
@@ -103,7 +113,14 @@
   </ul>
 </nav>
 
-{% render 'header-drawer', menu: s.nav, font_weight: s.font_weight, wrap_style: wrap_style %}
+{% render 'header-drawer',
+  menu: s.nav,
+  font_weight: s.font_weight,
+  utilities: utilities,
+  font_family: font_family,
+  font_color: 'text-btn',
+  display_size: 'h4'
+%}
 
 {% schema %}
 {
@@ -117,7 +134,7 @@
     },
     {
       "type": "header",
-      "content": "Nav Style"
+      "content": "Typography"
     },
     {
       "type": "select",
@@ -161,6 +178,31 @@
         { "value": "nowrap", "label": "No Wrap" },
         { "value": "balance", "label": "Balance" }
       ]
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text Transform",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
     },
     {
       "type": "header",

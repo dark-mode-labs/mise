@@ -2,12 +2,21 @@
 {% capture scheme_class %}
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
 {% endcapture %}
-{% capture wrap_style %}
+{% capture utilities %}
   {% case s.text_wrap %}
     {% when 'nowrap' %}whitespace-nowrap
     {% when 'balance' %}text-balance
   {% endcase %}
+  {% unless s.text_transform == 'none' %}
+    {{ s.text_transform }}
+  {% endunless %}
 {% endcapture %}
+
+{% assign font_family = 'btn' %}
+
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
 
 <div
   class="footer-block {{ scheme_class }}"
@@ -15,7 +24,13 @@
 >
   <details class="group" open>
     <summary class="flex items-center justify-between cursor-pointer md:cursor-default list-none mb-4">
-      {% render 'typography', text: s.heading, display_size: s.display_size, weight: s.font_weight, class: wrap_style %}
+      {% render 'typography',
+        text: s.heading,
+        display_size: s.display_size,
+        weight: s.font_weight,
+        class: utilities,
+        family: font_family
+      %}
       {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}
     </summary>
 
@@ -41,7 +56,7 @@
     },
     {
       "type": "header",
-      "content": "Heading"
+      "content": "Typography"
     },
     {
       "type": "select",
@@ -85,6 +100,31 @@
         { "value": "nowrap", "label": "No Wrap" },
         { "value": "balance", "label": "Balance" }
       ]
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text Transform",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
     },
     {
       "type": "header",

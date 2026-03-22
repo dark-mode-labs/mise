@@ -7,15 +7,15 @@
 
 {% capture style_override %}
   {% if s.margin_vertical == 'custom' %}
-    --space-mt: {{ s.margin_vertical_custom_top }}px;
-    --space-mb: {{ s.margin_vertical_custom_bottom }}px;
+    --space-mt: {{ s.margin_vertical_custom_top }}rem;
+    --space-mb: {{ s.margin_vertical_custom_bottom }}rem;
   {% endif %}
   {% if s.margin_horizontal == 'custom' %}
-     --space-ml: {{ s.margin_horizontal_custom_left }}px;
-     --space-mr: {{ s.margin_horizontal_custom_right }}px;
+     --space-ml: {{ s.margin_horizontal_custom_left }}rem;
+     --space-mr: {{ s.margin_horizontal_custom_right }}rem;
   {% endif %}
   {% if s.text_tracking == 'custom' %}
-    --text-tracking: {{ s.text_tracking_custom }}px;
+    --text-tracking: {{ s.text_tracking_custom }}em;
   {% endif %}
   {% if s.text_leading == 'custom' %}
     --text-leading: {{ s.text_leading_custom | divided_by: 100.0 }};
@@ -30,11 +30,9 @@
 {% capture utilities %}
   {% if s.italic %}italic{% endif %}
   {% if s.enable_hyphens %}hyphens-auto{% endif %}
-  {% case s.text_transform %}
-    {% when 'uppercase' %}uppercase
-    {% when 'capitalize' %}capitalize
-    {% when 'lowercase' %}lowercase
-  {% endcase %}
+  {% unless s.text_transform == 'none' %}
+    {{ s.text_transform }}
+  {% endunless %}
   {% case s.text_wrap %}
     {% when 'nowrap' %}whitespace-nowrap
     {% when 'balance' %}text-balance
@@ -44,6 +42,10 @@
     {% when 'ellipsis' %}truncate
   {% endcase %}
 {% endcapture %}
+
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
 
 <div
   class="text-align-{{ s.text_align }} {{ scheme_class }}"
@@ -57,7 +59,8 @@
     weight: s.font_weight,
     class: utilities,
     tracking: s.text_tracking,
-    leading: s.text_leading
+    leading: s.text_leading,
+    family: font_family
   %}
 </div>
 
@@ -156,10 +159,11 @@
       "type": "range",
       "id": "text_tracking_custom",
       "label": "Custom Tracking",
-      "min": 0,
-      "max": 128,
-      "step": 4,
+      "min": -0.1,
+      "max": 0.5,
+      "step": 0.025,
       "default": 0,
+      "unit": "em",
       "conditional": "setting.text_tracking == 'custom'"
     },
     {
@@ -199,6 +203,19 @@
       "id": "enable_hyphens",
       "label": "Hyphenate",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
     },
     {
       "type": "header",
@@ -262,9 +279,10 @@
       "id": "margin_vertical_custom_top",
       "label": "Custom Top margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
@@ -272,9 +290,10 @@
       "id": "margin_vertical_custom_bottom",
       "label": "Custom Bottom margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
@@ -297,9 +316,10 @@
       "id": "margin_horizontal_custom_left",
       "label": "Custom Left margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
@@ -307,9 +327,10 @@
       "id": "margin_horizontal_custom_right",
       "label": "Custom Right margin",
       "min": 0,
-      "max": 128,
-      "step": 4,
+      "max": 8,
+      "step": 0.25,
       "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {

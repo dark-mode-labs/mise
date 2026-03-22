@@ -1,5 +1,5 @@
 <div
-  class="w-full {% if block.settings.hide_mobile %}hidden md:block{% endif %}"
+  class="w-full {% case block.settings.show_responsive %}{% when 'desktop' %}hidden md:block{% when 'mobile' %}block md:hidden{% endcase %}"
   {{ context.attached_attributes }}
 >
   {% render 'spacer', height: block.settings.spacer_height %}
@@ -9,8 +9,27 @@
 {
   "name": "Spacer",
   "settings": [
-    { "type": "range", "id": "spacer_height", "label": "Height (px)", "min": 10, "max": 150, "default": 40 },
-    { "type": "checkbox", "id": "hide_mobile", "label": "Hide on Mobile", "default": false }
+    {
+      "type": "range",
+      "id": "spacer_height",
+      "label": "Height (rem)",
+      "min": 0.5,
+      "max": 10,
+      "step": 0.25,
+      "default": 2.5,
+      "unit": "rem"
+    },
+    {
+      "type": "select",
+      "id": "show_responsive",
+      "label": "Responsive",
+      "default": "both",
+      "options": [
+        { "label": "Both", "value": "both" },
+        { "label": "Mobile Only", "value": "mobile" },
+        { "label": "Desktop Only", "value": "desktop" }
+      ]
+    }
   ]
 }
 {% endschema %}

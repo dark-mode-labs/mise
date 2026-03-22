@@ -14,11 +14,6 @@ export default {
       height: {
         'screen-dvh': '100dvh',
       },
-      fontFamily: {
-        heading: ['var(--font-heading)', 'sans-serif'],
-        body: ['var(--font-body)', 'sans-serif'],
-        btn: ['var(--font-button)', 'sans-serif'],
-      },
       textColor: {
         body: 'var(--color-text)',
         secondary: 'var(--color-text-secondary)',
@@ -47,7 +42,7 @@ export default {
           '100%': { transform: 'translateX(0)' },
         },
         'fade-up': {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '0%': { opacity: '0', transform: 'translateY(1.25rem)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'ken-burns': {
