@@ -1,0 +1,3 @@
+{% for preconnect_scheme in preconnect_schemes %}
+  <link rel="preconnect" href="{{ preconnect_scheme[1].settings.url }}" {{ preconnect_scheme[1].settings.attributes }}>
+{% endfor %}
