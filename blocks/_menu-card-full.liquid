@@ -1,10 +1,9 @@
 {% assign s = block.settings %}
 
 {% capture block_classes %}
-  group-block group cursor-pointer grid grid-rows-[auto_1fr_auto] relative transition-all rounded-global
+  group-block group cursor-pointer flex flex-col relative transition-all rounded-global
   text-align-{{ s.text_align }}
-  width-{{ s.width }}
-  height-{{ s.height }}
+  width-full height-full
   padding-py-{{ s.padding_vertical }}
   padding-px-{{ s.padding_horizontal }}
   margin-my-{{ s.margin_vertical }}
@@ -88,17 +87,6 @@
 {
   "name": "Menu Card",
   "settings": [
-    { "type": "header", "content": "Layout Mode" },
-    {
-      "type": "range",
-      "id": "min_column_width",
-      "label": "Min Item Width (Grid Only)",
-      "min": 6,
-      "max": 32,
-      "step": 0.5,
-      "default": 16,
-      "unit": "rem"
-    },
     { "type": "header", "content": "General Styles" },
     {
       "type": "select",
@@ -110,26 +98,6 @@
         { "value": "right", "label": "Right" }
       ],
       "default": "left"
-    },
-    {
-      "type": "select",
-      "id": "width",
-      "label": "Width",
-      "options": [
-        { "value": "full", "label": "Full Width" },
-        { "value": "fit", "label": "Fit Content" }
-      ],
-      "default": "full"
-    },
-    {
-      "type": "select",
-      "id": "height",
-      "label": "Height",
-      "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "full", "label": "Full Height" }
-      ],
-      "default": "auto"
     },
     {
       "type": "select",
