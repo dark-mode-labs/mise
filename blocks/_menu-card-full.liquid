@@ -1,7 +1,7 @@
 {% assign s = block.settings %}
 
 {% capture block_classes %}
-  group-block grid grid-rows-[auto_1fr_auto] relative transition-all rounded-global
+  group-block group cursor-pointer grid grid-rows-[auto_1fr_auto] relative transition-all rounded-global
   text-align-{{ s.text_align }}
   width-{{ s.width }}
   height-{{ s.height }}
@@ -75,6 +75,8 @@
 <div
   class="{{ block_classes }}"
   style="{{ block_styles }}"
+  data-item-uuid="{{ context.item.uuid }}"
+  data-action="add-item"
   {{ context.attached_attributes }}
 >
   {% content_for 'block', type: 'group', id: 'menu-card-header' %}
