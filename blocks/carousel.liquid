@@ -1,0 +1,742 @@
+{% assign s = block.settings %}
+
+{% capture block_classes %}
+  carousel-block transition-all rounded-global rotate-custom
+  {% if s.animate_float %}float{% endif %}
+  {% if s.animate_scale_in %}scale-in{% endif %}
+  {% if s.animate_stagger %}stagger-load{% endif %}
+  {% if s.animate_fade != 'none' %}fade-{{ s.animate_fade }}{% endif %}
+  {% unless s.border_mode == 'none' %}
+    {% capture border_flags %}
+      {% if s.border_mode == 'custom' %}
+        {% if s.border_custom_left %}group-border-custom-left{% endif %}
+        {% if s.border_custom_right %}group-border-custom-right{% endif %}
+        {% if s.border_custom_top %}group-border-custom-top{% endif %}
+        {% if s.border_custom_bottom %}group-border-custom-bottom{% endif %}
+      {% endif %}
+    {% endcapture %}
+    group-border-{{ s.border_mode }} group-border-size-{{ s.border_size }} {{ border_flags }}
+  {% endunless %}
+
+  {% unless s.grow_content %}
+    width-{{ s.width_scheme }}
+  {% endunless %}
+  block-limit-width
+  height-{{ s.height }}
+  padding-py-{{ s.padding_vertical }}
+  padding-px-{{ s.padding_horizontal }}
+  margin-my-{{ s.margin_vertical }}
+  margin-mx-{{ s.margin_horizontal }}
+  aspect-{{ s.aspect_ratio }}
+
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }} bg-surface{% endunless %}
+
+  {% if s.shadow %}shadow-lg{% endif %}
+  {% if s.overflow_hidden %}overflow-hidden{% endif %}
+  {% if s.position == 'absolute' %}absolute anchor-{{ s.inset }}{% endif %}
+  {% if s.position == 'relative' %}relative{% endif %}
+{% endcapture %}
+
+{% capture block_styles %}
+  {% if s.padding_vertical == 'custom' %}
+    --space-pt: {{ s.padding_vertical_custom_top }}rem;
+    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
+  {% endif %}
+  {% if s.padding_horizontal == 'custom' %}
+     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
+     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
+  {% endif %}
+  {% if s.margin_vertical == 'custom' %}
+    --space-mt: {{ s.margin_vertical_custom_top }}rem;
+    --space-mb: {{ s.margin_vertical_custom_bottom }}rem;
+  {% endif %}
+  {% if s.margin_horizontal == 'custom' %}
+     --space-ml: {{ s.margin_horizontal_custom_left }}rem;
+     --space-mr: {{ s.margin_horizontal_custom_right }}rem;
+  {% endif %}
+  {% if s.gap == 'custom' %}
+    --space-gap: {{ s.gap_custom }}rem;
+  {% endif %}
+  {% unless s.border_mode == 'none' %}
+    {% if s.border_color_override %}
+      --color-border: {{  s.border_color }};
+    {% endif %}
+    --border-style: {{ s.border_style }};
+  {% endunless %}
+
+  {% unless s.inherit_styles %}
+    {% if s.border_radius_override %}
+      --radius-global: {{ s.border_radius }}px;
+    {% endif %}
+    {% if s.bg_color_override %}
+      --color-surface: {{ s.bg_color }};
+    {% endif %}
+    {% if s.shadow_color_override %}
+      --color-shadow: {{ s.shadow_color }}
+    {% endif %}
+    {% if s.text_color_override %}
+      --color-text: {{ s.text_color }};
+    {% endif %}
+  {% endunless %}
+
+  {% if s.enable_overlay %}
+    {% capture overlay_style %}
+        background: {{ s.overlay_color }};
+        opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
+    {% endcapture %}
+  {% endif %}
+{% endcapture %}
+
+{% assign nav_dir = '' %}
+{% if s.show_arrows %}
+  {% if s.nav_anchor contains 'top-' %}{% assign nav_dir = 'has-nav-top' %}{% endif %}
+  {% if s.nav_anchor contains 'bottom-' %}{% assign nav_dir = 'has-nav-bottom' %}{% endif %}
+{% endif %}
+
+<div
+  class="{{ block_classes }}"
+  style="{{ block_styles }}"
+  {{ context.attached_attributes }}
+>
+  <div
+    class="slideshow-wrapper relative w-full h-full flex flex-col {{ nav_dir }}"
+    data-behavior="slideshow"
+    data-autoplay="{{ s.autoplay }}"
+    data-speed="{{ s.autoplay_speed }}"
+    data-infinite="{{ s.infinite_scroll }}"
+    data-cols-mobile="{{ s.columns_mobile }}"
+    data-peek-mobile="{{ s.peek_mobile }}"
+    data-cols-desktop="{{ s.columns_desktop }}"
+    data-peek-desktop="{{ s.peek_desktop }}"
+    style="
+      --cols-mobile: {{ s.columns_mobile }};
+      --cols-desktop: {{ s.columns_desktop }};
+    "
+  >
+    {% if s.show_arrows %}
+      <div
+        class="slideshow-controls absolute z-floating anchor-{{ s.nav_anchor }} flex items-center gap-1"
+        style="--nav-offset-x: {{ s.nav_offset_x | default: 0 }}rem; --nav-offset-y: {{ s.nav_offset_y | default: 0 }}rem;"
+      >
+        <button
+          type="button"
+          class="slideshow-prev pointer-events-auto btn-nav nav-size-{{ s.nav_size }} nav-shape-{{ s.nav_shape }}"
+          aria-label="Previous"
+        >
+          {% render 'icon', name: s.arrow_icon %}
+        </button>
+
+        {% if s.show_counter %}
+          <div class="slideshow-counter-wrapper tabular-nums">
+            {% render 'typography', tag: 'span', display_size: s.display_size, weight: s.font_weight %}
+          </div>
+        {% endif %}
+
+        <button
+          type="button"
+          class="slideshow-next pointer-events-auto btn-nav nav-size-{{ s.nav_size }} nav-shape-{{ s.nav_shape }}"
+          aria-label="Next"
+        >
+          {% assign icon_name = s.arrow_icon | replace: '-left', '-right' %}
+          {% render 'icon', name: icon_name %}
+        </button>
+      </div>
+    {% endif %}
+
+    <div class="slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-{{ s.gap }}">
+      {% content_for 'blocks' %}
+    </div>
+
+    {% if s.enable_overlay %}
+      <div class="rounded-global absolute inset-0 pointer-events-none" style="{{ overlay_style }}"></div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Carousel",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Mobile Columns",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "peek_mobile",
+      "label": "Mobile Peek (%)",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "default": 0,
+      "info": "Percentage of the next card to reveal. Set to 0 for exact fit."
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Desktop Columns",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "peek_desktop",
+      "label": "Desktop Peek (%)",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "default": 0,
+      "info": "Percentage of the next card to reveal. Set to 0 for exact fit."
+    },
+    { "type": "header", "content": "Navigation" },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Arrows",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "arrow_icon",
+      "label": "Arrow Style",
+      "options": [
+        { "value": "chevron-left", "label": "Chevron" },
+        { "value": "arrow-left", "label": "Arrow" }
+      ],
+      "default": "chevron-left",
+      "conditional": "setting.show_arrows"
+    },
+    {
+      "type": "header",
+      "content": "Anchor",
+      "conditional": "setting.show_arrows"
+    },
+    {
+      "type": "select",
+      "id": "nav_anchor",
+      "label": "Anchor",
+      "options": [
+        { "value": "top-left", "label": "Top Left" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "top-center", "label": "Top Center" },
+        { "value": "bottom-left", "label": "Bottom Left" },
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "bottom-center", "label": "Bottom Center" }
+      ],
+      "default": "top-right",
+      "conditional": "setting.show_arrows"
+    },
+    {
+      "type": "range",
+      "id": "nav_offset_x",
+      "label": "Horizontal Nudge",
+      "min": -5,
+      "max": 5,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "info": "Fine-tune the horizontal position (negative moves left, positive moves right).",
+      "conditional": "setting.show_arrows"
+    },
+    {
+      "type": "range",
+      "id": "nav_offset_y",
+      "label": "Vertical Nudge",
+      "min": -5,
+      "max": 5,
+      "step": 0.25,
+      "default": -3,
+      "unit": "rem",
+      "info": "Fine-tune the vertical position to align with headings outside the block (negative moves up).",
+      "conditional": "setting.show_arrows"
+    },
+    {
+      "type": "select",
+      "id": "nav_size",
+      "label": "Button Size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "md",
+      "conditional": "setting.show_arrows"
+    },
+    {
+      "type": "select",
+      "id": "nav_shape",
+      "label": "Button Shape",
+      "options": [
+        { "value": "circle", "label": "Circle" },
+        { "value": "rounded", "label": "Rounded" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "circle",
+      "conditional": "setting.show_arrows"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show Counter",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Counter Style",
+      "conditional": "setting.show_counter"
+    },
+    {
+      "type": "select",
+      "id": "display_size",
+      "label": "Counter Size",
+      "default": "small",
+      "options": [
+        { "value": "body", "label": "Body" },
+        { "value": "small", "label": "Small" },
+        { "value": "caption", "label": "Caption" }
+      ],
+      "conditional": "setting.show_counter"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Counter Weight",
+      "default": "medium",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "bold", "label": "Bold" }
+      ],
+      "conditional": "setting.show_counter"
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_scroll",
+      "label": "Infinite Loop",
+      "default": false,
+      "conditional": "setting.layout_mode == 'slider'"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": false,
+      "conditional": "setting.layout_mode == 'slider'"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Speed (seconds)",
+      "min": 3,
+      "max": 10,
+      "default": 5,
+      "conditional": "setting.autoplay == true"
+    },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "full"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Height",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "full", "label": "Full Height" }
+      ],
+      "default": "auto"
+    },
+    { "type": "header", "content": "Padding/Margins" },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "XL" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "XL" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "margin_vertical",
+      "label": "Vertical margin",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "auto", "label": "Auto" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "margin_horizontal",
+      "label": "Horizontal margin",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "auto", "label": "Auto" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "gap",
+      "label": "Gap",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "XL" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 6,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
+      "conditional": "setting.gap == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    { "type": "checkbox", "id": "animate_float", "label": "Float", "default": false },
+    { "type": "checkbox", "id": "animate_scale_in", "label": "Scale In", "default": false },
+    { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
+    {
+      "type": "select",
+      "id": "animate_fade",
+      "label": "Fade Animation",
+      "default": "none",
+      "options": [
+        { "value": "in", "label": "In" },
+        { "value": "up", "label": "Up" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
+    { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
+    { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
+    {
+      "type": "header",
+      "content": "Borders"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        { "value": "custom", "label": "Custom" },
+        { "value": "full", "label": "Full" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" },
+        { "value": "double", "label": "Double" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "border_size",
+      "label": "Border Size",
+      "options": [
+        { "value": "xxs", "label": "XXS", "info": "1px" },
+        { "value": "xs", "label": "XS", "info": "2px" },
+        { "value": "sm", "label": "Small", "info": "4px" },
+        { "value": "md", "label": "Medium", "info": "6px" },
+        { "value": "lg", "label": "Large", "info": "8px" }
+      ],
+      "default": "md",
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "header",
+      "content": "Overlay Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Use Overlay",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Tint / Background Color",
+      "default": "",
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "default": 100,
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Override Background",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background",
+      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 1000,
+      "label": "Radius",
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow_color_override",
+      "label": "Override Shadow Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color",
+      "label": "Custom Shadow Color",
+      "default": "rgba(0,0,0,1)",
+      "conditional": "setting.inherit_styles != true and setting.shadow_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_color_override",
+      "label": "Override Border Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Custom Border Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_styles != true and setting.border_color_override and setting.border_mode != 'none'"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Text Color",
+      "default": false,
+      "conditional": "setting.show_counter and setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Custom Counter Color",
+      "default": "#ffffff",
+      "conditional": "setting.show_counter and setting.inherit_styles != true and setting.text_color_override"
+    }
+  ],
+  "blocks": [{ "type": "@theme" }],
+  "presets": [{ "name": "Group", "settings": {}, "blocks": {}, "block_order": [] }]
+}
+{% endschema %}

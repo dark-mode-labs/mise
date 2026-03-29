@@ -6,16 +6,67 @@ export default class Slideshow {
     this.nextBtn = this.el.querySelector('.slideshow-next');
     this.dots = this.el.querySelectorAll('.slideshow-dot');
 
+    this.counter = this.el.querySelector('.slideshow-counter-wrapper span');
+
     this.infinite = this.el.dataset.infinite === 'true';
     this.autoplayEnabled = this.el.dataset.autoplay === 'true';
     this.speed = (parseInt(this.el.dataset.speed) || 5) * 1000;
 
     this.interval = null;
     this.isDown = false;
+    this.isDragging = false;
     this.startX = 0;
     this.scrollLeft = 0;
 
+    this.scrollTicking = false;
+
     this.init();
+  }
+
+  getCols() {
+    const isMobile = this.el.clientWidth < 540;
+    return parseInt(this.el.dataset[isMobile ? 'colsMobile' : 'colsDesktop']) || 1;
+  }
+
+  initExactFit() {
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const wrapperWidth = entry.contentRect.width;
+        const isMobile = wrapperWidth < 540;
+        const cols = parseInt(this.el.dataset[isMobile ? 'colsMobile' : 'colsDesktop']) || 1;
+        const peekPct = parseInt(this.el.dataset[isMobile ? 'peekMobile' : 'peekDesktop']) / 100 || 0;
+        const gapPx = parseFloat(window.getComputedStyle(this.track).columnGap) || 0;
+        const visibleGaps = peekPct > 0 ? cols : cols - 1;
+        const exactWidth = (wrapperWidth - (gapPx * visibleGaps)) / (cols + peekPct);
+
+        this.el.style.setProperty('--computed-slide-width', `${exactWidth}px`);
+      }
+    });
+
+    observer.observe(this.el);
+  }
+
+  getSlides() {
+    if (!this.track) return [];
+    return Array.from(this.track.querySelectorAll(':scope > *:not(.contents), :scope > .contents > *'));
+  }
+
+  getCurrentIndex() {
+    const scrollPos = this.track.scrollLeft;
+    const slides = this.getSlides();
+    let closestIndex = 0;
+    let minDiff = Infinity;
+
+    slides.forEach((slide, index) => {
+      const slideLeft = slide.offsetLeft - this.track.offsetLeft;
+      const diff = Math.abs(slideLeft - scrollPos);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = index;
+      }
+    });
+
+    return closestIndex;
   }
 
   init() {
@@ -26,15 +77,22 @@ export default class Slideshow {
 
     this.dots.forEach(dot => {
       dot.addEventListener('click', (e) => {
-        this.scrollToIndex(parseInt(dot.dataset.index));
+        const cols = this.getCols();
+        const targetSlideIndex = parseInt(dot.dataset.index) * cols;
+        this.scrollToIndex(targetSlideIndex);
         this.stopAutoplay();
       });
     });
 
-    this.observer = new IntersectionObserver(this.onIntersect.bind(this), {
-      root: this.track, threshold: 0.5
+    this.track.addEventListener('scroll', () => {
+      if (!this.scrollTicking) {
+        window.requestAnimationFrame(() => {
+          this.updateUI(this.getCurrentIndex(), this.getSlides().length);
+          this.scrollTicking = false;
+        });
+        this.scrollTicking = true;
+      }
     });
-    Array.from(this.track.children).forEach(slide => this.observer.observe(slide));
 
     this.initDragPhysics();
 
@@ -43,53 +101,93 @@ export default class Slideshow {
       this.el.addEventListener('mouseenter', () => this.stopAutoplay());
       this.el.addEventListener('mouseleave', () => this.startAutoplay());
     }
-  }
 
-  onIntersect(entries) {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const slides = Array.from(this.track.children);
-        const index = slides.indexOf(entry.target);
-        this.updateUI(index, slides.length);
-      }
-    });
+    this.initExactFit();
+
+    setTimeout(() => this.updateUI(this.getCurrentIndex(), this.getSlides().length), 50);
   }
 
   updateUI(index, total) {
-    this.dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
+    if (total === 0) return;
+
+    const cols = this.getCols();
+    const totalPages = Math.ceil(total / cols);
+    const maxScroll = this.track.scrollWidth - this.track.clientWidth;
+
+    let currentPageIndex;
+
+    if (this.track.scrollLeft <= 10) {
+      currentPageIndex = 0;
+    }
+    else if (this.track.scrollLeft >= maxScroll - 10) {
+      currentPageIndex = totalPages - 1;
+    }
+    else {
+      currentPageIndex = Math.floor(index / cols);
+    }
+
+    currentPageIndex = Math.max(0, Math.min(currentPageIndex, totalPages - 1));
+    this.dots.forEach((dot, i) => dot.classList.toggle('is-active', i === currentPageIndex));
 
     if (!this.infinite) {
-      if (this.prevBtn) this.prevBtn.disabled = index === 0;
-      if (this.nextBtn) this.nextBtn.disabled = index === total - 1;
+      if (this.prevBtn) this.prevBtn.disabled = currentPageIndex === 0;
+      if (this.nextBtn) this.nextBtn.disabled = currentPageIndex === totalPages - 1;
+    }
+
+    if (this.counter) {
+      this.counter.textContent = `${currentPageIndex + 1} / ${totalPages}`;
     }
   }
 
   next() {
-    const maxScroll = this.track.scrollWidth - this.track.clientWidth;
-    const current = this.track.scrollLeft;
+    const cols = this.getCols();
+    const currentIndex = this.getCurrentIndex();
 
-    if (current >= maxScroll - 10) {
-      if (this.infinite) this.track.scrollTo({ left: 0, behavior: 'smooth' }); // Rewind
-    } else {
-      this.track.scrollBy({ left: this.track.clientWidth, behavior: 'smooth' });
+    let targetIndex = currentIndex + cols;
+    const maxLeftIndex = this.getSlides().length - cols;
+
+    if (currentIndex >= maxLeftIndex) {
+      if (this.infinite) {
+        targetIndex = 0;
+      } else {
+        return;
+      }
     }
+
+    this.scrollToIndex(targetIndex);
     this.stopAutoplay();
   }
 
   prev() {
-    const current = this.track.scrollLeft;
+    const cols = this.getCols();
+    const currentIndex = this.getCurrentIndex();
+    let targetIndex;
 
-    if (current <= 10) {
-      if (this.infinite) this.track.scrollTo({ left: this.track.scrollWidth, behavior: 'smooth' }); // Jump to end
+    if (currentIndex % cols !== 0) {
+      targetIndex = Math.floor(currentIndex / cols) * cols;
     } else {
-      this.track.scrollBy({ left: -this.track.clientWidth, behavior: 'smooth' });
+      targetIndex = currentIndex - cols;
     }
+
+    if (currentIndex <= 0) {
+      if (this.infinite) {
+        targetIndex = this.getSlides().length - 1;
+      } else {
+        return;
+      }
+    }
+
+    this.scrollToIndex(Math.max(0, targetIndex));
     this.stopAutoplay();
   }
 
   scrollToIndex(index) {
-    const slide = this.track.children[index];
-    if (slide) slide.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    const slides = this.getSlides();
+    const slide = slides[index];
+    if (!slide) return;
+
+    const targetLeft = slide.offsetLeft - this.track.offsetLeft;
+    this.track.scrollTo({ left: targetLeft, behavior: 'smooth' });
   }
 
   startAutoplay() {
@@ -102,10 +200,22 @@ export default class Slideshow {
   }
 
   initDragPhysics() {
+    this.track.addEventListener('click', (e) => {
+      if (this.isDragging) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.isDragging = false;
+      }
+    }, true);
+
     this.track.addEventListener('mousedown', (e) => {
       this.isDown = true;
+      this.isDragging = false;
       this.track.classList.add('cursor-grabbing');
-      this.track.classList.remove('scroll-smooth', 'snap-x');
+
+      this.track.style.scrollSnapType = 'none';
+      this.track.style.scrollBehavior = 'auto';
+
       this.startX = e.pageX - this.track.offsetLeft;
       this.scrollLeft = this.track.scrollLeft;
       this.stopAutoplay();
@@ -118,15 +228,29 @@ export default class Slideshow {
       if (!this.isDown) return;
       e.preventDefault();
       const x = e.pageX - this.track.offsetLeft;
-      const walk = (x - this.startX) * 2;
+
+      if (Math.abs(x - this.startX) > 5) {
+        this.isDragging = true;
+      }
+
+      const walk = (x - this.startX) * 1.5;
       this.track.scrollLeft = this.scrollLeft - walk;
     });
   }
 
   endDrag() {
+    if (!this.isDown) return;
     this.isDown = false;
     this.track.classList.remove('cursor-grabbing');
-    this.track.classList.add('scroll-smooth', 'snap-x');
+
+    this.track.style.scrollBehavior = 'smooth';
+    this.track.style.scrollSnapType = 'x mandatory';
+
+    if (this.isDragging) {
+      const nearestIndex = this.getCurrentIndex();
+      this.scrollToIndex(nearestIndex);
+    }
+
     if (this.autoplayEnabled) this.startAutoplay();
   }
 }
