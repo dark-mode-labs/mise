@@ -128,27 +128,51 @@
   style="{{ style_override }}"
   {{ context.attached_attributes }}
 >
-  <a
-    href="{{ s.link }}"
-    {{ inert }}
-    class="
-      rounded-global w-full flex
-      {{ justify_class }}
-      {{ align_class }}
-      padding-py-{{ s.padding_vertical }}
-      padding-px-{{ s.padding_horizontal }}
-      {{ style_class }}
-    "
-  >
-    {% render 'typography',
-      text: s.label,
-      display_size: s.display_size,
-      weight: s.font_weight,
-      color: 'text-btn',
-      family: font_family,
-      class: utilities
-    %}
-  </a>
+  {% if s.action_type == 'add-item' %}
+    <button
+      type="button"
+      class="
+        rounded-global w-full flex
+        {{ justify_class }}
+        {{ align_class }}
+        padding-py-{{ s.padding_vertical }}
+        padding-px-{{ s.padding_horizontal }}
+        {{ style_class }}
+      "
+      data-action="add-item"
+    >
+      {% render 'typography',
+        text: s.label,
+        display_size: s.display_size,
+        weight: s.font_weight,
+        color: 'text-btn',
+        family: font_family,
+        class: utilities
+      %}
+    </button>
+  {% elsif s.action_type == 'link' %}
+    <a
+      href="{{ s.link }}"
+      {{ inert }}
+      class="
+        rounded-global w-full flex
+        {{ justify_class }}
+        {{ align_class }}
+        padding-py-{{ s.padding_vertical }}
+        padding-px-{{ s.padding_horizontal }}
+        {{ style_class }}
+      "
+    >
+      {% render 'typography',
+        text: s.label,
+        display_size: s.display_size,
+        weight: s.font_weight,
+        color: 'text-btn',
+        family: font_family,
+        class: utilities
+      %}
+    </a>
+  {% endif %}
 </div>
 
 {% schema %}
@@ -156,7 +180,17 @@
   "name": "Button",
   "settings": [
     { "type": "text", "id": "label", "label": "Label", "default": "Book Now" },
-    { "type": "url", "id": "link", "label": "Link" },
+    {
+      "type": "select",
+      "id": "action_type",
+      "label": "Action",
+      "default": "link",
+      "options": [
+        { "value": "link", "label": "Link" },
+        { "value": "add-item", "label": "Add Item" }
+      ]
+    },
+    { "type": "url", "id": "link", "label": "Link", "conditional": "setting.action_type == 'link'" },
     {
       "type": "select",
       "id": "style",
@@ -495,7 +529,7 @@
         { "value": "auto", "label": "Auto" },
         { "value": "custom", "label": "Custom" }
       ],
-      "default": "auto"
+      "default": "none"
     },
     {
       "type": "range",
@@ -532,7 +566,7 @@
         { "value": "auto", "label": "Auto" },
         { "value": "custom", "label": "Custom" }
       ],
-      "default": "auto"
+      "default": "none"
     },
     {
       "type": "range",

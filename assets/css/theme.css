@@ -1,8 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:ital,wght@0,100..900;1,100..900&display=swap");
-
 @tailwind base;
 @tailwind utilities;
 
@@ -107,6 +102,80 @@
 
   .drawer-backdrop {
     @apply absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 pointer-events-auto;
+  }
+
+  .group-block,
+  .carousel-block {
+    @apply group-hover:pointer-events-none;
+  }
+
+  .carousel-block .slideshow-track {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .carousel-block .slideshow-track>*,
+  .carousel-block .slideshow-track>.contents>* {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    box-sizing: border-box;
+    width: var(--computed-slide-width, calc((100% - (1rem * (var(--cols-mobile) - 1))) / var(--cols-mobile)));
+  }
+
+  @media (min-width: 540px) {
+
+    .carousel-block .slideshow-track>*,
+    .carousel-block .slideshow-track>.contents>* {
+      width: var(--computed-slide-width, calc((100% - (1rem * (var(--cols-desktop) - 1))) / var(--cols-desktop)));
+    }
+  }
+
+  .slideshow-controls {
+    translate: var(--nav-offset-x, 0) var(--nav-offset-y, 0);
+  }
+
+  .slideshow-controls .btn-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+  }
+
+  .btn-nav.nav-size-sm {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .btn-nav.nav-size-md {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .btn-nav.nav-size-lg {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .slideshow-counter-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-width: 3em;
+    flex-shrink: 0;
+  }
+
+  .btn-nav.nav-shape-circle {
+    border-radius: 9999px;
+  }
+
+  .btn-nav.nav-shape-rounded {
+    border-radius: var(--radius-global);
+  }
+
+  .btn-nav.nav-shape-square {
+    border-radius: 0;
   }
 
   .media-wrapper {
