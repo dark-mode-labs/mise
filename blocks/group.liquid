@@ -98,7 +98,7 @@
   {% if s.layout_mode != 'grid' %}
     direction-{{ s.direction }}
     {% if s.wrap_content %}flex-wrap{% endif %}
-    {% if s.grow_content %}flex-1{% endif %}
+    {% if s.grow_content %}flex-grow{% else %}flex-initial{% endif %}
   {% endif %}
   {% if s.animate_float %}float{% endif %}
   {% if s.animate_scale_in %}scale-in{% endif %}
@@ -200,7 +200,7 @@
   {% endif %}
 {% endcapture %}
 
-{% if s.link %}
+{% if s.trigger == 'link' and s.link %}
   <a
     class="isolate {{ block_classes }}"
     style="{{ block_styles }}"
@@ -214,6 +214,9 @@
     class="isolate {{ block_classes }}"
     style="{{ block_styles }}"
     {{ context.attached_attributes }}
+    {% if s.trigger == 'action' %}
+      data-action="{{ s.action }}"
+    {% endif %}
   >
     {{ content }}
   </div>
@@ -223,7 +226,18 @@
 {
   "name": "Group",
   "settings": [
-    { "type": "url", "id": "link", "label": "Link" },
+    {
+      "type": "select",
+      "id": "trigger",
+      "label": "Trigger",
+      "default": "link",
+      "options": [
+        { "value": "link", "label": "Link" },
+        { "value": "action", "label": "Action" }
+      ]
+    },
+    { "type": "url", "id": "link", "label": "Link", "conditional": "setting.trigger == 'link'" },
+    { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
     { "type": "header", "content": "Layout Mode" },
     {
       "type": "select",

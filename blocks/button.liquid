@@ -86,12 +86,6 @@
     {% assign style_class = 'btn-link' %}
 {% endcase %}
 
-{% capture inert %}
-  {% if s.link == blank %}
-    inert="true"
-  {% endif %}
-{% endcapture %}
-
 {% case s.content_align %}
   {% when 'left' -%}
     {%- assign justify_class = 'justify-content-start' %}
@@ -153,7 +147,9 @@
   {% elsif s.trigger == 'link' %}
     <a
       href="{{ s.link }}"
-      {{ inert }}
+      {% if s.link == blank %}
+        inert="true"
+      {% endif %}
       class="
         rounded-global w-full flex
         {{ justify_class }}

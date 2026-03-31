@@ -3,6 +3,9 @@
   {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
   margin-my-{{ s.margin_vertical }}
   margin-mx-{{ s.margin_horizontal }}
+  {% if s.numeric == 'tabular' %}
+    tabular-nums min-w-[3ch]
+  {% endif %}
 {% endcapture %}
 
 {% capture style_override %}
@@ -139,6 +142,16 @@
         { "value": "black", "label": "Black" }
       ],
       "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "numeric",
+      "label": "Number Style",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "tabular", "label": "Tabular" }
+      ]
     },
     {
       "type": "select",
