@@ -85,12 +85,12 @@
   >
     <div class="text-center mx-auto mb-16 fade-up">
       {% if s.heading != blank %}
-        {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color: 'var(--color-text)' %}
+        {% render 'typography', text: s.heading, tag: 'h2', size: 'display', color_role: 'primary' %}
       {% endif %}
 
       {% if s.subtext != blank %}
         <div class="text-secondary mt-4">
-          {% render 'typography', text: s.subtext, tag: 'div', size: 'body', color: 'var(--color-text-secondary)' %}
+          {% render 'typography', text: s.subtext, tag: 'div', size: 'body', color_role: 'secondary' %}
         </div>
       {% endif %}
     </div>

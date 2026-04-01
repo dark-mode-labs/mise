@@ -117,6 +117,13 @@
   {% assign font_family = s.font_scheme %}
 {% endif %}
 
+{% assign color_role = s.color_role %}
+{% unless s.inherit_styles %}
+  {% if s.text_color_override %}
+    {% assign color_role = blank %}
+  {% endif %}
+{% endunless %}
+
 <div
   class="rounded-global {{ width_class }} whitespace-nowrap {{ scheme_class }}"
   style="{{ style_override }}"
@@ -139,7 +146,7 @@
         text: s.label,
         display_size: s.display_size,
         weight: s.font_weight,
-        color: 'text-btn',
+        color_role: color_role,
         family: font_family,
         class: utilities
       %}
@@ -163,7 +170,7 @@
         text: s.label,
         display_size: s.display_size,
         weight: s.font_weight,
-        color: 'text-btn',
+        color_role: color_role,
         family: font_family,
         class: utilities
       %}
@@ -597,6 +604,21 @@
       "label": "Inherit Theme Colors",
       "default": true,
       "info": "Uncheck to customize button colors manually."
+    },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Text Color Role",
+      "default": "button",
+      "options": [
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "conditional": "setting.inherit_styles or setting.text_color_override != true"
     },
     {
       "type": "header",

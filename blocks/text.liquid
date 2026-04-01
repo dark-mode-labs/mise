@@ -50,6 +50,13 @@
   {% assign font_family = s.font_scheme %}
 {% endif %}
 
+{% assign color_role = s.color_role %}
+{% unless s.inherit_styles %}
+  {% if s.text_color_override %}
+    {% assign color_role = blank %}
+  {% endif %}
+{% endunless %}
+
 <div
   class="text-align-{{ s.text_align }} {{ scheme_class }}"
   style="{{ style_override }}"
@@ -63,7 +70,8 @@
     class: utilities,
     tracking: s.text_tracking,
     leading: s.text_leading,
-    family: font_family
+    family: font_family,
+    color_role: color_role
   %}
 </div>
 
@@ -355,6 +363,19 @@
       "id": "inherit_styles",
       "label": "Inherit Global Styles",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "conditional": "setting.inherit_styles or setting.text_color_override != true"
     },
     {
       "type": "header",
