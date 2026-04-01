@@ -1,0 +1,6 @@
+{{ 'theme.css' | asset_url | stylesheet_tag: preload: true }}
+{% for scheme in font_schemes %}
+  {% if scheme[1].settings.url != blank %}
+    <link rel="stylesheet" href="{{ scheme[1].settings.url }}">
+  {% endif %}
+{% endfor %}

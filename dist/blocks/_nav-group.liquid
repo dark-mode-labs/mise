@@ -1,0 +1,180 @@
+{% assign s = block.settings %}
+{% capture scheme_class %}
+  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
+{% endcapture %}
+{% capture block_styles %}
+ {% if s.gap == 'custom' %}
+    --space-gap: {{ s.gap_custom }}rem;
+  {% endif %}
+{% endcapture %}
+{% capture utilities %}
+  {% case s.text_wrap %}
+    {% when 'nowrap' %}whitespace-nowrap
+    {% when 'balance' %}text-balance
+  {% endcase %}
+  {% unless s.text_transform == 'none' %}
+    {{ s.text_transform }}
+  {% endunless %}
+{% endcapture %}
+
+{% assign font_family = 'btn' %}
+
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
+
+<ul
+  class="flex-col gap-{{ s.gap }} hidden group-open:flex md:flex {{ scheme_class }}"
+  style="{{ block_styles }}"
+  {{ context.attached_attributes }}
+>
+  {% for link in s.nav.links %}
+    <li>
+      <a
+        href="{{ link.url }}"
+        class="hover:opacity-70 transition-opacity block"
+      >
+        {% render 'typography',
+          text: link.title,
+          display_size: s.display_size,
+          weight: s.font_weight,
+          color_role: 'button',
+          family: font_family,
+          class: utilities
+        %}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+{% schema %}
+{
+  "name": "Nav",
+  "settings": [
+    { "type": "link_list", "id": "nav", "label": "Menu", "default": "footer" },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "display_size",
+      "label": "Size",
+      "default": "body",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "display", "label": "Display" },
+        { "value": "body", "label": "Body" },
+        { "value": "caption", "label": "Caption" },
+        { "value": "small", "label": "Small" },
+        { "value": "jumbo", "label": "Jumbo" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "bold", "label": "Bold" },
+        { "value": "extrabold", "label": "Extra Bold" },
+        { "value": "black", "label": "Black" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "nowrap",
+      "options": [
+        { "value": "wrap", "label": "Wrap" },
+        { "value": "nowrap", "label": "No Wrap" },
+        { "value": "balance", "label": "Balance" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text Transform",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "gap",
+      "label": "Gap",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "XL" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 6,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
+      "conditional": "setting.gap == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    }
+  ]
+}
+{% endschema %}

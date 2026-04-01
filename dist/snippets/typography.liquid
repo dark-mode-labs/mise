@@ -1,0 +1,117 @@
+{% assign tag_el = tag | default: 'p' %}
+{% assign size_class = 'text-base' %}
+
+{% case display_size %}
+  {% when 'display' %}
+    {% assign size_class = 'fs-display' %}
+    {% assign family = family | default: 'heading' %}
+  {% when 'h1' %}
+    {% assign size_class = 'fs-h1' %}
+    {% assign family = family | default: 'heading' %}
+  {% when 'h2' %}
+    {% assign size_class = 'fs-h2' %}
+    {% assign family = family | default: 'heading' %}
+  {% when 'h3' %}
+    {% assign size_class = 'fs-h3' %}
+    {% assign family = family | default: 'heading' %}
+  {% when 'h4' %}
+    {% assign size_class = 'fs-h4' %}
+    {% assign family = family | default: 'heading' %}
+  {% when 'h5' %}
+    {% assign size_class = 'fs-h5' %}
+    {% assign family = family | default: 'heading' %}
+  {% when 'h6' %}
+    {% assign size_class = 'fs-h6' %}
+    {% assign family = family | default: 'heading' %}
+  {% when 'body' %}
+    {% assign size_class = 'text-base' %}
+    {% assign family = family | default: 'body' %}
+  {% when 'caption' %}
+    {% assign size_class = 'text-xs' %}
+    {% assign family = family | default: 'body' %}
+  {% when 'small' %}
+    {% assign size_class = 'text-sm' %}
+    {% assign family = family | default: 'body' %}
+  {% when 'jumbo' %}
+    {% assign size_class = 'fs-jumbo' %}
+    {% assign family = family | default: 'heading' %}
+{% endcase %}
+
+{% capture weight_class %}
+  {% case weight %}
+    {% when 'normal' %}
+      font-normal
+    {% when 'medium' %}
+      font-medium
+    {% when 'bold' %}
+      font-bold
+    {% when 'extrabold' %}
+      font-extrabold
+    {% when 'black' %}
+      font-black
+  {% endcase %}
+{% endcapture %}
+
+{% capture tracking_class %}
+  {% case tracking %}
+    {% when 'tighter' %}
+      tracking-tighter
+    {% when 'tight' %}
+      tracking-tight
+    {% when 'wide' %}
+      tracking-wide
+    {% when 'wider' %}
+      tracking-wider
+    {% when 'widest' %}
+      tracking-widest
+    {% when 'custom' %}
+      tracking-custom
+    {% else %}
+      tracking-normal
+  {% endcase %}
+{% endcapture %}
+
+{% capture leading_class %}
+  {% case leading %}
+    {% when 'none' %}
+      leading-none
+    {% when 'tight' %}
+      leading-tight
+    {% when 'snug' %}
+      leading-snug
+    {% when 'relaxed' %}
+      leading-relaxed
+    {% when 'loose' %}
+      leading-loose
+    {% when 'custom' %}
+      leading-custom
+    {% else %}
+      leading-normal
+  {% endcase %}
+{% endcapture %}
+
+{% assign family_class = '' %}
+{% if family != blank %}
+  {% assign family_class = 'font-' | append: family %}
+{% endif %}
+
+{% capture role_class %}
+  {% case color_role %}
+    {% when 'secondary' %}
+      text-secondary
+    {% when 'subtle' %}
+      text-subtle
+    {% when 'accent' %}
+      text-accent
+    {% when 'button' %}
+      text-btn
+    {% when 'control' %}
+      text-control
+    {% else %}
+      text-body
+  {% endcase %}
+{% endcapture %}
+
+<{{ tag_el }} class="{{ size_class }} {{ family_class }} {{ weight_class }} {{ role_class }} {{ class }} {{ tracking_class }} {{ leading_class }}">
+  {{ text }}
+</{{ tag_el }}>
