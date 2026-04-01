@@ -120,7 +120,7 @@
 {% assign color_role = s.color_role %}
 {% unless s.inherit_styles %}
   {% if s.text_color_override %}
-    {% assign color_role = blank %}
+    {% assign color_role = 'button' %}
   {% endif %}
 {% endunless %}
 
