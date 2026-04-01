@@ -18,7 +18,9 @@ export default {
         body: 'var(--color-text)',
         secondary: 'var(--color-text-secondary)',
         accent: 'var(--color-accent)',
+        subtle: 'var(--color-text-subtle)',
         btn: 'var(--color-btn-text)',
+        control: 'var(--color-ui-text)',
       },
       borderColor: {
         std: 'var(--color-border)',
