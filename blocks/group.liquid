@@ -98,11 +98,18 @@
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
   | push: 'aspect-{{ s.aspect_ratio }}'
+  | push_if: 'float', s.animate_float
+  | push_if: 'scale-in', s.animate_scale_in
+  | push_if: 'stagger-load', s.animate_stagger
+  | push_if: 'hover-shadow', s.animate_shadow_hover
+  | push_if: 'shadow-lg', s.shadow
+  | push_if: 'overflow-hidden', s.overflow_hidden
+  | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
 %}
 
 {% if s.layout_mode != 'grid' %}
-  {% assign classes = classes | push: 'direction-{{ s.direction }}' %}
-  {% if s.wrap_content %}{% assign classes = classes | push: 'flex-wrap' %}{% endif %}
+  {% assign classes = classes | push: 'direction-{{ s.direction }}' | push_if: 'flex-wrap', s.wrap_content %}
+
   {% if s.grow_content %}
     {% assign classes = classes | push: 'flex-grow' %}
   {% else %}
@@ -110,12 +117,9 @@
   {% endif %}
 {% endif %}
 
-{% comment %} Animations {% endcomment %}
-{% if s.animate_float %}{% assign classes = classes | push: 'float' %}{% endif %}
-{% if s.animate_scale_in %}{% assign classes = classes | push: 'scale-in' %}{% endif %}
-{% if s.animate_stagger %}{% assign classes = classes | push: 'stagger-load' %}{% endif %}
-{% if s.animate_shadow_hover %}{% assign classes = classes | push: 'hover-shadow' %}{% endif %}
-{% if s.animate_fade != 'none' %}{% assign classes = classes | push: 'fade-{{ s.animate_fade }}' %}{% endif %}
+{% if s.animate_fade != 'none' %}
+  {% assign classes = classes | push: 'fade-{{ s.animate_fade }}' %}
+{% endif %}
 
 {% comment %} Borders {% endcomment %}
 {% unless s.border_mode == 'none' %}
@@ -124,10 +128,12 @@
     | push: 'group-border-size-{{ s.border_size }}'
   %}
   {% if s.border_mode == 'custom' %}
-    {% if s.border_custom_left %}{% assign classes = classes | push: 'group-border-custom-left' %}{% endif %}
-    {% if s.border_custom_right %}{% assign classes = classes | push: 'group-border-custom-right' %}{% endif %}
-    {% if s.border_custom_top %}{% assign classes = classes | push: 'group-border-custom-top' %}{% endif %}
-    {% if s.border_custom_bottom %}{% assign classes = classes | push: 'group-border-custom-bottom' %}{% endif %}
+    {% assign classes = classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
   {% endif %}
 {% endunless %}
 
@@ -136,11 +142,6 @@
 {% unless s.inherit_styles %}
   {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
 {% endunless %}
-{% if s.shadow %}{% assign classes = classes | push: 'shadow-lg' %}{% endif %}
-{% if s.overflow_hidden %}{% assign classes = classes | push: 'overflow-hidden' %}{% endif %}
-{% if s.enable_glass %}
-  {% assign classes = classes | push: 'backdrop-blur-md bg-opacity-80 border border-white/10' %}
-{% endif %}
 
 {% if s.position == 'absolute' %}
   {% assign classes = classes | push: 'absolute' | push: 'anchor-{{ s.inset }}' %}
@@ -151,7 +152,6 @@
 {% comment %} Finalize Class Output {% endcomment %}
 {% assign block_classes = classes | join: ' ' %}
 
-{% comment %} --- Styles --- {% endcomment %}
 {% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign styles = blank %}
 
@@ -189,22 +189,20 @@
 {% endif %}
 
 {% unless s.border_mode == 'none' %}
-  {% if s.border_color_override %}
-    {% assign styles = styles | push: '--color-border: {{ s.border_color }}' %}
-  {% endif %}
-  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% assign styles = styles
+    | push_if: '--color-border: {{ s.border_color }}', s.border_color_override
+    | push: '--border-style: {{ s.border_style }}'
+  %}
 {% endunless %}
 
 {% assign styles = styles | push: '--rotation: {{ s.rotation }}deg' %}
 
 {% unless s.inherit_styles %}
-  {% if s.border_radius_override %}
-    {% assign styles = styles | push: '--radius-global: {{ s.border_radius }}px' %}
-  {% endif %}
-  {% if s.bg_color_override %}{% assign styles = styles | push: '--color-surface: {{ s.bg_color }}' %}{% endif %}
-  {% if s.shadow_color_override %}
-    {% assign styles = styles | push: '--color-shadow: {{ s.shadow_color }}' %}
-  {% endif %}
+  {% assign styles = styles
+    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+    | push_if: '--color-surface: {{ s.bg_color }}', s.bg_color_override
+    | push_if: '--color-shadow: {{ s.shadow_color }}', s.shadow_color_override
+  %}
 {% endunless %}
 
 {% comment %} Finalize Style Output {% endcomment %}
