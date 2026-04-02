@@ -1,7 +1,10 @@
 {% assign s = block.settings %}
-{% capture scheme_class %}
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
-{% endcapture %}
+
+{% assign scheme_class = blank %}
+
+{% unless s.inherit_styles %}
+  {% assign scheme_class="color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
 
 <div
   class="header-actions flex items-center gap-4 {{ scheme_class }}"
