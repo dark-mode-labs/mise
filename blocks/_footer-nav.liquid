@@ -19,7 +19,7 @@
     {% assign utilities = utilities | push: 'text-balance' %}
 {% endcase %}
 
-{% if s.text_transform != 'none' and s.text_transform != blank %}
+{% if s.text_transform != 'none' %}
   {% assign utilities = utilities | push: s.text_transform %}
 {% endif %}
 

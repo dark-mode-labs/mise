@@ -1,25 +1,39 @@
 {% assign s = block.settings %}
-{% capture scheme_class %}
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
-{% endcapture %}
-{% capture utilities %}
-  {% case s.text_wrap %}
-    {% when 'nowrap' %}whitespace-nowrap
-    {% when 'balance' %}text-balance
-  {% endcase %}
-  {% unless s.text_transform == 'none' %}
-    {{ s.text_transform }}
-  {% endunless %}
-{% endcapture %}
 
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign nav_classes = 'header-nav hidden lg:flex items-center' %}
+
+{% unless s.inherit_styles %}
+  {% assign nav_classes = nav_classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% assign block_classes = nav_classes | join: ' ' %}
+
+{% comment %} --- Typography Utilities --- {% endcomment %}
+{% assign utilities = blank %}
+
+{% case s.text_wrap %}
+  {% when 'nowrap' %}
+    {% assign utilities = utilities | push: 'whitespace-nowrap' %}
+  {% when 'balance' %}
+    {% assign utilities = utilities | push: 'text-balance' %}
+{% endcase %}
+
+{% if s.text_transform != 'none' %}
+  {% assign utilities = utilities | push: s.text_transform %}
+{% endif %}
+
+{% assign utility_classes = utilities | join: ' ' %}
+
+{% comment %} --- Font Family --- {% endcomment %}
 {% assign font_family = 'btn' %}
-
 {% if s.font_family_override and s.font_scheme != blank %}
   {% assign font_family = s.font_scheme %}
 {% endif %}
 
+{% comment %} --- Component Render --- {% endcomment %}
 <nav
-  class="header-nav hidden lg:flex items-center {{ scheme_class }}"
+  class="{{ block_classes }}"
   {{ context.attached_attributes }}
 >
   <ul class="flex items-center gap-8">
@@ -38,7 +52,7 @@
             weight: s.font_weight,
             color_role: 'button',
             family: font_family,
-            class: utilities
+            class: utility_classes
           %}
           {% if link.links != blank %}
             {% render 'icon',
@@ -69,7 +83,7 @@
                         weight: s.font_weight,
                         color_role: 'button',
                         family: font_family,
-                        class: utilities
+                        class: utility_classes
                       %}
                     </a>
                     <ul class="space-y-2">
@@ -85,7 +99,7 @@
                               weight: s.font_weight,
                               color_role: 'button',
                               family: font_family,
-                              class: utilities
+                              class: utility_classes
                             %}
                           </a>
                         </li>
@@ -116,7 +130,7 @@
 {% render 'header-drawer',
   menu: s.nav,
   font_weight: s.font_weight,
-  utilities: utilities,
+  utilities: utility_classes,
   font_family: font_family,
   color_role: 'button',
   display_size: 'h4'
