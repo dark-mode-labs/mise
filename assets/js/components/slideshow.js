@@ -2,11 +2,12 @@ export default class Slideshow {
   constructor(element) {
     this.el = element;
     this.track = this.el.querySelector('.slideshow-track');
+    this.controls = this.el.querySelector('.slideshow-controls');
     this.prevBtn = this.el.querySelector('.slideshow-prev');
     this.nextBtn = this.el.querySelector('.slideshow-next');
     this.dots = this.el.querySelectorAll('.slideshow-dot');
 
-    this.counter = this.el.querySelector('.slideshow-counter-wrapper span');
+    this.counter = this.el.querySelector('.slideshow-counter-wrapper span') || this.el.querySelector('.slideshow-counter-wrapper');
 
     this.infinite = this.el.dataset.infinite === 'true';
     this.autoplayEnabled = this.el.dataset.autoplay === 'true';
@@ -23,6 +24,7 @@ export default class Slideshow {
     this.init();
   }
 
+  // Returns the RAW configured column count for consistent sizing and logic
   getCols() {
     const isMobile = this.el.clientWidth < 540;
     return parseInt(this.el.dataset[isMobile ? 'colsMobile' : 'colsDesktop']) || 1;
@@ -33,13 +35,20 @@ export default class Slideshow {
       for (let entry of entries) {
         const wrapperWidth = entry.contentRect.width;
         const isMobile = wrapperWidth < 540;
-        const cols = parseInt(this.el.dataset[isMobile ? 'colsMobile' : 'colsDesktop']) || 1;
+
+        // We use the configured columns for width math so cards don't stretch
+        const cols = this.getCols();
         const peekPct = parseInt(this.el.dataset[isMobile ? 'peekMobile' : 'peekDesktop']) / 100 || 0;
+
         const gapPx = parseFloat(window.getComputedStyle(this.track).columnGap) || 0;
-        const visibleGaps = peekPct > 0 ? cols : cols - 1;
+        const visibleGaps = peekPct > 0 ? cols : Math.max(0, cols - 1);
+
+        // Mathematically locks the card width to the column setting
         const exactWidth = (wrapperWidth - (gapPx * visibleGaps)) / (cols + peekPct);
 
         this.el.style.setProperty('--computed-slide-width', `${exactWidth}px`);
+
+        this.updateUI(this.getCurrentIndex(), this.getSlides().length);
       }
     });
 
@@ -112,40 +121,51 @@ export default class Slideshow {
 
     const cols = this.getCols();
     const totalPages = Math.ceil(total / cols);
+
+    // If total items fit on a single page, hide controls and kill display
+    if (this.controls) {
+      this.controls.style.display = totalPages <= 1 ? 'none' : 'flex';
+    }
+
+    if (totalPages <= 1) {
+      this.track.classList.add('justify-center');
+    } else {
+      this.track.classList.remove('justify-center');
+    }
+
+    const maxVisibleLeftIndex = Math.max(0, total - cols);
     const maxScroll = this.track.scrollWidth - this.track.clientWidth;
 
     let currentPageIndex;
-
     if (this.track.scrollLeft <= 10) {
       currentPageIndex = 0;
-    }
-    else if (this.track.scrollLeft >= maxScroll - 10) {
+    } else if (this.track.scrollLeft >= maxScroll - 10) {
       currentPageIndex = totalPages - 1;
-    }
-    else {
+    } else {
       currentPageIndex = Math.floor(index / cols);
     }
 
     currentPageIndex = Math.max(0, Math.min(currentPageIndex, totalPages - 1));
+
     this.dots.forEach((dot, i) => dot.classList.toggle('is-active', i === currentPageIndex));
 
     if (!this.infinite) {
-      if (this.prevBtn) this.prevBtn.disabled = currentPageIndex === 0;
-      if (this.nextBtn) this.nextBtn.disabled = currentPageIndex === totalPages - 1;
+      if (this.prevBtn) this.prevBtn.disabled = this.track.scrollLeft <= 5;
+      if (this.nextBtn) this.nextBtn.disabled = this.track.scrollLeft >= maxScroll - 5;
     }
 
     if (this.counter) {
-      this.counter.textContent = `${currentPageIndex + 1} / ${totalPages}`;
+      const displayPage = currentPageIndex + 1;
+      this.counter.textContent = `${displayPage} / ${totalPages}`;
     }
   }
 
   next() {
     const cols = this.getCols();
     const currentIndex = this.getCurrentIndex();
-
     let targetIndex = currentIndex + cols;
-    const maxLeftIndex = this.getSlides().length - cols;
 
+    const maxLeftIndex = this.getSlides().length - cols;
     if (currentIndex >= maxLeftIndex) {
       if (this.infinite) {
         targetIndex = 0;
@@ -192,6 +212,10 @@ export default class Slideshow {
 
   startAutoplay() {
     this.stopAutoplay();
+    const cols = this.getCols();
+    const totalPages = Math.ceil(this.getSlides().length / cols);
+    if (totalPages <= 1) return;
+
     this.interval = setInterval(() => this.next(), this.speed);
   }
 
