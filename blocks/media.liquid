@@ -1,29 +1,36 @@
 {% assign s = block.settings %}
 
-{% capture block_classes %}
-  relative overflow-hidden rounded-global
-  {% unless s.inherit_styles %}
-    color-{{ s.color_scheme | default: 'none' }}
-    {% if s.show_shadow %}shadow-md{% endif %}
-  {% endunless %}
-{% endcapture %}
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'media-block w-full h-full relative overflow-hidden rounded-global' | push: 'is-{{ s.height }}' %}
 
-{% capture block_styles %}
-  {% unless s.inherit_styles %}
-    {% if s.border_radius_override %}
-      --radius-global: {{ s.border_radius }}px;
-    {% endif %}
-    {% if s.shadow_color_override %}
-      --color-shadow: {{ s.shadow_color }}
-    {% endif %}
-  {% endunless %}
-  {% if s.height == 'custom' %}
-    --max-h: {{ s.custom_height }}rem;
-  {% endif %}
-{% endcapture %}
+{% unless s.inherit_styles %}
+  {% assign classes = classes
+    | push: "color-{{ s.color_scheme | default: 'none' }}"
+    | push_if: 'shadow-md', s.show_shadow
+  %}
+{% endunless %}
 
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign styles = blank %}
+
+{% unless s.inherit_styles %}
+  {% assign styles = styles
+    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+    | push_if: '--color-shadow: {{ s.shadow_color }}', s.shadow_color_override
+  %}
+{% endunless %}
+
+{% if s.height == 'custom' %}
+  {% assign styles = styles | push: '--max-h: {{ s.custom_height }}rem' %}
+{% endif %}
+
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="media-block w-full h-full {{ block_classes }} is-{{ s.height }}"
+  class="{{ block_classes }}"
   style="{{ block_styles }}"
   {{ context.attached_attributes }}
 >
@@ -51,8 +58,20 @@
     { "type": "image_picker", "id": "image", "label": "Desktop Image" },
     { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
     { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
-    { "type": "checkbox", "id": "show_controls", "label": "Show Video Controls", "default": false, "conditional": "setting.video_url != blank" },
-    { "type": "checkbox", "id": "autoplay", "label": "Autoplay Video", "default": false, "conditional": "setting.video_url != blank" },
+    {
+      "type": "checkbox",
+      "id": "show_controls",
+      "label": "Show Video Controls",
+      "default": false,
+      "conditional": "setting.video_url != blank"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay Video",
+      "default": false,
+      "conditional": "setting.video_url != blank"
+    },
 
     {
       "type": "header",

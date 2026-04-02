@@ -1,20 +1,28 @@
 {% assign s = block.settings %}
 {% assign asset_src = shop.logo_src | default: s.logo %}
-{% capture scheme_class %}
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
-{% endcapture %}
 
-{% capture style_override %}
-  {% unless s.inherit_styles %}
-    {% if s.text_color_override %}
-      --color-text: {{ s.text_color }};
-    {% endif %}
-  {% endunless %}
-{% endcapture %}
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'flex items-center justify-center relative z-content group-hover:opacity-100 text-body' %}
 
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Text Fallback Styles --- {% endcomment %}
+{% assign styles = blank %}
+
+{% unless s.inherit_styles %}
+  {% assign styles = styles | push_if: '--color-text: {{ s.text_color }}', s.text_color_override %}
+{% endunless %}
+
+{% assign text_styles = styles | join: ';' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
 <a
   href="/"
-  class="flex items-center justify-center relative z-content group-hover:opacity-100 {{ scheme_class }} text-body"
+  class="{{ block_classes }}"
   {{ context.attached_attributes }}
 >
   {% if asset_src != blank %}
@@ -27,7 +35,7 @@
   {% else %}
     <span
       class="text-xl font-bold font-heading tracking-widest whitespace-nowrap"
-      style="{{ style_override }}"
+      style="{{ text_styles }}"
     >
       {{ shop.name }}
     </span>
@@ -39,7 +47,16 @@
   "name": "Brand Logo",
   "settings": [
     { "type": "image_picker", "id": "logo", "label": "Logo", "conditional": "shop.logo_src == blank" },
-    { "type": "range", "id": "logo_width", "label": "Width", "min": 3, "max": 25, "step": 0.5, "default": 8, "unit": "rem" },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Width",
+      "min": 3,
+      "max": 25,
+      "step": 0.5,
+      "default": 8,
+      "unit": "rem"
+    },
     {
       "type": "header",
       "content": "Style",

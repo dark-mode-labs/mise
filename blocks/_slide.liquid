@@ -1,22 +1,43 @@
 {% assign s = block.settings %}
-{% if s.enable_overlay %}
-  {% capture overlay_style %}
-      background: {{ s.overlay_color }};
-      opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
-  {% endcapture %}
-{% endif %}
 
-{% capture scheme_class %}
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }} bg-surface{% endunless %}
-{% endcapture %}
+{% comment %} --- Slide Wrapper Classes --- {% endcomment %}
+{% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden' %}
 
-{% assign placeholder_name = 'scene-1' %}
-{% unless s.show_placeholder %}
-  {% assign placeholder_name = '' %}
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
 {% endunless %}
 
+{% assign slide_classes = classes | join: ' ' %}
+
+{% comment %} --- Overlay Styles --- {% endcomment %}
+{% assign overlay_styles = blank %}
+{% if s.enable_overlay %}
+  {% assign overlay_styles = overlay_styles
+    | push: 'background: {{ s.overlay_color }}'
+    | push: 'opacity: {{ s.overlay_opacity | divided_by: 100.0 }}'
+  %}
+{% endif %}
+
+{% assign overlay_style_str = overlay_styles | join: ';' %}
+
+{% comment %} --- Content Wrapper Classes --- {% endcomment %}
+{% assign content_classes = 'wrapper absolute inset-0 z-content flex flex-col flex-auto gap-4'
+  | push: 'section-align-content-{{ s.content_align }}'
+  | push: 'section-align-v-{{ s.vertical_align }}'
+  | push: 'section-align-text-{{ s.text_align }}'
+%}
+
+{% assign content_class_str = content_classes | join: ' ' %}
+
+{% comment %} --- Media Placeholder --- {% endcomment %}
+{% assign placeholder_name = '' %}
+{% if s.show_placeholder %}
+  {% assign placeholder_name = 'scene-1' %}
+{% endif %}
+
+{% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden {{ scheme_class }}"
+  class="{{ slide_classes }}"
   {{ context.attached_attributes }}
 >
   <div class="absolute inset-0 z-media">
@@ -31,11 +52,11 @@
 
     <div
       class="absolute inset-0 pointer-events-none"
-      style="{{ overlay_style }}"
+      style="{{ overlay_style_str }}"
     ></div>
   </div>
 
-  <div class="wrapper absolute inset-0 z-content flex flex-col flex-auto gap-4 section-align-content-{{ s.content_align }} section-align-v-{{ s.vertical_align }} section-align-text-{{ s.text_align }}">
+  <div class="{{ content_class_str }}">
     {% content_for 'blocks' %}
   </div>
 </div>
