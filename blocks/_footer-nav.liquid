@@ -1,25 +1,39 @@
 {% assign s = block.settings %}
-{% capture scheme_class %}
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
-{% endcapture %}
-{% capture utilities %}
-  {% case s.text_wrap %}
-    {% when 'nowrap' %}whitespace-nowrap
-    {% when 'balance' %}text-balance
-  {% endcase %}
-  {% unless s.text_transform == 'none' %}
-    {{ s.text_transform }}
-  {% endunless %}
-{% endcapture %}
 
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'footer-block' %}
+
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Typography Utilities --- {% endcomment %}
+{% assign utilities = blank %}
+
+{% case s.text_wrap %}
+  {% when 'nowrap' %}
+    {% assign utilities = utilities | push: 'whitespace-nowrap' %}
+  {% when 'balance' %}
+    {% assign utilities = utilities | push: 'text-balance' %}
+{% endcase %}
+
+{% if s.text_transform != 'none' %}
+  {% assign utilities = utilities | push: s.text_transform %}
+{% endif %}
+
+{% assign utility_classes = utilities | join: ' ' %}
+
+{% comment %} --- Font Family --- {% endcomment %}
 {% assign font_family = 'btn' %}
-
 {% if s.font_family_override and s.font_scheme != blank %}
   {% assign font_family = s.font_scheme %}
 {% endif %}
 
+{% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="footer-block {{ scheme_class }}"
+  class="{{ block_classes }}"
   {{ context.attached_attributes }}
 >
   <details class="group" open>
@@ -28,7 +42,7 @@
         text: s.heading,
         display_size: s.display_size,
         weight: s.font_weight,
-        class: utilities,
+        class: utility_classes,
         family: font_family
       %}
       {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}

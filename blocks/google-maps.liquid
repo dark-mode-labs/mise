@@ -14,15 +14,9 @@
   {% endif %}
 {% endif %}
 
-{% capture block_styles %}
-  {% if s.height == 'custom' %}
-    --max-h: {{ s.custom_height }}rem;
-  {% endif %}
-{% endcapture %}
-
 <div
   class="media-block w-full h-full is-{{ s.height }}"
-  style="{{ block_styles }}"
+  style="{% if s.height == 'custom' %}--max-h: {{ s.custom_height }}rem;{% endif %}"
   {{ context.attached_attributes }}
 >
   {% if map_src %}

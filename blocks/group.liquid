@@ -1,34 +1,36 @@
 {% assign s = block.settings %}
 
+{% comment %} --- Layout & Alignment Logic --- {% endcomment %}
 {% assign layout_class = 'flex' %}
+{% assign align_class = blank %}
+{% assign justify_class = blank %}
+
 {% if s.layout_mode == 'grid' %}
   {% assign layout_class = 'grid grid-cols-[repeat(auto-fit,minmax(min(var(--width-grid-col),100%),1fr))]' %}
 
   {% case s.vertical_align %}
-    {% when 'top' -%}
-      {%- assign align_class = 'align-items-start' %}
-    {% when 'middle' -%}
-      {%- assign align_class = 'align-items-center' %}
-    {% when 'bottom' -%}
-      {%- assign align_class = 'align-items-end' %}
-    {% when 'stretch' -%}
-      {%- assign align_class = 'align-items-stretch' %}
+    {% when 'top' %}
+      {% assign align_class = 'align-items-start' %}
+    {% when 'middle' %}
+      {% assign align_class = 'align-items-center' %}
+    {% when 'bottom' %}
+      {% assign align_class = 'align-items-end' %}
     {% else %}
-      {%- assign align_class = 'align-items-stretch' %}
+      {% assign align_class = 'align-items-stretch' %}
   {% endcase %}
-  {% case s.content_align %}
-    {% when 'left' -%}
-      {%- assign justify_class = 'justify-content-start' %}
-    {% when 'center' -%}
-      {%- assign justify_class = 'justify-content-center' %}
-    {% when 'right' -%}
-      {%- assign justify_class = 'justify-content-end' %}
-    {% when 'between' -%}
-      {%- assign justify_class = 'justify-content-between' %}
-  {% endcase %}
-{% endif %}
 
-{% if s.layout_mode != 'grid' %}
+  {% case s.content_align %}
+    {% when 'left' %}
+      {% assign justify_class = 'justify-content-start' %}
+    {% when 'center' %}
+      {% assign justify_class = 'justify-content-center' %}
+    {% when 'right' %}
+      {% assign justify_class = 'justify-content-end' %}
+    {% when 'between' %}
+      {% assign justify_class = 'justify-content-between' %}
+  {% endcase %}
+
+{% else %}
   {% if s.direction == 'responsive' %}
     {% assign layout_class = layout_class | append: ' flex-col md:flex-row' %}
   {% elsif s.direction == 'row' %}
@@ -36,170 +38,188 @@
   {% else %}
     {% assign layout_class = layout_class | append: ' flex-col' %}
   {% endif %}
+
   {% if s.direction == 'row' or s.direction == 'responsive' %}
     {% case s.content_align %}
-      {% when 'left' -%}
-        {%- assign justify_class = 'justify-content-start' %}
-      {% when 'center' -%}
-        {%- assign justify_class = 'justify-content-center' %}
-      {% when 'right' -%}
-        {%- assign justify_class = 'justify-content-end' %}
-      {% when 'between' -%}
-        {%- assign justify_class = 'justify-content-between' %}
-      {% else -%}
-        {%- assign justify_class = 'justify-content-start' %}
+      {% when 'center' %}
+        {% assign justify_class = 'justify-content-center' %}
+      {% when 'right' %}
+        {% assign justify_class = 'justify-content-end' %}
+      {% when 'between' %}
+        {% assign justify_class = 'justify-content-between' %}
+      {% else %}
+        {% assign justify_class = 'justify-content-start' %}
     {% endcase %}
     {% case s.vertical_align %}
-      {% when 'top' -%}
-        {%- assign align_class = 'align-items-start' %}
-      {% when 'middle' -%}
-        {%- assign align_class = 'align-items-center' %}
-      {% when 'bottom' -%}
-        {%- assign align_class = 'align-items-end' %}
-      {% when 'stretch' -%}
-        {%- assign align_class = 'align-items-stretch' %}
-      {% else -%}
-        {%- assign align_class = 'align-items-stretch' %}
+      {% when 'top' %}
+        {% assign align_class = 'align-items-start' %}
+      {% when 'middle' %}
+        {% assign align_class = 'align-items-center' %}
+      {% when 'bottom' %}
+        {% assign align_class = 'align-items-end' %}
+      {% else %}
+        {% assign align_class = 'align-items-stretch' %}
     {% endcase %}
-
   {% else %}
     {% comment %} Strict Column: vertical_align = vertical (justify), content_align = horizontal (items) {% endcomment %}
     {% case s.vertical_align %}
-      {% when 'top' -%}
-        {%- assign justify_class = 'justify-content-start' %}
-      {% when 'middle' -%}
-        {%- assign justify_class = 'justify-content-center' %}
-      {% when 'bottom' -%}
-        {%- assign justify_class = 'justify-content-end' %}
-      {% when 'between' -%}
-        {%- assign justify_class = 'justify-content-between' %}
-      {% else -%}
-        {%- assign justify_class = 'justify-content-start' %}
+      {% when 'middle' %}
+        {% assign justify_class = 'justify-content-center' %}
+      {% when 'bottom' %}
+        {% assign justify_class = 'justify-content-end' %}
+      {% when 'between' %}
+        {% assign justify_class = 'justify-content-between' %}
+      {% else %}
+        {% assign justify_class = 'justify-content-start' %}
     {% endcase %}
     {% case s.content_align %}
-      {% when 'left' -%}
-        {%- assign align_class = 'align-items-start' %}
-      {% when 'center' -%}
-        {%- assign align_class = 'align-items-center' %}
-      {% when 'right' -%}
-        {%- assign align_class = 'align-items-end' %}
-      {% when 'stretch' -%}
-        {%- assign align_class = 'align-items-stretch' %}
-      {% else -%}
-        {%- assign align_class = 'align-items-stretch' %}
+      {% when 'left' %}
+        {% assign align_class = 'align-items-start' %}
+      {% when 'center' %}
+        {% assign align_class = 'align-items-center' %}
+      {% when 'right' %}
+        {% assign align_class = 'align-items-end' %}
+      {% else %}
+        {% assign align_class = 'align-items-stretch' %}
     {% endcase %}
   {% endif %}
 {% endif %}
 
-{% capture block_classes %}
-  group-block {{ layout_class }} transition-all rounded-global rotate-custom
-  {{ justify_class }}
-  {{ align_class }}
-  {% if s.layout_mode != 'grid' %}
-    direction-{{ s.direction }}
-    {% if s.wrap_content %}flex-wrap{% endif %}
-    {% if s.grow_content %}flex-grow{% else %}flex-initial{% endif %}
-  {% endif %}
-  {% if s.animate_float %}float{% endif %}
-  {% if s.animate_scale_in %}scale-in{% endif %}
-  {% if s.animate_stagger %}stagger-load{% endif %}
-  {% if s.animate_fade != 'none' %}fade-{{ s.animate_fade }}{% endif %}
-  {% if s.animate_shadow_hover %}hover-shadow{% endif %}
-  {% unless s.border_mode == 'none' %}
-    {% capture border_flags %}
-      {% if s.border_mode == 'custom' %}
-        {% if s.border_custom_left %}group-border-custom-left{% endif %}
-        {% if s.border_custom_right %}group-border-custom-right{% endif %}
-        {% if s.border_custom_top %}group-border-custom-top{% endif %}
-        {% if s.border_custom_bottom %}group-border-custom-bottom{% endif %}
-      {% endif %}
-    {% endcapture %}
-    group-border-{{ s.border_mode }} group-border-size-{{ s.border_size }} {{ border_flags }}
-  {% endunless %}
+{% comment %} --- Class Array Building --- {% endcomment %}
+{% assign classes = 'group-block transition-all rounded-global rotate-custom block-limit-width'
+  | push: layout_class
+  | push: justify_class
+  | push: align_class
+  | push: 'text-align-{{ s.text_align }}'
+  | push: 'height-{{ s.height }}'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: 'gap-{{ s.gap }}'
+  | push: 'margin-my-{{ s.margin_vertical }}'
+  | push: 'margin-mx-{{ s.margin_horizontal }}'
+  | push: 'aspect-{{ s.aspect_ratio }}'
+  | push_if: 'float', s.animate_float
+  | push_if: 'scale-in', s.animate_scale_in
+  | push_if: 'stagger-load', s.animate_stagger
+  | push_if: 'hover-shadow', s.animate_shadow_hover
+  | push_if: 'shadow-lg', s.shadow
+  | push_if: 'overflow-hidden', s.overflow_hidden
+  | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
+%}
 
-  text-align-{{ s.text_align }}
-  {% unless s.grow_content %}
-    width-{{ s.width_scheme }}
-  {% endunless %}
-  block-limit-width
-  height-{{ s.height }}
-  padding-py-{{ s.padding_vertical }}
-  padding-px-{{ s.padding_horizontal }}
-  gap-{{ s.gap }}
-  margin-my-{{ s.margin_vertical }}
-  margin-mx-{{ s.margin_horizontal }}
-  aspect-{{ s.aspect_ratio }}
+{% if s.layout_mode != 'grid' %}
+  {% assign classes = classes | push: 'direction-{{ s.direction }}' | push_if: 'flex-wrap', s.wrap_content %}
 
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }} bg-surface{% endunless %}
+  {% if s.grow_content %}
+    {% assign classes = classes | push: 'flex-grow' %}
+  {% else %}
+    {% assign classes = classes | push: 'flex-initial' %}
+  {% endif %}
+{% endif %}
 
-  {% if s.shadow %}shadow-lg{% endif %}
-  {% if s.overflow_hidden %}overflow-hidden{% endif %}
-  {% if s.enable_glass %}backdrop-blur-md bg-opacity-80 border border-white/10{% endif %}
-  {% if s.position == 'absolute' %}absolute anchor-{{ s.inset }}{% endif %}
-  {% if s.position == 'relative' %}relative{% endif %}
-{% endcapture %}
+{% if s.animate_fade != 'none' %}
+  {% assign classes = classes | push: 'fade-{{ s.animate_fade }}' %}
+{% endif %}
 
-{% capture block_styles %}
-  {% if s.padding_vertical == 'custom' %}
-    --space-pt: {{ s.padding_vertical_custom_top }}rem;
-    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
+{% comment %} Borders {% endcomment %}
+{% unless s.border_mode == 'none' %}
+  {% assign classes = classes
+    | push: 'group-border-{{ s.border_mode }}'
+    | push: 'group-border-size-{{ s.border_size }}'
+  %}
+  {% if s.border_mode == 'custom' %}
+    {% assign classes = classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
   {% endif %}
-  {% if s.padding_horizontal == 'custom' %}
-     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
-     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
-  {% endif %}
-  {% if s.margin_vertical == 'custom' %}
-    --space-mt: {{ s.margin_vertical_custom_top }}rem;
-    --space-mb: {{ s.margin_vertical_custom_bottom }}rem;
-  {% endif %}
-  {% if s.margin_horizontal == 'custom' %}
-     --space-ml: {{ s.margin_horizontal_custom_left }}rem;
-     --space-mr: {{ s.margin_horizontal_custom_right }}rem;
-  {% endif %}
-  {% if s.gap == 'custom' %}
-    --space-gap: {{ s.gap_custom }}rem;
-  {% endif %}
-  {% if s.layout_mode == 'grid' %}
-    --width-grid-col: {{ s.min_column_width }}rem;
-  {% endif %}
-  {% unless s.border_mode == 'none' %}
-    {% if s.border_color_override %}
-      --color-border: {{  s.border_color }};
-    {% endif %}
-    --border-style: {{ s.border_style }};
-  {% endunless %}
-  --rotation: {{ s.rotation }}deg;
+{% endunless %}
 
-  {% unless s.inherit_styles %}
-    {% if s.border_radius_override %}
-      --radius-global: {{ s.border_radius }}px;
-    {% endif %}
-    {% if s.bg_color_override %}
-      --color-surface: {{ s.bg_color }};
-    {% endif %}
-    {% if s.shadow_color_override %}
-      --color-shadow: {{ s.shadow_color }}
-    {% endif %}
-  {% endunless %}
+{% comment %} Layout & Styling Flags {% endcomment %}
+{% unless s.grow_content %}{% assign classes = classes | push: 'width-{{ s.width_scheme }}' %}{% endunless %}
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
+{% endunless %}
 
-  {% if s.enable_overlay %}
-    {% capture overlay_style %}
-        background: {{ s.overlay_color }};
-        opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
-    {% endcapture %}
-  {% endif %}
-{% endcapture %}
+{% if s.position == 'absolute' %}
+  {% assign classes = classes | push: 'absolute' | push: 'anchor-{{ s.inset }}' %}
+{% elsif s.position == 'relative' %}
+  {% assign classes = classes | push: 'relative' %}
+{% endif %}
 
+{% comment %} Finalize Class Output {% endcomment %}
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign styles = blank %}
+
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.margin_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
+    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.margin_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.gap == 'custom' %}{% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}{% endif %}
+{% if s.layout_mode == 'grid' %}
+  {% assign styles = styles | push: '--width-grid-col: {{ s.min_column_width }}rem' %}
+{% endif %}
+
+{% unless s.border_mode == 'none' %}
+  {% assign styles = styles
+    | push_if: '--color-border: {{ s.border_color }}', s.border_color_override
+    | push: '--border-style: {{ s.border_style }}'
+  %}
+{% endunless %}
+
+{% assign styles = styles | push: '--rotation: {{ s.rotation }}deg' %}
+
+{% unless s.inherit_styles %}
+  {% assign styles = styles
+    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+    | push_if: '--color-surface: {{ s.bg_color }}', s.bg_color_override
+    | push_if: '--color-shadow: {{ s.shadow_color }}', s.shadow_color_override
+  %}
+{% endunless %}
+
+{% comment %} Finalize Style Output {% endcomment %}
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Content Generation --- {% endcomment %}
 {% capture content %}
   {% content_for 'blocks' %}
   {% if s.enable_overlay %}
     <div
       class="rounded-global absolute inset-0 pointer-events-none"
-      style="{{ overlay_style }}"
+      style="background: {{ s.overlay_color }}; opacity: {{ s.overlay_opacity | divided_by: 100.0 }};"
     ></div>
   {% endif %}
 {% endcapture %}
 
+{% comment %} --- Component Render --- {% endcomment %}
 {% if s.trigger == 'link' and s.link %}
   <a
     class="isolate {{ block_classes }}"

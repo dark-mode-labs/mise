@@ -1,4 +1,4 @@
-<style>
+{% capture stylesheet %}
   :root {
     --space-base: 1rem;       /* 16px - Base reference */
 
@@ -104,4 +104,7 @@
       .font-{{ scheme[0] }} { font-family: {{ scheme[1].settings.name }}; }
     {% endif %}
   {% endfor %}
+{% endcapture %}
+<style>
+  {{ stylesheet | strip_newlines }}
 </style>

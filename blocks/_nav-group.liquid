@@ -1,30 +1,48 @@
 {% assign s = block.settings %}
-{% capture scheme_class %}
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
-{% endcapture %}
-{% capture block_styles %}
- {% if s.gap == 'custom' %}
-    --space-gap: {{ s.gap_custom }}rem;
-  {% endif %}
-{% endcapture %}
-{% capture utilities %}
-  {% case s.text_wrap %}
-    {% when 'nowrap' %}whitespace-nowrap
-    {% when 'balance' %}text-balance
-  {% endcase %}
-  {% unless s.text_transform == 'none' %}
-    {{ s.text_transform }}
-  {% endunless %}
-{% endcapture %}
 
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'flex-col hidden group-open:flex md:flex' | push: 'gap-{{ s.gap }}' %}
+
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign styles = blank %}
+
+{% if s.gap == 'custom' %}
+  {% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}
+{% endif %}
+
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Typography Utilities --- {% endcomment %}
+{% assign utilities = blank %}
+
+{% case s.text_wrap %}
+  {% when 'nowrap' %}
+    {% assign utilities = utilities | push: 'whitespace-nowrap' %}
+  {% when 'balance' %}
+    {% assign utilities = utilities | push: 'text-balance' %}
+{% endcase %}
+
+{% if s.text_transform != 'none' %}
+  {% assign utilities = utilities | push: s.text_transform %}
+{% endif %}
+
+{% assign utility_classes = utilities | join: ' ' %}
+
+{% comment %} --- Font Family --- {% endcomment %}
 {% assign font_family = 'btn' %}
-
 {% if s.font_family_override and s.font_scheme != blank %}
   {% assign font_family = s.font_scheme %}
 {% endif %}
 
+{% comment %} --- Component Render --- {% endcomment %}
 <ul
-  class="flex-col gap-{{ s.gap }} hidden group-open:flex md:flex {{ scheme_class }}"
+  class="{{ block_classes }}"
   style="{{ block_styles }}"
   {{ context.attached_attributes }}
 >
@@ -40,12 +58,13 @@
           weight: s.font_weight,
           color_role: 'button',
           family: font_family,
-          class: utilities
+          class: utility_classes
         %}
       </a>
     </li>
   {% endfor %}
 </ul>
+
 {% schema %}
 {
   "name": "Nav",

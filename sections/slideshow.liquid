@@ -1,9 +1,5 @@
 {% assign s = section.settings %}
 
-{% capture section_spacing_style %}
-  {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}vh;{% endif %}
-{% endcapture %}
-
 <section
   class="section-slideshow color-{{ s.color_scheme | default: 'none' }} is-{{ s.height }}"
   {{ context.attached_attributes }}
@@ -18,7 +14,7 @@
       --slide-width: {{ s.slide_width_mobile }}%;
       --slide-width-md: {{ s.slide_width }}%;
       --slide-gap: {{ s.slide_gap }}rem;
-      {{ section_spacing_style }}
+      {% if s.height == 'custom' %}--max-h: {{ s.height_custom }}vh;{% endif %}
     "
   >
     <div class="slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-[var(--slide-gap)]">

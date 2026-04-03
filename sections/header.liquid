@@ -1,57 +1,71 @@
 {% assign s = section.settings %}
 
-{% capture slot_logo %}
-    {% content_for 'block', type: 'brand-logo', id: 'header-logo' %}
-{% endcapture %}
-
-{% capture slot_nav %}
-    {% content_for 'block', type: '_header-menu', id: 'header-menu' %}
-{% endcapture %}
-
-{% capture slot_actions %}
-    {% content_for 'block', type: '_header-actions', id: 'header-actions' %}
-{% endcapture %}
-
-{% assign needs_spacer = false %}
-{% assign position_class = 'relative' %}
+{% comment %} --- 1. Header Logic & State --- {% endcomment %}
 {% assign is_overlay = false %}
 {% if s.header_overlay_mode == 'overlay' or s.header_overlay_mode == 'transparent' %}
   {% assign is_overlay = true %}
 {% endif %}
+
+{% assign needs_spacer = false %}
+{% assign positions = blank %}
+
 {% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
-  {% assign position_class = 'fixed top-[var(--top-nav, 0)]' %}
+  {% assign positions = positions | push: 'fixed top-[var(--top-nav,0)]' %}
   {% unless is_overlay %}
     {% assign needs_spacer = true %}
   {% endunless %}
 {% elsif is_overlay %}
-  {% assign position_class = 'absolute top-[var(--top-nav, 0)]' %}
+  {% assign positions = positions | push: 'absolute top-[var(--top-nav,0)]' %}
+{% else %}
+  {% assign positions = positions | push: 'relative' %}
 {% endif %}
 
-{% capture section_spacing_style %}
-  {% if s.padding_vertical == 'custom' %}
-    --space-pt: {{ s.padding_vertical_custom_top }}rem;
-    --space-pb: {{ s.padding_vertical_custom_bottom }}rem;
-  {% endif %}
-  {% if s.padding_horizontal == 'custom' %}
-     --space-pl: {{ s.padding_horizontal_custom_left }}rem;
-     --space-pr: {{ s.padding_horizontal_custom_right }}rem;
-  {% endif %}
-{% endcapture %}
+{% assign position_class_str = positions | join: ' ' %}
 
-{% capture section_spacing_class %}
-  padding-py-{{ s.padding_vertical }}
-  padding-px-{{ s.padding_horizontal }}
-{% endcapture %}
+{% comment %} --- 2. Header Classes --- {% endcomment %}
+{% assign header_classes = 'header-section z-header transition-all duration-300 border-b border-std'
+  | push: position_class_str
+  | push: 'color-{{ s.color_scheme | default: "none" }}'
+  | push: 'bg-body'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+%}
 
+{% assign header_class_str = header_classes | join: ' ' %}
+
+{% comment %} --- 3. Header Spacing Styles --- {% endcomment %}
+{% assign spacing_styles = blank %}
+{% if s.padding_vertical == 'custom' %}
+  {% assign spacing_styles = spacing_styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.padding_horizontal == 'custom' %}
+  {% assign spacing_styles = spacing_styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% assign spacing_style_str = spacing_styles | join: ';' %}
+
+{% comment %} --- 4. Content Slots --- {% endcomment %}
+{% capture slot_logo %}{% content_for 'block', type: 'brand-logo', id: 'header-logo' %}{% endcapture %}
+{% capture slot_nav %}{% content_for 'block', type: '_header-menu', id: 'header-menu' %}{% endcapture %}
+{% capture slot_actions %}{% content_for 'block', type: '_header-actions', id: 'header-actions' %}{% endcapture %}
+
+{% comment %} --- Header Render --- {% endcomment %}
 <header
-  class="header-section {{ position_class }} color-{{ s.color_scheme | default: 'none' }} bg-body z-header transition-all duration-300 border-b border-std {{ section_spacing_class }}"
+  class="{{ header_class_str }}"
   data-behavior="header"
   data-sticky="{{ s.sticky_behavior }}"
   data-transparent="{% if s.header_overlay_mode == 'transparent' %}true{% else %}false{% endif %}"
-  style="{{ section_spacing_style }}"
+  style="{{ spacing_style_str }}"
   {{ context.attached_attributes }}
 >
   <div class="width-{{ s.width_scheme }} grid grid-cols-3 items-center limit-width">
+    {% comment %} Left Col {% endcomment %}
     <div class="flex items-center justify-start gap-4">
       <button
         type="button"
@@ -63,35 +77,28 @@
       </button>
 
       {% if s.desktop_layout == 'logo_left' %}
-        <div class="mr-8 flex-shrink-0 hidden lg:block">
-          {{ slot_logo }}
-        </div>
+        <div class="mr-8 flex-shrink-0 hidden lg:block">{{ slot_logo }}</div>
         <div>
-          {% if s.nav_alignment == 'left' %}
-            {{ slot_nav }}
-          {% endif %}
+          {% if s.nav_alignment == 'left' %}{{ slot_nav }}{% endif %}
         </div>
       {% else %}
-        <div>
-          {{ slot_nav }}
-        </div>
+        <div>{{ slot_nav }}</div>
       {% endif %}
     </div>
 
+    {% comment %} Center Col {% endcomment %}
     <div class="flex items-center justify-center flex-auto">
-      {% if s.nav_alignment == 'center' %}
-        {{ slot_nav }}
-      {% endif %}
-      {% if s.desktop_layout == 'logo_left' %}
-        {% assign logo_class = 'lg:hidden' %}
-      {% endif %}
-      <div class="{{ logo_class }}">{{ slot_logo }}</div>
+      {% if s.nav_alignment == 'center' %}{{ slot_nav }}{% endif %}
+
+      {% assign logo_wrap_class = '' %}
+      {% if s.desktop_layout == 'logo_left' %}{% assign logo_wrap_class = 'lg:hidden' %}{% endif %}
+
+      <div class="{{ logo_wrap_class }}">{{ slot_logo }}</div>
     </div>
 
+    {% comment %} Right Col {% endcomment %}
     <div class="flex items-center justify-end gap-4">
-      {% if s.nav_alignment == 'right' %}
-        {{ slot_nav }}
-      {% endif %}
+      {% if s.nav_alignment == 'right' %}{{ slot_nav }}{% endif %}
       {{ slot_actions }}
     </div>
   </div>

@@ -1,19 +1,29 @@
 {% assign s = block.settings %}
-{% capture scheme_class %}
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }}{% endunless %}
-{% endcapture %}
-{% capture style_override %}
-  {% unless s.inherit_styles %}
-    {% if s.text_color_override %}
-      --color-text: {{ s.text_color }};
-    {% endif %}
-  {% endunless %}
-  bottom: {{ s.bottom_offset }}rem;
-{% endcapture %}
 
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'absolute w-full z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80' %}
+
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign styles = blank %}
+
+{% unless s.inherit_styles %}
+  {% assign styles = styles | push_if: '--color-text: {{ s.text_color }}', s.text_color_override %}
+{% endunless %}
+
+{% assign styles = styles | push: 'bottom: {{ s.bottom_offset }}rem' %}
+
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="absolute w-full z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80 {{ scheme_class }}"
-  style="{{ style_override }}"
+  class="{{ block_classes }}"
+  style="{{ block_styles }}"
   onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });"
   {{ context.attached_attributes }}
 >
