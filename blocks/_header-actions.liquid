@@ -3,7 +3,7 @@
 {% assign scheme_class = blank %}
 
 {% unless s.inherit_styles %}
-  {% assign scheme_class="color-{{ s.color_scheme | default: 'none' }}" %}
+  {% assign scheme_class = "color-{{ s.color_scheme | default: 'none' }}" %}
 {% endunless %}
 
 <div
@@ -16,8 +16,11 @@
     </a>
   {% endif %}
 
+  <div class="hidden md:block">
+    {% content_for 'blocks' %}
+  </div>
   {% if s.show_cart %}
-    <a href="/cart" class="p-2 hover:opacity-70 relative group">
+    <a data-action="open-cart" class="p-2 hover:opacity-70 relative group">
       <span class="sr-only">Cart</span>
       {% render 'icon', name: 'bag', class: 'w-5 h-5' %}
       <span
@@ -25,10 +28,6 @@
       ></span>
     </a>
   {% endif %}
-
-  <div class="hidden md:block">
-    {% content_for 'blocks' %}
-  </div>
 </div>
 
 {% schema %}
