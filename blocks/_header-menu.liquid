@@ -127,14 +127,16 @@
   </ul>
 </nav>
 
-{% render 'header-drawer',
-  menu: s.nav,
-  font_weight: s.font_weight,
-  utilities: utility_classes,
-  font_family: font_family,
-  color_role: 'button',
-  display_size: 'h4'
-%}
+{% if s.nav %}
+  {% render 'header-drawer',
+    menu: s.nav,
+    font_weight: s.font_weight,
+    utilities: utility_classes,
+    font_family: font_family,
+    color_role: 'button',
+    display_size: 'h4'
+  %}
+{% endif %}
 
 {% schema %}
 {
@@ -143,8 +145,7 @@
     {
       "type": "link_list",
       "id": "nav",
-      "label": "Menu",
-      "default": "main-menu"
+      "label": "Menu"
     },
     {
       "type": "header",
