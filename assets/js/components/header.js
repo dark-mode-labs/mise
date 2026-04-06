@@ -14,8 +14,13 @@ export default class Header {
   }
 
   init() {
+    const drawer = this.el.querySelector('.header-drawer');
+
     document.querySelectorAll('[data-action="toggle-drawer"]').forEach(btn => {
-      btn.addEventListener('click', () => this.toggleDrawer(true));
+      if (drawer) {
+        btn.addEventListener('click', () => this.toggleDrawer(true));
+        btn.classList.remove("hidden");
+      }
     });
     document.querySelectorAll('[data-action="close"]').forEach(btn => {
       btn.addEventListener('click', () => this.toggleDrawer(false));
