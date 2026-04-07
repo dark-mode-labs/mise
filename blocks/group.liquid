@@ -225,6 +225,9 @@
     class="isolate {{ block_classes }}"
     style="{{ block_styles }}"
     href="{{ s.link }}"
+    {% if s.link_target == '_blank' %}
+      target="_blank" rel="noopener"
+    {% endif %}
     {{ context.attached_attributes }}
   >
     {{ content }}
@@ -257,6 +260,17 @@
       ]
     },
     { "type": "url", "id": "link", "label": "Link", "conditional": "setting.trigger == 'link'" },
+    {
+      "type": "select",
+      "id": "link_target",
+      "label": "Open link in",
+      "options": [
+        { "value": "_blank", "label": "New Tab" },
+        { "value": "_self", "label": "Current Tab" }
+      ],
+      "default": "_self",
+      "conditional": "setting.trigger == 'link'"
+    },
     { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
     { "type": "header", "content": "Layout Mode" },
     {
