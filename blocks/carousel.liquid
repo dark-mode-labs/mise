@@ -145,7 +145,7 @@
   >
     {% if s.show_arrows %}
       <div
-        class="slideshow-controls absolute z-floating anchor-{{ s.nav_anchor }} flex items-center gap-1"
+        class="slideshow-controls absolute z-floating anchor-{{ s.nav_anchor }} flex items-center gap-1 hidden"
         style="--nav-offset-x: {{ s.nav_offset_x | default: 0 }}rem; --nav-offset-y: {{ s.nav_offset_y | default: 0 }}rem;"
       >
         <button

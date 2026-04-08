@@ -64,8 +64,10 @@
           --limit-width: 100%;
         {% when 'half' %}
           --limit-width: 50%;
+          flex: 0 0 50%;
         {% when 'third' %}
           --limit-width: 33.333%;
+          flex: 0 0 33.333%;
         {% when 'custom' %}
           --limit-width: {{ scheme[1].settings.custom_width }}rem;
         {% when 'auto' %}
