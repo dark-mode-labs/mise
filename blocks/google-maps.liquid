@@ -1,17 +1,15 @@
 {% assign s = block.settings %}
 
-{% if s.location %}
+{% assign api_key = shop.config.maps_api_key %}
+{% assign map_src = 'https://www.google.com/maps/embed/v1/place?key=' | append: api_key | append: '&q=' %}
+
+{% if s.location != blank %}
   {% assign args = 'location_identifier:' | append: s.location | parse_kv %}
   {% assign location = 'location' | data_source: 'fetch', args %}
-  {% if location %}
-    {% assign address = shop.name | append: ', ' | append: location.formatted_address | url_encode %}
-    {% assign api_key = shop.config.maps_api_key %}
-    {% assign map_src = 'https://www.google.com/maps/embed/v1/place?key='
-      | append: api_key
-      | append: '&q='
-      | append: address
-    %}
-  {% endif %}
+  {% assign address = shop.name | append: ', ' | append: location.formatted_address | url_encode %}
+  {% assign map_src = map_src | append: address %}
+{% else %}
+  {% assign map_src = map_src | append: shop.name %}
 {% endif %}
 
 <div
@@ -19,18 +17,16 @@
   style="{% if s.height == 'custom' %}--max-h: {{ s.custom_height }}rem;{% endif %}"
   {{ context.attached_attributes }}
 >
-  {% if map_src %}
-    <iframe
-      width="100%"
-      height="100%"
-      style="border:0;"
-      loading="lazy"
-      allowfullscreen=""
-      referrerpolicy="no-referrer-when-downgrade"
-      src="{{ map_src }}"
-    >
-    </iframe>
-  {% endif %}
+  <iframe
+    width="100%"
+    height="100%"
+    style="border:0;"
+    loading="lazy"
+    allowfullscreen=""
+    referrerpolicy="no-referrer-when-downgrade"
+    src="{{ map_src }}"
+  >
+  </iframe>
 </div>
 {% schema %}
 {

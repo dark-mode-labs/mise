@@ -13,6 +13,8 @@
       {% assign args = 'source:item_collection, item_collection_identifier:' | append: s.item_collection | parse_kv %}
       {% assign items = 'item' | data_source: 'list', args %}
     {% endif %}
+  {% when 'location' %}
+    {% assign items = 'location' | data_source: 'list' %}
 {% endcase %}
 
 <div class="contents" {{ context.attached_attributes }}>
@@ -37,7 +39,8 @@
       "options": [
         { "value": "json", "label": "JSON" },
         { "value": "inherit", "label": "Inherit" },
-        { "value": "item_collection", "label": "Item Collection" }
+        { "value": "item_collection", "label": "Item Collection" },
+        { "value": "location", "label": "Location" }
       ]
     },
     {
