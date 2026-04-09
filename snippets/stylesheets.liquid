@@ -1,4 +1,5 @@
-{{ 'theme.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'theme.css' | asset_url | preload_tag: as: 'style' }}
+{{ 'theme.css' | asset_url | stylesheet_tag }}
 {% assign fonts = font_schemes | values | map: 'settings.url' | uniq | compact %}
 {% for font in fonts %}
   <link rel="stylesheet" href="{{ font }}">
