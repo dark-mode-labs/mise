@@ -335,21 +335,21 @@
       "font_schemes": {
         "heading": {
           "settings": {
-            "title": "Inter",
+            "title": "Heading",
             "name": "Inter",
             "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
           }
         },
         "body": {
           "settings": {
-            "title": "Inter",
+            "title": "Body",
             "name": "Inter",
             "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
           }
         },
         "button": {
           "settings": {
-            "title": "Inter",
+            "title": "Button",
             "name": "Inter",
             "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
           }
