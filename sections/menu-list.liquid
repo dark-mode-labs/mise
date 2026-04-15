@@ -1,12 +1,13 @@
 {% assign s = section.settings %}
 {% if s.display_scope == 'full_menu' and s.menu != blank %}
-  {% assign args = 'source:menu, menu_identifier:' | append: s.menu | parse_kv %}
+  {% assign args = 'source' | push: 'menu' | push: 'menu_identifier' | push: s.menu %}
 {% elsif s.display_scope == 'category' and s.category != blank %}
-  {% assign args = 'source:menu_category, menu_identifier:'
-    | append: s.menu
-    | append: ', category_identifier:'
-    | append: s.category
-    | parse_kv
+  {% assign args = 'source'
+    | push: 'menu_category'
+    | push: 'menu_identifier'
+    | push: s.menu
+    | push: 'category_identifier'
+    | push: s.category
   %}
 {% endif %}
 {% if args != blank %}

@@ -239,6 +239,7 @@
     {{ context.attached_attributes }}
     {% if s.trigger == 'action' %}
       data-action="{{ s.action }}"
+      {% if s.action_args != blank %}data-action-args="{{ s.action_args }}"{% endif %}
     {% endif %}
   >
     {{ content }}
@@ -272,6 +273,7 @@
       "conditional": "setting.trigger == 'link'"
     },
     { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
+    { "type": "text", "id": "action_args", "label": "Action Arguments", "conditional": "setting.trigger == 'action'" },
     { "type": "header", "content": "Layout Mode" },
     {
       "type": "select",

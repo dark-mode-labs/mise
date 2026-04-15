@@ -116,11 +116,23 @@
 {% assign overlay_style_str = overlay_styles | join: ';' %}
 
 {% comment %} --- Nav Direction Logic --- {% endcomment %}
-{% assign nav_dir = '' %}
+{% assign wrapper_classes = blank %}
 {% if s.show_arrows %}
-  {% if s.nav_anchor contains 'top-' %}{% assign nav_dir = 'has-nav-top' %}{% endif %}
-  {% if s.nav_anchor contains 'bottom-' %}{% assign nav_dir = 'has-nav-bottom' %}{% endif %}
+  {% if s.nav_anchor contains 'top-' %}{% assign wrapper_classes = wrapper_classes | push: 'has-nav-top' %}{% endif %}
+  {% if s.nav_anchor contains 'bottom-' %}{% assign nav_dir = wrapper_classes | push: 'has-nav-bottom' %}{% endif %}
 {% endif %}
+{% case s.content_align %}
+  {% when 'left' %}
+    {% assign wrapper_classes = wrapper_classes | push: 'align-items-start' %}
+  {% when 'center' %}
+    {% assign wrapper_classes = wrapper_classes | push: 'align-items-center' %}
+  {% when 'right' %}
+    {% assign wrapper_classes = wrapper_classes | push: 'align-items-end' %}
+  {% else %}
+    {% assign wrapper_classes = wrapper_classes | push: 'align-items-stretch' %}
+{% endcase %}
+
+{% assign wrapper_classes = wrapper_classes | join: ' ' %}
 
 {% comment %} --- Component Render --- {% endcomment %}
 <div
@@ -129,7 +141,7 @@
   {{ context.attached_attributes }}
 >
   <div
-    class="slideshow-wrapper relative w-full h-full flex flex-col {{ nav_dir }}"
+    class="slideshow-wrapper relative w-full h-full flex flex-col {{ wrapper_classes }}"
     data-behavior="slideshow"
     data-autoplay="{{ s.autoplay }}"
     data-speed="{{ s.autoplay_speed }}"
@@ -385,6 +397,18 @@
         { "value": "full", "label": "Full Height" }
       ],
       "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
     },
     { "type": "header", "content": "Padding/Margins" },
     {

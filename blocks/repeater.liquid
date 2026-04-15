@@ -7,14 +7,29 @@
   {% when 'inherit' %}
     {% if s.data_field != blank %}
       {% assign items = context.item | map: s.data_field %}
+    {% else %}
+      {% assign items = context.item %}
     {% endif %}
   {% when 'item_collection' %}
-    {% if s.item_collection != blank %}
-      {% assign args = 'source:item_collection, item_collection_identifier:' | append: s.item_collection | parse_kv %}
+    {% unless s.item_collection == blank %}
+      {% assign args = 'source'
+        | push: 'item_collection'
+        | push: 'item_collection_identifier'
+        | push: s.item_collection
+      %}
       {% assign items = 'item' | data_source: 'list', args %}
-    {% endif %}
-  {% when 'location' %}
+    {% endunless %}
+  {% when 'locations' %}
     {% assign items = 'location' | data_source: 'list' %}
+  {% when 'collections_in' %}
+    {% unless s.collections_in == blank %}
+      {% assign args = 'source'
+        | push: 'item_collection'
+        | push: 'item_collection_identifiers'
+        | push: s.collections_in
+      %}
+      {% assign items = 'item_collection' | data_source: 'list', args %}
+    {% endunless %}
 {% endcase %}
 
 <div class="contents" {{ context.attached_attributes }}>
@@ -39,8 +54,9 @@
       "options": [
         { "value": "json", "label": "JSON" },
         { "value": "inherit", "label": "Inherit" },
-        { "value": "item_collection", "label": "Item Collection" },
-        { "value": "location", "label": "Location" }
+        { "value": "item_collection", "label": "Items in Collection" },
+        { "value": "locations", "label": "Locations" },
+        { "value": "collections_in", "label": "Collections" }
       ]
     },
     {
@@ -61,9 +77,15 @@
       "id": "item_collection",
       "label": "Select Item Collection",
       "conditional": "setting.data_source_type == 'item_collection'"
+    },
+    {
+      "type": "collection",
+      "id": "collections_in",
+      "label": "Select Item Collections",
+      "conditional": "setting.data_source_type == 'collections_in'"
     }
   ],
-  "blocks": [{ "type": "@theme" }, { "type": "_menu-card-full" }, { "type": "_menu-card-compact" }],
+  "blocks": [{ "type": "@theme" }, { "type": "_menu-card-full" }, { "type": "_tab-head" }, { "type": "_tab-content" }],
   "presets": [{ "name": "Repeater Template", "settings": {}, "blocks": {}, "block_order": [] }]
 }
 {% endschema %}
