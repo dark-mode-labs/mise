@@ -114,6 +114,12 @@
     user-select: none;
   }
 
+  /* Hide the track until JS has computed and applied the correct slide width.
+     `data-loaded` is set on the wrapper immediately after the Slideshow constructor runs. */
+  [data-behavior="slideshow"]:not([data-loaded]) .slideshow-track {
+    visibility: hidden;
+  }
+
   .carousel-block .slideshow-track>*,
   .carousel-block .slideshow-track>.contents>* {
     flex: 0 0 auto;
