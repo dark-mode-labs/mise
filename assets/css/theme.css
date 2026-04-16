@@ -1231,6 +1231,13 @@
        All rem values in the codebase inherit this fluid scale automatically.
        --type-scale acts as a fine-tuning multiplier on top. */
     font-size: calc(clamp(0.875em, 0.75em + 0.5vw, 1em) * var(--type-scale));
+    box-sizing: border-box;
+  }
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: inherit;
   }
 
   body {
