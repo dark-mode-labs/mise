@@ -238,8 +238,8 @@
     style="{{ block_styles }}"
     {{ context.attached_attributes }}
     {% if s.trigger == 'action' %}
-      data-action="{{ s.action }}"
-      {% if s.action_args != blank %}data-action-args="{{ s.action_args }}"{% endif %}
+      data-action="{{ s.action | escape }}"
+      {% if s.action_args != blank %}data-action-args="{{ s.action_args | escape }}"{% endif %}
     {% endif %}
   >
     {{ content }}
