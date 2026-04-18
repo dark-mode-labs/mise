@@ -1,0 +1,740 @@
+{% assign s = block.settings %}
+
+{% comment %} --- 1. Wrapper Classes (Outer DIV) --- {% endcomment %}
+{% assign wrapper_classes = 'rounded-global whitespace-nowrap'
+  | push: 'margin-my-{{ s.margin_vertical }}'
+  | push: 'margin-mx-{{ s.margin_horizontal }}'
+%}
+
+{% if s.width == 'full' %}
+  {% assign wrapper_classes = wrapper_classes | push: 'w-full block' %}
+{% else %}
+  {% assign wrapper_classes = wrapper_classes | push: 'inline-block' %}
+{% endif %}
+
+{% unless s.inherit_styles %}
+  {% assign wrapper_classes = wrapper_classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% unless s.border_mode == 'none' %}
+  {% assign wrapper_classes = wrapper_classes
+    | push: 'group-border-{{ s.border_mode }}'
+    | push: 'group-border-size-{{ s.border_size }}'
+  %}
+  {% if s.border_mode == 'custom' %}
+    {% assign wrapper_classes = wrapper_classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
+  {% endif %}
+{% endunless %}
+
+{% assign wrapper_class_str = wrapper_classes | join: ' ' %}
+
+{% comment %} --- 2. Inner Classes (Button / Link) --- {% endcomment %}
+{% assign inner_classes = 'rounded-global w-full flex'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+%}
+
+{% case s.style %}
+  {% when 'outline' -%}
+    {%- assign inner_classes = inner_classes | push: 'btn-outline' %}
+  {% when 'link' -%}
+    {%- assign inner_classes = inner_classes | push: 'btn-link' %}
+  {% else -%}
+    {%- assign inner_classes = inner_classes | push: 'btn-primary' %}
+{% endcase %}
+
+{% case s.content_align %}
+  {% when 'center' -%}
+    {%- assign inner_classes = inner_classes | push: 'justify-content-center' %}
+  {% when 'right' -%}
+    {%- assign inner_classes = inner_classes | push: 'justify-content-end' %}
+  {% when 'between' -%}
+    {%- assign inner_classes = inner_classes | push: 'justify-content-between' %}
+  {% else -%}
+    {%- assign inner_classes = inner_classes | push: 'justify-content-start' %}
+{% endcase %}
+
+{% case s.vertical_align %}
+  {% when 'top' -%}
+    {%- assign inner_classes = inner_classes | push: 'align-items-start' %}
+  {% when 'middle' -%}
+    {%- assign inner_classes = inner_classes | push: 'align-items-center' %}
+  {% when 'bottom' -%}
+    {%- assign inner_classes = inner_classes | push: 'align-items-end' %}
+  {% else -%}
+    {%- assign inner_classes = inner_classes | push: 'align-items-stretch' %}
+{% endcase %}
+
+{% assign inner_class_str = inner_classes | join: ' ' %}
+
+{% comment %} --- 3. Wrapper Styles --- {% endcomment %}
+{% assign styles = blank %}
+
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.margin_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
+    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.margin_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.text_tracking == 'custom' %}
+  {% assign styles = styles | push: '--text-tracking: {{ s.text_tracking_custom }}em' %}
+{% endif %}
+
+{% if s.text_leading == 'custom' %}
+  {% assign styles = styles | push: '--text-leading: {{ s.text_leading_custom | divided_by: 100.0 }}' %}
+{% endif %}
+
+{% unless s.border_mode == 'none' %}
+  {% assign styles = styles
+    | push_if: '--color-border: {{ s.border_color }}', s.border_color_override
+    | push: '--border-style: {{ s.border_style }}'
+  %}
+{% endunless %}
+
+{% unless s.inherit_styles %}
+  {% assign styles = styles
+    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+    | push_if: '--color-btn-bg: {{ s.bg_color }}', s.bg_color_override
+    | push_if: '--color-btn-text: {{ s.text_color }}', s.text_color_override
+  %}
+{% endunless %}
+
+{% assign wrapper_style_str = styles | join: ';' %}
+
+{% comment %} --- 4. Typography Utilities & Config --- {% endcomment %}
+{% assign utilities = blank %}
+
+{% if s.text_transform != 'none' %}
+  {% assign utilities = utilities | push: s.text_transform %}
+{% endif %}
+
+{% case s.text_wrap %}
+  {% when 'nowrap' -%}
+    {%- assign utilities = utilities | push: 'whitespace-nowrap' %}
+  {% when 'balance' -%}
+    {%- assign utilities = utilities | push: 'text-balance' %}
+{% endcase %}
+
+{% case s.overflow_behavior %}
+  {% when 'hidden' -%}
+    {%- assign utilities = utilities | push: 'overflow-hidden' %}
+  {% when 'ellipsis' -%}
+    {%- assign utilities = utilities | push: 'truncate' %}
+{% endcase %}
+
+{% assign utility_classes = utilities | join: ' ' %}
+
+{% assign font_family = 'btn' %}
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
+
+{% assign color_role = s.color_role %}
+{% unless s.inherit_styles %}
+  {% if s.text_color_override %}
+    {% assign color_role = 'button' %}
+  {% endif %}
+{% endunless %}
+
+{% comment %} --- 5. Component Render --- {% endcomment %}
+<div
+  class="{{ wrapper_class_str }}"
+  style="{{ wrapper_style_str }}"
+  {{ context.attached_attributes }}
+>
+  {% if s.trigger == 'action' %}
+    <button
+      type="button"
+      class="{{ inner_class_str }}"
+      data-action="{{ s.action | escape }}"
+      {% if s.action_args != blank %}
+        data-action-args="{{ s.action_args | escape }}"
+      {% endif %}
+    >
+      {% render 'typography',
+        text: s.label,
+        display_size: s.display_size,
+        weight: s.font_weight,
+        color_role: color_role,
+        family: font_family,
+        class: utility_classes
+      %}
+    </button>
+  {% elsif s.trigger == 'link' %}
+    <a
+      href="{{ s.link }}"
+      {% if s.link == blank %}
+        inert="true"
+      {% endif %}
+      {% if s.link_target == '_blank' %}
+        target="_blank" rel="noopener"
+      {% endif %}
+      class="{{ inner_class_str }}"
+    >
+      {% render 'typography',
+        text: s.label,
+        display_size: s.display_size,
+        weight: s.font_weight,
+        color_role: color_role,
+        family: font_family,
+        class: utility_classes
+      %}
+    </a>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Button",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "Book Now" },
+    {
+      "type": "select",
+      "id": "trigger",
+      "label": "Trigger",
+      "default": "link",
+      "options": [
+        { "value": "link", "label": "Link" },
+        { "value": "action", "label": "Action" }
+      ]
+    },
+    { "type": "url", "id": "link", "label": "Link", "conditional": "setting.trigger == 'link'" },
+    {
+      "type": "select",
+      "id": "link_target",
+      "label": "Open link in",
+      "options": [
+        { "value": "_blank", "label": "New Tab" },
+        { "value": "_self", "label": "Current Tab" }
+      ],
+      "default": "_self",
+      "conditional": "setting.trigger == 'link'"
+    },
+    { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
+    { "type": "text", "id": "action_args", "label": "Action Arguments", "conditional": "setting.trigger == 'action'" },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Layout",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "full", "label": "Full Width" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top / Start" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "display_size",
+      "label": "Size",
+      "default": "body",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "display", "label": "Display" },
+        { "value": "body", "label": "Body" },
+        { "value": "caption", "label": "Caption" },
+        { "value": "small", "label": "Small" },
+        { "value": "jumbo", "label": "Jumbo" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "bold", "label": "Bold" },
+        { "value": "extrabold", "label": "Extra Bold" },
+        { "value": "black", "label": "Black" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "text_tracking",
+      "label": "Tracking",
+      "options": [
+        { "value": "tighter", "label": "Tighter" },
+        { "value": "tight", "label": "Tight" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "wider", "label": "Wider" },
+        { "value": "widest", "label": "Widest" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "text_tracking_custom",
+      "label": "Custom Tracking",
+      "min": -0.1,
+      "max": 0.5,
+      "step": 0.025,
+      "default": 0,
+      "unit": "em",
+      "conditional": "setting.text_tracking == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "text_leading",
+      "label": "Leading",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "tight", "label": "Tight" },
+        { "value": "snug", "label": "Snug" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "relaxed", "label": "Relaxed" },
+        { "value": "loose", "label": "Loose" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "text_leading_custom",
+      "label": "Custom Leading",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "conditional": "setting.text_leading == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text Transform",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "wrap",
+      "options": [
+        { "value": "wrap", "label": "Wrap" },
+        { "value": "nowrap", "label": "No Wrap" },
+        { "value": "balance", "label": "Balance" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "overflow_behavior",
+      "label": "Overflow",
+      "default": "visible",
+      "options": [
+        { "value": "visible", "label": "Visible" },
+        { "value": "hidden", "label": "Hidden (Clip)" },
+        { "value": "ellipsis", "label": "Ellipsis (Truncate)" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
+    },
+    {
+      "type": "header",
+      "content": "Borders"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        { "value": "custom", "label": "Custom" },
+        { "value": "full", "label": "Full" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" },
+        { "value": "double", "label": "Double" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "border_size",
+      "label": "Border Size",
+      "options": [
+        { "value": "xxs", "label": "XXS", "info": "1px" },
+        { "value": "xs", "label": "XS", "info": "2px" },
+        { "value": "sm", "label": "Small", "info": "4px" },
+        { "value": "md", "label": "Medium", "info": "6px" },
+        { "value": "lg", "label": "Large", "info": "8px" }
+      ],
+      "default": "md",
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "margin_vertical",
+      "label": "Vertical margin",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "auto", "label": "Auto" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "margin_horizontal",
+      "label": "Horizontal margin",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "auto", "label": "Auto" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Theme Colors",
+      "default": true,
+      "info": "Uncheck to customize button colors manually."
+    },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Text Color Role",
+      "default": "button",
+      "options": [
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "conditional": "setting.inherit_styles or setting.text_color_override != true"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Override Background",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background",
+      "default": "#000000",
+      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Text Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Custom Text Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Custom Border Radius",
+      "min": 0,
+      "max": 1000,
+      "default": 4,
+      "unit": "px",
+      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_color_override",
+      "label": "Override Border Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Custom Border Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_styles != true and setting.border_color_override and setting.border_mode != 'none'"
+    }
+  ]
+}
+{% endschema %}

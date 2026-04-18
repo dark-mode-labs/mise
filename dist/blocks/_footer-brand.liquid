@@ -1,0 +1,45 @@
+{% assign s = block.settings %}
+
+{% assign scheme_class = blank %}
+
+{% unless s.inherit_styles %}
+  {% assign scheme_class="color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+<div
+  class="footer-block flex flex-col gap-6 items-start {{ scheme_class }}"
+  {{ context.attached_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Brand & Socials",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    }
+  ]
+}
+{% endschema %}

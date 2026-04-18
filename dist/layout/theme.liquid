@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    {% if settings.favicon != blank %}
+      <link
+        rel="icon"
+        type="image/png"
+        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+      >
+    {% endif %}
+
+    {% render 'meta-tags' %}
+    {% render 'preconnects', preconnect_schemes: settings.preconnect_schemes %}
+    {% render 'stylesheets', font_schemes: settings.font_schemes %}
+    {% render 'scripts' %}
+    {% render 'theme_variables',
+      typography: settings.typography,
+      layout: settings.layout,
+      color_schemes: settings.color_schemes,
+      width_schemes: settings.width_schemes,
+      font_schemes: settings.font_schemes
+    %}
+
+    {{ content_for_header }}
+  </head>
+
+  <body>
+    {% sections 'header-group' %}
+
+    <main>
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+  </body>
+</html>

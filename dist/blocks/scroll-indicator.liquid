@@ -1,0 +1,107 @@
+{% assign s = block.settings %}
+
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'absolute w-full z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80' %}
+
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign styles = blank %}
+
+{% unless s.inherit_styles %}
+  {% assign styles = styles | push_if: '--color-text: {{ s.text_color }}', s.text_color_override %}
+{% endunless %}
+
+{% assign styles = styles | push: 'bottom: {{ s.bottom_offset }}rem' %}
+
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+<div
+  class="{{ block_classes }}"
+  style="{{ block_styles }}"
+  onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });"
+  {{ context.attached_attributes }}
+>
+  {% if s.label != blank %}
+    {% render 'typography', text: s.label, tag: 'span', display_size: 'caption', weight: 'bold', class: 'uppercase' %}
+  {% endif %}
+
+  <div class="animate-bounce">
+    {% render 'icon', name: 'chevron-down', class: 'w-5 h-5 text-body' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Scroll Indicator",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "bottom_offset",
+      "label": "Bottom Offset",
+      "info": "Lift up to clear marquees.",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 2,
+      "unit": "rem"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Scroll"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Global Styles",
+      "default": true,
+      "info": "Uncheck to customize Radius and Colors."
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Text Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Custom Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+    }
+  ]
+}
+{% endschema %}
