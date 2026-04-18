@@ -173,9 +173,9 @@
     <button
       type="button"
       class="{{ inner_class_str }}"
-      data-action="{{ s.action }}"
+      data-action="{{ s.action | escape }}"
       {% if s.action_args != blank %}
-        data-action-args="{{ s.action_args }}"
+        data-action-args="{{ s.action_args | escape }}"
       {% endif %}
     >
       {% render 'typography',
