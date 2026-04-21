@@ -98,6 +98,7 @@
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
   | push: 'aspect-{{ s.aspect_ratio }}'
+  | push: 'cursor-{{ s.cursor }}'
   | push_if: 'float', s.animate_float
   | push_if: 'scale-in', s.animate_scale_in
   | push_if: 'stagger-load', s.animate_stagger
@@ -250,30 +251,6 @@
 {
   "name": "Group",
   "settings": [
-    {
-      "type": "select",
-      "id": "trigger",
-      "label": "Trigger",
-      "default": "link",
-      "options": [
-        { "value": "link", "label": "Link" },
-        { "value": "action", "label": "Action" }
-      ]
-    },
-    { "type": "url", "id": "link", "label": "Link", "conditional": "setting.trigger == 'link'" },
-    {
-      "type": "select",
-      "id": "link_target",
-      "label": "Open link in",
-      "options": [
-        { "value": "_blank", "label": "New Tab" },
-        { "value": "_self", "label": "Current Tab" }
-      ],
-      "default": "_self",
-      "conditional": "setting.trigger == 'link'"
-    },
-    { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
-    { "type": "text", "id": "action_args", "label": "Action Arguments", "conditional": "setting.trigger == 'action'" },
     { "type": "header", "content": "Layout Mode" },
     {
       "type": "select",
@@ -389,7 +366,48 @@
       "default": "top-left",
       "conditional": "setting.position == 'absolute'"
     },
+    { "type": "header", "content": "Action Trigger" },
+    {
+      "type": "select",
+      "id": "trigger",
+      "label": "Trigger",
+      "default": "none",
+      "options": [
+        { "value": "link", "label": "Link" },
+        { "value": "action", "label": "Action" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    { "type": "url", "id": "link", "label": "Link", "conditional": "setting.trigger == 'link'" },
+    {
+      "type": "select",
+      "id": "link_target",
+      "label": "Open link in",
+      "options": [
+        { "value": "_blank", "label": "New Tab" },
+        { "value": "_self", "label": "Current Tab" }
+      ],
+      "default": "_self",
+      "conditional": "setting.trigger == 'link'"
+    },
+    { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
+    { "type": "text", "id": "action_args", "label": "Action Arguments", "conditional": "setting.trigger == 'action'" },
     { "type": "header", "content": "General Styles" },
+    {
+      "type": "select",
+      "subtype": "cursor",
+      "id": "cursor",
+      "label": "Cursor",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "pointer", "label": "Pointer" },
+        { "value": "not-allowed", "label": "Not Allowed" },
+        { "value": "help", "label": "Help" },
+        { "value": "none", "label": "None" },
+        { "value": "inherit", "label": "Inherit" }
+      ],
+      "default": "inherit"
+    },
     {
       "type": "select",
       "id": "text_align",
