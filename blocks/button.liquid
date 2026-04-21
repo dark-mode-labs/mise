@@ -217,6 +217,18 @@
     { "type": "text", "id": "label", "label": "Label", "default": "Book Now" },
     {
       "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "link", "label": "Link" }
+      ]
+    },
+    { "type": "header", "content": "Trigger" },
+    {
+      "type": "select",
       "id": "trigger",
       "label": "Trigger",
       "default": "link",
@@ -239,51 +251,6 @@
     },
     { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
     { "type": "text", "id": "action_args", "label": "Action Arguments", "conditional": "setting.trigger == 'action'" },
-    {
-      "type": "select",
-      "id": "style",
-      "label": "Layout",
-      "default": "primary",
-      "options": [
-        { "value": "primary", "label": "Solid" },
-        { "value": "outline", "label": "Outline" },
-        { "value": "link", "label": "Link" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "width",
-      "label": "Width",
-      "default": "auto",
-      "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "full", "label": "Full Width" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "content_align",
-      "label": "Horizontal Alignment",
-      "options": [
-        { "value": "left", "label": "Left / Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right / End" },
-        { "value": "between", "label": "Space Between" },
-        { "value": "stretch", "label": "Stretch" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "vertical_align",
-      "label": "Vertical Alignment",
-      "options": [
-        { "value": "top", "label": "Top / Start" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom / End" },
-        { "value": "between", "label": "Space Between" },
-        { "value": "stretch", "label": "Stretch" }
-      ]
-    },
     {
       "type": "header",
       "content": "Typography"
@@ -491,6 +458,40 @@
     {
       "type": "header",
       "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "full", "label": "Full Width" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top / Start" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom / End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
     },
     {
       "type": "select",
