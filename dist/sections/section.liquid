@@ -1,0 +1,262 @@
+{% assign s = section.settings %}
+
+{% comment %} --- 1. Container Class Pipeline --- {% endcomment %}
+{% assign container_classes = 'bg-body section-layout limit-width'
+  | push: 'width-{{ s.width_scheme }}'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: 'is-{{ s.height }}'
+%}
+
+{% assign container_class_str = container_classes | join: ' ' %}
+
+{% comment %} --- 2. Spacing Style Pipeline --- {% endcomment %}
+{% assign spacing_styles = blank %}
+
+{% if s.padding_vertical == 'custom' %}
+  {% assign spacing_styles = spacing_styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.padding_horizontal == 'custom' %}
+  {% assign spacing_styles = spacing_styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.height == 'custom' %}
+  {% assign spacing_styles = spacing_styles | push: '--max-h: {{ s.height_custom }}vh' %}
+{% endif %}
+
+{% assign spacing_style_str = spacing_styles | join: ';' %}
+
+{% comment %} --- 3. Inner Flex Pipeline --- {% endcomment %}
+{% assign inner_classes = 'flex flex-auto gap-6'
+  | push: 'flex-{{ s.flex_direction }}'
+  | push: 'section-align-content-{{ s.content_align }}'
+  | push: 'section-align-v-{{ s.vertical_align }}'
+  | push: 'section-align-text-{{ s.text_align }}'
+  | push_if: 'stagger-load', s.animate_stagger
+%}
+
+{% assign inner_class_str = inner_classes | join: ' ' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+<section
+  class="color-{{ s.color_scheme | default: 'none' }}"
+  {{ context.attached_attributes }}
+>
+  <div
+    class="{{ container_class_str }}"
+    style="{{ spacing_style_str }}"
+  >
+    <div class="{{ inner_class_str }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Generic section",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "width_scheme",
+      "id": "width_scheme",
+      "label": "Max Content Width",
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Section Height",
+      "options": [
+        { "value": "auto", "label": "Auto (Fit Content)" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Fullscreen" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "height_custom",
+      "label": "Custom Height",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 56,
+      "unit": "vh",
+      "conditional": "setting.height == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "flex_direction",
+      "label": "Flex Direction",
+      "options": [
+        { "value": "col", "label": "Column" },
+        { "value": "row", "label": "Row" }
+      ],
+      "default": "col"
+    },
+    { "type": "header", "content": "Alignment" },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Content Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "middle"
+    },
+    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "select",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
+    { "type": "header", "content": "Theme" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+  ],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "scroll-indicator" },
+    { "type": "text" },
+    { "type": "spacer" },
+    { "type": "_marquee" },
+    { "type": "media" },
+    { "type": "group" },
+    { "type": "button" }
+  ],
+  "presets": [
+    {
+      "name": "Rich Text",
+      "settings": {
+        "text_align": "text-center items-center"
+      },
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "settings": { "content": "Our Story", "display_size": "h2", "tag": "h2", "font_weight": "bold" }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "content": "Founded in 2025, we believe in honest ingredients and good vibes.",
+            "display_size": "body"
+          }
+        },
+        "btn": {
+          "type": "button",
+          "settings": { "label": "Learn More", "style": "link" }
+        }
+      },
+      "block_order": ["heading", "body", "btn"]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,100 @@
+{% assign s = block.settings %}
+{% assign asset_src = shop.logo_src | default: s.logo %}
+
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'flex items-center justify-center relative z-content group-hover:opacity-100 text-body' %}
+
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Text Fallback Styles --- {% endcomment %}
+{% assign styles = blank %}
+
+{% unless s.inherit_styles %}
+  {% assign styles = styles | push_if: '--color-text: {{ s.text_color }}', s.text_color_override %}
+{% endunless %}
+
+{% assign text_styles = styles | join: ';' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+<a
+  href="/"
+  class="{{ block_classes }}"
+  {{ context.attached_attributes }}
+>
+  {% if asset_src != blank %}
+    <div
+      class="transition-opacity duration-300 block"
+      style="width: {{ s.logo_width }}rem;"
+    >
+      {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}
+    </div>
+  {% else %}
+    <span
+      class="text-xl font-bold font-heading tracking-widest whitespace-nowrap"
+      style="{{ text_styles }}"
+    >
+      {{ shop.name }}
+    </span>
+  {% endif %}
+</a>
+
+{% schema %}
+{
+  "name": "Brand Logo",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo", "conditional": "shop.logo_src == blank" },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Width",
+      "min": 3,
+      "max": 25,
+      "step": 0.5,
+      "default": 8,
+      "unit": "rem"
+    },
+    {
+      "type": "header",
+      "content": "Style",
+      "conditional": "shop.logo_src == blank"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true,
+      "conditional": "shop.logo_src == blank"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_color_override",
+      "label": "Override Text Color",
+      "default": false,
+      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Custom Text Color",
+      "default": "#ffffff",
+      "conditional": "setting.inherit_styles != true and setting.text_color_override and shop.logo_src == blank"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,246 @@
+{% assign s = block.settings %}
+
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign nav_classes = 'header-nav hidden lg:flex items-center' %}
+
+{% unless s.inherit_styles %}
+  {% assign nav_classes = nav_classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% endunless %}
+
+{% assign block_classes = nav_classes | join: ' ' %}
+
+{% comment %} --- Typography Utilities --- {% endcomment %}
+{% assign utilities = blank %}
+
+{% case s.text_wrap %}
+  {% when 'nowrap' %}
+    {% assign utilities = utilities | push: 'whitespace-nowrap' %}
+  {% when 'balance' %}
+    {% assign utilities = utilities | push: 'text-balance' %}
+{% endcase %}
+
+{% if s.text_transform != 'none' %}
+  {% assign utilities = utilities | push: s.text_transform %}
+{% endif %}
+
+{% assign utility_classes = utilities | join: ' ' %}
+
+{% comment %} --- Font Family --- {% endcomment %}
+{% assign font_family = 'btn' %}
+{% if s.font_family_override and s.font_scheme != blank %}
+  {% assign font_family = s.font_scheme %}
+{% endif %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+<nav
+  class="{{ block_classes }}"
+  {{ context.attached_attributes }}
+>
+  <ul class="flex items-center gap-8">
+    {% for link in s.nav.links %}
+      {% assign has_mega = false %}
+      {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
+
+      <li class="group flex items-center relative">
+        <a
+          href="{{ link.url }}"
+          class="hover:opacity-70 flex items-center gap-1"
+        >
+          {% render 'typography',
+            text: link.title,
+            display_size: s.display_size,
+            weight: s.font_weight,
+            color_role: 'button',
+            family: font_family,
+            class: utility_classes
+          %}
+          {% if link.links != blank %}
+            {% render 'icon',
+              name: 'chevron-down',
+              class: 'w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform'
+            %}
+          {% endif %}
+        </a>
+
+        {% if link.links != blank %}
+          <div
+            class="
+              absolute top-full left-0 border border-std shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating
+              {% if has_mega %}!fixed left-0 right-0 w-full border-x-0{% else %}w-64{% endif %}
+            "
+          >
+            {% if has_mega %}
+              <div class="mx-auto px-8 py-12 grid grid-cols-4 gap-8">
+                {% for child in link.links %}
+                  <div>
+                    <a
+                      href="{{ child.url }}"
+                      class="block mb-4 hover:underline underline-offset-4"
+                    >
+                      {% render 'typography',
+                        text: child.title,
+                        display_size: s.display_size,
+                        weight: s.font_weight,
+                        color_role: 'button',
+                        family: font_family,
+                        class: utility_classes
+                      %}
+                    </a>
+                    <ul class="space-y-2">
+                      {% for grandchild in child.links %}
+                        <li>
+                          <a
+                            href="{{ grandchild.url }}"
+                            class="opacity-70 hover:opacity-100 block"
+                          >
+                            {% render 'typography',
+                              text: grandchild.title,
+                              display_size: s.display_size,
+                              weight: s.font_weight,
+                              color_role: 'button',
+                              family: font_family,
+                              class: utility_classes
+                            %}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endfor %}
+              </div>
+
+            {% else %}
+              <ul class="py-4">
+                {% for child in link.links %}
+                  <li>
+                    <a href="{{ child.url }}" class="block px-6 py-2 text-sm hover:bg-gray-50/5 whitespace-nowrap">
+                      {{ child.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+
+{% if s.nav %}
+  {% render 'header-drawer',
+    menu: s.nav,
+    font_weight: s.font_weight,
+    utilities: utility_classes,
+    font_family: font_family,
+    color_role: 'button',
+    display_size: 'h4'
+  %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Header Nav",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "nav",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "display_size",
+      "label": "Size",
+      "default": "body",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "display", "label": "Display" },
+        { "value": "body", "label": "Body" },
+        { "value": "caption", "label": "Caption" },
+        { "value": "small", "label": "Small" },
+        { "value": "jumbo", "label": "Jumbo" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "bold", "label": "Bold" },
+        { "value": "extrabold", "label": "Extra Bold" },
+        { "value": "black", "label": "Black" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "nowrap",
+      "options": [
+        { "value": "wrap", "label": "Wrap" },
+        { "value": "nowrap", "label": "No Wrap" },
+        { "value": "balance", "label": "Balance" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text Transform",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "font_family_override",
+      "label": "Override Font",
+      "default": false
+    },
+    {
+      "type": "font_scheme",
+      "id": "font_scheme",
+      "label": "Font",
+      "default": "",
+      "conditional": "setting.font_family_override == true"
+    },
+    {
+      "type": "header",
+      "content": "General Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_styles",
+      "label": "Inherit Styles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Palette",
+      "default": "default",
+      "conditional": "setting.inherit_styles != true"
+    }
+  ]
+}
+{% endschema %}
