@@ -11,7 +11,7 @@
   margin-mx-{{ s.margin_horizontal }}
   gap-{{ s.gap }}
 
-  {% unless s.inherit_styles %}color-{{ s.color_scheme | default: 'none' }} bg-surface{% endunless %}
+  {% if s.inherit_styles == false and s.color_scheme_override == true %}color-{{ s.color_scheme | default: 'none' }} bg-surface{% endif %}
 
   {% if s.shadow %}shadow-lg{% endif %}
   {% if s.overflow_hidden %}overflow-hidden{% endif %}
@@ -392,11 +392,18 @@
       "conditional": "setting.inherit_styles != true"
     },
     {
+      "type": "checkbox",
+      "id": "color_scheme_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
     },
     {
       "type": "checkbox",

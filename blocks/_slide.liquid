@@ -3,9 +3,9 @@
 {% comment %} --- Slide Wrapper Classes --- {% endcomment %}
 {% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden' %}
 
-{% unless s.inherit_styles %}
+{% if s.inherit_styles == false and s.color_scheme_override == true %}
   {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
-{% endunless %}
+{% endif %}
 
 {% assign slide_classes = classes | join: ' ' %}
 
@@ -155,11 +155,18 @@
       "conditional": "setting.inherit_styles != true"
     },
     {
+      "type": "checkbox",
+      "id": "color_scheme_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
     }
   ],
   "blocks": [{ "type": "@theme" }],

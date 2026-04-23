@@ -4,9 +4,9 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'flex items-center justify-center relative z-content group-hover:opacity-100 text-body' %}
 
-{% unless s.inherit_styles %}
+{% if s.inherit_styles == false and s.color_scheme_override == true %}
   {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
-{% endunless %}
+{% endif %}
 
 {% assign block_classes = classes | join: ' ' %}
 
@@ -75,11 +75,18 @@
       "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
     },
     {
+      "type": "checkbox",
+      "id": "color_scheme_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+      "conditional": "setting.inherit_styles != true and shop.logo_src == blank and setting.color_scheme_override == true"
     },
     {
       "type": "checkbox",

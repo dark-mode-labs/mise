@@ -13,9 +13,9 @@
   | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
 %}
 
-{% unless s.inherit_styles %}
+{% if s.inherit_styles == false and s.color_scheme_override == true %}
   {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
-{% endunless %}
+{% endif %}
 
 {% comment %} Borders {% endcomment %}
 {% unless s.border_mode == 'none' %}
@@ -378,11 +378,18 @@
       "conditional": "setting.inherit_styles != true"
     },
     {
+      "type": "checkbox",
+      "id": "color_scheme_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
     },
     {
       "type": "checkbox",

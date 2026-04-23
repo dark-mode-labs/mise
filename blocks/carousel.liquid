@@ -23,9 +23,9 @@
   {% assign classes = classes | push: 'width-{{ s.width_scheme }}' %}
 {% endunless %}
 
-{% unless s.inherit_styles %}
+{% if s.inherit_styles == false and s.color_scheme_override == true %}
   {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
-{% endunless %}
+{% endif %}
 
 {% if s.position == 'absolute' %}
   {% assign classes = classes | push: 'absolute' | push: 'anchor-{{ s.inset }}' %}
@@ -711,11 +711,18 @@
       "conditional": "setting.inherit_styles != true"
     },
     {
+      "type": "checkbox",
+      "id": "color_scheme_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "setting.inherit_styles != true"
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
     },
     {
       "type": "checkbox",
