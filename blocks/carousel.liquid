@@ -23,9 +23,12 @@
   {% assign classes = classes | push: 'width-{{ s.width_scheme }}' %}
 {% endunless %}
 
-{% if s.inherit_styles == false and s.color_scheme_override == true %}
-  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
-{% endif %}
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
+  {% if s.color_scheme_override or s.bg_color_override %}
+    {% assign classes = classes | push: 'bg-surface' %}
+  {% endif %}
+{% endunless %}
 
 {% if s.position == 'absolute' %}
   {% assign classes = classes | push: 'absolute' | push: 'anchor-{{ s.inset }}' %}
