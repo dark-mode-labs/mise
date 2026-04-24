@@ -30,7 +30,7 @@
         --color-shadow: {{ scheme[1].settings.shadow }};
         --color-ui-bg: {{ scheme[1].settings.ui_bg }};
         --color-ui-text: {{ scheme[1].settings.ui_text }};
-        --color-text-subtle: {{ scheme[1].settings.text | color_modify: 'alpha', 0.7 }};
+        --color-text-subtle: {{ scheme[1].settings.text_subtle }};
       }
     {% endfor %}
 

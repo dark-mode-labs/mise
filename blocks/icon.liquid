@@ -8,11 +8,16 @@
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
 
-{% if s.inherit_styles == false and s.color_scheme_override == true %}
-  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
-{% endif %}
+{% assign color_role = 'text-{{ s.color_role }}' %}
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
 
-{% assign block_classes = classes | join: ' ' %}
+  {% if s.text_color_override %}
+    {% assign color_role = 'text-primary' %}
+  {% endif %}
+{% endunless %}
+
+{% assign block_classes = classes | push: color_role | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign styles = blank %}
@@ -235,6 +240,19 @@
     {
       "type": "header",
       "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "conditional": "setting.inherit_styles or setting.text_color_override != true"
     },
     {
       "type": "checkbox",

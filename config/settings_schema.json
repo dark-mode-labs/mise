@@ -138,6 +138,12 @@
         },
         {
           "type": "color",
+          "id": "text_subtle",
+          "label": "Subtle Text",
+          "default": "rgba(102, 102, 102, 1)"
+        },
+        {
+          "type": "color",
           "id": "accent",
           "label": "Accent / Links",
           "default": "rgba(0, 0, 0, 1)"
@@ -384,7 +390,8 @@
             "button_bg": "#0891B2",
             "background": "#FDFEFE",
             "button_text": "#FFFFFF",
-            "text_secondary": "#5B7C8D"
+            "text_secondary": "#5B7C8D",
+            "text_subtle": "#5B7C8D"
           }
         },
         "none": {
@@ -400,7 +407,8 @@
             "button_bg": "",
             "background": "",
             "button_text": "",
-            "text_secondary": ""
+            "text_secondary": "",
+            "text_subtle": ""
           }
         }
       },

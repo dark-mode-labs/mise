@@ -43,7 +43,8 @@
         display_size: s.display_size,
         weight: s.font_weight,
         class: utility_classes,
-        family: font_family
+        family: font_family,
+        color_role: s.color_role
       %}
       {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}
     </summary>
@@ -125,6 +126,18 @@
         { "value": "uppercase", "label": "Uppercase" },
         { "value": "capitalize", "label": "Capitalize" },
         { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "accent", "label": "Accent" }
       ]
     },
     {

@@ -56,9 +56,9 @@
           text: link.title,
           display_size: s.display_size,
           weight: s.font_weight,
-          color_role: 'button',
           family: font_family,
-          class: utility_classes
+          class: utility_classes,
+          color_role: s.color_role
         %}
       </a>
     </li>
@@ -127,6 +127,19 @@
         { "value": "uppercase", "label": "Uppercase" },
         { "value": "capitalize", "label": "Capitalize" },
         { "value": "lowercase", "label": "Lowercase" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Text Color Role",
+      "default": "button",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" }
       ]
     },
     {
