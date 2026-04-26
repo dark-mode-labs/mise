@@ -18,17 +18,60 @@
     }
 
     {% for scheme in color_schemes %}
+      {%- assign s_bg = scheme[1].settings.background -%}
+      {%- assign s_surface = scheme[1].settings.surface -%}
+      {%- assign s_accent = scheme[1].settings.accent -%}
+      {%- assign s_btn_bg = scheme[1].settings.button_bg -%}
+      {%- assign s_ui_bg = scheme[1].settings.ui_bg -%}
+      {%- comment -%}
+        For each bg-painting slot we emit TWO variables: a solid color (used by
+        background-color via color-mix for runtime alpha control) and a
+        gradient-or-none image (painted via background-image). When the scheme
+        slot is a gradient, the color side becomes `transparent` (so color-mix
+        is valid and the alpha control is a no-op) and the image side carries
+        the gradient. Solids do the inverse.
+      {%- endcomment -%}
       .color-{{ scheme[0] }} {
-        --color-bg: {{ scheme[1].settings.background }};
+        {%- if s_bg contains 'gradient' -%}
+          --color-bg: transparent;
+          --color-bg-image: {{ s_bg }};
+        {%- else -%}
+          --color-bg: {{ s_bg }};
+          --color-bg-image: none;
+        {%- endif %}
         --color-text: {{ scheme[1].settings.text }};
         --color-text-secondary: {{ scheme[1].settings.text_secondary }};
-        --color-accent: {{ scheme[1].settings.accent }};
-        --color-surface: {{ scheme[1].settings.surface }};
-        --color-btn-bg: {{ scheme[1].settings.button_bg }};
+        {%- if s_accent contains 'gradient' -%}
+          --color-accent: transparent;
+          --color-accent-image: {{ s_accent }};
+        {%- else -%}
+          --color-accent: {{ s_accent }};
+          --color-accent-image: none;
+        {%- endif %}
+        {%- if s_surface contains 'gradient' -%}
+          --color-surface: transparent;
+          --color-surface-image: {{ s_surface }};
+        {%- else -%}
+          --color-surface: {{ s_surface }};
+          --color-surface-image: none;
+        {%- endif %}
+        {%- if s_btn_bg contains 'gradient' -%}
+          --color-btn-bg: transparent;
+          --color-btn-bg-image: {{ s_btn_bg }};
+        {%- else -%}
+          --color-btn-bg: {{ s_btn_bg }};
+          --color-btn-bg-image: none;
+        {%- endif %}
         --color-btn-text: {{ scheme[1].settings.button_text }};
         --color-border: {{ scheme[1].settings.border }};
         --color-shadow: {{ scheme[1].settings.shadow }};
-        --color-ui-bg: {{ scheme[1].settings.ui_bg }};
+        {%- if s_ui_bg contains 'gradient' -%}
+          --color-ui-bg: transparent;
+          --color-ui-bg-image: {{ s_ui_bg }};
+        {%- else -%}
+          --color-ui-bg: {{ s_ui_bg }};
+          --color-ui-bg-image: none;
+        {%- endif %}
         --color-ui-text: {{ scheme[1].settings.ui_text }};
         --color-text-subtle: {{ scheme[1].settings.text_subtle }};
       }

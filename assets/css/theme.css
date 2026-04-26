@@ -1296,23 +1296,40 @@
     @apply relative w-full overflow-hidden;
   }
 
+  /* The .bg-<role> classes paint the corresponding scheme slot.
+
+     Each scheme variable is split: `--color-X` is the solid color (or
+     `transparent` if the scheme bg is a gradient), `--color-X-image` is
+     the gradient (or `none` for solids). We layer them via background-color
+     + background-image — only one is non-transparent / non-none per scheme,
+     but BOTH must be valid CSS values, otherwise IACVT (invalid-at-
+     computed-value time) sets the property to its initial value (transparent)
+     instead of falling back to a previous declaration in the cascade.
+
+     `--bg-alpha` (0..1) controls runtime alpha for solid bgs only. For
+     gradients, alpha is baked into the stops at compile time. */
   .bg-body {
-    background: var(--color-bg);
+    background-color: color-mix(in srgb, var(--color-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--color-bg-image);
   }
 
   .bg-surface {
-    background: var(--color-surface);
+    background-color: color-mix(in srgb, var(--color-surface) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--color-surface-image);
   }
 
   .bg-accent {
-    background: var(--color-accent);
+    background-color: color-mix(in srgb, var(--color-accent) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--color-accent-image);
   }
 
   .bg-button {
-    background: var(--color-btn-bg);
+    background-color: color-mix(in srgb, var(--color-btn-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--color-btn-bg-image);
   }
 
   .bg-nav {
-    background: var(--color-ui-bg);
+    background-color: color-mix(in srgb, var(--color-ui-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--color-ui-bg-image);
   }
 }

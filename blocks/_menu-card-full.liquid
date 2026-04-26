@@ -1,7 +1,7 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Class Array Building --- {% endcomment %}
-{% assign classes = 'group-block group cursor-pointer flex flex-col relative transition-all rounded-global width-full height-full'
+{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all rounded-global width-full height-full'
   | push: 'text-align-{{ s.text_align }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
@@ -11,8 +11,13 @@
   | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
   | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
-  | push_if: 'bg-{{ s.color_role }}', s.apply_background
 %}
+
+{% comment %} Background layer: scheme-driven via .bg-<role>. Escape-hatch
+   (bg_color_override) is rendered as inline style further down. {% endcomment %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_color_override != true %}
+  {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
+{% endif %}
 
 {% unless s.inherit_styles %}
   {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
@@ -74,7 +79,6 @@
 {% unless s.inherit_styles %}
   {% assign styles = styles
     | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--color-surface: {{ s.bg_color }}', s.bg_color_override
     | push_if: '--color-shadow: {{ s.shadow_color }}', s.shadow_color_override
   %}
 
@@ -85,6 +89,13 @@
     %}
   {% endunless %}
 {% endunless %}
+
+{% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
+{% if s.bg_color_override and s.bg_color != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
+{% elsif s.bg_role and s.bg_role != 'none' and s.bg_alpha and s.bg_alpha != 100 %}
+  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% endif %}
 
 {% if s.opacity < 100 %}
   {% assign styles = styles | push: 'opacity: {{ s.opacity | divided_by: 100.0 }}' %}
@@ -100,6 +111,13 @@
   data-action="add-item"
   {{ context.attached_attributes }}
 >
+  {% render 'bg-overlay',
+       role: s.overlay_role,
+       alpha: s.overlay_alpha,
+       use_custom: s.overlay_color_override,
+       custom_color: s.overlay_color,
+       behind: true
+  %}
   {% content_for 'block', type: 'group', id: 'menu-card-header' %}
   {% content_for 'block', type: 'group', id: 'menu-card-content' %}
   {% content_for 'block', type: 'group', id: 'menu-card-footer' %}
@@ -368,20 +386,60 @@
       "type": "header",
       "content": "Style"
     },
-    { "type": "checkbox", "id": "apply_background", "label": "Apply Background", "default": false },
     {
       "type": "select",
-      "id": "color_role",
-      "label": "Color Role",
-      "default": "surface",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "none",
       "options": [
-        { "value": "button", "label": "Button" },
-        { "value": "nav", "label": "Control" },
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
         { "value": "surface", "label": "Surface" },
-        { "value": "body", "label": "Body" },
-        { "value": "accent", "label": "Accent" }
-      ],
-      "conditional": "setting.apply_background"
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "bg_alpha",
+      "label": "Background Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "conditional": "setting.bg_role != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
+      "conditional": "setting.overlay_role != 'none' or setting.overlay_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_color_override",
+      "label": "Custom Overlay (free hex/gradient)",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Custom Overlay Color",
+      "default": "",
+      "conditional": "setting.overlay_color_override"
     },
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
     { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
@@ -410,15 +468,15 @@
     {
       "type": "checkbox",
       "id": "bg_color_override",
-      "label": "Override Background",
+      "label": "Custom Background (free hex/gradient)",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.bg_role != 'none'"
     },
     {
       "type": "color",
       "id": "bg_color",
-      "label": "Custom Background",
-      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
+      "label": "Custom Background Color",
+      "conditional": "setting.bg_role != 'none' and setting.bg_color_override"
     },
     {
       "type": "checkbox",

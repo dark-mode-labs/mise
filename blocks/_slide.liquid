@@ -1,9 +1,13 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Slide Wrapper Classes --- {% endcomment %}
-{% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden'
-  | push_if: 'bg-{{ s.color_role }}', s.apply_background
-%}
+{% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden' %}
+
+{% comment %} Background layer: scheme-driven via .bg-<role>. Escape-hatch
+   (bg_color_override) is rendered as inline style further down. {% endcomment %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_color_override != true %}
+  {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
+{% endif %}
 
 {% unless s.inherit_styles %}
   {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
@@ -11,16 +15,14 @@
 
 {% assign slide_classes = classes | join: ' ' %}
 
-{% comment %} --- Overlay Styles --- {% endcomment %}
-{% assign overlay_styles = blank %}
-{% if s.enable_overlay %}
-  {% assign overlay_styles = overlay_styles
-    | push: 'background: {{ s.overlay_color }}'
-    | push: 'opacity: {{ s.overlay_opacity | divided_by: 100.0 }}'
-  %}
+{% comment %} --- Slide-level inline styles (bg escape-hatch + alpha) --- {% endcomment %}
+{% assign slide_styles = blank %}
+{% if s.bg_color_override and s.bg_color != blank %}
+  {% assign slide_styles = slide_styles | push: 'background: {{ s.bg_color }}' %}
+{% elsif s.bg_role and s.bg_role != 'none' and s.bg_alpha and s.bg_alpha != 100 %}
+  {% assign slide_styles = slide_styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
 {% endif %}
-
-{% assign overlay_style_str = overlay_styles | join: ';' %}
+{% assign slide_style_str = slide_styles | join: ';' %}
 
 {% comment %} --- Content Wrapper Classes --- {% endcomment %}
 {% assign content_classes = 'wrapper absolute inset-0 z-content flex flex-col flex-auto gap-4'
@@ -40,6 +42,7 @@
 {% comment %} --- Component Render --- {% endcomment %}
 <div
   class="{{ slide_classes }}"
+  style="{{ slide_style_str }}"
   {{ context.attached_attributes }}
 >
   <div class="absolute inset-0 z-media">
@@ -52,10 +55,12 @@
       animate: s.enable_zoom
     %}
 
-    <div
-      class="absolute inset-0 pointer-events-none"
-      style="{{ overlay_style_str }}"
-    ></div>
+    {% render 'bg-overlay',
+         role: s.overlay_role,
+         alpha: s.overlay_alpha,
+         use_custom: s.overlay_color_override,
+         custom_color: s.overlay_color
+    %}
   </div>
 
   <div class="{{ content_class_str }}">
@@ -82,29 +87,41 @@
 
     {
       "type": "header",
-      "content": "Overlay Style"
+      "content": "Overlay"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
+      "conditional": "setting.overlay_role != 'none' or setting.overlay_color_override"
     },
     {
       "type": "checkbox",
-      "id": "enable_overlay",
-      "label": "Use Overlay",
+      "id": "overlay_color_override",
+      "label": "Custom Overlay (free hex/gradient)",
       "default": false
     },
     {
       "type": "color",
       "id": "overlay_color",
-      "label": "Tint Color",
-      "default": "#000000",
-      "conditional": "setting.enable_overlay == true"
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "label": "Opacity",
-      "min": 0,
-      "max": 100,
-      "default": 100,
-      "conditional": "setting.enable_overlay == true"
+      "label": "Custom Overlay Color",
+      "default": "",
+      "conditional": "setting.overlay_color_override"
     },
 
     { "type": "header", "content": "Alignment" },
@@ -151,20 +168,26 @@
       "label": "Inherit Color Scheme",
       "default": true
     },
-    { "type": "checkbox", "id": "apply_background", "label": "Apply Background", "default": false },
     {
       "type": "select",
-      "id": "color_role",
-      "label": "Color Role",
-      "default": "surface",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "none",
       "options": [
-        { "value": "button", "label": "Button" },
-        { "value": "nav", "label": "Control" },
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
         { "value": "surface", "label": "Surface" },
-        { "value": "body", "label": "Body" },
-        { "value": "accent", "label": "Accent" }
-      ],
-      "conditional": "setting.apply_background"
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "bg_alpha",
+      "label": "Background Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "conditional": "setting.bg_role != 'none'"
     },
     {
       "type": "header",
@@ -184,6 +207,19 @@
       "label": "Color Scheme",
       "default": "default",
       "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Custom Background (free hex/gradient)",
+      "default": false,
+      "conditional": "setting.bg_role != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background Color",
+      "conditional": "setting.bg_role != 'none' and setting.bg_color_override"
     }
   ],
   "blocks": [{ "type": "@theme" }],

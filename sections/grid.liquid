@@ -28,16 +28,22 @@
 {% assign container_class_str = container_classes | join: ' ' %}
 {% assign spacing_style_str = spacing_styles | join: ';' %}
 
-{% comment %} --- 2. Overlay & Background Logic --- {% endcomment %}
-{% assign overlay_styles = blank %}
-{% if s.enable_overlay and s.overlay_color != blank %}
-  {% assign overlay_styles = overlay_styles
-    | push: 'background: {{ s.overlay_color }}'
-    | push: 'opacity: {{ s.overlay_opacity | divided_by: 100.0 }}'
-  %}
-{% endif %}
+{% comment %} --- 2. Background class + styles (unified bg primitive) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if s.bg_color_override and s.bg_color != blank %}{% assign bg_class = '' %}{% endif %}
 
-{% assign overlay_style_str = overlay_styles | join: ';' %}
+{% assign styles = blank %}
+{% if s.bg_color_override and s.bg_color != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
+{% elsif s.bg_alpha and s.bg_alpha != 100 %}
+  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
+{% assign has_overlay = false %}
+{% if s.overlay_role and s.overlay_role != 'none' %}{% assign has_overlay = true %}{% endif %}
+{% if s.overlay_color_override and s.overlay_color != blank %}{% assign has_overlay = true %}{% endif %}
 
 {% comment %} --- 3. Flex Grid Logic --- {% endcomment %}
 {% assign flex_classes = 'flex flex-wrap -mx-4'
@@ -57,11 +63,12 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <section
-  class="section-flex color-{{ s.color_scheme | default: 'none' }} bg-body"
+  class="section-flex color-{{ s.color_scheme | default: 'none' }} {{ bg_class }}"
+  style="{{ style_str }}"
   {{ context.attached_attributes }}
 >
   {% comment %} Background Media / Overlay Layer {% endcomment %}
-  {% if s.bg_image != blank or s.enable_overlay %}
+  {% if s.bg_image != blank or has_overlay %}
     <div
       class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden"
       {% if s.bg_image != blank %}
@@ -79,12 +86,12 @@
           %}
         {% endif %}
 
-        {% if s.enable_overlay and s.overlay_color != blank %}
-          <div
-            class="absolute inset-0 pointer-events-none"
-            style="{{ overlay_style_str }}"
-          ></div>
-        {% endif %}
+        {% render 'bg-overlay',
+             role: s.overlay_role,
+             alpha: s.overlay_alpha,
+             use_custom: s.overlay_color_override,
+             custom_color: s.overlay_color
+        %}
       </div>
     </div>
   {% endif %}
@@ -111,29 +118,78 @@
   "settings": [
     {
       "type": "header",
-      "content": "Overlay Style"
+      "content": "Background"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "bg_alpha",
+      "label": "Background Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "conditional": "setting.bg_role != 'none'"
     },
     {
       "type": "checkbox",
-      "id": "enable_overlay",
-      "label": "Use Overlay",
+      "id": "bg_color_override",
+      "label": "Custom Background (free hex/gradient)",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background Color",
+      "conditional": "setting.bg_color_override"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
+      "conditional": "setting.overlay_role != 'none' or setting.overlay_color_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_color_override",
+      "label": "Custom Overlay (free hex/gradient)",
       "default": false
     },
     {
       "type": "color",
       "id": "overlay_color",
-      "label": "Tint / Background Color",
+      "label": "Custom Overlay Color",
       "default": "",
-      "conditional": "setting.enable_overlay == true"
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "label": "Opacity",
-      "min": 0,
-      "max": 100,
-      "default": 100,
-      "conditional": "setting.enable_overlay == true"
+      "conditional": "setting.overlay_color_override"
     },
     { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
     { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile Background" },

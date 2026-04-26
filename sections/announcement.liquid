@@ -1,7 +1,21 @@
 {% assign s = section.settings %}
 
+{% comment %} --- Background class + styles (unified bg primitive) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if s.bg_color_override and s.bg_color != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign styles = blank %}
+{% if s.bg_color_override and s.bg_color != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
+{% elsif s.bg_alpha and s.bg_alpha != 100 %}
+  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
 <section
-  class="section-announcement color-{{ s.color_scheme | default: 'none' }} bg-body z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std"
+  class="section-announcement color-{{ s.color_scheme | default: 'none' }} {{ bg_class }} z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std"
+  style="{{ style_str }}"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
@@ -65,7 +79,40 @@
       "type": "header",
       "content": "Theme"
     },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" }
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "bg_alpha",
+      "label": "Background Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "conditional": "setting.bg_role != 'none'"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Custom Background (free hex/gradient)",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background Color",
+      "conditional": "setting.bg_color_override"
+    }
   ],
   "blocks": [{ "type": "_announcement" }],
   "presets": [

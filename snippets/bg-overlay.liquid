@@ -1,0 +1,43 @@
+{% comment %}
+  Renders an overlay layer for any block/section that supports the unified
+  bg primitive. The host element must establish a positioning context (any
+  `relative` ancestor) so the absolute layer is bounded.
+
+  Inputs:
+    role        — overlay_role: 'none' | 'body' | 'surface' | 'accent' | 'button' | 'nav'
+    alpha       — overlay_alpha (0..100), default 100
+    use_custom  — overlay_color_override boolean
+    custom_color — overlay_color string (hex or CSS gradient)
+    behind      — boolean. False (default): overlay paints ON TOP — used by
+                  hero/grid/_slide where the overlay dims a media child.
+                  True: overlay paints BEHIND siblings as a bg layer — used
+                  by footer/group/badge/_menu-card-full/carousel where the
+                  overlay is an alternate scheme bg behind the content. The
+                  host MUST also include the `isolate` class so the negative
+                  z-index is bounded inside the host's stacking context.
+
+  Behavior:
+    - If use_custom and custom_color present → escape hatch: paint the raw
+      hex/gradient. Ignores alpha (gradients carry their own alphas).
+    - Else if role != 'none' → paint via .bg-<role>, respects alpha via --bg-alpha.
+    - Else: render nothing.
+{% endcomment %}
+
+{% assign overlay_z = '' %}
+{% if behind %}
+  {% assign overlay_z = ' -z-10' %}
+{% endif %}
+
+{% if use_custom and custom_color != blank %}
+  <div
+    class="rounded-global absolute inset-0 pointer-events-none{{ overlay_z }}"
+    style="background: {{ custom_color }};"
+  ></div>
+{% elsif role and role != 'none' %}
+  <div
+    class="rounded-global absolute inset-0 pointer-events-none{{ overlay_z }} bg-{{ role }}"
+    {% if alpha and alpha != 100 %}
+      style="--bg-alpha: {{ alpha | divided_by: 100.0 }};"
+    {% endif %}
+  ></div>
+{% endif %}

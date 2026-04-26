@@ -1,7 +1,13 @@
 {% assign s = section.settings %}
 
+{% comment %} --- Background class (unified bg primitive) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if s.bg_color_override and s.bg_color != blank %}{% assign bg_class = '' %}{% endif %}
+
 {% comment %} --- 1. Container Class Pipeline --- {% endcomment %}
-{% assign container_classes = 'bg-body text-body border-y border-std limit-width'
+{% assign container_classes = 'text-body border-y border-std limit-width'
+  | push: bg_class
   | push: 'width-{{ s.width_scheme }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
@@ -9,24 +15,26 @@
 
 {% assign container_class_str = container_classes | join: ' ' %}
 
-{% comment %} --- 2. Spacing Style Pipeline --- {% endcomment %}
-{% assign spacing_styles = blank %}
-
+{% comment %} --- 2. Style Pipeline (spacing + bg layer, single var) --- {% endcomment %}
+{% assign styles = blank %}
 {% if s.padding_vertical == 'custom' %}
-  {% assign spacing_styles = spacing_styles
+  {% assign styles = styles
     | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
     | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
   %}
 {% endif %}
-
 {% if s.padding_horizontal == 'custom' %}
-  {% assign spacing_styles = spacing_styles
+  {% assign styles = styles
     | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
     | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
   %}
 {% endif %}
-
-{% assign spacing_style_str = spacing_styles | join: ';' %}
+{% if s.bg_color_override and s.bg_color != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
+{% elsif s.bg_alpha and s.bg_alpha != 100 %}
+  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
 
 {% comment %} --- 3. Component Render --- {% endcomment %}
 <section
@@ -35,7 +43,7 @@
 >
   <div
     class="{{ container_class_str }}"
-    style="{{ spacing_style_str }}"
+    style="{{ style_str }}"
   >
     {% render 'marquee',
       items: s.text_list,
@@ -186,6 +194,39 @@
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "bg_alpha",
+      "label": "Background Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "conditional": "setting.bg_role != 'none'"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Custom Background (free hex/gradient)",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background Color",
+      "conditional": "setting.bg_color_override"
     }
   ],
   "presets": [

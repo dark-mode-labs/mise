@@ -13,8 +13,13 @@
   | push_if: 'stagger-load', s.animate_stagger
   | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
-  | push_if: 'bg-{{ s.color_role }}', s.apply_background
 %}
+
+{% comment %} Background layer: scheme-driven via .bg-<role>. Escape-hatch
+   (bg_color_override) is rendered as inline style further down. {% endcomment %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_color_override != true %}
+  {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
+{% endif %}
 
 {% if s.animate_fade != 'none' %}
   {% assign classes = classes | push: 'fade-{{ s.animate_fade }}' %}
@@ -97,24 +102,19 @@
 {% unless s.inherit_styles %}
   {% assign styles = styles
     | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--color-surface: {{ s.bg_color }}', s.bg_color_override
     | push_if: '--color-shadow: {{ s.shadow_color }}', s.shadow_color_override
     | push_if: '--color-text: {{ s.text_color }}', s.text_color_override
   %}
 {% endunless %}
 
-{% assign block_styles = styles | join: ';' %}
-
-{% comment %} --- Overlay Styles Array Building --- {% endcomment %}
-{% assign overlay_styles = blank %}
-{% if s.enable_overlay %}
-  {% assign overlay_styles = overlay_styles
-    | push: 'background: {{ s.overlay_color }}'
-    | push: 'opacity: {{ s.overlay_opacity | divided_by: 100.0 }}'
-  %}
+{% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
+{% if s.bg_color_override and s.bg_color != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
+{% elsif s.bg_role and s.bg_role != 'none' and s.bg_alpha and s.bg_alpha != 100 %}
+  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
 {% endif %}
 
-{% assign overlay_style_str = overlay_styles | join: ';' %}
+{% assign block_styles = styles | join: ';' %}
 
 {% comment %} --- Nav Direction Logic --- {% endcomment %}
 {% assign wrapper_classes = blank %}
@@ -142,7 +142,7 @@
   {{ context.attached_attributes }}
 >
   <div
-    class="slideshow-wrapper relative w-full h-full flex flex-col {{ wrapper_classes }}"
+    class="slideshow-wrapper relative isolate w-full h-full flex flex-col {{ wrapper_classes }}"
     data-behavior="slideshow"
     data-autoplay="{{ s.autoplay }}"
     data-speed="{{ s.autoplay_speed }}"
@@ -186,13 +186,16 @@
       </div>
     {% endif %}
 
+    {% render 'bg-overlay',
+         role: s.overlay_role,
+         alpha: s.overlay_alpha,
+         use_custom: s.overlay_color_override,
+         custom_color: s.overlay_color,
+         behind: true
+    %}
     <div class="slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-{{ s.gap }}">
       {% content_for 'blocks' %}
     </div>
-
-    {% if s.enable_overlay %}
-      <div class="rounded-global absolute inset-0 pointer-events-none" style="{{ overlay_style_str }}"></div>
-    {% endif %}
   </div>
 </div>
 
@@ -609,20 +612,26 @@
       "content": "Style"
     },
     { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
-    { "type": "checkbox", "id": "apply_background", "label": "Apply Background", "default": false },
     {
       "type": "select",
-      "id": "color_role",
-      "label": "Color Role",
-      "default": "surface",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "none",
       "options": [
-        { "value": "button", "label": "Button" },
-        { "value": "nav", "label": "Control" },
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
         { "value": "surface", "label": "Surface" },
-        { "value": "body", "label": "Body" },
-        { "value": "accent", "label": "Accent" }
-      ],
-      "conditional": "setting.apply_background"
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "bg_alpha",
+      "label": "Background Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "conditional": "setting.bg_role != 'none'"
     },
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
     { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
@@ -697,29 +706,41 @@
     },
     {
       "type": "header",
-      "content": "Overlay Style"
+      "content": "Overlay"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
+      "conditional": "setting.overlay_role != 'none' or setting.overlay_color_override"
     },
     {
       "type": "checkbox",
-      "id": "enable_overlay",
-      "label": "Use Overlay",
+      "id": "overlay_color_override",
+      "label": "Custom Overlay (free hex/gradient)",
       "default": false
     },
     {
       "type": "color",
       "id": "overlay_color",
-      "label": "Tint / Background Color",
+      "label": "Custom Overlay Color",
       "default": "",
-      "conditional": "setting.enable_overlay == true"
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "label": "Opacity",
-      "min": 0,
-      "max": 100,
-      "default": 100,
-      "conditional": "setting.enable_overlay == true"
+      "conditional": "setting.overlay_color_override"
     },
     {
       "type": "header",
@@ -743,15 +764,15 @@
     {
       "type": "checkbox",
       "id": "bg_color_override",
-      "label": "Override Background",
+      "label": "Custom Background (free hex/gradient)",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.bg_role != 'none'"
     },
     {
       "type": "color",
       "id": "bg_color",
-      "label": "Custom Background",
-      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
+      "label": "Custom Background Color",
+      "conditional": "setting.bg_role != 'none' and setting.bg_color_override"
     },
     {
       "type": "checkbox",

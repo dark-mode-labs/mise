@@ -13,7 +13,13 @@
   {% assign container_classes = container_classes | push: 'media-layout-right' %}
 {% endif %}
 
-{% assign content_classes = 'media-content-split bg-body gap-6 transition-all'
+{% comment %} --- Background class (unified bg primitive) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if s.bg_color_override and s.bg_color != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign content_classes = 'media-content-split gap-6 transition-all'
+  | push: bg_class
   | push: 'section-align-content-{{ s.content_align }}'
   | push: 'section-align-v-{{ s.vertical_align }}'
   | push: 'section-align-text-{{ s.text_align }}'
@@ -44,6 +50,13 @@
 {% endif %}
 {% if s.height == 'custom' %}
   {% assign spacing_styles = spacing_styles | push: '--max-h: {{ s.height_custom }}vh' %}
+{% endif %}
+
+{% comment %} bg layer styles into the same list (unified bg primitive) {% endcomment %}
+{% if s.bg_color_override and s.bg_color != blank %}
+  {% assign spacing_styles = spacing_styles | push: 'background: {{ s.bg_color }}' %}
+{% elsif s.bg_alpha and s.bg_alpha != 100 %}
+  {% assign spacing_styles = spacing_styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
 {% endif %}
 
 {% assign spacing_style_str = spacing_styles | join: ';' %}
@@ -259,7 +272,40 @@
     { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
     { "type": "header", "content": "Visuals" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" }
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        { "value": "none",    "label": "None" },
+        { "value": "body",    "label": "Body" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "accent",  "label": "Accent" },
+        { "value": "button",  "label": "Button" },
+        { "value": "nav",     "label": "Control" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "bg_alpha",
+      "label": "Background Opacity",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "conditional": "setting.bg_role != 'none'"
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_color_override",
+      "label": "Custom Background (free hex/gradient)",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background Color",
+      "conditional": "setting.bg_color_override"
+    }
   ],
   "blocks": [{ "type": "text" }, { "type": "button" }, { "type": "logo" }, { "type": "spacer" }, { "type": "@theme" }],
   "presets": [
