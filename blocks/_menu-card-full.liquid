@@ -11,13 +11,11 @@
   | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
   | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
+  | push_if: 'bg-{{ s.color_role }}', s.apply_background
 %}
 
 {% unless s.inherit_styles %}
   {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
-  {% if s.color_scheme_override or s.bg_color_override %}
-    {% assign classes = classes | push: 'bg-surface' %}
-  {% endif %}
 {% endunless %}
 
 {% comment %} Borders {% endcomment %}
@@ -369,6 +367,21 @@
     {
       "type": "header",
       "content": "Style"
+    },
+    { "type": "checkbox", "id": "apply_background", "label": "Apply Background", "default": false },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Color Role",
+      "default": "surface",
+      "options": [
+        { "value": "button", "label": "Button" },
+        { "value": "nav", "label": "Control" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "body", "label": "Body" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "conditional": "setting.apply_background"
     },
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
     { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },

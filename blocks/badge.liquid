@@ -4,7 +4,7 @@
 {% assign align_class = 'align-items-center' %}
 {% assign justify_class = 'justify-content-center' %}
 
-{% assign classes = 'badge-pill transition-all rounded-full overflow-hidden width-fit bg-surface'
+{% assign classes = 'badge-pill transition-all rounded-full overflow-hidden width-fit'
   | push: layout_class
   | push: justify_class
   | push: align_class
@@ -15,6 +15,7 @@
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
   | push_if: 'shadow-lg', s.shadow
+  | push_if: 'bg-{{ s.color_role }}', s.apply_background
 %}
 
 {% if s.inherit_styles == false and s.color_scheme_override == true %}
@@ -304,6 +305,21 @@
       "content": "Style"
     },
     { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
+    { "type": "checkbox", "id": "apply_background", "label": "Apply Background", "default": false },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Color Role",
+      "default": "surface",
+      "options": [
+        { "value": "button", "label": "Button" },
+        { "value": "nav", "label": "Control" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "body", "label": "Body" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "conditional": "setting.apply_background"
+    },
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
     {
       "type": "header",

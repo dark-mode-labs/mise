@@ -258,7 +258,7 @@
   }
 
   .btn-primary {
-    @apply btn-base bg-btn hover:opacity-90;
+    @apply btn-base bg-button hover:opacity-90;
   }
 
   .btn-outline {
@@ -1308,7 +1308,7 @@
     background: var(--color-accent);
   }
 
-  .bg-btn {
+  .bg-button {
     background: var(--color-btn-bg);
   }
 

@@ -1,7 +1,7 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign classes = 'icon icon-size inline-flex items-center justify-center flex-shrink-0 text-body'
+{% assign classes = 'icon icon-size inline-flex items-center justify-center flex-shrink-0'
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
@@ -247,6 +247,8 @@
       "label": "Text Color Role",
       "default": "primary",
       "options": [
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
         { "value": "primary", "label": "Primary" },
         { "value": "secondary", "label": "Secondary" },
         { "value": "subtle", "label": "Subtle" },

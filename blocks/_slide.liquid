@@ -1,11 +1,13 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Slide Wrapper Classes --- {% endcomment %}
-{% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden' %}
+{% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden'
+  | push_if: 'bg-{{ s.color_role }}', s.apply_background
+%}
 
-{% if s.inherit_styles == false and s.color_scheme_override == true %}
-  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
-{% endif %}
+{% unless s.inherit_styles %}
+  {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
+{% endunless %}
 
 {% assign slide_classes = classes | join: ' ' %}
 
@@ -148,6 +150,21 @@
       "id": "inherit_styles",
       "label": "Inherit Color Scheme",
       "default": true
+    },
+    { "type": "checkbox", "id": "apply_background", "label": "Apply Background", "default": false },
+    {
+      "type": "select",
+      "id": "color_role",
+      "label": "Color Role",
+      "default": "surface",
+      "options": [
+        { "value": "button", "label": "Button" },
+        { "value": "nav", "label": "Control" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "body", "label": "Body" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "conditional": "setting.apply_background"
     },
     {
       "type": "header",
