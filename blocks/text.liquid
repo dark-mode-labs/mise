@@ -10,13 +10,15 @@
   {% assign wrapper_classes = wrapper_classes | push: 'tabular-nums min-w-[3ch]' %}
 {% endif %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign wrapper_classes = wrapper_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign _is_custom_text = false %}
+{% if s.text_role == 'custom' %}{% assign _is_custom_text = true %}{% endif %}
 {% assign styles = blank %}
 
 {% if s.margin_vertical == 'custom' %}
@@ -41,10 +43,7 @@
   {% assign styles = styles | push: '--text-leading: {{ s.text_leading_custom | divided_by: 100.0 }}' %}
 {% endif %}
 
-{% unless s.surface_override == false %}
-  {% assign styles = styles | push_if: '--text: {{ s.text_color }}', s.text_color_override %}
-{% endunless %}
-
+{% assign styles = styles | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text %}
 {% assign wrapper_style_str = styles | join: ';' %}
 
 {% comment %} --- Typography Utilities --- {% endcomment %}
@@ -77,12 +76,9 @@
 {% endif %}
 
 {% assign color_role = s.text_role %}
-{% unless s.surface_override == false %}
-  {% if s.text_color_override %}
+{% if s.text_role == 'custom' %}
     {% assign color_role = 'primary' %}
   {% endif %}
-{% endunless %}
-
 {% comment %} --- Component Render --- {% endcomment %}
 <div
   class="{{ wrapper_class_str }}"
@@ -394,8 +390,19 @@
         { "value": "primary", "label": "Primary" },
         { "value": "secondary", "label": "Secondary" },
         { "value": "subtle", "label": "Subtle" },
-        { "value": "accent", "label": "Accent" }
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "custom", "label": "Custom" }
       ]
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Custom Text",
+      "info": "Free hex or CSS gradient. Used only when Text role = Custom.",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "header",
@@ -415,20 +422,6 @@
       "label": "Color Scheme",
       "default": "default",
       "conditional": "setting.surface_override == true"
-    },
-    {
-      "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Text Color",
-      "default": false,
-      "conditional": "true"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Color",
-      "default": "#ffffff",
-      "conditional": "true and setting.text_color_override"
     }
   ]
 }

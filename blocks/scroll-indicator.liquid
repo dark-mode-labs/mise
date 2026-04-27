@@ -3,19 +3,18 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'absolute w-full z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80' %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign _is_custom_text = false %}
+{% if s.text_role == 'custom' %}{% assign _is_custom_text = true %}{% endif %}
 {% assign styles = blank %}
 
-{% unless s.surface_override == false %}
-  {% assign styles = styles | push_if: '--text: {{ s.text_color }}', s.text_color_override %}
-{% endunless %}
-
+{% assign styles = styles | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text %}
 {% assign styles = styles | push: 'bottom: {{ s.bottom_offset }}rem' %}
 
 {% assign block_styles = styles | join: ';' %}
@@ -32,7 +31,7 @@
   {% endif %}
 
   <div class="animate-bounce">
-    {% render 'icon', name: 'chevron-down', class: 'w-5 h-5 text-body' %}
+    {% render 'icon', name: 'chevron-down', class: 'w-5 h-5 text-primary' %}
   </div>
 </div>
 
@@ -69,7 +68,7 @@
       "type": "header",
       "content": "Style"
     },
-        {
+    {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
@@ -87,20 +86,6 @@
       "label": "Color Scheme",
       "default": "default",
       "conditional": "setting.surface_override == true"
-    },
-    {
-      "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Text Color",
-      "default": false,
-      "conditional": "true"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Color",
-      "default": "#ffffff",
-      "conditional": "true and setting.text_color_override"
     }
   ]
 }

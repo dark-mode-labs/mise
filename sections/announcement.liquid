@@ -3,18 +3,16 @@
 {% comment %} --- Background class + styles (unified bg primitive) --- {% endcomment %}
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
 {% assign bg_class = 'bg-' | append: bg_role_safe %}
-{% if s.bg_color_override and s.bg_color != blank %}{% assign bg_class = '' %}{% endif %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}{% assign bg_class = '' %}{% endif %}
 
 {% assign styles = blank %}
-{% if s.bg_color_override and s.bg_color != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
-{% elsif s.bg_alpha and s.bg_alpha != 100 %}
-  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class="section-announcement surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std"
+  class="section-announcement surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-default"
   style="{{ style_str }}"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
@@ -86,34 +84,25 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none",    "label": "None" },
-        { "value": "body",    "label": "Body" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "accent",  "label": "Accent" },
-        { "value": "button",  "label": "Button" },
-        { "value": "nav",     "label": "Control" }
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom (free hex/gradient)" }
       ]
     },
     {
-      "type": "range",
-      "id": "bg_alpha",
-      "label": "Background Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
-      "conditional": "setting.bg_role != 'none'"
-    },
-    {
-      "type": "checkbox",
-      "id": "bg_color_override",
-      "label": "Custom Background (free hex/gradient)",
-      "default": false
-    },
-    {
       "type": "color",
-      "id": "bg_color",
-      "label": "Custom Background Color",
-      "conditional": "setting.bg_color_override"
+      "id": "bg_role_custom",
+      "label": "Custom Bg",
+      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
+      "conditional": "setting.bg_role == 'custom'"
     }
-  ],
+        ],
   "blocks": [{ "type": "_announcement" }],
   "presets": [
     {

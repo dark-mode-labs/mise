@@ -270,7 +270,7 @@
   }
 
   .btn-nav {
-    @apply btn-base bg-nav shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply btn-base bg-control shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .slideshow-dot span {
@@ -1247,6 +1247,25 @@
       transform: translateY(-20px);
     }
   }
+
+  .bg-body        { background: var(--background); }
+  .bg-body-alt    { background: var(--background-alt); }
+  .bg-surface     { background: var(--surface); }
+  .bg-surface-alt { background: var(--surface-alt); }
+  .bg-accent      { background: var(--accent-bg); }
+  .bg-button      { background: var(--button-bg); }
+  .bg-control     { background: var(--control-bg); }
+
+  .text-primary    { color: var(--text, currentColor); }
+  .text-secondary  { color: var(--text-secondary, currentColor); }
+  .text-subtle     { color: var(--text-subtle, currentColor); }
+  .text-emphasis   { color: var(--text-emphasis, currentColor); }
+  .text-on-accent  { color: var(--text-on-accent, currentColor); }
+  .text-on-button  { color: var(--text-on-button, currentColor); }
+  .text-on-control { color: var(--text-on-control, currentColor); }
+
+  .border-default  { border-color: var(--border, transparent); }
+  .border-emphasis { border-color: var(--border-emphasis, transparent); }
 }
 
 @layer base {
@@ -1295,73 +1314,4 @@
   .menu-list {
     @apply relative w-full overflow-hidden;
   }
-
-  /* Surface bg-role classes — paint a scheme slot from the active surface.
-
-     Each surface emits TWO variables per bg-family slot (see
-     theme_variables.liquid):
-       --<slot>           solid color (or `transparent` if value is a gradient)
-       --<slot>-image     gradient `linear-gradient(...)` (or `none` for solids)
-     We layer them via background-color + background-image — only one is
-     non-transparent / non-none per slot, but BOTH must always be valid CSS
-     values, otherwise IACVT (invalid-at-computed-value time) sets the
-     property to its initial value (transparent) instead of falling back to
-     a previous declaration in the cascade.
-
-     `--bg-alpha` (0..1) controls runtime alpha for solid bgs only. For
-     gradients, alpha is baked into the stops at compile time. */
-  .bg-body {
-    background-color: color-mix(in srgb, var(--background) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--background-image);
-  }
-  .bg-body-alt {
-    background-color: color-mix(in srgb, var(--background-alt) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--background-alt-image);
-  }
-  .bg-surface {
-    background-color: color-mix(in srgb, var(--surface) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--surface-image);
-  }
-  .bg-surface-alt {
-    background-color: color-mix(in srgb, var(--surface-alt) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--surface-alt-image);
-  }
-  .bg-accent {
-    background-color: color-mix(in srgb, var(--accent-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--accent-bg-image);
-  }
-  .bg-button {
-    background-color: color-mix(in srgb, var(--button-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--button-bg-image);
-  }
-  .bg-control {
-    background-color: color-mix(in srgb, var(--control-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--control-bg-image);
-  }
-  /* Legacy bg-nav alias — old transpiler still emits `bg_role: nav`. */
-  .bg-nav {
-    background-color: color-mix(in srgb, var(--control-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--control-bg-image);
-  }
-
-  /* Surface text-role classes — paint a text slot from the active surface.
-     `currentColor` fallback so unstyled descendants inherit the parent
-     element's color rather than going transparent when the slot is unset. */
-  .text-primary    { color: var(--text, currentColor); }
-  .text-secondary  { color: var(--text-secondary, currentColor); }
-  .text-subtle     { color: var(--text-subtle, currentColor); }
-  .text-emphasis   { color: var(--text-emphasis, currentColor); }
-  .text-on-accent  { color: var(--text-on-accent, currentColor); }
-  .text-on-button  { color: var(--text-on-button, currentColor); }
-  .text-on-control { color: var(--text-on-control, currentColor); }
-
-  /* Legacy text-* aliases — typography.liquid and many liquids still use
-     these directly. Phase B will migrate consumers. */
-  .text-body    { color: var(--text, currentColor); }
-  .text-accent  { color: var(--text-emphasis, var(--accent-bg, currentColor)); }
-  .text-button  { color: var(--text-on-button, currentColor); }
-  .text-control { color: var(--text-on-control, currentColor); }
-
-  .border-default  { border-color: var(--border, transparent); }
-  .border-emphasis { border-color: var(--border-emphasis, transparent); }
 }

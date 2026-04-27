@@ -15,7 +15,7 @@
     href="#"
     data-spy-trigger="{{ category.uuid }}"
     data-filter-nav="{{ category.uuid }}"
-    class="text-sm font-bold text-secondary hover:text-body uppercase tracking-wider {{ link_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
+    class="text-sm font-bold text-secondary hover:text-primary uppercase tracking-wider {{ link_base_class }} [&.is-active]:text-primary [&.is-active]:font-bold"
   >
     {{ category.name }}
   </a>
@@ -24,14 +24,14 @@
     href="#"
     data-spy-trigger="{{ category.uuid }}"
     data-filter-nav="{{ category.uuid }}"
-    class="text-xs text-secondary hover:text-body transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:text-body [&.is-active]:font-bold"
+    class="text-xs text-secondary hover:text-primary transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:text-primary [&.is-active]:font-bold"
   >
     {{ category.name }}
   </a>
 {% endif %}
 
 {% if children.size > 0 and nav_layout == 'vertical' %}
-  <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-std">
+  <div class="pl-4 flex flex-col gap-1 mt-1 mb-2 border-l border-default">
     {% for child in children %}
       {% render 'menu-nav-recursive',
         category: child.category,

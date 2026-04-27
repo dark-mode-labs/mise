@@ -66,28 +66,26 @@
 
 {% assign main_flex_direction = 'flex-col lg:flex-row' %}
 {% assign nav_container_class = 'hidden lg:block w-64 flex-shrink-0 sticky self-start z-floating top-32' %}
-{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-body/10 pl-4 overflow-y-auto no-scrollbar' %}
-{% assign link_base_class = 'block border-l-2 border-transparent -ml-[1.125rem] pl-[0.875rem] [&.is-active]:border-body [&.is-active]:pl-4' %}
+{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-default/10 pl-4 overflow-y-auto no-scrollbar' %}
+{% assign link_base_class = 'block border-l-2 border-transparent -ml-[1.125rem] pl-[0.875rem] [&.is-active]:border-default [&.is-active]:pl-4' %}
 {% assign sublink_base_class = 'block' %}
 
 {% if s.nav_layout == 'horizontal' %}
   {% capture sticky_style %}top: {{ s.nav_sticky_offset }}rem;{% endcapture %}
   {% assign main_flex_direction = 'flex-col' %}
-  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--background)] border-b border-body/10 mb-8 transition-[top] duration-200' %}
+  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--background)] border-b border-default/10 mb-8 transition-[top] duration-200' %}
   {% assign nav_wrapper_class = 'flex flex-row items-center gap-6 overflow-x-auto no-scrollbar py-3 px-1' %}
-  {% assign link_base_class = 'whitespace-nowrap border-b-2 border-transparent pb-2 transition-all duration-300 [&.is-active]:border-body [&.is-active]:opacity-100 [&.is-active]:font-bold' %}
+  {% assign link_base_class = 'whitespace-nowrap border-b-2 border-transparent pb-2 transition-all duration-300 [&.is-active]:border-default [&.is-active]:opacity-100 [&.is-active]:font-bold' %}
   {% assign sublink_base_class = 'hidden' %}
 {% endif %}
 
 {% comment %} --- Background class + bg styles into single styles list --- {% endcomment %}
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
 {% assign bg_class = 'bg-' | append: bg_role_safe %}
-{% if s.bg_color_override and s.bg_color != blank %}{% assign bg_class = '' %}{% endif %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}{% assign bg_class = '' %}{% endif %}
 
-{% if s.bg_color_override and s.bg_color != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
-{% elsif s.bg_alpha and s.bg_alpha != 100 %}
-  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
@@ -128,7 +126,7 @@
                 <input
                   type="text"
                   placeholder="Search menu..."
-                  class="w-full bg-transparent border border-std rounded-full px-4 py-2 text-sm focus:border-body focus:outline-none transition-colors placeholder:text-secondary"
+                  class="w-full bg-transparent border border-default rounded-full px-4 py-2 text-sm focus:border-default focus:outline-none transition-colors placeholder:text-secondary"
                   data-filter-search
                 >
                 {% render 'icon',
@@ -139,7 +137,7 @@
             {% endif %}
             {% if s.enable_filtering and dietary_flags.size > 0 %}
               <div
-                class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-std pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
+                class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-default pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
                 data-filter-tags
               >
                 {% for tag in dietary_flags %}
@@ -148,7 +146,7 @@
                     type="button"
                     data-filter-tag="{{ tag_name }}"
                     title="Filter by {{ tag.name }}"
-                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[0.625rem] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[0.625rem] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--text)] [&.is-active]:text-[var(--background)] [&.is-active]:opacity-100"
+                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-default rounded-full text-[0.625rem] font-bold uppercase text-secondary hover:text-primary hover:border-default{% else %}px-2 py-1 border border-default rounded text-[0.625rem] uppercase tracking-wider text-secondary hover:text-primary hover:border-default{% endif %} transition-all [&.is-active]:bg-[var(--text)] [&.is-active]:text-[var(--background)] [&.is-active]:opacity-100"
                   >
                     {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
                   </button>
@@ -204,7 +202,7 @@
     </div>
 
     {% if disclaimers.size > 0 %}
-      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest mx-auto border-t border-body/10 pt-8">
+      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest mx-auto border-t border-default/10 pt-8">
         {% for disclaimer in disclaimers %}
           <p>{{ disclaimer.text }}</p>
         {% endfor %}
@@ -495,34 +493,25 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none",    "label": "None" },
-        { "value": "body",    "label": "Body" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "accent",  "label": "Accent" },
-        { "value": "button",  "label": "Button" },
-        { "value": "nav",     "label": "Control" }
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom (free hex/gradient)" }
       ]
     },
     {
-      "type": "range",
-      "id": "bg_alpha",
-      "label": "Background Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
-      "conditional": "setting.bg_role != 'none'"
-    },
-    {
-      "type": "checkbox",
-      "id": "bg_color_override",
-      "label": "Custom Background (free hex/gradient)",
-      "default": false
-    },
-    {
       "type": "color",
-      "id": "bg_color",
-      "label": "Custom Background Color",
-      "conditional": "setting.bg_color_override"
+      "id": "bg_role_custom",
+      "label": "Custom Bg",
+      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
+      "conditional": "setting.bg_role == 'custom'"
     }
-  ],
+        ],
   "presets": [{ "name": "Menu View" }]
 }
 {% endschema %}

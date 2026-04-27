@@ -45,10 +45,8 @@
   {% assign styles = styles | push: '--max-h: {{ s.height_custom }}vh' %}
 {% endif %}
 
-{% if bg_role_safe == 'custom' and s.custom_bg != blank %}
-  {% assign styles = styles | push: 'background: {{ s.custom_bg }}' %}
-{% elsif s.bg_alpha and s.bg_alpha != 100 %}
-  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% if bg_role_safe == 'custom' and s.bg_role_custom != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
 {% endif %}
 
 {% assign style_str = styles | join: ';' %}
@@ -243,16 +241,9 @@
         { "value": "custom",      "label": "Custom (free hex/gradient)" }
       ]
     },
-    {
-      "type": "range",
-      "id": "bg_alpha",
-      "label": "Background Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
-      "conditional": "setting.bg_role != 'none' and setting.bg_role != 'custom'"
-    },
-    {
+        {
       "type": "color",
-      "id": "custom_bg",
+      "id": "bg_role_custom",
       "label": "Custom Background",
       "info": "Free hex or CSS gradient. Used only when Background = Custom.",
       "conditional": "setting.bg_role == 'custom'"

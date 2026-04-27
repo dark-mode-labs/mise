@@ -3,7 +3,7 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'footer-block' %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
@@ -128,11 +128,22 @@
       "label": "Text Color Role",
       "default": "primary",
       "options": [
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "accent", "label": "Accent" }
+        { "value": "primary",    "label": "Primary" },
+        { "value": "secondary",  "label": "Secondary" },
+        { "value": "subtle",     "label": "Subtle" },
+        { "value": "emphasis",   "label": "Emphasis" },
+        { "value": "on-accent",  "label": "On Accent" },
+        { "value": "on-button",  "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "custom",     "label": "Custom" }
       ]
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Custom Text",
+      "info": "Free hex or CSS gradient. Used only when Text role = Custom.",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "checkbox",

@@ -2,7 +2,7 @@
 
 {% assign scheme_class = blank %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 

@@ -2,21 +2,20 @@
 {% assign asset_src = shop.logo_src | default: s.logo %}
 
 {% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign classes = 'flex items-center justify-center relative z-content group-hover:opacity-100 text-body' %}
+{% assign classes = 'flex items-center justify-center relative z-content group-hover:opacity-100 text-primary' %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Text Fallback Styles --- {% endcomment %}
+{% assign _is_custom_text = false %}
+{% if s.text_role == 'custom' %}{% assign _is_custom_text = true %}{% endif %}
 {% assign styles = blank %}
 
-{% unless s.surface_override == false %}
-  {% assign styles = styles | push_if: '--text: {{ s.text_color }}', s.text_color_override %}
-{% endunless %}
-
+{% assign styles = styles | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text %}
 {% assign text_styles = styles | join: ';' %}
 
 {% comment %} --- Component Render --- {% endcomment %}
@@ -65,36 +64,22 @@
         {
       "type": "header",
       "content": "Overrides",
-      "conditional": "true and shop.logo_src == blank"
+      "conditional": "shop.logo_src == blank"
     },
     {
       "type": "checkbox",
       "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "true and shop.logo_src == blank"
+      "conditional": "shop.logo_src == blank"
     },
     {
       "type": "surface",
       "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "true and shop.logo_src == blank and setting.surface_override == true"
-    },
-    {
-      "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Text Color",
-      "default": false,
-      "conditional": "true and shop.logo_src == blank"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Text Color",
-      "default": "#ffffff",
-      "conditional": "true and setting.text_color_override and shop.logo_src == blank"
+      "conditional": "shop.logo_src == blank and setting.surface_override == true"
     }
-  ]
+    ]
 }
 {% endschema %}

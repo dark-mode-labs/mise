@@ -27,50 +27,19 @@
 
     {% comment %}
       --- Surfaces ---
-      Each surface emits TWO variables per bg-family slot:
-        --<slot>          (solid color, or `transparent` if the slot value is a gradient)
-        --<slot>-image    (gradient `linear-gradient(...)`, or `none` if the slot value is solid)
-      This split exists because `color-mix(in srgb, gradient, ...)` is invalid
-      at computed-value-time — IACVT skips cascade fallback and the property
-      goes to its initial value (transparent). Splitting solid vs image into
-      two properties means both stay valid for any input.
-
-      Slot values may be:
+      Each slot emits one CSS custom property. Slot values may be:
         @palette-id     → resolves to var(--palette-id)
         #aabbcc         → solid hex
         rgba(...)       → solid rgba
-        linear-gradient → gradient image
-        radial-gradient → gradient image
-        ""              → unset (defaults to transparent / none)
+        linear-gradient → gradient image (consumed via `background:` shorthand)
+        ""              → unset (defaults to transparent)
     {% endcomment %}
 
     {% for surface in surfaces %}
       {%- assign s = surface[1].settings -%}
       .surface-{{ surface[0] }} {
-        {%- comment -%} bg-family slots (each emits color + image vars) {%- endcomment -%}
-         {% assign pairs = 'background|background_alt|surface|surface_alt|accent_bg|button_bg|control_bg' | split: '|' %}
-        {%- for pair in pairs -%}
-          {%- assign slot_id = pair -%}
-          {%- assign slot_val = s[slot_id] | default: '' -%}
-          {%- assign css_var = '--' | append: slot_id | replace: '_', '-' -%}
-          {%- assign img_var = css_var | append: '-image' -%}
-          {% assign first_slot_char = slot_val | slice: 0, 1 %}
-          {%- if slot_val == blank -%}
-            {{ css_var }}: transparent; {{ img_var }}: none;
-          {%- elsif slot_val contains 'gradient' -%}
-            {{ css_var }}: transparent; {{ img_var }}: {{ slot_val }};
-          {%- elsif first_slot_char == '@' -%}
-            {%- assign ref = slot_val | remove_first: '@' -%}
-            {{ css_var }}: var(--palette-{{ ref }}); {{ img_var }}: none;
-          {%- else -%}
-            {{ css_var }}: {{ slot_val }}; {{ img_var }}: none;
-          {%- endif -%}
-        {%- endfor -%}
-
-        {%- comment -%} text + border + shadow slots (single var each) {%- endcomment -%}
-         {% assign child_pairs = 'text|text_secondary|text_subtle|text_emphasis|text_on_accent|text_on_button|text_on_control|border|border_emphasis|shadow' | split: '|' %}
-        {%- for pair in child_pairs -%}
-          {%- assign slot_id = pair -%}
+         {% assign slots = 'background|background_alt|surface|surface_alt|accent_bg|button_bg|control_bg|text|text_secondary|text_subtle|text_emphasis|text_on_accent|text_on_button|text_on_control|border|border_emphasis|shadow' | split: '|' %}
+        {%- for slot_id in slots -%}
           {%- assign slot_val = s[slot_id] | default: '' -%}
           {%- assign css_var = '--' | append: slot_id | replace: '_', '-' -%}
           {% assign first_slot_char = slot_val | slice: 0, 1 %}

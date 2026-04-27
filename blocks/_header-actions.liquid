@@ -2,7 +2,7 @@
 
 {% assign scheme_class = blank %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
@@ -11,7 +11,7 @@
   {{ context.attached_attributes }}
 >
   {% if s.show_search %}
-    <a href="/search" class="p-2 hover:opacity-70 text-control"
+    <a href="/search" class="p-2 hover:opacity-70 text-on-control"
       ><span class="sr-only">Search</span>{% render 'icon', name: 'search', class: 'w-5 h-5' %}
     </a>
   {% endif %}
@@ -20,7 +20,7 @@
     {% content_for 'blocks' %}
   </div>
   {% if s.show_cart %}
-    <a data-action="open-cart" class="p-2 hover:opacity-70 relative group text-control">
+    <a data-action="open-cart" class="p-2 hover:opacity-70 relative group text-on-control">
       <span class="sr-only">Cart</span>
       {% render 'icon', name: 'bag', class: 'w-5 h-5' %}
       <span

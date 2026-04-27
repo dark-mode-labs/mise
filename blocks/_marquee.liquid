@@ -2,7 +2,7 @@
 
 {% assign scheme_class = blank %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
@@ -19,7 +19,7 @@
 
 {% if s.pin_bottom %}
   <div
-    class="absolute bottom-0 left-0 z-floating w-full border-t border-std {{ scheme_class }} bg-surface text-body no-stagger"
+    class="absolute bottom-0 left-0 z-floating w-full border-t border-default {{ scheme_class }} bg-surface text-primary no-stagger"
     style="opacity: {{ s.opacity | divided_by: 100.0 }};"
     {{ context.attached_attributes }}
   >
@@ -32,7 +32,7 @@
     {{ context.attached_attributes }}
   >
     <div
-      class="border-y border-std {{ scheme_class }} bg-body text-body"
+      class="border-y border-default {{ scheme_class }} bg-body text-primary"
       style="opacity: {{ s.opacity | divided_by: 100.0 }};"
     >
       {{ rendered_marquee }}

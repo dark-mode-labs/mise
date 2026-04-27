@@ -139,31 +139,99 @@
           "content": "Background slots",
           "info": "Hex / gradient / @palette-token reference. Leave empty to default to transparent."
         },
-        { "type": "color", "id": "background",     "label": "Background" },
-        { "type": "color", "id": "background_alt", "label": "Background (alt)" },
-        { "type": "color", "id": "surface",        "label": "Surface" },
-        { "type": "color", "id": "surface_alt",    "label": "Surface (alt)" },
-        { "type": "color", "id": "accent_bg",      "label": "Accent BG" },
-        { "type": "color", "id": "button_bg",      "label": "Button BG" },
-        { "type": "color", "id": "control_bg",     "label": "Control BG" },
+        {
+          "type": "color",
+          "id": "background",
+          "label": "Background"
+        },
+        {
+          "type": "color",
+          "id": "background_alt",
+          "label": "Background (alt)"
+        },
+        {
+          "type": "color",
+          "id": "surface",
+          "label": "Surface"
+        },
+        {
+          "type": "color",
+          "id": "surface_alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "type": "color",
+          "id": "accent_bg",
+          "label": "Accent BG"
+        },
+        {
+          "type": "color",
+          "id": "button_bg",
+          "label": "Button BG"
+        },
+        {
+          "type": "color",
+          "id": "control_bg",
+          "label": "Control BG"
+        },
         {
           "type": "header",
           "content": "Text slots"
         },
-        { "type": "color", "id": "text",            "label": "Text — primary" },
-        { "type": "color", "id": "text_secondary",  "label": "Text — secondary" },
-        { "type": "color", "id": "text_subtle",     "label": "Text — subtle" },
-        { "type": "color", "id": "text_emphasis",   "label": "Text — emphasis" },
-        { "type": "color", "id": "text_on_accent",  "label": "Text on accent" },
-        { "type": "color", "id": "text_on_button",  "label": "Text on button" },
-        { "type": "color", "id": "text_on_control", "label": "Text on control" },
+        {
+          "type": "color",
+          "id": "text",
+          "label": "Text — primary"
+        },
+        {
+          "type": "color",
+          "id": "text_secondary",
+          "label": "Text — secondary"
+        },
+        {
+          "type": "color",
+          "id": "text_subtle",
+          "label": "Text — subtle"
+        },
+        {
+          "type": "color",
+          "id": "text_emphasis",
+          "label": "Text — emphasis"
+        },
+        {
+          "type": "color",
+          "id": "text_on_accent",
+          "label": "Text on accent"
+        },
+        {
+          "type": "color",
+          "id": "text_on_button",
+          "label": "Text on button"
+        },
+        {
+          "type": "color",
+          "id": "text_on_control",
+          "label": "Text on control"
+        },
         {
           "type": "header",
           "content": "Borders & shadow"
         },
-        { "type": "color", "id": "border",            "label": "Border" },
-        { "type": "color", "id": "border_emphasis",   "label": "Border — emphasis" },
-        { "type": "color", "id": "shadow",            "label": "Shadow" }
+        {
+          "type": "color",
+          "id": "border",
+          "label": "Border"
+        },
+        {
+          "type": "color",
+          "id": "border_emphasis",
+          "label": "Border — emphasis"
+        },
+        {
+          "type": "color",
+          "id": "shadow",
+          "label": "Shadow"
+        }
       ]
     },
     {
@@ -208,18 +276,66 @@
           "id": "width",
           "label": "Width",
           "options": [
-            { "value": "sm",     "label": "Small" },
-            { "value": "md",     "label": "Medium" },
-            { "value": "lg",     "label": "Large" },
-            { "value": "xl",     "label": "x-Large" },
-            { "value": "2xl",    "label": "2x-Large" },
-            { "value": "3xl",    "label": "3x-Large" },
-            { "value": "4xl",    "label": "4x-Large" },
-            { "value": "fit",    "label": "Fit Content" },
-            { "value": "full",   "label": "Full" },
-            { "value": "half",   "label": "Half" },
-            { "value": "third",  "label": "Third" },
-            { "value": "custom", "label": "Custom" }
+            {
+              "value": "sm",
+              "label": "Small"
+            },
+            {
+              "value": "md",
+              "label": "Medium"
+            },
+            {
+              "value": "lg",
+              "label": "Large"
+            },
+            {
+              "value": "xl",
+              "label": "x-Large"
+            },
+            {
+              "value": "2xl",
+              "label": "2x-Large"
+            },
+            {
+              "value": "3xl",
+              "label": "3x-Large"
+            },
+            {
+              "value": "4xl",
+              "label": "4x-Large"
+            },
+            {
+              "value": "5xl",
+              "label": "5x-Large"
+            },
+            {
+              "value": "6xl",
+              "label": "6x-Large"
+            },
+            {
+              "value": "7xl",
+              "label": "7x-Large"
+            },
+            {
+              "value": "fit",
+              "label": "Fit Content"
+            },
+            {
+              "value": "full",
+              "label": "Full"
+            },
+            {
+              "value": "half",
+              "label": "Half"
+            },
+            {
+              "value": "third",
+              "label": "Third"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
+            }
           ],
           "default": "fit"
         },
@@ -307,32 +423,76 @@
         }
       },
       "palette": {
-        "neutral-0":   { "settings": { "title": "Neutral 0",   "value": "#ffffff" } },
-        "neutral-100": { "settings": { "title": "Neutral 100", "value": "#f5f5f4" } },
-        "neutral-300": { "settings": { "title": "Neutral 300", "value": "#d6d3d1" } },
-        "neutral-500": { "settings": { "title": "Neutral 500", "value": "#78716c" } },
-        "neutral-700": { "settings": { "title": "Neutral 700", "value": "#44403c" } },
-        "neutral-900": { "settings": { "title": "Neutral 900", "value": "#1c1917" } },
-        "brand":       { "settings": { "title": "Brand",       "value": "#0891b2" } },
-        "brand-soft":  { "settings": { "title": "Brand Soft",  "value": "#bae6fd" } }
+        "neutral-0": {
+          "settings": {
+            "title": "Neutral 0",
+            "value": "#ffffff"
+          }
+        },
+        "neutral-100": {
+          "settings": {
+            "title": "Neutral 100",
+            "value": "#f5f5f4"
+          }
+        },
+        "neutral-300": {
+          "settings": {
+            "title": "Neutral 300",
+            "value": "#d6d3d1"
+          }
+        },
+        "neutral-500": {
+          "settings": {
+            "title": "Neutral 500",
+            "value": "#78716c"
+          }
+        },
+        "neutral-700": {
+          "settings": {
+            "title": "Neutral 700",
+            "value": "#44403c"
+          }
+        },
+        "neutral-900": {
+          "settings": {
+            "title": "Neutral 900",
+            "value": "#1c1917"
+          }
+        },
+        "brand": {
+          "settings": {
+            "title": "Brand",
+            "value": "#0891b2"
+          }
+        },
+        "brand-soft": {
+          "settings": {
+            "title": "Brand Soft",
+            "value": "#bae6fd"
+          }
+        }
       },
       "surfaces": {
         "default": {
           "settings": {
-            "title":           "Default",
-            "background":      "@neutral-0",
-            "surface":         "@neutral-100",
-            "accent_bg":       "@brand",
-            "button_bg":       "@brand",
-            "control_bg":      "@brand",
-            "text":            "@neutral-900",
-            "text_secondary":  "@neutral-700",
-            "text_subtle":     "@neutral-500",
-            "text_on_accent":  "@neutral-0",
-            "text_on_button":  "@neutral-0",
+            "title": "Default",
+            "background": "@neutral-0",
+            "background_alt": "@neutral-100",
+            "surface": "@neutral-100",
+            "surface_alt": "@neutral-300",
+            "accent_bg": "@brand",
+            "button_bg": "@brand",
+            "control_bg": "@brand",
+            "text": "@neutral-900",
+            "text_secondary": "@neutral-700",
+            "text_subtle": "@neutral-500",
+            "text_emphasis": "@brand",
+            "text_on_accent": "@neutral-0",
+            "text_on_button": "@neutral-0",
             "text_on_control": "@neutral-0",
-            "border":          "@brand-soft",
-            "shadow":          "rgba(8, 145, 178, 0.15)"
+            "border": "@neutral-300",
+            "border_emphasis": "@brand",
+            "shadow": "rgba(8, 145, 178, 0.15)"
           }
         },
         "none": {
@@ -342,20 +502,104 @@
         }
       },
       "width_schemes": {
-        "fit":          { "settings": { "title": "Fit Content",  "width": "fit",    "custom_width": "fit-content" } },
-        "full":         { "settings": { "title": "Full",         "width": "full",   "custom_width": "100%" } },
-        "half":         { "settings": { "title": "Half",         "width": "half",   "custom_width": "50%" } },
-        "third":        { "settings": { "title": "Third",        "width": "third",  "custom_width": "33%" } },
-        "wide-6xl":     { "settings": { "title": "Wide 6XL",     "width": "6xl",    "custom_width": "64" } },
-        "wide-7xl":     { "settings": { "title": "Wide 7XL",     "width": "7xl",    "custom_width": "80" } },
-        "narrow-sm":    { "settings": { "title": "Narrow SM",    "width": "sm",     "custom_width": "24" } },
-        "narrow-md":    { "settings": { "title": "Narrow MD",    "width": "md",     "custom_width": "28" } },
-        "narrow-lg":    { "settings": { "title": "Narrow LG",    "width": "lg",     "custom_width": "32" } },
-        "narrow-xl":    { "settings": { "title": "Narrow XL",    "width": "xl",     "custom_width": "36" } },
-        "narrow-2xl":   { "settings": { "title": "Narrow 2XL",   "width": "2xl",    "custom_width": "42" } },
-        "narrow-3xl":   { "settings": { "title": "Narrow 3XL",   "width": "3xl",    "custom_width": "48" } },
-        "standard-4xl": { "settings": { "title": "Standard 4XL", "width": "4xl",    "custom_width": "56" } },
-        "standard-5xl": { "settings": { "title": "Standard 5XL", "width": "5xl",    "custom_width": "64" } }
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "width": "fit",
+            "custom_width": "fit-content"
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full",
+            "width": "full",
+            "custom_width": "100%"
+          }
+        },
+        "half": {
+          "settings": {
+            "title": "Half",
+            "width": "half",
+            "custom_width": "50%"
+          }
+        },
+        "third": {
+          "settings": {
+            "title": "Third",
+            "width": "third",
+            "custom_width": "33%"
+          }
+        },
+        "wide-6xl": {
+          "settings": {
+            "title": "Wide 6XL",
+            "width": "6xl",
+            "custom_width": "64"
+          }
+        },
+        "wide-7xl": {
+          "settings": {
+            "title": "Wide 7XL",
+            "width": "7xl",
+            "custom_width": "80"
+          }
+        },
+        "narrow-sm": {
+          "settings": {
+            "title": "Narrow SM",
+            "width": "sm",
+            "custom_width": "24"
+          }
+        },
+        "narrow-md": {
+          "settings": {
+            "title": "Narrow MD",
+            "width": "md",
+            "custom_width": "28"
+          }
+        },
+        "narrow-lg": {
+          "settings": {
+            "title": "Narrow LG",
+            "width": "lg",
+            "custom_width": "32"
+          }
+        },
+        "narrow-xl": {
+          "settings": {
+            "title": "Narrow XL",
+            "width": "xl",
+            "custom_width": "36"
+          }
+        },
+        "narrow-2xl": {
+          "settings": {
+            "title": "Narrow 2XL",
+            "width": "2xl",
+            "custom_width": "42"
+          }
+        },
+        "narrow-3xl": {
+          "settings": {
+            "title": "Narrow 3XL",
+            "width": "3xl",
+            "custom_width": "48"
+          }
+        },
+        "standard-4xl": {
+          "settings": {
+            "title": "Standard 4XL",
+            "width": "4xl",
+            "custom_width": "56"
+          }
+        },
+        "standard-5xl": {
+          "settings": {
+            "title": "Standard 5XL",
+            "width": "5xl",
+            "custom_width": "64"
+          }
+        }
       }
     }
   }

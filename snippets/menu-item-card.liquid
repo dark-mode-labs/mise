@@ -16,7 +16,7 @@
 
 <div
   class="
-    menu-item-card group relative flex flex-auto bg-[var(--background)] border border-body/10 rounded-global overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 break-inside-avoid
+    menu-item-card group relative flex flex-auto bg-[var(--background)] border border-default/10 rounded-global overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 break-inside-avoid
     {% if style == 'compact' %}flex-row items-stretch text-left{% else %}flex-col{% endif %}
   "
   data-filter-item
@@ -24,7 +24,7 @@
 >
   {% if style == 'compact' %}
     {% if img_pos == 'left' %}
-      <div class="w-24 md:w-32 shrink-0 relative border-r border-body/10">
+      <div class="w-24 md:w-32 shrink-0 relative border-r border-default/10">
         {% render 'media',
           src: asset_src,
           ratio: ratio,
@@ -67,7 +67,7 @@
             {% for group in item.modifier_groups %}
               {% assign sorted_modifiers = group.modifiers | sort: 'amount_delta' %}
               {% for mod in sorted_modifiers %}
-                <div class="flex items-center gap-1 bg-body/5 border border-body/10 px-1.5 py-1 rounded-sm text-[0.625rem] md:text-xs">
+                <div class="flex items-center gap-1 bg-body/5 border border-default/10 px-1.5 py-1 rounded-sm text-[0.625rem] md:text-xs">
                   <span class="opacity-70 uppercase font-bold">{{ mod.name }}</span>
                   <span class="font-bold">
                     {{ item.amount | plus: mod.amount_delta | money }}
@@ -92,7 +92,7 @@
     </div>
 
     {% if img_pos == 'right' %}
-      <div class="w-24 md:w-32 shrink-0 relative border-l border-body/10">
+      <div class="w-24 md:w-32 shrink-0 relative border-l border-default/10">
         {% render 'media',
           src: asset_src,
           ratio: ratio,
@@ -104,7 +104,7 @@
     {% endif %}
 
   {% else %}
-    <div class="w-full overflow-hidden bg-gray-100 border-b border-body/10 relative">
+    <div class="w-full overflow-hidden bg-gray-100 border-b border-default/10 relative">
       {% render 'media',
         src: asset_src,
         ratio: ratio,
@@ -137,7 +137,7 @@
         </div>
       {% endif %}
 
-      <div class="mt-auto pt-3 border-t border-dashed border-body/10">
+      <div class="mt-auto pt-3 border-t border-dashed border-default/10">
         {% if is_complex %}
           <div class="flex items-center justify-between">
             <div class="flex flex-col">

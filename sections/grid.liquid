@@ -31,19 +31,17 @@
 {% comment %} --- 2. Background class + styles (unified bg primitive) --- {% endcomment %}
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
 {% assign bg_class = 'bg-' | append: bg_role_safe %}
-{% if s.bg_color_override and s.bg_color != blank %}{% assign bg_class = '' %}{% endif %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}{% assign bg_class = '' %}{% endif %}
 
 {% assign styles = blank %}
-{% if s.bg_color_override and s.bg_color != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
-{% elsif s.bg_alpha and s.bg_alpha != 100 %}
-  {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
 {% assign has_overlay = false %}
 {% if s.overlay_role and s.overlay_role != 'none' %}{% assign has_overlay = true %}{% endif %}
-{% if s.overlay_color_override and s.overlay_color != blank %}{% assign has_overlay = true %}{% endif %}
+{% if s.overlay_role == 'custom' and s.overlay_role_custom != blank %}{% assign has_overlay = true %}{% endif %}
 
 {% comment %} --- 3. Flex Grid Logic --- {% endcomment %}
 {% assign flex_classes = 'flex flex-wrap -mx-4'
@@ -89,8 +87,8 @@
         {% render 'bg-overlay',
              role: s.overlay_role,
              alpha: s.overlay_alpha,
-             use_custom: s.overlay_color_override,
-             custom_color: s.overlay_color
+             use_custom: s.overlay_role == 'custom',
+             custom_color: s.overlay_role_custom
         %}
       </div>
     </div>
@@ -126,34 +124,25 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none",    "label": "None" },
-        { "value": "body",    "label": "Body" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "accent",  "label": "Accent" },
-        { "value": "button",  "label": "Button" },
-        { "value": "nav",     "label": "Control" }
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom (free hex/gradient)" }
       ]
     },
     {
-      "type": "range",
-      "id": "bg_alpha",
-      "label": "Background Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
-      "conditional": "setting.bg_role != 'none'"
-    },
-    {
-      "type": "checkbox",
-      "id": "bg_color_override",
-      "label": "Custom Background (free hex/gradient)",
-      "default": false
-    },
-    {
       "type": "color",
-      "id": "bg_color",
-      "label": "Custom Background Color",
-      "conditional": "setting.bg_color_override"
+      "id": "bg_role_custom",
+      "label": "Custom Bg",
+      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
+      "conditional": "setting.bg_role == 'custom'"
     },
-    {
+        {
       "type": "header",
       "content": "Overlay"
     },
@@ -163,33 +152,30 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none",    "label": "None" },
-        { "value": "body",    "label": "Body" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "accent",  "label": "Accent" },
-        { "value": "button",  "label": "Button" },
-        { "value": "nav",     "label": "Control" }
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom (free hex/gradient)" }
       ]
+    },
+    {
+      "type": "color",
+      "id": "overlay_role_custom",
+      "label": "Custom Overlay",
+      "info": "Free hex or CSS gradient. Used only when Overlay role = Custom.",
+      "conditional": "setting.overlay_role == 'custom'"
     },
     {
       "type": "range",
       "id": "overlay_alpha",
       "label": "Overlay Opacity",
       "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
-      "conditional": "setting.overlay_role != 'none' or setting.overlay_color_override"
-    },
-    {
-      "type": "checkbox",
-      "id": "overlay_color_override",
-      "label": "Custom Overlay (free hex/gradient)",
-      "default": false
-    },
-    {
-      "type": "color",
-      "id": "overlay_color",
-      "label": "Custom Overlay Color",
-      "default": "",
-      "conditional": "setting.overlay_color_override"
+      "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
     { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
     { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile Background" },
@@ -360,7 +346,7 @@
       "step": 0.25,
       "default": 1.5,
       "unit": "rem",
-      "conditional": "setting.enable_cards_global == true and setting.card_padding == 'custom'"
+      "conditional": "setting.enable_cards_global == setting.card_padding == 'custom'"
     }
   ],
   "blocks": [{ "type": "group" }],

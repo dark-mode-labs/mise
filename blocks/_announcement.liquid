@@ -2,12 +2,12 @@
 
 {% assign scheme_class = blank %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 <div
-  class="w-full flex-shrink-0 snap-center py-2.5 px-4 flex items-center justify-center {{ scheme_class }} text-body bg-body"
+  class="w-full flex-shrink-0 snap-center py-2.5 px-4 flex items-center justify-center {{ scheme_class }} text-primary bg-body"
   {{ context.attached_attributes }}
 >
   {% if s.link != blank %}

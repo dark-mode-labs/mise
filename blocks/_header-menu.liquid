@@ -3,7 +3,7 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign nav_classes = 'header-nav hidden lg:flex items-center' %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign nav_classes = nav_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
@@ -65,7 +65,7 @@
         {% if link.links != blank %}
           <div
             class="
-              absolute top-full left-0 border border-std shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating
+              absolute top-full left-0 border border-default shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating
               {% if has_mega %}!fixed left-0 right-0 w-full border-x-0{% else %}w-64{% endif %}
             "
           >
@@ -212,12 +212,22 @@
       "label": "Text Color Role",
       "default": "button",
       "options": [
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" }
+        { "value": "primary",    "label": "Primary" },
+        { "value": "secondary",  "label": "Secondary" },
+        { "value": "subtle",     "label": "Subtle" },
+        { "value": "emphasis",   "label": "Emphasis" },
+        { "value": "on-accent",  "label": "On Accent" },
+        { "value": "on-button",  "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "custom",     "label": "Custom" }
       ]
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Custom Text",
+      "info": "Free hex or CSS gradient. Used only when Text role = Custom.",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "checkbox",

@@ -99,14 +99,16 @@
     {%- assign classes = classes | push: 'text-secondary' %}
   {% when 'subtle' -%}
     {%- assign classes = classes | push: 'text-subtle' %}
-  {% when 'accent' -%}
-    {%- assign classes = classes | push: 'text-accent' %}
-  {% when 'button' -%}
-    {%- assign classes = classes | push: 'text-button' %}
-  {% when 'control' -%}
-    {%- assign classes = classes | push: 'text-control' %}
+  {% when 'emphasis' -%}
+    {%- assign classes = classes | push: 'text-emphasis' %}
+  {% when 'on-accent' -%}
+    {%- assign classes = classes | push: 'text-on-accent' %}
+  {% when 'on-button' -%}
+    {%- assign classes = classes | push: 'text-on-button' %}
+  {% when 'on-control' -%}
+    {%- assign classes = classes | push: 'text-on-control' %}
   {% else -%}
-    {%- assign classes = classes | push: 'text-body' %}
+    {%- assign classes = classes | push: 'text-primary' %}
 {% endcase %}
 
 {% if class != blank %}

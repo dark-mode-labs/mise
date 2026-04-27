@@ -3,25 +3,19 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'media-block w-full h-full relative overflow-hidden rounded-global' | push: 'is-{{ s.height }}' %}
 
-{% unless s.surface_override == false %}
-  {% assign classes = classes
+{% assign classes = classes
     | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override
     | push_if: 'shadow-md', s.show_shadow
   %}
-{% endunless %}
-
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign styles = blank %}
 
-{% unless s.surface_override == false %}
-  {% assign styles = styles
+{% assign styles = styles
     | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
     | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
   %}
-{% endunless %}
-
 {% if s.height == 'custom' %}
   {% assign styles = styles | push: '--max-h: {{ s.custom_height }}rem' %}
 {% endif %}
@@ -82,13 +76,14 @@
       "id": "height",
       "label": "Image Height",
       "options": [
-        { "value": "auto", "label": "Auto (Fit Content)" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Fullscreen" },
+        { "value": "auto",      "label": "Auto (Fit Content)" },
+        { "value": "sm",        "label": "Small" },
+        { "value": "md",        "label": "Medium" },
+        { "value": "lg",        "label": "Large" },
+        { "value": "xl",        "label": "Fullscreen" },
+        { "value": "full",      "label": "Full" },
         { "value": "thumbnail", "label": "Thumbnail" },
-        { "value": "custom", "label": "Custom" }
+        { "value": "custom",    "label": "Custom" }
       ],
       "default": "auto"
     },
@@ -171,7 +166,7 @@
       "max": 1000,
       "default": 0,
       "unit": "px",
-      "conditional": "true and setting.border_radius_override"
+      "conditional": "setting.border_radius_override"
     },
     {
       "type": "checkbox",
@@ -185,7 +180,7 @@
       "id": "shadow_color",
       "label": "Custom Shadow Color",
       "default": "rgba(0,0,0,1)",
-      "conditional": "true and setting.shadow_color_override"
+      "conditional": "setting.shadow_color_override"
     }
   ],
   "presets": [

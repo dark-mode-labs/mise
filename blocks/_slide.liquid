@@ -5,22 +5,17 @@
 
 {% comment %} Background layer: scheme-driven via .bg-<role>. Escape-hatch
    (bg_color_override) is rendered as inline style further down. {% endcomment %}
-{% if s.bg_role and s.bg_role != 'none' and s.bg_color_override != true %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
-{% unless s.surface_override == false %}
-  {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
-{% endunless %}
-
+{% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
 {% assign slide_classes = classes | join: ' ' %}
 
 {% comment %} --- Slide-level inline styles (bg escape-hatch + alpha) --- {% endcomment %}
 {% assign slide_styles = blank %}
-{% if s.bg_color_override and s.bg_color != blank %}
-  {% assign slide_styles = slide_styles | push: 'background: {{ s.bg_color }}' %}
-{% elsif s.bg_role and s.bg_role != 'none' and s.bg_alpha and s.bg_alpha != 100 %}
-  {% assign slide_styles = slide_styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign slide_styles = slide_styles | push: 'background: {{ s.bg_role_custom }}' %}
 {% endif %}
 {% assign slide_style_str = slide_styles | join: ';' %}
 
@@ -58,8 +53,8 @@
     {% render 'bg-overlay',
          role: s.overlay_role,
          alpha: s.overlay_alpha,
-         use_custom: s.overlay_color_override,
-         custom_color: s.overlay_color
+         use_custom: s.overlay_role == 'custom',
+         custom_color: s.overlay_role_custom
     %}
   </div>
 
@@ -95,35 +90,31 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none",    "label": "None" },
-        { "value": "body",    "label": "Body" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "accent",  "label": "Accent" },
-        { "value": "button",  "label": "Button" },
-        { "value": "nav",     "label": "Control" }
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom (free hex/gradient)" }
       ]
+    },
+    {
+      "type": "color",
+      "id": "overlay_role_custom",
+      "label": "Custom Overlay",
+      "info": "Free hex or CSS gradient. Used only when Overlay role = Custom.",
+      "conditional": "setting.overlay_role == 'custom'"
     },
     {
       "type": "range",
       "id": "overlay_alpha",
       "label": "Overlay Opacity",
       "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
-      "conditional": "setting.overlay_role != 'none' or setting.overlay_color_override"
+      "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
-    {
-      "type": "checkbox",
-      "id": "overlay_color_override",
-      "label": "Custom Overlay (free hex/gradient)",
-      "default": false
-    },
-    {
-      "type": "color",
-      "id": "overlay_color",
-      "label": "Custom Overlay Color",
-      "default": "",
-      "conditional": "setting.overlay_color_override"
-    },
-
     { "type": "header", "content": "Alignment" },
     {
       "type": "select",
@@ -168,22 +159,25 @@
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none",    "label": "None" },
-        { "value": "body",    "label": "Body" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "accent",  "label": "Accent" },
-        { "value": "button",  "label": "Button" },
-        { "value": "nav",     "label": "Control" }
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom (free hex/gradient)" }
       ]
     },
     {
-      "type": "range",
-      "id": "bg_alpha",
-      "label": "Background Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
-      "conditional": "setting.bg_role != 'none'"
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Custom Bg",
+      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
+      "conditional": "setting.bg_role == 'custom'"
     },
-    {
+        {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
@@ -201,21 +195,8 @@
       "label": "Color Scheme",
       "default": "default",
       "conditional": "setting.surface_override == true"
-    },
-    {
-      "type": "checkbox",
-      "id": "bg_color_override",
-      "label": "Custom Background (free hex/gradient)",
-      "default": false,
-      "conditional": "setting.bg_role != 'none'"
-    },
-    {
-      "type": "color",
-      "id": "bg_color",
-      "label": "Custom Background Color",
-      "conditional": "setting.bg_role != 'none' and setting.bg_color_override"
     }
-  ],
+    ],
   "blocks": [{ "type": "@theme" }],
   "presets": [
     {

@@ -12,7 +12,7 @@
   {% assign wrapper_classes = wrapper_classes | push: 'inline-block' %}
 {% endif %}
 
-{% if s.surface_override == false and s.surface_override == true %}
+{% if s.surface_override %}
   {% assign wrapper_classes = wrapper_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
@@ -73,6 +73,12 @@
 {% assign inner_class_str = inner_classes | join: ' ' %}
 
 {% comment %} --- 3. Wrapper Styles --- {% endcomment %}
+{% assign _is_custom_bg = false %}
+{% if s.bg_role == 'custom' %}{% assign _is_custom_bg = true %}{% endif %}
+{% assign _is_custom_text = false %}
+{% if s.text_role == 'custom' %}{% assign _is_custom_text = true %}{% endif %}
+{% assign _is_custom_border = false %}
+{% if s.border_role == 'custom' %}{% assign _is_custom_border = true %}{% endif %}
 {% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -113,19 +119,16 @@
 
 {% unless s.border_mode == 'none' %}
   {% assign styles = styles
-    | push_if: '--border: {{ s.border_color }}', s.border_color_override
+    | push_if: '--border: {{ s.border_role_custom }}', _is_custom_border
     | push: '--border-style: {{ s.border_style }}'
   %}
 {% endunless %}
 
-{% unless s.surface_override == false %}
-  {% assign styles = styles
+{% assign styles = styles
     | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--button-bg: {{ s.bg_color }}', s.bg_color_override
-    | push_if: '--text-on-button: {{ s.text_color }}', s.text_color_override
+    | push_if: '--button-bg: {{ s.bg_role_custom }}', _is_custom_bg
+    | push_if: '--text-on-button: {{ s.text_role_custom }}', _is_custom_text
   %}
-{% endunless %}
-
 {% assign wrapper_style_str = styles | join: ';' %}
 
 {% comment %} --- 4. Typography Utilities & Config --- {% endcomment %}
@@ -157,11 +160,9 @@
 {% endif %}
 
 {% assign color_role = s.text_role %}
-{% unless s.surface_override == false %}
-  {% if s.text_color_override %}
-    {% assign color_role = 'button' %}
-  {% endif %}
-{% endunless %}
+{% if s.text_role == 'custom' %}
+  {% assign color_role = 'on-button' %}
+{% endif %}
 
 {% comment %} --- 5. Component Render --- {% endcomment %}
 <div
@@ -403,6 +404,27 @@
     },
     {
       "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        { "value": "none",     "label": "None" },
+        { "value": "default",  "label": "Default" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "custom",   "label": "Custom" }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Custom Border",
+      "info": "Free hex. Used only when Border Color = Custom.",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+
+    {
+      "type": "select",
       "id": "border_style",
       "label": "Border Style",
       "default": "solid",
@@ -466,7 +488,8 @@
       "default": "auto",
       "options": [
         { "value": "auto", "label": "Auto" },
-        { "value": "full", "label": "Full Width" }
+        { "value": "full", "label": "Full Width" },
+        { "value": "fit",  "label": "Fit Content" }
       ]
     },
     {
@@ -498,11 +521,12 @@
       "id": "padding_vertical",
       "label": "Vertical Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
+        { "value": "none",   "label": "None" },
+        { "value": "xs",     "label": "XS" },
+        { "value": "sm",     "label": "Small" },
+        { "value": "md",     "label": "Medium" },
+        { "value": "lg",     "label": "Large" },
+        { "value": "xl",     "label": "X-Large" },
         { "value": "custom", "label": "Custom" }
       ],
       "default": "xs"
@@ -534,11 +558,12 @@
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
+        { "value": "none",   "label": "None" },
+        { "value": "xs",     "label": "XS" },
+        { "value": "sm",     "label": "Small" },
+        { "value": "md",     "label": "Medium" },
+        { "value": "lg",     "label": "Large" },
+        { "value": "xl",     "label": "X-Large" },
         { "value": "custom", "label": "Custom" }
       ],
       "default": "md"
@@ -647,15 +672,24 @@
       "type": "select",
       "id": "text_role",
       "label": "Text Color Role",
-      "default": "button",
+      "default": "on-button",
       "options": [
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "accent", "label": "Accent" }
+        { "value": "primary",    "label": "Primary" },
+        { "value": "secondary",  "label": "Secondary" },
+        { "value": "subtle",     "label": "Subtle" },
+        { "value": "emphasis",   "label": "Emphasis" },
+        { "value": "on-accent",  "label": "On Accent" },
+        { "value": "on-button",  "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "custom",     "label": "Custom" }
       ]
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Custom Text",
+      "info": "Free hex or CSS gradient. Used only when Text role = Custom.",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "header",
@@ -678,34 +712,6 @@
     },
     {
       "type": "checkbox",
-      "id": "bg_color_override",
-      "label": "Override Background",
-      "default": false,
-      "conditional": "true"
-    },
-    {
-      "type": "color",
-      "id": "bg_color",
-      "label": "Custom Background",
-      "default": "#000000",
-      "conditional": "true and setting.bg_color_override"
-    },
-    {
-      "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Text Color",
-      "default": false,
-      "conditional": "true"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Text Color",
-      "default": "#ffffff",
-      "conditional": "true and setting.text_color_override"
-    },
-    {
-      "type": "checkbox",
       "id": "border_radius_override",
       "label": "Override Border Radius",
       "default": false,
@@ -719,22 +725,8 @@
       "max": 1000,
       "default": 4,
       "unit": "px",
-      "conditional": "true and setting.border_radius_override"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_color_override",
-      "label": "Override Border Color",
-      "default": false,
-      "conditional": "true and setting.border_mode != 'none'"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "Custom Border Color",
-      "default": "#ffffff",
-      "conditional": "true and setting.border_color_override and setting.border_mode != 'none'"
+      "conditional": "setting.border_radius_override"
     }
-  ]
+    ]
 }
 {% endschema %}
