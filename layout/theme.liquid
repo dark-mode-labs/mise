@@ -16,7 +16,8 @@
     {% render 'theme_variables',
       typography: settings.typography,
       layout: settings.layout,
-      color_schemes: settings.color_schemes,
+      palette: settings.palette,
+      surfaces: settings.surfaces,
       width_schemes: settings.width_schemes,
       font_schemes: settings.font_schemes
     %}
@@ -24,7 +25,7 @@
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="surface-default">
     {% sections 'header-group' %}
 
     <main>

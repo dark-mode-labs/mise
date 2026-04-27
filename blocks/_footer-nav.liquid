@@ -3,8 +3,8 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'footer-block' %}
 
-{% if s.inherit_styles == false and s.color_scheme_override == true %}
-  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% if s.surface_override == false and s.surface_override == true %}
+  {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 {% assign block_classes = classes | join: ' ' %}
@@ -44,7 +44,7 @@
         weight: s.font_weight,
         class: utility_classes,
         family: font_family,
-        color_role: s.color_role
+        color_role: s.text_role
       %}
       {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}
     </summary>
@@ -63,13 +63,7 @@
       "type": "header",
       "content": "Style"
     },
-    {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Styles",
-      "default": true
-    },
-    {
+        {
       "type": "header",
       "content": "Typography"
     },
@@ -130,7 +124,7 @@
     },
     {
       "type": "select",
-      "id": "color_role",
+      "id": "text_role",
       "label": "Text Color Role",
       "default": "primary",
       "options": [
@@ -156,21 +150,21 @@
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "color_scheme_override",
+      "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+      "conditional": "setting.surface_override == true"
     }
   ]
 }

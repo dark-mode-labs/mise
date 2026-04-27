@@ -18,7 +18,7 @@
   {{ context.attached_attributes }}
 >
   <div
-    class="flex flex-auto items-center justify-center color-{{ s.color_scheme | default: 'none' }} width-{{ s.width_scheme }} {{ bg_class }} text-body limit-width h-[var(--max-h)]"
+    class="flex flex-auto items-center justify-center surface-{{ s.surface_id | default: 'default' }} width-{{ s.width_scheme }} {{ bg_class }} text-body limit-width h-[var(--max-h)]"
     style="{{ style_str }}"
   >
     <div class="relative flex items-center justify-center w-full">
@@ -95,8 +95,8 @@
       "content": "Theme"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default"
     },

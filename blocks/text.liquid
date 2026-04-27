@@ -10,8 +10,8 @@
   {% assign wrapper_classes = wrapper_classes | push: 'tabular-nums min-w-[3ch]' %}
 {% endif %}
 
-{% if s.inherit_styles == false and s.color_scheme_override == true %}
-  {% assign wrapper_classes = wrapper_classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% if s.surface_override == false and s.surface_override == true %}
+  {% assign wrapper_classes = wrapper_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
@@ -41,8 +41,8 @@
   {% assign styles = styles | push: '--text-leading: {{ s.text_leading_custom | divided_by: 100.0 }}' %}
 {% endif %}
 
-{% unless s.inherit_styles %}
-  {% assign styles = styles | push_if: '--color-text: {{ s.text_color }}', s.text_color_override %}
+{% unless s.surface_override == false %}
+  {% assign styles = styles | push_if: '--text: {{ s.text_color }}', s.text_color_override %}
 {% endunless %}
 
 {% assign wrapper_style_str = styles | join: ';' %}
@@ -76,8 +76,8 @@
   {% assign font_family = s.font_scheme %}
 {% endif %}
 
-{% assign color_role = s.color_role %}
-{% unless s.inherit_styles %}
+{% assign color_role = s.text_role %}
+{% unless s.surface_override == false %}
   {% if s.text_color_override %}
     {% assign color_role = 'primary' %}
   {% endif %}
@@ -385,15 +385,9 @@
       "type": "header",
       "content": "Style"
     },
-    {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Global Styles",
-      "default": true
-    },
-    {
+        {
       "type": "select",
-      "id": "color_role",
+      "id": "text_role",
       "label": "Text Color Role",
       "default": "primary",
       "options": [
@@ -402,40 +396,40 @@
         { "value": "subtle", "label": "Subtle" },
         { "value": "accent", "label": "Accent" }
       ],
-      "conditional": "setting.inherit_styles or setting.text_color_override != true"
+      "conditional": "setting.text_role != "custom""
     },
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "color_scheme_override",
+      "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+      "conditional": "setting.surface_override == true"
     },
     {
       "type": "checkbox",
       "id": "text_color_override",
       "label": "Override Text Color",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "color",
       "id": "text_color",
       "label": "Custom Color",
       "default": "#ffffff",
-      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+      "conditional": "true and setting.text_color_override"
     }
   ]
 }

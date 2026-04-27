@@ -6,11 +6,11 @@
 {% assign inactive_state_classes = '' %}
 {% assign inactive_state_styles = '' %}
 
-{% unless s.inherit_styles %}
-  {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
+{% unless s.surface_override == false %}
+  {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
   {% assign styles = styles | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override %}
   {% if s.border_color_override %}
-    {% assign styles = styles | push: '--color-border: {{ s.border_color }}' %}
+    {% assign styles = styles | push: '--border: {{ s.border_color }}' %}
   {% endif %}
 {% endunless %}
 
@@ -294,32 +294,31 @@
       "type": "header",
       "content": "Style"
     },
-    { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
-    {
+        {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "color_scheme_override",
+      "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+      "conditional": "setting.surface_override == true"
     },
     {
       "type": "checkbox",
       "id": "border_radius_override",
       "label": "Override Border Radius",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "range",
@@ -329,21 +328,21 @@
       "label": "Radius",
       "default": 0,
       "unit": "px",
-      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+      "conditional": "true and setting.border_radius_override"
     },
     {
       "type": "checkbox",
       "id": "border_color_override",
       "label": "Override Border Color",
       "default": false,
-      "conditional": "setting.inherit_styles != true and setting.border_mode != 'none'"
+      "conditional": "true and setting.border_mode != 'none'"
     },
     {
       "type": "color",
       "id": "border_color",
       "label": "Custom Border Color",
       "default": "#ffffff",
-      "conditional": "setting.inherit_styles != true and setting.border_color_override and setting.border_mode != 'none'"
+      "conditional": "true and setting.border_color_override and setting.border_mode != 'none'"
     }
   ],
   "blocks": [{ "type": "@theme" }],

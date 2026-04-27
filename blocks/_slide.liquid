@@ -9,8 +9,8 @@
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
-{% unless s.inherit_styles %}
-  {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
+{% unless s.surface_override == false %}
+  {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
 {% endunless %}
 
 {% assign slide_classes = classes | join: ' ' %}
@@ -162,13 +162,7 @@
       "type": "header",
       "content": "Style"
     },
-    {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Color Scheme",
-      "default": true
-    },
-    {
+        {
       "type": "select",
       "id": "bg_role",
       "label": "Background",
@@ -192,21 +186,21 @@
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "color_scheme_override",
+      "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+      "conditional": "setting.surface_override == true"
     },
     {
       "type": "checkbox",

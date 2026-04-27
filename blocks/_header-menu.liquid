@@ -3,8 +3,8 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign nav_classes = 'header-nav hidden lg:flex items-center' %}
 
-{% if s.inherit_styles == false and s.color_scheme_override == true %}
-  {% assign nav_classes = nav_classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
+{% if s.surface_override == false and s.surface_override == true %}
+  {% assign nav_classes = nav_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 {% assign block_classes = nav_classes | join: ' ' %}
@@ -50,7 +50,7 @@
             text: link.title,
             display_size: s.display_size,
             weight: s.font_weight,
-            color_role: s.color_role,
+            color_role: s.text_role,
             family: font_family,
             class: utility_classes
           %}
@@ -81,7 +81,7 @@
                         text: child.title,
                         display_size: s.display_size,
                         weight: s.font_weight,
-                        color_role: s.color_role,
+                        color_role: s.text_role,
                         family: font_family,
                         class: utility_classes
                       %}
@@ -97,7 +97,7 @@
                               text: grandchild.title,
                               display_size: s.display_size,
                               weight: s.font_weight,
-                              color_role: s.color_role,
+                              color_role: s.text_role,
                               family: font_family,
                               class: utility_classes
                             %}
@@ -133,7 +133,7 @@
     font_weight: s.font_weight,
     utilities: utility_classes,
     font_family: font_family,
-    color_role: s.color_role,
+    color_role: s.text_role,
     display_size: 'h4'
   %}
 {% endif %}
@@ -208,7 +208,7 @@
     },
     {
       "type": "select",
-      "id": "color_role",
+      "id": "text_role",
       "label": "Text Color Role",
       "default": "button",
       "options": [
@@ -236,30 +236,24 @@
       "type": "header",
       "content": "General Style"
     },
-    {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Styles",
-      "default": true
-    },
-    {
+        {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "color_scheme_override",
+      "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+      "conditional": "setting.surface_override == true"
     }
   ]
 }

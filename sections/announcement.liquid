@@ -14,7 +14,7 @@
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class="section-announcement color-{{ s.color_scheme | default: 'none' }} {{ bg_class }} z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std"
+  class="section-announcement surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std"
   style="{{ style_str }}"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
@@ -79,7 +79,7 @@
       "type": "header",
       "content": "Theme"
     },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    { "type": "surface", "id": "surface_id", "label": "Color Scheme", "default": "default" },
     {
       "type": "select",
       "id": "bg_role",

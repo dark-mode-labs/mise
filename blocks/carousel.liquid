@@ -29,8 +29,8 @@
   {% assign classes = classes | push: 'width-{{ s.width_scheme }}' %}
 {% endunless %}
 
-{% unless s.inherit_styles %}
-  {% assign classes = classes | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override %}
+{% unless s.surface_override == false %}
+  {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
 {% endunless %}
 
 {% if s.position == 'absolute' %}
@@ -94,16 +94,16 @@
 
 {% unless s.border_mode == 'none' %}
   {% assign styles = styles
-    | push_if: '--color-border: {{ s.border_color }}', s.border_color_override
+    | push_if: '--border: {{ s.border_color }}', s.border_color_override
     | push: '--border-style: {{ s.border_style }}'
   %}
 {% endunless %}
 
-{% unless s.inherit_styles %}
+{% unless s.surface_override == false %}
   {% assign styles = styles
     | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--color-shadow: {{ s.shadow_color }}', s.shadow_color_override
-    | push_if: '--color-text: {{ s.text_color }}', s.text_color_override
+    | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+    | push_if: '--text: {{ s.text_color }}', s.text_color_override
   %}
 {% endunless %}
 
@@ -611,8 +611,7 @@
       "type": "header",
       "content": "Style"
     },
-    { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
-    {
+        {
       "type": "select",
       "id": "bg_role",
       "label": "Background",
@@ -745,21 +744,21 @@
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "color_scheme_override",
+      "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+      "conditional": "setting.surface_override == true"
     },
     {
       "type": "checkbox",
@@ -779,7 +778,7 @@
       "id": "border_radius_override",
       "label": "Override Border Radius",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "range",
@@ -789,49 +788,49 @@
       "label": "Radius",
       "default": 0,
       "unit": "px",
-      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+      "conditional": "true and setting.border_radius_override"
     },
     {
       "type": "checkbox",
       "id": "shadow_color_override",
       "label": "Override Shadow Color",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "color",
       "id": "shadow_color",
       "label": "Custom Shadow Color",
       "default": "rgba(0,0,0,1)",
-      "conditional": "setting.inherit_styles != true and setting.shadow_color_override"
+      "conditional": "true and setting.shadow_color_override"
     },
     {
       "type": "checkbox",
       "id": "border_color_override",
       "label": "Override Border Color",
       "default": false,
-      "conditional": "setting.inherit_styles != true and setting.border_mode != 'none'"
+      "conditional": "true and setting.border_mode != 'none'"
     },
     {
       "type": "color",
       "id": "border_color",
       "label": "Custom Border Color",
       "default": "#ffffff",
-      "conditional": "setting.inherit_styles != true and setting.border_color_override and setting.border_mode != 'none'"
+      "conditional": "true and setting.border_color_override and setting.border_mode != 'none'"
     },
     {
       "type": "checkbox",
       "id": "text_color_override",
       "label": "Override Text Color",
       "default": false,
-      "conditional": "setting.show_counter and setting.inherit_styles != true"
+      "conditional": "setting.show_counter and true"
     },
     {
       "type": "color",
       "id": "text_color",
       "label": "Custom Counter Color",
       "default": "#ffffff",
-      "conditional": "setting.show_counter and setting.inherit_styles != true and setting.text_color_override"
+      "conditional": "setting.show_counter and true and setting.text_color_override"
     }
   ],
   "blocks": [{ "type": "@theme" }],

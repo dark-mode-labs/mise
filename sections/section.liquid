@@ -1,11 +1,20 @@
 {% assign s = section.settings %}
 
-{% comment %} --- 1. Background class (unified bg primitive) --- {% endcomment %}
-{% assign bg_role_safe = s.bg_role | default: 'body' %}
-{% assign bg_class = 'bg-' | append: bg_role_safe %}
-{% if s.bg_color_override and s.bg_color != blank %}{% assign bg_class = '' %}{% endif %}
+{% comment %} --- 1. Surface scoping (CSS-var context) ---
+   Sections always introduce a surface scope (they're the natural surface
+   boundary in the layout tree). Defaults to `default` so descendants always
+   inherit a usable set of CSS variables. {% endcomment %}
+{% assign surface_safe = s.surface_id | default: 'default' %}
+{% assign surface_class = 'surface-' | append: surface_safe %}
 
-{% comment %} --- 2. Container Class Pipeline --- {% endcomment %}
+{% comment %} --- 2. Background role (paints from active surface) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = '' %}
+{% if bg_role_safe != 'none' and bg_role_safe != 'custom' %}
+  {% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% endif %}
+
+{% comment %} --- 3. Container Class Pipeline --- {% endcomment %}
 {% assign container_classes = 'section-layout limit-width'
   | push: bg_class
   | push: 'width-{{ s.width_scheme }}'
@@ -13,10 +22,9 @@
   | push: 'padding-px-{{ s.padding_horizontal }}'
   | push: 'is-{{ s.height }}'
 %}
-
 {% assign container_class_str = container_classes | join: ' ' %}
 
-{% comment %} --- 3. Style Pipeline (spacing + bg layer, single var) --- {% endcomment %}
+{% comment %} --- 4. Style Pipeline (spacing + bg layer) --- {% endcomment %}
 {% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -37,15 +45,15 @@
   {% assign styles = styles | push: '--max-h: {{ s.height_custom }}vh' %}
 {% endif %}
 
-{% if s.bg_color_override and s.bg_color != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_color }}' %}
+{% if bg_role_safe == 'custom' and s.custom_bg != blank %}
+  {% assign styles = styles | push: 'background: {{ s.custom_bg }}' %}
 {% elsif s.bg_alpha and s.bg_alpha != 100 %}
   {% assign styles = styles | push: '--bg-alpha: {{ s.bg_alpha | divided_by: 100.0 }}' %}
 {% endif %}
 
 {% assign style_str = styles | join: ';' %}
 
-{% comment %} --- 3. Inner Flex Pipeline --- {% endcomment %}
+{% comment %} --- 5. Inner Flex Pipeline --- {% endcomment %}
 {% assign inner_classes = 'flex flex-auto gap-6'
   | push: 'flex-{{ s.flex_direction }}'
   | push: 'section-align-content-{{ s.content_align }}'
@@ -53,12 +61,11 @@
   | push: 'section-align-text-{{ s.text_align }}'
   | push_if: 'stagger-load', s.animate_stagger
 %}
-
 {% assign inner_class_str = inner_classes | join: ' ' %}
 
 {% comment %} --- Component Render --- {% endcomment %}
 <section
-  class="color-{{ s.color_scheme | default: 'none' }}"
+  class="{{ surface_class }}"
   {{ context.attached_attributes }}
 >
   <div
@@ -100,11 +107,7 @@
       "type": "range",
       "id": "height_custom",
       "label": "Custom Height",
-      "min": 10,
-      "max": 100,
-      "step": 5,
-      "default": 56,
-      "unit": "vh",
+      "min": 10, "max": 100, "step": 5, "default": 56, "unit": "vh",
       "conditional": "setting.height == 'custom'"
     },
     {
@@ -168,25 +171,15 @@
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "padding_vertical_custom_top",
+      "type": "range", "id": "padding_vertical_custom_top",
       "label": "Custom Top Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
+      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "range",
-      "id": "padding_vertical_custom_bottom",
+      "type": "range", "id": "padding_vertical_custom_bottom",
       "label": "Custom Bottom Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
+      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -205,46 +198,49 @@
       "default": "xs"
     },
     {
-      "type": "range",
-      "id": "padding_horizontal_custom_left",
+      "type": "range", "id": "padding_horizontal_custom_left",
       "label": "Custom Left Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
+      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "range",
-      "id": "padding_horizontal_custom_right",
+      "type": "range", "id": "padding_horizontal_custom_right",
       "label": "Custom Right Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
+      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
-    {
-      "type": "header",
-      "content": "Animation"
-    },
+    { "type": "header", "content": "Animation" },
     { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
     { "type": "header", "content": "Theme" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override surface",
+      "default": false,
+      "info": "When enabled, this section introduces its own surface scope. Otherwise descendants inherit the surface from the parent (page default unless a surrounding section overrode it)."
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Surface",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    },
     {
       "type": "select",
       "id": "bg_role",
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none",    "label": "None" },
-        { "value": "body",    "label": "Body" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "accent",  "label": "Accent" },
-        { "value": "button",  "label": "Button" },
-        { "value": "nav",     "label": "Control" }
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom (free hex/gradient)" }
       ]
     },
     {
@@ -252,19 +248,14 @@
       "id": "bg_alpha",
       "label": "Background Opacity",
       "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
-      "conditional": "setting.bg_role != 'none'"
-    },
-    {
-      "type": "checkbox",
-      "id": "bg_color_override",
-      "label": "Custom Background (free hex/gradient)",
-      "default": false
+      "conditional": "setting.bg_role != 'none' and setting.bg_role != 'custom'"
     },
     {
       "type": "color",
-      "id": "bg_color",
-      "label": "Custom Background Color",
-      "conditional": "setting.bg_color_override"
+      "id": "custom_bg",
+      "label": "Custom Background",
+      "info": "Free hex or CSS gradient. Used only when Background = Custom.",
+      "conditional": "setting.bg_role == 'custom'"
     }
   ],
   "blocks": [

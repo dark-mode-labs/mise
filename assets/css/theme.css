@@ -280,17 +280,17 @@
   .slideshow-dot.is-active span {
     opacity: 1;
     transform: scale(1.2);
-    background: var(--color-ui-bg);
+    background: var(--control-bg);
   }
 
   .slideshow-dot.is-active span.text-sm {
     opacity: 1;
     background: transparent;
-    color: var(--color-ui-bg);
+    color: var(--control-bg);
   }
 
   .slideshow-dot.is-active span.ring-1 {
-    box-shadow: 0 0 0 1px var(--color-ui-text);
+    box-shadow: 0 0 0 1px var(--text-on-control);
   }
 
   .header-section {
@@ -1000,31 +1000,31 @@
   .group-border-custom-left {
     border-left-style: var(--border-style);
     border-left-width: var(--border-width);
-    border-left-color: var(--color-border);
+    border-left-color: var(--border);
   }
 
   .group-border-custom-right {
     border-right-style: var(--border-style);
     border-right-width: var(--border-width);
-    border-right-color: var(--color-border);
+    border-right-color: var(--border);
   }
 
   .group-border-custom-top {
     border-top-style: var(--border-style);
     border-top-width: var(--border-width);
-    border-top-color: var(--color-border);
+    border-top-color: var(--border);
   }
 
   .group-border-custom-bottom {
     border-bottom-style: var(--border-style);
     border-bottom-width: var(--border-width);
-    border-bottom-color: var(--color-border);
+    border-bottom-color: var(--border);
   }
 
   .group-border-full {
     border-style: var(--border-style);
     border-width: var(--border-width);
-    border-color: var(--color-border);
+    border-color: var(--border);
   }
 
   .animate {
@@ -1296,40 +1296,72 @@
     @apply relative w-full overflow-hidden;
   }
 
-  /* The .bg-<role> classes paint the corresponding scheme slot.
+  /* Surface bg-role classes — paint a scheme slot from the active surface.
 
-     Each scheme variable is split: `--color-X` is the solid color (or
-     `transparent` if the scheme bg is a gradient), `--color-X-image` is
-     the gradient (or `none` for solids). We layer them via background-color
-     + background-image — only one is non-transparent / non-none per scheme,
-     but BOTH must be valid CSS values, otherwise IACVT (invalid-at-
-     computed-value time) sets the property to its initial value (transparent)
-     instead of falling back to a previous declaration in the cascade.
+     Each surface emits TWO variables per bg-family slot (see
+     theme_variables.liquid):
+       --<slot>           solid color (or `transparent` if value is a gradient)
+       --<slot>-image     gradient `linear-gradient(...)` (or `none` for solids)
+     We layer them via background-color + background-image — only one is
+     non-transparent / non-none per slot, but BOTH must always be valid CSS
+     values, otherwise IACVT (invalid-at-computed-value time) sets the
+     property to its initial value (transparent) instead of falling back to
+     a previous declaration in the cascade.
 
      `--bg-alpha` (0..1) controls runtime alpha for solid bgs only. For
      gradients, alpha is baked into the stops at compile time. */
   .bg-body {
-    background-color: color-mix(in srgb, var(--color-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--color-bg-image);
+    background-color: color-mix(in srgb, var(--background) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--background-image);
   }
-
+  .bg-body-alt {
+    background-color: color-mix(in srgb, var(--background-alt) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--background-alt-image);
+  }
   .bg-surface {
-    background-color: color-mix(in srgb, var(--color-surface) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--color-surface-image);
+    background-color: color-mix(in srgb, var(--surface) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--surface-image);
   }
-
+  .bg-surface-alt {
+    background-color: color-mix(in srgb, var(--surface-alt) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--surface-alt-image);
+  }
   .bg-accent {
-    background-color: color-mix(in srgb, var(--color-accent) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--color-accent-image);
+    background-color: color-mix(in srgb, var(--accent-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--accent-bg-image);
   }
-
   .bg-button {
-    background-color: color-mix(in srgb, var(--color-btn-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--color-btn-bg-image);
+    background-color: color-mix(in srgb, var(--button-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--button-bg-image);
+  }
+  .bg-control {
+    background-color: color-mix(in srgb, var(--control-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--control-bg-image);
+  }
+  /* Legacy bg-nav alias — old transpiler still emits `bg_role: nav`. */
+  .bg-nav {
+    background-color: color-mix(in srgb, var(--control-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
+    background-image: var(--control-bg-image);
   }
 
-  .bg-nav {
-    background-color: color-mix(in srgb, var(--color-ui-bg) calc(var(--bg-alpha, 1) * 100%), transparent);
-    background-image: var(--color-ui-bg-image);
-  }
+  /* Surface text-role classes — paint a text slot from the active surface.
+     `currentColor` fallback so unstyled descendants inherit the parent
+     element's color rather than going transparent when the slot is unset. */
+  .text-primary    { color: var(--text, currentColor); }
+  .text-secondary  { color: var(--text-secondary, currentColor); }
+  .text-subtle     { color: var(--text-subtle, currentColor); }
+  .text-emphasis   { color: var(--text-emphasis, currentColor); }
+  .text-on-accent  { color: var(--text-on-accent, currentColor); }
+  .text-on-button  { color: var(--text-on-button, currentColor); }
+  .text-on-control { color: var(--text-on-control, currentColor); }
+
+  /* Legacy text-* aliases — typography.liquid and many liquids still use
+     these directly. Phase B will migrate consumers. */
+  .text-body    { color: var(--text, currentColor); }
+  .text-accent  { color: var(--text-emphasis, var(--accent-bg, currentColor)); }
+  .text-button  { color: var(--text-on-button, currentColor); }
+  .text-control { color: var(--text-on-control, currentColor); }
+
+  .border-default  { border-color: var(--border, transparent); }
+  .border-emphasis { border-color: var(--border-emphasis, transparent); }
 }

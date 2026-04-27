@@ -63,7 +63,7 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <section
-  class="section-flex color-{{ s.color_scheme | default: 'none' }} {{ bg_class }}"
+  class="section-flex surface-{{ s.surface_id | default: 'default' }} {{ bg_class }}"
   style="{{ style_str }}"
   {{ context.attached_attributes }}
 >
@@ -332,7 +332,7 @@
     },
     { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
     { "type": "header", "content": "Theme" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    { "type": "surface", "id": "surface_id", "label": "Color Scheme", "default": "default" },
 
     { "type": "header", "content": "Gap & Cards" },
     { "type": "checkbox", "id": "enable_cards_global", "label": "Enable Cards for All Columns", "default": false },

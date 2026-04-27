@@ -29,7 +29,7 @@
 
 {% assign header_classes = 'header-section z-header transition-all duration-300 border-b border-std'
   | push: position_class_str
-  | push: 'color-{{ s.color_scheme | default: "none" }}'
+  | push: 'surface-{{ s.surface_id | default: "default" }}'
   | push: bg_class
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
@@ -250,7 +250,7 @@
       "default": "none"
     },
     { "type": "header", "content": "Style" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    { "type": "surface", "id": "surface_id", "label": "Color Scheme", "default": "default" },
     {
       "type": "select",
       "id": "bg_role",

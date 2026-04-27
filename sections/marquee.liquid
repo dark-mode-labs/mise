@@ -38,7 +38,7 @@
 
 {% comment %} --- 3. Component Render --- {% endcomment %}
 <section
-  class="section-marquee color-{{ s.color_scheme | default: 'none' }}"
+  class="section-marquee surface-{{ s.surface_id | default: 'default' }}"
   {{ context.attached_attributes }}
 >
   <div
@@ -190,8 +190,8 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default"
     },

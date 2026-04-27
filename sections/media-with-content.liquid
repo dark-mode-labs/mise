@@ -66,7 +66,7 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <section
-  class="section-feature color-{{ s.color_scheme | default: 'none' }}"
+  class="section-feature surface-{{ s.surface_id | default: 'default' }}"
   {{ context.attached_attributes }}
 >
   <div
@@ -272,7 +272,7 @@
     { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
     { "type": "header", "content": "Visuals" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    { "type": "surface", "id": "surface_id", "label": "Color Scheme", "default": "default" },
     {
       "type": "select",
       "id": "bg_role",
@@ -313,7 +313,7 @@
       "name": "Feature (Chef Profile)",
       "settings": {
         "desktop_layout": "image_left",
-        "color_scheme": "default",
+        "surface_id": "default",
         "enable_animation": true
       },
       "blocks": {

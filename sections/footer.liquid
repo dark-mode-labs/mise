@@ -42,7 +42,7 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <footer
-  class="section-footer color-{{ s.color_scheme | default: 'none' }} {{ bg_class }} text-body relative isolate"
+  class="section-footer surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} text-body relative isolate"
   style="{{ style_str }}"
   {{ context.attached_attributes }}
 >
@@ -164,7 +164,7 @@
     { "type": "checkbox", "id": "show_payment", "label": "Show Payment Icons", "default": true },
 
     { "type": "header", "content": "Theme" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    { "type": "surface", "id": "surface_id", "label": "Color Scheme", "default": "default" },
     {
       "type": "select",
       "id": "bg_role",

@@ -75,7 +75,7 @@
 
 {% comment %} --- Hero Render --- {% endcomment %}
 <section
-  class="section-hero color-{{ s.color_scheme | default: 'none' }}"
+  class="section-hero surface-{{ s.surface_id | default: 'default' }}"
   {{ context.attached_attributes }}
 >
   <div
@@ -324,7 +324,7 @@
     { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
     { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns Effect", "default": false },
     { "type": "header", "content": "Theme" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    { "type": "surface", "id": "surface_id", "label": "Color Scheme", "default": "default" },
     {
       "type": "select",
       "id": "bg_role",
@@ -407,7 +407,7 @@
       "name": "Hero (Fine Dining)",
       "settings": {
         "layout_mode": "overlay",
-        "color_scheme": "default"
+        "surface_id": "default"
       },
       "blocks": {
         "hero_heading": {

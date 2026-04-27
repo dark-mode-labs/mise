@@ -73,7 +73,7 @@
 {% if s.nav_layout == 'horizontal' %}
   {% capture sticky_style %}top: {{ s.nav_sticky_offset }}rem;{% endcapture %}
   {% assign main_flex_direction = 'flex-col' %}
-  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--color-bg)] border-b border-body/10 mb-8 transition-[top] duration-200' %}
+  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--background)] border-b border-body/10 mb-8 transition-[top] duration-200' %}
   {% assign nav_wrapper_class = 'flex flex-row items-center gap-6 overflow-x-auto no-scrollbar py-3 px-1' %}
   {% assign link_base_class = 'whitespace-nowrap border-b-2 border-transparent pb-2 transition-all duration-300 [&.is-active]:border-body [&.is-active]:opacity-100 [&.is-active]:font-bold' %}
   {% assign sublink_base_class = 'hidden' %}
@@ -92,7 +92,7 @@
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class="menu-list color-{{ s.color_scheme | default: 'none' }}"
+  class="menu-list surface-{{ s.surface_id | default: 'default' }}"
   data-spy-scope
   data-filter-scope
   {{ context.attached_attributes }}
@@ -148,7 +148,7 @@
                     type="button"
                     data-filter-tag="{{ tag_name }}"
                     title="Filter by {{ tag.name }}"
-                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[0.625rem] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[0.625rem] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--color-text)] [&.is-active]:text-[var(--color-bg)] [&.is-active]:opacity-100"
+                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-std rounded-full text-[0.625rem] font-bold uppercase text-secondary hover:text-body hover:border-body{% else %}px-2 py-1 border border-std rounded text-[0.625rem] uppercase tracking-wider text-secondary hover:text-body hover:border-body{% endif %} transition-all [&.is-active]:bg-[var(--text)] [&.is-active]:text-[var(--background)] [&.is-active]:opacity-100"
                   >
                     {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
                   </button>
@@ -488,7 +488,7 @@
     },
     { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
     { "type": "header", "content": "Theme" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Scheme", "default": "default" },
+    { "type": "surface", "id": "surface_id", "label": "Color Scheme", "default": "default" },
     {
       "type": "select",
       "id": "bg_role",

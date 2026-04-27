@@ -3,9 +3,9 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'media-block w-full h-full relative overflow-hidden rounded-global' | push: 'is-{{ s.height }}' %}
 
-{% unless s.inherit_styles %}
+{% unless s.surface_override == false %}
   {% assign classes = classes
-    | push_if: "color-{{ s.color_scheme | default: 'none' }}", s.color_scheme_override
+    | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override
     | push_if: 'shadow-md', s.show_shadow
   %}
 {% endunless %}
@@ -15,10 +15,10 @@
 {% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign styles = blank %}
 
-{% unless s.inherit_styles %}
+{% unless s.surface_override == false %}
   {% assign styles = styles
     | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--color-shadow: {{ s.shadow_color }}', s.shadow_color_override
+    | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
   %}
 {% endunless %}
 
@@ -137,38 +137,31 @@
       "label": "Show Shadow",
       "default": false
     },
-    {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Global Styles",
-      "default": true,
-      "info": "Uncheck to customize Radius and Colors."
-    },
-    {
+        {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "color_scheme_override",
+      "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+      "conditional": "setting.surface_override == true"
     },
     {
       "type": "checkbox",
       "id": "border_radius_override",
       "label": "Override Border Radius",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "range",
@@ -178,21 +171,21 @@
       "max": 1000,
       "default": 0,
       "unit": "px",
-      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+      "conditional": "true and setting.border_radius_override"
     },
     {
       "type": "checkbox",
       "id": "shadow_color_override",
       "label": "Override Shadow Color",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "color",
       "id": "shadow_color",
       "label": "Custom Shadow Color",
       "default": "rgba(0,0,0,1)",
-      "conditional": "setting.inherit_styles != true and setting.shadow_color_override"
+      "conditional": "true and setting.shadow_color_override"
     }
   ],
   "presets": [

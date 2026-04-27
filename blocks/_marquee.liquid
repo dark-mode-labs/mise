@@ -2,8 +2,8 @@
 
 {% assign scheme_class = blank %}
 
-{% if s.inherit_styles == false and s.color_scheme_override == true %}
-  {% assign scheme_class="color-{{ s.color_scheme | default: 'none' }}" %}
+{% if s.surface_override == false and s.surface_override == true %}
+  {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 {% assign size_class = 'text-size-{{ s.text_size }}' %}
@@ -114,30 +114,24 @@
       "type": "header",
       "content": "Style"
     },
-    {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Color Scheme",
-      "default": true
-    },
-    {
+        {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "color_scheme_override",
+      "id": "surface_override",
       "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true and setting.color_scheme_override == true"
+      "conditional": "setting.surface_override == true"
     }
   ]
 }

@@ -14,7 +14,7 @@
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class="section-slideshow color-{{ s.color_scheme | default: 'none' }} {{ bg_class }} is-{{ s.height }}"
+  class="section-slideshow surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} is-{{ s.height }}"
   style="{{ style_str }}"
   {{ context.attached_attributes }}
 >
@@ -73,12 +73,12 @@
             >
               {% if s.dot_style == 'dots' %}
                 <span
-                  class="block w-2.5 h-2.5 rounded-full bg-[var(--color-ui-bg)] opacity-50 hover:opacity-100 ring-1 ring-transparent"
+                  class="block w-2.5 h-2.5 rounded-full bg-[var(--control-bg)] opacity-50 hover:opacity-100 ring-1 ring-transparent"
                 ></span>
               {% elsif s.dot_style == 'bars' %}
-                <span class="block w-8 h-1 rounded-sm bg-[var(--color-ui-bg)] opacity-50 hover:opacity-100"></span>
+                <span class="block w-8 h-1 rounded-sm bg-[var(--control-bg)] opacity-50 hover:opacity-100"></span>
               {% elsif s.dot_style == 'numbers' %}
-                <span class="text-sm font-bold text-[var(--color-ui-text)] opacity-50">{{ forloop.index }}</span>
+                <span class="text-sm font-bold text-[var(--text-on-control)] opacity-50">{{ forloop.index }}</span>
               {% endif %}
             </button>
           {% endfor %}
@@ -200,8 +200,8 @@
     },
     { "type": "header", "content": "Theme" },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
+      "type": "surface",
+      "id": "surface_id",
       "label": "Color Scheme",
       "default": "default",
       "info": "Controls the color of arrows and dots."
