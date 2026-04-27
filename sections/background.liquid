@@ -1,13 +1,36 @@
 {% assign s = section.settings %}
-{% if s.image != blank or s.bg_role_custom != blank %}
+
+{% comment %}
+  Page-level fixed background. Sits behind everything (`-z-50`, inset-0,
+  pointer-events-none). The unified `bg-overlay` snippet paints either a
+  scheme role OR a custom hex/gradient — same primitive every other block
+  uses for its bg, so the page-level surface participates in the same
+  role vocabulary as section/group bgs.
+
+  Inputs:
+    bg_role          — bg color slot (none|body|surface|...|custom)
+    bg_role_custom   — escape-hatch hex/rgba/gradient when bg_role=custom
+    image            — page-level fixed background image
+{% endcomment %}
+
+{% assign render_section = false %}
+{% if s.bg_role and s.bg_role != 'none' %}{% assign render_section = true %}{% endif %}
+{% if s.image != blank %}{% assign render_section = true %}{% endif %}
+
+{% if render_section %}
   <section
-    class="fixed inset-0 -z-50 pointer-events-none is-auto"
-    style="background: {{ s.bg_role_custom }};"
+    class="fixed inset-0 -z-50 pointer-events-none"
     {{ context.attached_attributes }}
   >
+    {% render 'bg-overlay',
+         role: s.bg_role,
+         alpha: 100,
+         use_custom: s.bg_role == 'custom',
+         custom_color: s.bg_role_custom,
+         behind: false
+    %}
     {% if s.image != blank %}
       {% render 'media', src: s.image, fit: 'cover', loading: 'eager' %}
-      <div class="absolute inset-0 bg-black" style="opacity: {{ s.overlay | divided_by: 100.0 }}"></div>
     {% endif %}
   </section>
 {% endif %}
@@ -16,8 +39,31 @@
 {
   "name": "Global Background",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Background Image" },
-    { "type": "range", "id": "overlay", "label": "Overlay Opacity", "min": 0, "max": 90, "step": 10, "default": 0 }
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "none",
+      "options": [
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Custom Bg",
+      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    { "type": "image_picker", "id": "image", "label": "Background Image" }
   ],
   "presets": [{ "name": "Global Background" }]
 }
