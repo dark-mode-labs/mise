@@ -19,15 +19,16 @@
 
 {% if render_section %}
   <section
-    class="fixed inset-0 -z-50 pointer-events-none"
+    class="fixed inset-0 -z-50 pointer-events-none surface-{{ s.surface_id | default: 'default' }}"
     {{ context.attached_attributes }}
   >
-    {% render 'bg-overlay',
-         role: s.bg_role,
-         alpha: 100,
-         use_custom: s.bg_role == 'custom',
-         custom_color: s.bg_role_custom,
-         behind: false
+    {%
+      render 'bg-overlay',
+      role: s.bg_role,
+      alpha: 100,
+      use_custom: s.bg_role == 'custom',
+      custom_color: s.bg_role_custom,
+      behind: false
     %}
     {% if s.image != blank %}
       {% render 'media', src: s.image, fit: 'cover', loading: 'eager' %}
@@ -45,15 +46,15 @@
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
@@ -63,7 +64,13 @@
       "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     },
-    { "type": "image_picker", "id": "image", "label": "Background Image" }
+    { "type": "image_picker", "id": "image", "label": "Background Image" },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    }
   ],
   "presets": [{ "name": "Global Background" }]
 }
