@@ -1,5 +1,12 @@
 {% assign s = section.settings %}
 
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
 {% comment %}
   --- 1. Surface scoping (CSS-var context) ---
   Sections always introduce a surface scope (they're the natural surface
@@ -12,7 +19,7 @@
 {% comment %} --- 2. Background role (paints from active surface) --- {% endcomment %}
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
 {% assign bg_class = '' %}
-{% if bg_role_safe != 'none' and bg_role_safe != 'custom' %}
+{% if bg_color_value == blank and bg_role_safe != 'none' %}
   {% assign bg_class = 'bg-' | append: bg_role_safe %}
 {% endif %}
 
@@ -47,10 +54,9 @@
   {% assign styles = styles | push: '--max-h: {{ s.height_custom }}vh' %}
 {% endif %}
 
-{% if bg_role_safe == 'custom' and s.bg_role_custom != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
-
 {% assign style_str = styles | join: ';' %}
 
 {% comment %} --- 5. Inner Flex Pipeline --- {% endcomment %}
@@ -82,7 +88,10 @@
 {
   "name": "Generic section",
   "settings": [
-    { "type": "header", "content": "Layout" },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
     {
       "type": "width_scheme",
       "id": "width_scheme",
@@ -94,12 +103,30 @@
       "id": "height",
       "label": "Section Height",
       "options": [
-        { "value": "auto", "label": "Auto (Fit Content)" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Fullscreen" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "auto",
+          "label": "Auto (Fit Content)"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "Fullscreen"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "auto"
     },
@@ -119,20 +146,38 @@
       "id": "flex_direction",
       "label": "Flex Direction",
       "options": [
-        { "value": "col", "label": "Column" },
-        { "value": "row", "label": "Row" }
+        {
+          "value": "col",
+          "label": "Column"
+        },
+        {
+          "value": "row",
+          "label": "Row"
+        }
       ],
       "default": "col"
     },
-    { "type": "header", "content": "Alignment" },
+    {
+      "type": "header",
+      "content": "Alignment"
+    },
     {
       "type": "select",
       "id": "content_align",
       "label": "Content Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "center"
     },
@@ -141,9 +186,18 @@
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "center"
     },
@@ -152,25 +206,58 @@
       "id": "vertical_align",
       "label": "Vertical Alignment",
       "options": [
-        { "value": "top", "label": "Top" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom" }
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
       ],
       "default": "middle"
     },
-    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
     {
       "type": "select",
       "id": "padding_vertical",
       "label": "Vertical Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "Extra Small" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Extra Large" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "Extra Small"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "Extra Large"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -201,13 +288,34 @@
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "Extra Small" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Extra Large" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "Extra Small"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "Extra Large"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "xs"
     },
@@ -233,9 +341,20 @@
       "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
-    { "type": "header", "content": "Animation" },
-    { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
-    { "type": "header", "content": "Theme" },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_stagger",
+      "label": "Stagger",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
     {
       "type": "checkbox",
       "id": "surface_override",
@@ -256,33 +375,88 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
     },
     {
       "type": "color",
       "id": "bg_role_custom",
-      "label": "Custom Background",
+      "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
     }
   ],
   "blocks": [
-    { "type": "@theme" },
-    { "type": "scroll-indicator" },
-    { "type": "text" },
-    { "type": "spacer" },
-    { "type": "_marquee" },
-    { "type": "media" },
-    { "type": "group" },
-    { "type": "button" }
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "scroll-indicator"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "spacer"
+    },
+    {
+      "type": "_marquee"
+    },
+    {
+      "type": "media"
+    },
+    {
+      "type": "group"
+    },
+    {
+      "type": "button"
+    }
   ],
   "presets": [
     {
@@ -293,7 +467,12 @@
       "blocks": {
         "heading": {
           "type": "text",
-          "settings": { "content": "Our Story", "display_size": "h2", "tag": "h2", "font_weight": "bold" }
+          "settings": {
+            "content": "Our Story",
+            "display_size": "h2",
+            "tag": "h2",
+            "font_weight": "bold"
+          }
         },
         "body": {
           "type": "text",
@@ -304,7 +483,10 @@
         },
         "btn": {
           "type": "button",
-          "settings": { "label": "Learn More", "style": "link" }
+          "settings": {
+            "label": "Learn More",
+            "style": "link"
+          }
         }
       },
       "block_order": ["heading", "body", "btn"]

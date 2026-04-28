@@ -1,5 +1,12 @@
 {% assign s = section.settings %}
 
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
 {% comment %} --- 1. Header Logic & State --- {% endcomment %}
 {% assign is_overlay = false %}
 {% if s.header_overlay_mode == 'overlay' or s.header_overlay_mode == 'transparent' %}
@@ -25,7 +32,7 @@
 {% comment %} --- 2. Header Classes (bg via unified primitive) --- {% endcomment %}
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
 {% assign bg_class = 'bg-' | append: bg_role_safe %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}{% assign bg_class = '' %}{% endif %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
 
 {% assign header_classes = 'header-section z-header transition-all duration-300 border-b border-default'
   | push: position_class_str
@@ -51,8 +58,8 @@
     | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
   %}
 {% endif %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
@@ -117,9 +124,14 @@
 {% schema %}
 {
   "name": "Header",
-  "restriction": { "groups": ["header"] },
+  "restriction": {
+    "groups": ["header"]
+  },
   "settings": [
-    { "type": "header", "content": "Layout" },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
     {
       "type": "width_scheme",
       "id": "width_scheme",
@@ -131,8 +143,14 @@
       "id": "desktop_layout",
       "label": "Logo placement",
       "options": [
-        { "value": "logo_center", "label": "Center" },
-        { "value": "logo_left", "label": "Left" }
+        {
+          "value": "logo_center",
+          "label": "Center"
+        },
+        {
+          "value": "logo_left",
+          "label": "Left"
+        }
       ],
       "default": "logo_center"
     },
@@ -141,27 +159,60 @@
       "id": "nav_alignment",
       "label": "Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "left",
       "info": "Desktop only.",
       "conditional": "setting.desktop_layout == 'logo_left'"
     },
-    { "type": "header", "content": "Section Spacing" },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
     {
       "type": "select",
       "id": "padding_vertical",
       "label": "Vertical Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "Extra Small" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Extra Large" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "Extra Small"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "Extra Large"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -192,13 +243,34 @@
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "Extra Small" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Extra Large" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "Extra Small"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "Extra Large"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "xs"
     },
@@ -224,15 +296,27 @@
       "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
-    { "type": "header", "content": "Behavior" },
+    {
+      "type": "header",
+      "content": "Behavior"
+    },
     {
       "type": "select",
       "id": "sticky_behavior",
       "label": "Sticky Mode",
       "options": [
-        { "value": "none", "label": "Static" },
-        { "value": "always", "label": "Always" },
-        { "value": "on_scroll_up", "label": "Scroll" }
+        {
+          "value": "none",
+          "label": "Static"
+        },
+        {
+          "value": "always",
+          "label": "Always"
+        },
+        {
+          "value": "on_scroll_up",
+          "label": "Scroll"
+        }
       ],
       "default": "always"
     },
@@ -241,35 +325,91 @@
       "id": "header_overlay_mode",
       "label": "Header Overlay",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "overlay", "label": "Top of Content" },
-        { "value": "transparent", "label": "Transparent on Top" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "overlay",
+          "label": "Top of Content"
+        },
+        {
+          "value": "transparent",
+          "label": "Transparent on Top"
+        }
       ],
       "default": "none"
     },
-    { "type": "header", "content": "Style" },
-    { "type": "surface", "id": "surface_id", "label": "Color Scheme", "default": "default" },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    },
     {
       "type": "select",
       "id": "bg_role",
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
     },
     {
       "type": "color",
       "id": "bg_role_custom",
-      "label": "Custom Bg",
+      "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
     }
   ],
@@ -284,12 +424,24 @@
         "header-menu": {
           "type": "_header-menu",
           "static": true,
-          "settings": { "nav": { "links": [{ "url": "/", "title": "Home" }] } }
+          "settings": {
+            "nav": {
+              "links": [
+                {
+                  "url": "/",
+                  "title": "Home"
+                }
+              ]
+            }
+          }
         },
         "header-actions": {
           "type": "_header-actions",
           "static": true,
-          "settings": { "show_search": false, "show_cart": false }
+          "settings": {
+            "show_search": false,
+            "show_cart": false
+          }
         }
       },
       "settings": {

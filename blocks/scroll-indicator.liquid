@@ -10,11 +10,17 @@
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
-{% assign _is_custom_text = false %}
-{% if s.text_role == 'custom' %}{% assign _is_custom_text = true %}{% endif %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
 {% assign styles = blank %}
 
-{% assign styles = styles | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text %}
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
 {% assign styles = styles | push: 'bottom: {{ s.bottom_offset }}rem' %}
 
 {% assign block_styles = styles | join: ';' %}
@@ -74,20 +80,56 @@
       "label": "Text Color Role",
       "default": "primary",
       "options": [
-        { "value": "primary",    "label": "Primary" },
-        { "value": "secondary",  "label": "Secondary" },
-        { "value": "subtle",     "label": "Subtle" },
-        { "value": "emphasis",   "label": "Emphasis" },
-        { "value": "on-accent",  "label": "On Accent" },
-        { "value": "on-button",  "label": "On Button" },
-        { "value": "on-control", "label": "On Control" },
-        { "value": "custom",     "label": "Custom" }
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
     },
     {
       "type": "color",
       "id": "text_role_custom",
-      "label": "Custom Text",
+      "label": "Raw Text Color",
       "conditional": "setting.text_role == 'custom'"
     },
     {

@@ -10,14 +10,20 @@
 {% assign block_classes = nav_classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
-{% assign _is_custom_text = false %}
-{% if s.text_role == 'custom' %}{% assign _is_custom_text = true %}{% endif %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
 {% assign styles = blank %}
-{% assign styles = styles | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text %}
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
 {% assign block_styles = styles | join: ';' %}
 
 {% assign color_role = s.text_role %}
-{% if s.text_role == 'custom' %}{% assign color_role = 'primary' %}{% endif %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}{% assign color_role = 'primary' %}{% endif %}
 
 {% comment %} --- Typography Utilities --- {% endcomment %}
 {% assign utilities = blank %}
@@ -168,17 +174,50 @@
       "label": "Size",
       "default": "body",
       "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" },
-        { "value": "h3", "label": "H3" },
-        { "value": "h4", "label": "H4" },
-        { "value": "h5", "label": "H5" },
-        { "value": "h6", "label": "H6" },
-        { "value": "display", "label": "Display" },
-        { "value": "body", "label": "Body" },
-        { "value": "caption", "label": "Caption" },
-        { "value": "small", "label": "Small" },
-        { "value": "jumbo", "label": "Jumbo" }
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "display",
+          "label": "Display"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "caption",
+          "label": "Caption"
+        },
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "jumbo",
+          "label": "Jumbo"
+        }
       ]
     },
     {
@@ -186,11 +225,26 @@
       "id": "font_weight",
       "label": "Weight",
       "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "bold", "label": "Bold" },
-        { "value": "extrabold", "label": "Extra Bold" },
-        { "value": "black", "label": "Black" }
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "bold",
+          "label": "Bold"
+        },
+        {
+          "value": "extrabold",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "black",
+          "label": "Black"
+        }
       ],
       "default": "normal"
     },
@@ -200,9 +254,18 @@
       "label": "Text Wrapping",
       "default": "nowrap",
       "options": [
-        { "value": "wrap", "label": "Wrap" },
-        { "value": "nowrap", "label": "No Wrap" },
-        { "value": "balance", "label": "Balance" }
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "No Wrap"
+        },
+        {
+          "value": "balance",
+          "label": "Balance"
+        }
       ]
     },
     {
@@ -211,10 +274,22 @@
       "label": "Text Transform",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "uppercase", "label": "Uppercase" },
-        { "value": "capitalize", "label": "Capitalize" },
-        { "value": "lowercase", "label": "Lowercase" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        }
       ]
     },
     {
@@ -223,20 +298,56 @@
       "label": "Text Color Role",
       "default": "button",
       "options": [
-        { "value": "primary",    "label": "Primary" },
-        { "value": "secondary",  "label": "Secondary" },
-        { "value": "subtle",     "label": "Subtle" },
-        { "value": "emphasis",   "label": "Emphasis" },
-        { "value": "on-accent",  "label": "On Accent" },
-        { "value": "on-button",  "label": "On Button" },
-        { "value": "on-control", "label": "On Control" },
-        { "value": "custom",     "label": "Custom" }
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
     },
     {
       "type": "color",
       "id": "text_role_custom",
-      "label": "Custom Text",
+      "label": "Raw Text Color",
       "conditional": "setting.text_role == 'custom'"
     },
     {
@@ -256,7 +367,7 @@
       "type": "header",
       "content": "General Style"
     },
-        {
+    {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"

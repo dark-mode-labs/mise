@@ -1,4 +1,17 @@
 {% assign s = block.settings %}
+
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
+{% assign overlay_color_value = blank %}
+{% if s.overlay_role == 'palette' and s.overlay_role_palette != blank %}
+  {% assign overlay_color_value = 'var(--palette-{{ s.overlay_role_palette }})' %}
+{% elsif s.overlay_role == 'custom' and s.overlay_role_custom != blank %}
+  {% assign overlay_color_value = s.overlay_role_custom %}
+{% endif %}
 {% assign classes = '' %}
 {% assign styles = '' %}
 {% assign active_state_classes = '' %}
@@ -8,8 +21,8 @@
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
 {% assign styles = styles | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override %}
-{% if s.border_role == 'custom' %}
-  {% assign styles = styles | push: '--border: {{ s.border_role_custom }}' %}
+{% if border_color_value != blank %}
+  {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
 {% endif %}
 {% unless s.border_mode_inactive == 'none' %}
   {% assign inactive_state_classes = inactive_state_classes
@@ -59,10 +72,10 @@
     Custom color/gradient encodes its own alpha — don't
     multiply with --overlay-opacity. Opacity stays 1.
   {% endcomment %}
-  {% assign active_state_styles = active_state_styles
-    | push: '--overlay-bg:{{ s.overlay_role_custom }}'
-    | push: '--overlay-opacity:1'
-  %}
+  {% assign active_state_styles = active_state_styles | push: '--overlay-opacity:1' %}
+  {% if overlay_color_value != blank -%}
+    {%- assign active_state_styles = active_state_styles | push: '--overlay-bg:{{ overlay_color_value }}' -%}
+  {%- endif %}
 {% endif %}
 
 <div
@@ -116,9 +129,18 @@
       "label": "Border",
       "default": "none",
       "options": [
-        { "value": "custom", "label": "Custom" },
-        { "value": "full", "label": "Full" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
     },
     {
@@ -127,30 +149,65 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "default", "label": "Default" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
     {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
       "type": "color",
       "id": "border_role_custom",
-      "label": "Custom Border",
+      "label": "Raw Border",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
     },
-
     {
       "type": "select",
       "id": "border_style",
       "label": "Border Style",
       "default": "solid",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "dashed", "label": "Dashed" },
-        { "value": "dotted", "label": "Dotted" },
-        { "value": "double", "label": "Double" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
       ]
     },
     {
@@ -186,11 +243,31 @@
       "id": "border_size",
       "label": "Border Size",
       "options": [
-        { "value": "xxs", "label": "XXS", "info": "1px" },
-        { "value": "xs", "label": "XS", "info": "2px" },
-        { "value": "sm", "label": "Small", "info": "4px" },
-        { "value": "md", "label": "Medium", "info": "6px" },
-        { "value": "lg", "label": "Large", "info": "8px" }
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
       ],
       "default": "md",
       "conditional": "setting.border_mode != 'none'"
@@ -211,6 +288,14 @@
       "conditional": "setting.enable_overlay == true"
     },
     {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
+    },
+    {
       "type": "color",
       "id": "overlay_role_custom",
       "label": "Overlay Color",
@@ -227,9 +312,18 @@
       "label": "Border",
       "default": "none",
       "options": [
-        { "value": "custom", "label": "Custom" },
-        { "value": "full", "label": "Full" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
     },
     {
@@ -239,10 +333,22 @@
       "label": "Border Style",
       "default": "solid",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "dashed", "label": "Dashed" },
-        { "value": "dotted", "label": "Dotted" },
-        { "value": "double", "label": "Double" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
       ]
     },
     {
@@ -283,11 +389,31 @@
       "id": "border_size_inactive",
       "label": "Border Size",
       "options": [
-        { "value": "xxs", "label": "XXS", "info": "1px" },
-        { "value": "xs", "label": "XS", "info": "2px" },
-        { "value": "sm", "label": "Small", "info": "4px" },
-        { "value": "md", "label": "Medium", "info": "6px" },
-        { "value": "lg", "label": "Large", "info": "8px" }
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
       ],
       "default": "md",
       "conditional": "setting.border_mode_inactive != 'none'"
@@ -355,7 +481,11 @@
       "conditional": "setting.border_radius_override"
     }
   ],
-  "blocks": [{ "type": "@theme" }],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
   "presets": [
     {
       "name": "Tab Head",

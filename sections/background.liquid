@@ -22,10 +22,10 @@
     class="fixed inset-0 -z-50 pointer-events-none surface-{{ s.surface_id | default: 'default' }}"
     {{ context.attached_attributes }}
   >
-    {%
-      render 'bg-overlay',
+    {% render 'bg-overlay',
       role: s.bg_role,
       alpha: 100,
+      palette_token: s.bg_role_palette,
       custom_color: s.bg_role_custom,
       behind: false
     %}
@@ -45,24 +45,67 @@
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
     },
     {
       "type": "color",
       "id": "bg_role_custom",
-      "label": "Custom Bg",
+      "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
     },
-    { "type": "image_picker", "id": "image", "label": "Background Image" },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
     {
       "type": "surface",
       "id": "surface_id",
@@ -70,6 +113,10 @@
       "default": "default"
     }
   ],
-  "presets": [{ "name": "Global Background" }]
+  "presets": [
+    {
+      "name": "Global Background"
+    }
+  ]
 }
 {% endschema %}

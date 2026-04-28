@@ -17,7 +17,7 @@
   Background layer: scheme-driven via .bg-<role>. Escape-hatch
   (bg_color_override) is rendered as inline style further down.
 {% endcomment %}
-{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
@@ -41,8 +41,18 @@
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
-{% assign _is_custom_border = false %}
-{% if s.border_role == 'custom' %}{% assign _is_custom_border = true %}{% endif %}
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
 {% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -83,17 +93,16 @@
 %}
 
 {% unless s.border_mode == 'none' %}
-  {% assign styles = styles
-    | push_if: '--border: {{ s.border_role_custom }}', _is_custom_border
-    | push: '--border-style: {{ s.border_style }}'
-  %}
+  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if border_color_value != blank -%}
+    {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
+  {%- endif %}
 {% endunless %}
 
 {% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
-
 {% if s.opacity < 100 %}
   {% assign styles = styles | push: 'opacity: {{ s.opacity | divided_by: 100.0 }}' %}
 {% endif %}
@@ -111,6 +120,7 @@
   {% render 'bg-overlay',
     role: s.overlay_role,
     alpha: s.overlay_alpha,
+    palette_token: s.overlay_role_palette,
     custom_color: s.overlay_role_custom,
     behind: true
   %}
@@ -123,15 +133,27 @@
 {
   "name": "Menu Card",
   "settings": [
-    { "type": "header", "content": "General Styles" },
+    {
+      "type": "header",
+      "content": "General Styles"
+    },
     {
       "type": "select",
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "left"
     },
@@ -140,13 +162,34 @@
       "id": "padding_vertical",
       "label": "Vertical Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "XL"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -177,13 +220,34 @@
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "XL"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -214,13 +278,34 @@
       "id": "margin_vertical",
       "label": "Vertical margin",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -251,13 +336,34 @@
       "id": "margin_horizontal",
       "label": "Horizontal margin",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -288,13 +394,34 @@
       "id": "gap",
       "label": "Gap",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "XL"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -319,9 +446,18 @@
       "label": "Border",
       "default": "none",
       "options": [
-        { "value": "custom", "label": "Custom" },
-        { "value": "full", "label": "Full" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
     },
     {
@@ -330,30 +466,65 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "default", "label": "Default" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
     {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
       "type": "color",
       "id": "border_role_custom",
-      "label": "Custom Border",
+      "label": "Raw Border",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
     },
-
     {
       "type": "select",
       "id": "border_style",
       "label": "Border Style",
       "default": "solid",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "dashed", "label": "Dashed" },
-        { "value": "dotted", "label": "Dotted" },
-        { "value": "double", "label": "Double" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
       ]
     },
     {
@@ -389,11 +560,31 @@
       "id": "border_size",
       "label": "Border Size",
       "options": [
-        { "value": "xxs", "label": "XXS", "info": "1px" },
-        { "value": "xs", "label": "XS", "info": "2px" },
-        { "value": "sm", "label": "Small", "info": "4px" },
-        { "value": "md", "label": "Medium", "info": "6px" },
-        { "value": "lg", "label": "Large", "info": "8px" }
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
       ],
       "default": "md",
       "conditional": "setting.border_mode != 'none'"
@@ -408,21 +599,60 @@
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
     },
     {
       "type": "color",
       "id": "bg_role_custom",
-      "label": "Custom Bg",
+      "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
     },
     {
@@ -431,21 +661,60 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
     },
     {
       "type": "color",
       "id": "overlay_role_custom",
-      "label": "Custom Overlay",
+      "label": "Raw Overlay",
       "conditional": "setting.overlay_role == 'custom'"
     },
     {
@@ -459,10 +728,32 @@
       "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
-    { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
-    { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
-    { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": true },
-    { "type": "range", "id": "opacity", "min": 0, "max": 100, "label": "Opacity", "default": 100 },
+    {
+      "type": "checkbox",
+      "id": "shadow",
+      "label": "Show Shadow",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Glass Effect",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "overflow_hidden",
+      "label": "Clip Content",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "min": 0,
+      "max": 100,
+      "label": "Opacity",
+      "default": 100
+    },
     {
       "type": "header",
       "content": "Overrides",

@@ -1,13 +1,20 @@
 {% assign s = section.settings %}
 
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
 {% comment %} --- Background class + styles (unified bg primitive) --- {% endcomment %}
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
 {% assign bg_class = 'bg-' | append: bg_role_safe %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}{% assign bg_class = '' %}{% endif %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
 
 {% assign styles = blank | push: '--max-h: {{ s.divider_height }}rem' %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
@@ -39,7 +46,10 @@
 {
   "name": "Divider",
   "settings": [
-    { "type": "header", "content": "Layout" },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
     {
       "type": "width_scheme",
       "id": "width_scheme",
@@ -67,9 +77,18 @@
       "id": "icon_select",
       "label": "Icon",
       "options": [
-        { "value": "star", "label": "Star" },
-        { "value": "chevron-down", "label": "Diamond/Arrow" },
-        { "value": "menu", "label": "Utensils" }
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "chevron-down",
+          "label": "Diamond/Arrow"
+        },
+        {
+          "value": "menu",
+          "label": "Utensils"
+        }
       ],
       "default": "star",
       "conditional": "setting.show_icon"
@@ -104,25 +123,68 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
     },
     {
       "type": "color",
       "id": "bg_role_custom",
-      "label": "Custom Bg",
+      "label": "Raw Background",
       "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     }
-        ],
-  "presets": [{ "name": "Divider" }]
+  ],
+  "presets": [
+    {
+      "name": "Divider"
+    }
+  ]
 }
 {% endschema %}

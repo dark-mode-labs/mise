@@ -1,5 +1,11 @@
 {% assign s = block.settings %}
 
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
 {% comment %} --- Slide Wrapper Classes --- {% endcomment %}
 {% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden' %}
 
@@ -7,7 +13,7 @@
   Background layer: scheme-driven via .bg-<role>. Escape-hatch
   (bg_color_override) is rendered as inline style further down.
 {% endcomment %}
-{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
@@ -16,8 +22,8 @@
 
 {% comment %} --- Slide-level inline styles (bg escape-hatch + alpha) --- {% endcomment %}
 {% assign slide_styles = blank %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign slide_styles = slide_styles | push: 'background: {{ s.bg_role_custom }}' %}
+{% if bg_color_value != blank %}
+  {% assign slide_styles = slide_styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
 {% assign slide_style_str = slide_styles | join: ';' %}
 
@@ -52,7 +58,12 @@
       animate: s.enable_zoom
     %}
 
-    {% render 'bg-overlay', role: s.overlay_role, alpha: s.overlay_alpha, custom_color: s.overlay_role_custom %}
+    {% render 'bg-overlay',
+      role: s.overlay_role,
+      alpha: s.overlay_alpha,
+      palette_token: s.overlay_role_palette,
+      custom_color: s.overlay_role_custom
+    %}
   </div>
 
   <div class="{{ content_class_str }}">
@@ -64,10 +75,25 @@
 {
   "name": "Slide",
   "settings": [
-    { "type": "header", "content": "Media" },
-    { "type": "image_picker", "id": "image", "label": "Desktop Image" },
-    { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
-    { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile Image"
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Video URL (MP4)"
+    },
     {
       "type": "checkbox",
       "id": "show_placeholder",
@@ -75,8 +101,12 @@
       "default": true,
       "info": "Show a pattern when no image is selected."
     },
-    { "type": "checkbox", "id": "enable_zoom", "label": "Enable Ken Burns (Zoom)", "default": false },
-
+    {
+      "type": "checkbox",
+      "id": "enable_zoom",
+      "label": "Enable Ken Burns (Zoom)",
+      "default": false
+    },
     {
       "type": "header",
       "content": "Overlay"
@@ -87,21 +117,60 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
     },
     {
       "type": "color",
       "id": "overlay_role_custom",
-      "label": "Custom Overlay",
+      "label": "Raw Overlay",
       "conditional": "setting.overlay_role == 'custom'"
     },
     {
@@ -115,15 +184,27 @@
       "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
-    { "type": "header", "content": "Alignment" },
+    {
+      "type": "header",
+      "content": "Alignment"
+    },
     {
       "type": "select",
       "id": "content_align",
       "label": "Content Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "center"
     },
@@ -132,9 +213,18 @@
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "center"
     },
@@ -143,9 +233,18 @@
       "id": "vertical_align",
       "label": "Vertical Alignment",
       "options": [
-        { "value": "top", "label": "Top" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom" }
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
       ],
       "default": "middle"
     },
@@ -159,21 +258,60 @@
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
     },
     {
       "type": "color",
       "id": "bg_role_custom",
-      "label": "Custom Bg",
+      "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
     },
     {
@@ -196,18 +334,30 @@
       "conditional": "setting.surface_override == true"
     }
   ],
-  "blocks": [{ "type": "@theme" }],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
   "presets": [
     {
       "name": "Slide",
       "blocks": {
         "heading": {
           "type": "text",
-          "settings": { "content": "New Slide", "display_size": "display", "tag": "h1", "font_weight": "bold" }
+          "settings": {
+            "content": "New Slide",
+            "display_size": "display",
+            "tag": "h1",
+            "font_weight": "bold"
+          }
         },
         "button": {
           "type": "button",
-          "settings": { "label": "View Menu", "style": "primary" }
+          "settings": {
+            "label": "View Menu",
+            "style": "primary"
+          }
         }
       },
       "block_order": ["heading", "button"]

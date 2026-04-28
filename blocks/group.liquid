@@ -113,7 +113,7 @@
   escape-hatch (bg_color_override) is in play — that case is rendered via
   inline style further down to support free hex/gradient bgs.
 {% endcomment %}
-{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
@@ -165,8 +165,18 @@
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
-{% assign _is_custom_border = false %}
-{% if s.border_role == 'custom' %}{% assign _is_custom_border = true %}{% endif %}
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
 {% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -203,10 +213,10 @@
 {% endif %}
 
 {% unless s.border_mode == 'none' %}
-  {% assign styles = styles
-    | push_if: '--border: {{ s.border_role_custom }}', _is_custom_border
-    | push: '--border-style: {{ s.border_style }}'
-  %}
+  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if border_color_value != blank -%}
+    {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
+  {%- endif %}
 {% endunless %}
 
 {% assign styles = styles | push: '--rotation: {{ s.rotation }}deg' %}
@@ -216,10 +226,9 @@
   | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
 %}
 {% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
-
 {% comment %} Finalize Style Output {% endcomment %}
 {% assign block_styles = styles | join: ';' %}
 
@@ -228,6 +237,7 @@
   {% render 'bg-overlay',
        role: s.overlay_role,
        alpha: s.overlay_alpha,
+       palette_token: s.overlay_role_palette,
        custom_color: s.overlay_role_custom,
        behind: true
   %}
@@ -265,14 +275,23 @@
 {
   "name": "Group",
   "settings": [
-    { "type": "header", "content": "Layout Mode" },
+    {
+      "type": "header",
+      "content": "Layout Mode"
+    },
     {
       "type": "select",
       "id": "layout_mode",
       "label": "Mode",
       "options": [
-        { "value": "flex", "label": "Flex (Standard)" },
-        { "value": "grid", "label": "CSS Grid (Auto-Fit)" }
+        {
+          "value": "flex",
+          "label": "Flex (Standard)"
+        },
+        {
+          "value": "grid",
+          "label": "CSS Grid (Auto-Fit)"
+        }
       ],
       "default": "flex"
     },
@@ -287,15 +306,28 @@
       "unit": "rem",
       "conditional": "setting.layout_mode == 'grid'"
     },
-    { "type": "header", "content": "Flex Settings", "conditional": "setting.layout_mode == 'flex'" },
+    {
+      "type": "header",
+      "content": "Flex Settings",
+      "conditional": "setting.layout_mode == 'flex'"
+    },
     {
       "type": "select",
       "id": "direction",
       "label": "Direction",
       "options": [
-        { "value": "column", "label": "Vertical (Column)" },
-        { "value": "row", "label": "Horizontal (Row)" },
-        { "value": "responsive", "label": "Responsive" }
+        {
+          "value": "column",
+          "label": "Vertical (Column)"
+        },
+        {
+          "value": "row",
+          "label": "Horizontal (Row)"
+        },
+        {
+          "value": "responsive",
+          "label": "Responsive"
+        }
       ],
       "default": "column",
       "conditional": "setting.layout_mode == 'flex'"
@@ -305,11 +337,26 @@
       "id": "content_align",
       "label": "Horizontal Alignment",
       "options": [
-        { "value": "left", "label": "Left / Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right / End" },
-        { "value": "between", "label": "Space Between" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "left",
+          "label": "Left / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right / End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
     {
@@ -317,11 +364,26 @@
       "id": "vertical_align",
       "label": "Vertical Alignment",
       "options": [
-        { "value": "top", "label": "Top / Start" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom / End" },
-        { "value": "between", "label": "Space Between" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "top",
+          "label": "Top / Start"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
     {
@@ -343,11 +405,26 @@
       "id": "aspect_ratio",
       "label": "Aspect Ratio",
       "options": [
-        { "value": "auto", "label": "Natural" },
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "video", "label": "Video (16:9)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "landscape", "label": "Landscape (4:3)" }
+        {
+          "value": "auto",
+          "label": "Natural"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "video",
+          "label": "Video (16:9)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
       ],
       "default": "auto"
     },
@@ -356,8 +433,14 @@
       "id": "position",
       "label": "Position Type",
       "options": [
-        { "value": "relative", "label": "Relative" },
-        { "value": "absolute", "label": "Absolute" }
+        {
+          "value": "relative",
+          "label": "Relative"
+        },
+        {
+          "value": "absolute",
+          "label": "Absolute"
+        }
       ],
       "default": "relative"
     },
@@ -366,59 +449,143 @@
       "id": "inset",
       "label": "Anchor",
       "options": [
-        { "value": "top-left", "label": "Top Left" },
-        { "value": "top-right", "label": "Top Right" },
-        { "value": "top-center", "label": "Top Center" },
-        { "value": "bottom-left", "label": "Bottom Left" },
-        { "value": "bottom-right", "label": "Bottom Right" },
-        { "value": "bottom-center", "label": "Bottom Center" },
-        { "value": "center", "label": "Center" },
-        { "value": "center-right", "label": "Center Right" },
-        { "value": "center-left", "label": "Center Left" },
-        { "value": "cover", "label": "Cover" }
+        {
+          "value": "top-left",
+          "label": "Top Left"
+        },
+        {
+          "value": "top-right",
+          "label": "Top Right"
+        },
+        {
+          "value": "top-center",
+          "label": "Top Center"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "center-right",
+          "label": "Center Right"
+        },
+        {
+          "value": "center-left",
+          "label": "Center Left"
+        },
+        {
+          "value": "cover",
+          "label": "Cover"
+        }
       ],
       "default": "top-left",
       "conditional": "setting.position == 'absolute'"
     },
-    { "type": "header", "content": "Action Trigger" },
+    {
+      "type": "header",
+      "content": "Action Trigger"
+    },
     {
       "type": "select",
       "id": "trigger",
       "label": "Trigger",
       "default": "none",
       "options": [
-        { "value": "link", "label": "Link" },
-        { "value": "action", "label": "Action" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "link",
+          "label": "Link"
+        },
+        {
+          "value": "action",
+          "label": "Action"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
     },
-    { "type": "url", "id": "link", "label": "Link", "conditional": "setting.trigger == 'link'" },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "conditional": "setting.trigger == 'link'"
+    },
     {
       "type": "select",
       "id": "link_target",
       "label": "Open link in",
       "options": [
-        { "value": "_blank", "label": "New Tab" },
-        { "value": "_self", "label": "Current Tab" }
+        {
+          "value": "_blank",
+          "label": "New Tab"
+        },
+        {
+          "value": "_self",
+          "label": "Current Tab"
+        }
       ],
       "default": "_self",
       "conditional": "setting.trigger == 'link'"
     },
-    { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
-    { "type": "text", "id": "action_args", "label": "Action Arguments", "conditional": "setting.trigger == 'action'" },
-    { "type": "header", "content": "General Styles" },
+    {
+      "type": "text",
+      "id": "action",
+      "label": "Action Type",
+      "conditional": "setting.trigger == 'action'"
+    },
+    {
+      "type": "text",
+      "id": "action_args",
+      "label": "Action Arguments",
+      "conditional": "setting.trigger == 'action'"
+    },
+    {
+      "type": "header",
+      "content": "General Styles"
+    },
     {
       "type": "select",
       "subtype": "cursor",
       "id": "cursor",
       "label": "Cursor",
       "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "pointer", "label": "Pointer" },
-        { "value": "not-allowed", "label": "Not Allowed" },
-        { "value": "help", "label": "Help" },
-        { "value": "none", "label": "None" },
-        { "value": "inherit", "label": "Inherit" }
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "pointer",
+          "label": "Pointer"
+        },
+        {
+          "value": "not-allowed",
+          "label": "Not Allowed"
+        },
+        {
+          "value": "help",
+          "label": "Help"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        }
       ],
       "default": "inherit"
     },
@@ -427,9 +594,18 @@
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "left"
     },
@@ -444,24 +620,54 @@
       "id": "height",
       "label": "Height",
       "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "full", "label": "Full Height" }
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "full",
+          "label": "Full Height"
+        }
       ],
       "default": "auto"
     },
-    { "type": "header", "content": "Padding/Margins" },
+    {
+      "type": "header",
+      "content": "Padding/Margins"
+    },
     {
       "type": "select",
       "id": "padding_vertical",
       "label": "Vertical Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "XL"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -492,13 +698,34 @@
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "XL"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -529,13 +756,34 @@
       "id": "margin_vertical",
       "label": "Vertical margin",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -566,13 +814,34 @@
       "id": "margin_horizontal",
       "label": "Horizontal margin",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -603,13 +872,34 @@
       "id": "gap",
       "label": "Gap",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "XL"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "none"
     },
@@ -628,19 +918,48 @@
       "type": "header",
       "content": "Animation"
     },
-    { "type": "checkbox", "id": "animate_float", "label": "Float", "default": false },
-    { "type": "checkbox", "id": "animate_scale_in", "label": "Scale In", "default": false },
-    { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
-    { "type": "checkbox", "id": "animate_shadow_hover", "label": "Hover Shadow", "default": false },
+    {
+      "type": "checkbox",
+      "id": "animate_float",
+      "label": "Float",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_scale_in",
+      "label": "Scale In",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_stagger",
+      "label": "Stagger",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_shadow_hover",
+      "label": "Hover Shadow",
+      "default": false
+    },
     {
       "type": "select",
       "id": "animate_fade",
       "label": "Fade Animation",
       "default": "none",
       "options": [
-        { "value": "in", "label": "In" },
-        { "value": "up", "label": "Up" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "in",
+          "label": "In"
+        },
+        {
+          "value": "up",
+          "label": "Up"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
     },
     {
@@ -653,26 +972,80 @@
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
     },
     {
       "type": "color",
       "id": "bg_role_custom",
-      "label": "Custom Bg",
+      "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
     },
-    { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
-    { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
-    { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
+    {
+      "type": "checkbox",
+      "id": "shadow",
+      "label": "Show Shadow",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Glass Effect",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "overflow_hidden",
+      "label": "Clip Content",
+      "default": false
+    },
     {
       "type": "range",
       "id": "rotation",
@@ -693,9 +1066,18 @@
       "label": "Border",
       "default": "none",
       "options": [
-        { "value": "custom", "label": "Custom" },
-        { "value": "full", "label": "Full" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
     },
     {
@@ -704,30 +1086,65 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "default", "label": "Default" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
     {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
       "type": "color",
       "id": "border_role_custom",
-      "label": "Custom Border",
+      "label": "Raw Border",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
     },
-
     {
       "type": "select",
       "id": "border_style",
       "label": "Border Style",
       "default": "solid",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "dashed", "label": "Dashed" },
-        { "value": "dotted", "label": "Dotted" },
-        { "value": "double", "label": "Double" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
       ]
     },
     {
@@ -763,11 +1180,31 @@
       "id": "border_size",
       "label": "Border Size",
       "options": [
-        { "value": "xxs", "label": "XXS", "info": "1px" },
-        { "value": "xs", "label": "XS", "info": "2px" },
-        { "value": "sm", "label": "Small", "info": "4px" },
-        { "value": "md", "label": "Medium", "info": "6px" },
-        { "value": "lg", "label": "Large", "info": "8px" }
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
       ],
       "default": "md",
       "conditional": "setting.border_mode != 'none'"
@@ -782,21 +1219,60 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
     },
     {
       "type": "color",
       "id": "overlay_role_custom",
-      "label": "Custom Overlay",
+      "label": "Raw Overlay",
       "conditional": "setting.overlay_role == 'custom'"
     },
     {
@@ -861,7 +1337,18 @@
       "conditional": "setting.shadow_color_override"
     }
   ],
-  "blocks": [{ "type": "@theme" }],
-  "presets": [{ "name": "Group", "settings": {}, "blocks": {}, "block_order": [] }]
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Group",
+      "settings": {},
+      "blocks": {},
+      "block_order": []
+    }
+  ]
 }
 {% endschema %}

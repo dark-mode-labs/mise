@@ -1,13 +1,20 @@
 {% assign s = section.settings %}
 
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
 {% comment %} --- Background class + styles (unified bg primitive) --- {% endcomment %}
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
 {% assign bg_class = 'bg-' | append: bg_role_safe %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}{% assign bg_class = '' %}{% endif %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
 
 {% assign styles = blank %}
-{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
@@ -90,7 +97,10 @@
 {
   "name": "Slideshow",
   "settings": [
-    { "type": "header", "content": "Layout" },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
     {
       "type": "width_scheme",
       "id": "width_scheme",
@@ -102,11 +112,26 @@
       "id": "height",
       "label": "Image Height",
       "options": [
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Fullscreen" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "Fullscreen"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "sm"
     },
@@ -156,18 +181,39 @@
       "default": 100,
       "unit": "%"
     },
-
-    { "type": "header", "content": "Controls" },
-    { "type": "checkbox", "id": "show_arrows", "label": "Show Arrows", "default": true },
-    { "type": "checkbox", "id": "show_dots", "label": "Show Pagination", "default": true },
+    {
+      "type": "header",
+      "content": "Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show Pagination",
+      "default": true
+    },
     {
       "type": "select",
       "id": "dot_style",
       "label": "Pagination Style",
       "options": [
-        { "value": "dots", "label": "Dots" },
-        { "value": "bars", "label": "Bars" },
-        { "value": "numbers", "label": "Numbers" }
+        {
+          "value": "dots",
+          "label": "Dots"
+        },
+        {
+          "value": "bars",
+          "label": "Bars"
+        },
+        {
+          "value": "numbers",
+          "label": "Numbers"
+        }
       ],
       "default": "dots",
       "conditional": "setting.show_dots"
@@ -177,8 +223,14 @@
       "id": "arrow_icon",
       "label": "Arrow Style",
       "options": [
-        { "value": "chevron-left", "label": "Chevron" },
-        { "value": "arrow-left", "label": "Arrow" }
+        {
+          "value": "chevron-left",
+          "label": "Chevron"
+        },
+        {
+          "value": "arrow-left",
+          "label": "Arrow"
+        }
       ],
       "default": "chevron-left",
       "conditional": "setting.show_arrows",
@@ -189,14 +241,26 @@
       "id": "nav_position",
       "label": "Controls Position",
       "options": [
-        { "value": "bottom_center", "label": "Bottom Center" },
-        { "value": "bottom_left", "label": "Bottom Left" },
-        { "value": "bottom_right", "label": "Bottom Right" }
+        {
+          "value": "bottom_center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "bottom_left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom_right",
+          "label": "Bottom Right"
+        }
       ],
       "default": "bottom_center",
       "conditional": "setting.show_dots"
     },
-    { "type": "header", "content": "Theme" },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
     {
       "type": "surface",
       "id": "surface_id",
@@ -204,9 +268,22 @@
       "default": "default",
       "info": "Controls the color of arrows and dots."
     },
-    { "type": "header", "content": "Behavior" },
-    { "type": "checkbox", "id": "infinite_scroll", "label": "Infinite Loop", "default": true },
-    { "type": "checkbox", "id": "autoplay", "label": "Autoplay", "default": false },
+    {
+      "type": "header",
+      "content": "Behavior"
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_scroll",
+      "label": "Infinite Loop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": false
+    },
     {
       "type": "range",
       "id": "autoplay_speed",
@@ -222,25 +299,68 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "custom", "label": "Custom (free hex/gradient)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
     },
     {
       "type": "color",
       "id": "bg_role_custom",
-      "label": "Custom Bg",
+      "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
     }
   ],
-  "blocks": [{ "type": "_slide" }],
+  "blocks": [
+    {
+      "type": "_slide"
+    }
+  ],
   "presets": [
     {
       "name": "Slideshow (Gallery)",
@@ -256,9 +376,20 @@
           "blocks": {
             "heading": {
               "type": "text",
-              "settings": { "content": "Welcome", "display_size": "display", "tag": "h1", "font_weight": "bold" }
+              "settings": {
+                "content": "Welcome",
+                "display_size": "display",
+                "tag": "h1",
+                "font_weight": "bold"
+              }
             },
-            "btn": { "type": "button", "settings": { "label": "View Menu", "style": "primary" } }
+            "btn": {
+              "type": "button",
+              "settings": {
+                "label": "View Menu",
+                "style": "primary"
+              }
+            }
           },
           "block_order": ["heading", "btn"]
         }
