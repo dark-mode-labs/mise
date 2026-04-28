@@ -99,11 +99,12 @@
           animate: s.enable_zoom
         %}
 
-        {% render 'bg-overlay',
-             role: s.overlay_role,
-             alpha: s.overlay_alpha,
-             use_custom: s.overlay_role == 'custom',
-             custom_color: s.overlay_role_custom
+        {%
+          render 'bg-overlay',
+          role: s.overlay_role,
+          alpha: s.overlay_alpha,
+          use_custom: s.overlay_role == 'custom',
+          custom_color: s.overlay_role_custom
         %}
       </div>
 
@@ -119,11 +120,12 @@
             placeholder: placeholder_name,
             animate: s.enable_zoom
           %}
-          {% render 'bg-overlay',
-               role: s.overlay_role,
-               alpha: s.overlay_alpha,
-               use_custom: s.overlay_role == 'custom',
-               custom_color: s.overlay_role_custom
+          {%
+            render 'bg-overlay',
+            role: s.overlay_role,
+            alpha: s.overlay_alpha,
+            use_custom: s.overlay_role == 'custom',
+            custom_color: s.overlay_role_custom
           %}
         </div>
       {% endif %}
@@ -329,15 +331,15 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
@@ -347,21 +349,21 @@
       "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     },
-        {
+    {
       "type": "select",
       "id": "overlay_role",
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
@@ -375,10 +377,14 @@
       "type": "range",
       "id": "overlay_alpha",
       "label": "Overlay Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     }
-    ],
+  ],
   "blocks": [
     { "type": "@theme" },
     { "type": "scroll-indicator" },
