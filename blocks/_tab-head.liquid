@@ -7,10 +7,10 @@
 {% assign inactive_state_styles = '' %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
-  {% assign styles = styles | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override %}
-  {% if s.border_role == 'custom' %}
-    {% assign styles = styles | push: '--border: {{ s.border_role_custom }}' %}
-  {% endif %}
+{% assign styles = styles | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override %}
+{% if s.border_role == 'custom' %}
+  {% assign styles = styles | push: '--border: {{ s.border_role_custom }}' %}
+{% endif %}
 {% unless s.border_mode_inactive == 'none' %}
   {% assign inactive_state_classes = inactive_state_classes
     | push: 'group-border-{{ s.border_mode_inactive }}'
@@ -28,8 +28,10 @@
 {% endunless %}
 
 {% if s.enable_overlay_inactive %}
-  {% comment %} Custom color/gradient encodes its own alpha — don't
-                multiply with --overlay-opacity. Opacity stays 1. {% endcomment %}
+  {% comment %}
+    Custom color/gradient encodes its own alpha — don't
+    multiply with --overlay-opacity. Opacity stays 1.
+  {% endcomment %}
   {% assign inactive_state_styles = inactive_state_styles
     | push: '--overlay-bg:{{ s.overlay_color_inactive }}'
     | push: '--overlay-opacity:1'
@@ -53,8 +55,10 @@
 {% endunless %}
 
 {% if s.enable_overlay %}
-  {% comment %} Custom color/gradient encodes its own alpha — don't
-                multiply with --overlay-opacity. Opacity stays 1. {% endcomment %}
+  {% comment %}
+    Custom color/gradient encodes its own alpha — don't
+    multiply with --overlay-opacity. Opacity stays 1.
+  {% endcomment %}
   {% assign active_state_styles = active_state_styles
     | push: '--overlay-bg:{{ s.overlay_role_custom }}'
     | push: '--overlay-opacity:1'
@@ -123,10 +127,10 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        { "value": "none",     "label": "None" },
-        { "value": "default",  "label": "Default" },
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
         { "value": "emphasis", "label": "Emphasis" },
-        { "value": "custom",   "label": "Custom" }
+        { "value": "custom", "label": "Custom" }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
@@ -134,7 +138,6 @@
       "type": "color",
       "id": "border_role_custom",
       "label": "Custom Border",
-      "info": "Free hex. Used only when Border Color = Custom.",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
     },
 
@@ -211,7 +214,6 @@
       "type": "color",
       "id": "overlay_role_custom",
       "label": "Overlay Color",
-      "info": "Free hex / rgba / gradient painted as the active-state overlay layer.",
       "conditional": "setting.enable_overlay == true"
     },
     {
@@ -316,7 +318,7 @@
       "type": "header",
       "content": "Style"
     },
-        {
+    {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
@@ -352,7 +354,7 @@
       "unit": "px",
       "conditional": "setting.border_radius_override"
     }
-    ],
+  ],
   "blocks": [{ "type": "@theme" }],
   "presets": [
     {

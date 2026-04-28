@@ -77,8 +77,8 @@
 
 {% assign color_role = s.text_role %}
 {% if s.text_role == 'custom' %}
-    {% assign color_role = 'primary' %}
-  {% endif %}
+  {% assign color_role = 'primary' %}
+{% endif %}
 {% comment %} --- Component Render --- {% endcomment %}
 <div
   class="{{ wrapper_class_str }}"
@@ -401,7 +401,6 @@
       "type": "color",
       "id": "text_role_custom",
       "label": "Custom Text",
-      "info": "Free hex or CSS gradient. Used only when Text role = Custom.",
       "conditional": "setting.text_role == 'custom'"
     },
     {

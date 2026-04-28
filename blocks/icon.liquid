@@ -11,9 +11,9 @@
 {% assign color_role = 'text-{{ s.text_role }}' %}
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
 
-  {% if s.text_role == 'custom' %}
-    {% assign color_role = 'text-primary' %}
-  {% endif %}
+{% if s.text_role == 'custom' %}
+  {% assign color_role = 'text-primary' %}
+{% endif %}
 {% assign block_classes = classes | push: color_role | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
@@ -257,7 +257,6 @@
       "type": "color",
       "id": "text_role_custom",
       "label": "Custom Text",
-      "info": "Free hex or CSS gradient. Used only when Text role = Custom.",
       "conditional": "setting.text_role == 'custom'"
     },
     {

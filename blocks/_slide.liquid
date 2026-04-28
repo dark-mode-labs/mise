@@ -3,8 +3,10 @@
 {% comment %} --- Slide Wrapper Classes --- {% endcomment %}
 {% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden' %}
 
-{% comment %} Background layer: scheme-driven via .bg-<role>. Escape-hatch
-   (bg_color_override) is rendered as inline style further down. {% endcomment %}
+{% comment %}
+  Background layer: scheme-driven via .bg-<role>. Escape-hatch
+  (bg_color_override) is rendered as inline style further down.
+{% endcomment %}
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
@@ -50,11 +52,7 @@
       animate: s.enable_zoom
     %}
 
-    {% render 'bg-overlay',
-         role: s.overlay_role,
-         alpha: s.overlay_alpha,
-         custom_color: s.overlay_role_custom
-    %}
+    {% render 'bg-overlay', role: s.overlay_role, alpha: s.overlay_alpha, custom_color: s.overlay_role_custom %}
   </div>
 
   <div class="{{ content_class_str }}">
@@ -89,29 +87,32 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
       "type": "color",
       "id": "overlay_role_custom",
       "label": "Custom Overlay",
-      "info": "Free hex or CSS gradient. Used only when Overlay role = Custom.",
       "conditional": "setting.overlay_role == 'custom'"
     },
     {
       "type": "range",
       "id": "overlay_alpha",
       "label": "Overlay Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
     { "type": "header", "content": "Alignment" },
@@ -152,31 +153,30 @@
       "type": "header",
       "content": "Style"
     },
-        {
+    {
       "type": "select",
       "id": "bg_role",
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
       "type": "color",
       "id": "bg_role_custom",
       "label": "Custom Bg",
-      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     },
-        {
+    {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
@@ -195,7 +195,7 @@
       "default": "default",
       "conditional": "setting.surface_override == true"
     }
-    ],
+  ],
   "blocks": [{ "type": "@theme" }],
   "presets": [
     {

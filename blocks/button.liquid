@@ -125,10 +125,10 @@
 {% endunless %}
 
 {% assign styles = styles
-    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--button-bg: {{ s.bg_role_custom }}', _is_custom_bg
-    | push_if: '--text-on-button: {{ s.text_role_custom }}', _is_custom_text
-  %}
+  | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--button-bg: {{ s.bg_role_custom }}', _is_custom_bg
+  | push_if: '--text-on-button: {{ s.text_role_custom }}', _is_custom_text
+%}
 {% assign wrapper_style_str = styles | join: ';' %}
 
 {% comment %} --- 4. Typography Utilities & Config --- {% endcomment %}
@@ -242,7 +242,6 @@
       "type": "color",
       "id": "bg_role_custom",
       "label": "Custom Button Background",
-      "info": "Free hex. Used only when Button Background = Custom.",
       "conditional": "setting.bg_role == 'custom' and setting.style == 'primary'"
     },
     { "type": "header", "content": "Trigger" },
@@ -426,10 +425,10 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        { "value": "none",     "label": "None" },
-        { "value": "default",  "label": "Default" },
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
         { "value": "emphasis", "label": "Emphasis" },
-        { "value": "custom",   "label": "Custom" }
+        { "value": "custom", "label": "Custom" }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
@@ -437,7 +436,6 @@
       "type": "color",
       "id": "border_role_custom",
       "label": "Custom Border",
-      "info": "Free hex. Used only when Border Color = Custom.",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
     },
 
@@ -507,7 +505,7 @@
       "options": [
         { "value": "auto", "label": "Auto" },
         { "value": "full", "label": "Full Width" },
-        { "value": "fit",  "label": "Fit Content" }
+        { "value": "fit", "label": "Fit Content" }
       ]
     },
     {
@@ -539,12 +537,12 @@
       "id": "padding_vertical",
       "label": "Vertical Padding",
       "options": [
-        { "value": "none",   "label": "None" },
-        { "value": "xs",     "label": "XS" },
-        { "value": "sm",     "label": "Small" },
-        { "value": "md",     "label": "Medium" },
-        { "value": "lg",     "label": "Large" },
-        { "value": "xl",     "label": "X-Large" },
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" },
         { "value": "custom", "label": "Custom" }
       ],
       "default": "xs"
@@ -576,12 +574,12 @@
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
       "options": [
-        { "value": "none",   "label": "None" },
-        { "value": "xs",     "label": "XS" },
-        { "value": "sm",     "label": "Small" },
-        { "value": "md",     "label": "Medium" },
-        { "value": "lg",     "label": "Large" },
-        { "value": "xl",     "label": "X-Large" },
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" },
         { "value": "custom", "label": "Custom" }
       ],
       "default": "md"
@@ -692,21 +690,20 @@
       "label": "Text Color Role",
       "default": "on-button",
       "options": [
-        { "value": "primary",    "label": "Primary" },
-        { "value": "secondary",  "label": "Secondary" },
-        { "value": "subtle",     "label": "Subtle" },
-        { "value": "emphasis",   "label": "Emphasis" },
-        { "value": "on-accent",  "label": "On Accent" },
-        { "value": "on-button",  "label": "On Button" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
         { "value": "on-control", "label": "On Control" },
-        { "value": "custom",     "label": "Custom" }
+        { "value": "custom", "label": "Custom" }
       ]
     },
     {
       "type": "color",
       "id": "text_role_custom",
       "label": "Custom Text",
-      "info": "Free hex or CSS gradient. Used only when Text role = Custom.",
       "conditional": "setting.text_role == 'custom'"
     },
     {
@@ -745,6 +742,6 @@
       "unit": "px",
       "conditional": "setting.border_radius_override"
     }
-    ]
+  ]
 }
 {% endschema %}

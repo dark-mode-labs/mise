@@ -212,9 +212,9 @@
 {% assign styles = styles | push: '--rotation: {{ s.rotation }}deg' %}
 
 {% assign styles = styles
-    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
-  %}
+  | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+%}
 {% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
 {% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
@@ -668,7 +668,6 @@
       "type": "color",
       "id": "bg_role_custom",
       "label": "Custom Bg",
-      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     },
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
@@ -716,7 +715,6 @@
       "type": "color",
       "id": "border_role_custom",
       "label": "Custom Border",
-      "info": "Free hex. Used only when Border Color = Custom.",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
     },
 
@@ -799,7 +797,6 @@
       "type": "color",
       "id": "overlay_role_custom",
       "label": "Custom Overlay",
-      "info": "Free hex or CSS gradient. Used only when Overlay role = Custom.",
       "conditional": "setting.overlay_role == 'custom'"
     },
     {

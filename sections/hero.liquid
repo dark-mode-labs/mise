@@ -99,12 +99,7 @@
           animate: s.enable_zoom
         %}
 
-        {%
-          render 'bg-overlay',
-          role: s.overlay_role,
-          alpha: s.overlay_alpha,
-          custom_color: s.overlay_role_custom
-        %}
+        {% render 'bg-overlay', role: s.overlay_role, alpha: s.overlay_alpha, custom_color: s.overlay_role_custom %}
       </div>
 
       {% comment %} Secondary Media Slot {% endcomment %}
@@ -119,12 +114,7 @@
             placeholder: placeholder_name,
             animate: s.enable_zoom
           %}
-          {%
-            render 'bg-overlay',
-            role: s.overlay_role,
-            alpha: s.overlay_alpha,
-            custom_color: s.overlay_role_custom
-          %}
+          {% render 'bg-overlay', role: s.overlay_role, alpha: s.overlay_alpha, custom_color: s.overlay_role_custom %}
         </div>
       {% endif %}
     </div>
@@ -344,7 +334,6 @@
       "type": "color",
       "id": "bg_role_custom",
       "label": "Custom Bg",
-      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     },
     {
@@ -368,7 +357,6 @@
       "type": "color",
       "id": "overlay_role_custom",
       "label": "Custom Overlay",
-      "info": "Free hex or CSS gradient. Used only when Overlay role = Custom.",
       "conditional": "setting.overlay_role == 'custom'"
     },
     {

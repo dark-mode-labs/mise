@@ -17,8 +17,10 @@
   | push_if: 'shadow-lg', s.shadow
 %}
 
-{% comment %} Background layer: scheme-driven via .bg-<role>. Escape-hatch
-   (bg_color_override) is rendered as inline style further down. {% endcomment %}
+{% comment %}
+  Background layer: scheme-driven via .bg-<role>. Escape-hatch
+  (bg_color_override) is rendered as inline style further down.
+{% endcomment %}
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
@@ -84,10 +86,10 @@
 {% endif %}
 
 {% assign styles = styles
-    | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text
-    | push_if: '--border: {{ s.border_role_custom }}', _is_custom_border
-    | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
-  %}
+  | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text
+  | push_if: '--border: {{ s.border_role_custom }}', _is_custom_border
+  | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+%}
 {% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
 {% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign styles = styles | push: 'background: {{ s.bg_role_custom }}' %}
@@ -101,10 +103,10 @@
   {{ context.attached_attributes }}
 >
   {% render 'bg-overlay',
-       role: s.overlay_role,
-       alpha: s.overlay_alpha,
-       custom_color: s.overlay_role_custom,
-       behind: true
+    role: s.overlay_role,
+    alpha: s.overlay_alpha,
+    custom_color: s.overlay_role_custom,
+    behind: true
   %}
   {% content_for 'blocks' %}
 </div>
@@ -122,21 +124,20 @@
       "label": "Text Color Role",
       "default": "primary",
       "options": [
-        { "value": "primary",    "label": "Primary" },
-        { "value": "secondary",  "label": "Secondary" },
-        { "value": "subtle",     "label": "Subtle" },
-        { "value": "emphasis",   "label": "Emphasis" },
-        { "value": "on-accent",  "label": "On Accent" },
-        { "value": "on-button",  "label": "On Button" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
         { "value": "on-control", "label": "On Control" },
-        { "value": "custom",     "label": "Custom" }
+        { "value": "custom", "label": "Custom" }
       ]
     },
     {
       "type": "color",
       "id": "text_role_custom",
       "label": "Custom Text",
-      "info": "Free hex or CSS gradient. Used only when Text role = Custom.",
       "conditional": "setting.text_role == 'custom'"
     },
     {
@@ -252,28 +253,44 @@
       "type": "range",
       "id": "margin_vertical_custom_top",
       "label": "Margin top",
-      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
       "type": "range",
       "id": "margin_vertical_custom_bottom",
       "label": "Margin bottom",
-      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
       "type": "range",
       "id": "margin_horizontal_custom_left",
       "label": "Margin left",
-      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
       "type": "range",
       "id": "margin_horizontal_custom_right",
       "label": "Margin right",
-      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
@@ -320,10 +337,10 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        { "value": "none",     "label": "None" },
-        { "value": "default",  "label": "Default" },
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
         { "value": "emphasis", "label": "Emphasis" },
-        { "value": "custom",   "label": "Custom" }
+        { "value": "custom", "label": "Custom" }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
@@ -331,7 +348,6 @@
       "type": "color",
       "id": "border_role_custom",
       "label": "Custom Border",
-      "info": "Free hex. Used only when Border Color = Custom.",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
     },
 
@@ -393,59 +409,61 @@
       "type": "header",
       "content": "Style"
     },
-        {
+    {
       "type": "select",
       "id": "bg_role",
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
       "type": "color",
       "id": "bg_role_custom",
       "label": "Custom Bg",
-      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     },
-        {
+    {
       "type": "select",
       "id": "overlay_role",
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
       "type": "color",
       "id": "overlay_role_custom",
       "label": "Custom Overlay",
-      "info": "Free hex or CSS gradient. Used only when Overlay role = Custom.",
       "conditional": "setting.overlay_role == 'custom'"
     },
     {
       "type": "range",
       "id": "overlay_alpha",
       "label": "Overlay Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
@@ -499,7 +517,7 @@
       "unit": "px",
       "conditional": "setting.border_radius_override"
     }
-    ],
+  ],
   "blocks": [{ "type": "@theme" }],
   "presets": [
     {

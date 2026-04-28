@@ -1,9 +1,11 @@
 {% assign s = section.settings %}
 
-{% comment %} --- 1. Surface scoping (CSS-var context) ---
-   Sections always introduce a surface scope (they're the natural surface
-   boundary in the layout tree). Defaults to `default` so descendants always
-   inherit a usable set of CSS variables. {% endcomment %}
+{% comment %}
+  --- 1. Surface scoping (CSS-var context) ---
+  Sections always introduce a surface scope (they're the natural surface
+  boundary in the layout tree). Defaults to `default` so descendants always
+  inherit a usable set of CSS variables.
+{% endcomment %}
 {% assign surface_safe = s.surface_id | default: 'default' %}
 {% assign surface_class = 'surface-' | append: surface_safe %}
 
@@ -105,7 +107,11 @@
       "type": "range",
       "id": "height_custom",
       "label": "Custom Height",
-      "min": 10, "max": 100, "step": 5, "default": 56, "unit": "vh",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 56,
+      "unit": "vh",
       "conditional": "setting.height == 'custom'"
     },
     {
@@ -169,15 +175,25 @@
       "default": "none"
     },
     {
-      "type": "range", "id": "padding_vertical_custom_top",
+      "type": "range",
+      "id": "padding_vertical_custom_top",
       "label": "Custom Top Padding",
-      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "range", "id": "padding_vertical_custom_bottom",
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
       "label": "Custom Bottom Padding",
-      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
@@ -196,15 +212,25 @@
       "default": "xs"
     },
     {
-      "type": "range", "id": "padding_horizontal_custom_left",
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
       "label": "Custom Left Padding",
-      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "range", "id": "padding_horizontal_custom_right",
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
       "label": "Custom Right Padding",
-      "min": 0, "max": 8, "step": 0.25, "default": 0, "unit": "rem",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     { "type": "header", "content": "Animation" },
@@ -230,22 +256,21 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
-        {
+    {
       "type": "color",
       "id": "bg_role_custom",
       "label": "Custom Background",
-      "info": "Free hex or CSS gradient. Used only when Background = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     }
   ],

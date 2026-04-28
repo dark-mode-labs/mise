@@ -3,7 +3,7 @@
 {% assign scheme_class = blank %}
 
 {% if s.surface_override %}
-  {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
+  {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
@@ -46,22 +46,21 @@
       "label": "Background",
       "default": "body",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom" }
       ]
     },
     {
       "type": "color",
       "id": "bg_role_custom",
       "label": "Custom Background",
-      "info": "Free hex. Used only when Background = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     },
     {

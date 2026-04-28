@@ -13,8 +13,10 @@
   | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
 %}
 
-{% comment %} Background layer: scheme-driven via .bg-<role>. Escape-hatch
-   (bg_color_override) is rendered as inline style further down. {% endcomment %}
+{% comment %}
+  Background layer: scheme-driven via .bg-<role>. Escape-hatch
+  (bg_color_override) is rendered as inline style further down.
+{% endcomment %}
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
@@ -107,10 +109,10 @@
   {{ context.attached_attributes }}
 >
   {% render 'bg-overlay',
-       role: s.overlay_role,
-       alpha: s.overlay_alpha,
-       custom_color: s.overlay_role_custom,
-       behind: true
+    role: s.overlay_role,
+    alpha: s.overlay_alpha,
+    custom_color: s.overlay_role_custom,
+    behind: true
   %}
   {% content_for 'block', type: 'group', id: 'menu-card-header' %}
   {% content_for 'block', type: 'group', id: 'menu-card-content' %}
@@ -328,10 +330,10 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        { "value": "none",     "label": "None" },
-        { "value": "default",  "label": "Default" },
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
         { "value": "emphasis", "label": "Emphasis" },
-        { "value": "custom",   "label": "Custom" }
+        { "value": "custom", "label": "Custom" }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
@@ -339,7 +341,6 @@
       "type": "color",
       "id": "border_role_custom",
       "label": "Custom Border",
-      "info": "Free hex. Used only when Border Color = Custom.",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
     },
 
@@ -407,60 +408,62 @@
       "label": "Background",
       "default": "none",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
       "type": "color",
       "id": "bg_role_custom",
       "label": "Custom Bg",
-      "info": "Free hex or CSS gradient. Used only when Bg role = Custom.",
       "conditional": "setting.bg_role == 'custom'"
     },
-        {
+    {
       "type": "select",
       "id": "overlay_role",
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none",        "label": "None" },
-        { "value": "body",        "label": "Body" },
-        { "value": "body-alt",    "label": "Body (alt)" },
-        { "value": "surface",     "label": "Surface" },
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
         { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent",      "label": "Accent" },
-        { "value": "button",      "label": "Button" },
-        { "value": "control",     "label": "Control" },
-        { "value": "custom",      "label": "Custom (free hex/gradient)" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "custom", "label": "Custom (free hex/gradient)" }
       ]
     },
     {
       "type": "color",
       "id": "overlay_role_custom",
       "label": "Custom Overlay",
-      "info": "Free hex or CSS gradient. Used only when Overlay role = Custom.",
       "conditional": "setting.overlay_role == 'custom'"
     },
     {
       "type": "range",
       "id": "overlay_alpha",
       "label": "Overlay Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
     { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
     { "type": "checkbox", "id": "enable_glass", "label": "Glass Effect", "default": false },
     { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": true },
     { "type": "range", "id": "opacity", "min": 0, "max": 100, "label": "Opacity", "default": 100 },
-        {
+    {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
