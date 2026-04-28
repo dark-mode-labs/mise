@@ -9,6 +9,13 @@
 
 {% assign block_classes = classes | join: ' ' %}
 
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign _is_custom_text = false %}
+{% if s.text_role == 'custom' %}{% assign _is_custom_text = true %}{% endif %}
+{% assign styles = blank %}
+{% assign styles = styles | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text %}
+{% assign block_styles = styles | join: ';' %}
+
 {% comment %} --- Typography Utilities --- {% endcomment %}
 {% assign utilities = blank %}
 
@@ -32,8 +39,11 @@
 {% endif %}
 
 {% comment %} --- Component Render --- {% endcomment %}
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' %}{% assign color_role = 'primary' %}{% endif %}
 <div
   class="{{ block_classes }}"
+  style="{{ block_styles }}"
   {{ context.attached_attributes }}
 >
   <details class="group" open>
@@ -44,7 +54,7 @@
         weight: s.font_weight,
         class: utility_classes,
         family: font_family,
-        color_role: s.text_role
+        color_role: color_role
       %}
       {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}
     </summary>

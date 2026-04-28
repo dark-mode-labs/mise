@@ -10,11 +10,15 @@
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign _is_custom_text = false %}
+{% if s.text_role == 'custom' %}{% assign _is_custom_text = true %}{% endif %}
 {% assign styles = blank %}
 
 {% if s.gap == 'custom' %}
   {% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}
 {% endif %}
+
+{% assign styles = styles | push_if: '--text: {{ s.text_role_custom }}', _is_custom_text %}
 
 {% assign block_styles = styles | join: ';' %}
 
@@ -41,6 +45,8 @@
 {% endif %}
 
 {% comment %} --- Component Render --- {% endcomment %}
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' %}{% assign color_role = 'primary' %}{% endif %}
 <ul
   class="{{ block_classes }}"
   style="{{ block_styles }}"
@@ -58,7 +64,7 @@
           weight: s.font_weight,
           family: font_family,
           class: utility_classes,
-          color_role: s.text_role
+          color_role: color_role
         %}
       </a>
     </li>

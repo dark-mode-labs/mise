@@ -1,32 +1,15 @@
 {% comment %}
-  Renders an overlay layer for any block/section that supports the unified
-  bg primitive. The host element must establish a positioning context (any
-  `relative` ancestor) so the absolute layer is bounded.
-
-  Inputs:
-    role         — overlay_role: 'none' | 'body' | 'body-alt' | 'surface' |
-                   'surface-alt' | 'accent' | 'button' | 'control' | 'custom'
-    alpha        — overlay_alpha (0..100). Applied as `opacity` on the
-                   overlay div ONLY for scheme-role overlays. When role is
-                   `custom`, the user-supplied color/rgba/gradient already
-                   encodes any intended alpha — the schema also conditionals
-                   the picker on `role != custom`, so don't second-guess it
-                   here.
-    use_custom   — boolean: true when role == 'custom'
+  Renders an overlay layer. Inputs:
+    role         — overlay_role: 'none' | scheme role | 'custom'
+    alpha        — overlay_alpha (0..100). ONLY applied for scheme-role
+                   overlays. When role == 'custom', the user-supplied
+                   value (hex/rgba/gradient) already encodes its own
+                   alpha; opacity stays 1.
     custom_color — overlay_role_custom string (hex / rgba / gradient)
-    behind       — false (default): overlay paints ON TOP — used by
-                   hero/grid/_slide where it dims a media child.
-                   true: overlay paints BEHIND siblings as a bg layer — used
-                   by footer/group/badge/_menu-card-full/carousel where the
-                   overlay is an alternate scheme bg behind the content. The
-                   host MUST also include the `isolate` class so the negative
-                   z-index is bounded inside the host's stacking context.
-
-  Behavior:
-    - If use_custom and custom_color present → escape hatch: paint the raw
-      hex/rgba/gradient at full opacity (alpha is ignored).
-    - Else if role != 'none' → paint via .bg-<role> with opacity = alpha%.
-    - Else: render nothing.
+    behind       — false: paints ON TOP (hero/grid/_slide media dim)
+                   true:  paints BEHIND siblings as a bg layer
+                          (footer/group/badge/_menu-card-full/carousel —
+                           host must include `isolate`).
 {% endcomment %}
 
 {% assign overlay_z = '' %}
@@ -34,18 +17,26 @@
   {% assign overlay_z = ' -z-10' %}
 {% endif %}
 
-{% if use_custom and custom_color != blank %}
+{% assign is_custom = false %}
+{% if role == 'custom' %}{% assign is_custom = true %}{% endif %}
+
+{% if is_custom and custom_color != blank %}
   <div
     class="rounded-global absolute inset-0 pointer-events-none{{ overlay_z }}"
     style="background: {{ custom_color }};"
   ></div>
-{% elsif role and role != 'none' %}
-  {% assign overlay_style = '' %}
-  {% if alpha and alpha != 100 %}
-    {% assign overlay_style = 'opacity: ' | append: alpha | append: '%;' %}
+{% elsif role and role != 'none' and role != 'custom' %}
+  {% comment %}
+    Scheme-role overlay: paint via `.bg-<role>` with
+    opacity = alpha/100. Use 0..1 form for max browser
+    compatibility. Default to 1 if alpha unset.
+  {% endcomment %}
+  {% assign overlay_alpha_value = 1 %}
+  {% if alpha != blank and alpha != null %}
+    {% assign overlay_alpha_value = alpha | divided_by: 100.0 %}
   {% endif %}
   <div
     class="rounded-global absolute inset-0 pointer-events-none{{ overlay_z }} bg-{{ role }}"
-    {% if overlay_style != '' %}style="{{ overlay_style }}"{% endif %}
+    style="opacity: {{ overlay_alpha_value }};"
   ></div>
 {% endif %}

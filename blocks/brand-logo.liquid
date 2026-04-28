@@ -61,7 +61,31 @@
       "content": "Style",
       "conditional": "shop.logo_src == blank"
     },
-        {
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        { "value": "primary",    "label": "Primary" },
+        { "value": "secondary",  "label": "Secondary" },
+        { "value": "subtle",     "label": "Subtle" },
+        { "value": "emphasis",   "label": "Emphasis" },
+        { "value": "on-accent",  "label": "On Accent" },
+        { "value": "on-button",  "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "custom",     "label": "Custom" }
+      ],
+      "conditional": "shop.logo_src == blank"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Custom Text",
+      "info": "Free hex. Used only when Text role = Custom.",
+      "conditional": "setting.text_role == 'custom' and shop.logo_src == blank"
+    },
+    {
       "type": "header",
       "content": "Overrides",
       "conditional": "shop.logo_src == blank"

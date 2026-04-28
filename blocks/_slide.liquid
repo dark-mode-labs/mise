@@ -53,7 +53,6 @@
     {% render 'bg-overlay',
          role: s.overlay_role,
          alpha: s.overlay_alpha,
-         use_custom: s.overlay_role == 'custom',
          custom_color: s.overlay_role_custom
     %}
   </div>
@@ -112,7 +111,7 @@
       "type": "range",
       "id": "overlay_alpha",
       "label": "Overlay Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
     { "type": "header", "content": "Alignment" },

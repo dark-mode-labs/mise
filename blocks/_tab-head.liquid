@@ -28,9 +28,11 @@
 {% endunless %}
 
 {% if s.enable_overlay_inactive %}
+  {% comment %} Custom color/gradient encodes its own alpha — don't
+                multiply with --overlay-opacity. Opacity stays 1. {% endcomment %}
   {% assign inactive_state_styles = inactive_state_styles
     | push: '--overlay-bg:{{ s.overlay_color_inactive }}'
-    | push: '--overlay-opacity:{{ s.overlay_opacity_inactive | divided_by: 100.0 }}'
+    | push: '--overlay-opacity:1'
   %}
 {% endif %}
 
@@ -51,9 +53,11 @@
 {% endunless %}
 
 {% if s.enable_overlay %}
+  {% comment %} Custom color/gradient encodes its own alpha — don't
+                multiply with --overlay-opacity. Opacity stays 1. {% endcomment %}
   {% assign active_state_styles = active_state_styles
     | push: '--overlay-bg:{{ s.overlay_role_custom }}'
-    | push: '--overlay-opacity:{{ s.overlay_opacity | divided_by: 100.0 }}'
+    | push: '--overlay-opacity:1'
   %}
 {% endif %}
 
@@ -201,6 +205,13 @@
       "min": 0,
       "max": 100,
       "default": 100,
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
+      "type": "color",
+      "id": "overlay_role_custom",
+      "label": "Overlay Color",
+      "info": "Free hex / rgba / gradient painted as the active-state overlay layer.",
       "conditional": "setting.enable_overlay == true"
     },
     {

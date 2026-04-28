@@ -228,7 +228,6 @@
   {% render 'bg-overlay',
        role: s.overlay_role,
        alpha: s.overlay_alpha,
-       use_custom: s.overlay_role == 'custom',
        custom_color: s.overlay_role_custom,
        behind: true
   %}
@@ -810,7 +809,7 @@
       "min": 0,
       "max": 100,
       "step": 5,
-      "default": 50,
+      "default": 100,
       "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },

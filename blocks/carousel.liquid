@@ -185,7 +185,6 @@
     {% render 'bg-overlay',
          role: s.overlay_role,
          alpha: s.overlay_alpha,
-         use_custom: s.overlay_role == 'custom',
          custom_color: s.overlay_role_custom,
          behind: true
     %}
@@ -409,6 +408,77 @@
         { "value": "between", "label": "Space Between" },
         { "value": "stretch", "label": "Stretch" }
       ]
+    },
+    {
+      "type": "checkbox",
+      "id": "grow_content",
+      "label": "Grow Content",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect Ratio",
+      "default": "auto",
+      "options": [
+        { "value": "auto",      "label": "Natural" },
+        { "value": "square",    "label": "Square (1:1)" },
+        { "value": "video",     "label": "Video (16:9)" },
+        { "value": "portrait",  "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position Type",
+      "default": "relative",
+      "options": [
+        { "value": "relative", "label": "Relative" },
+        { "value": "absolute", "label": "Absolute" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "inset",
+      "label": "Anchor",
+      "default": "top-left",
+      "options": [
+        { "value": "top-left",      "label": "Top Left" },
+        { "value": "top-right",     "label": "Top Right" },
+        { "value": "top-center",    "label": "Top Center" },
+        { "value": "bottom-left",   "label": "Bottom Left" },
+        { "value": "bottom-right",  "label": "Bottom Right" },
+        { "value": "bottom-center", "label": "Bottom Center" },
+        { "value": "center",        "label": "Center" },
+        { "value": "center-right",  "label": "Center Right" },
+        { "value": "center-left",   "label": "Center Left" },
+        { "value": "cover",         "label": "Cover" }
+      ],
+      "conditional": "setting.position == 'absolute'"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        { "value": "primary",    "label": "Primary" },
+        { "value": "secondary",  "label": "Secondary" },
+        { "value": "subtle",     "label": "Subtle" },
+        { "value": "emphasis",   "label": "Emphasis" },
+        { "value": "on-accent",  "label": "On Accent" },
+        { "value": "on-button",  "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "custom",     "label": "Custom" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Custom Text",
+      "info": "Free hex. Used only when Text role = Custom.",
+      "conditional": "setting.text_role == 'custom'"
     },
     { "type": "header", "content": "Padding/Margins" },
     {
@@ -755,7 +825,7 @@
       "type": "range",
       "id": "overlay_alpha",
       "label": "Overlay Opacity",
-      "min": 0, "max": 100, "step": 5, "default": 50, "unit": "%",
+      "min": 0, "max": 100, "step": 5, "default": 100, "unit": "%",
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
     {
