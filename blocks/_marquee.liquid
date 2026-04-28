@@ -6,21 +6,35 @@
   {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
+{% if s.pin_bottom %}
+  {% assign default_bg_role = 'surface' %}
+{% else %}
+  {% assign default_bg_role = 'body' %}
+{% endif %}
+{% assign bg_role_safe = s.bg_role | default: default_bg_role %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign extra_styles = blank %}
+{% if s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign extra_styles = 'background: ' | append: s.bg_role_custom | append: ';' %}
+{% endif %}
+
 {% assign size_class = 'text-size-{{ s.text_size }}' %}
 
 {% capture rendered_marquee %}
-  {% render 'marquee', 
-    items: s.text_list, 
-    speed: s.speed, 
-    direction: s.direction, 
+  {% render 'marquee',
+    items: s.text_list,
+    speed: s.speed,
+    direction: s.direction,
     size_class: size_class,
     uppercase: s.uppercase %}
 {% endcapture %}
 
 {% if s.pin_bottom %}
   <div
-    class="absolute bottom-0 left-0 z-floating w-full border-t border-default {{ scheme_class }} bg-surface text-primary no-stagger"
-    style="opacity: {{ s.opacity | divided_by: 100.0 }};"
+    class="absolute bottom-0 left-0 z-floating w-full border-t border-default {{ scheme_class }} {{ bg_class }} text-primary no-stagger"
+    style="opacity: {{ s.opacity | divided_by: 100.0 }}; {{ extra_styles }}"
     {{ context.attached_attributes }}
   >
     {{ rendered_marquee }}
@@ -32,8 +46,8 @@
     {{ context.attached_attributes }}
   >
     <div
-      class="border-y border-default {{ scheme_class }} bg-body text-primary"
-      style="opacity: {{ s.opacity | divided_by: 100.0 }};"
+      class="border-y border-default {{ scheme_class }} {{ bg_class }} text-primary"
+      style="opacity: {{ s.opacity | divided_by: 100.0 }}; {{ extra_styles }}"
     >
       {{ rendered_marquee }}
     </div>
@@ -114,7 +128,31 @@
       "type": "header",
       "content": "Style"
     },
-        {
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "info": "Defaults to Surface when pinned to bottom, Body otherwise.",
+      "options": [
+        { "value": "none",        "label": "None" },
+        { "value": "body",        "label": "Body" },
+        { "value": "body-alt",    "label": "Body (alt)" },
+        { "value": "surface",     "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent",      "label": "Accent" },
+        { "value": "button",      "label": "Button" },
+        { "value": "control",     "label": "Control" },
+        { "value": "custom",      "label": "Custom" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Custom Background",
+      "info": "Free hex. Used only when Background = Custom.",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
