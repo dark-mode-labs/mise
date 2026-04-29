@@ -77,7 +77,7 @@
   style="{{ style_str }}"
   {{ context.attached_attributes }}
 >
-  <div class="width-{{ s.width_scheme }} grid grid-cols-3 items-center limit-width">
+  <div class="width-{{ s.width }} grid grid-cols-3 items-center limit-width">
     {% comment %} Left Col {% endcomment %}
     <div class="flex items-center justify-start gap-4">
       <button
@@ -125,7 +125,9 @@
 {
   "name": "Header",
   "restriction": {
-    "groups": ["header"]
+    "groups": [
+      "header"
+    ]
   },
   "settings": [
     {
@@ -133,10 +135,10 @@
       "content": "Layout"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Max Content Width",
-      "default": "standard"
+      "default": "fill"
     },
     {
       "type": "select",

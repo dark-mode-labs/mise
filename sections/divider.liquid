@@ -23,7 +23,7 @@
   {{ context.attached_attributes }}
 >
   <div
-    class="flex flex-auto items-center justify-center surface-{{ s.surface_id | default: 'default' }} width-{{ s.width_scheme }} {{ bg_class }} text-primary limit-width h-[var(--max-h)]"
+    class="flex flex-auto items-center justify-center surface-{{ s.surface_id | default: 'default' }} width-{{ s.width }} {{ bg_class }} text-primary limit-width h-[var(--max-h)]"
     style="{{ style_str }}"
   >
     <div class="relative flex items-center justify-center w-full">
@@ -51,10 +51,10 @@
       "content": "Layout"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Max Content Width",
-      "default": "full"
+      "default": "fill"
     },
     {
       "type": "header",

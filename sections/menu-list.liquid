@@ -103,7 +103,7 @@
   {{ context.attached_attributes }}
 >
   <div
-    class="{{ bg_class }} width-{{ s.width_scheme }} limit-width {{ section_spacing_class }}"
+    class="{{ bg_class }} width-{{ s.width }} limit-width {{ section_spacing_class }}"
     style="{{ style_str }}"
   >
     <div class="text-center mx-auto mb-16 fade-up">
@@ -520,10 +520,10 @@
       "content": "Layout"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Max Content Width",
-      "default": "standard"
+      "default": "fill"
     },
     {
       "type": "header",

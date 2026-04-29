@@ -28,7 +28,7 @@
 {% endif %}
 
 {% unless s.grow_content %}
-  {% assign classes = classes | push: 'width-{{ s.width_scheme }}' %}
+  {% assign classes = classes | push: 'width-{{ s.width }}' %}
 {% endunless %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
@@ -464,10 +464,10 @@
       "conditional": "setting.autoplay == true"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Max Content Width",
-      "default": "full"
+      "default": "fill"
     },
     {
       "type": "select",

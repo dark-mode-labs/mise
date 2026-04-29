@@ -181,22 +181,22 @@
         {
           "type": "color",
           "id": "text",
-          "label": "Text — primary"
+          "label": "Text \u2014 primary"
         },
         {
           "type": "color",
           "id": "text_secondary",
-          "label": "Text — secondary"
+          "label": "Text \u2014 secondary"
         },
         {
           "type": "color",
           "id": "text_subtle",
-          "label": "Text — subtle"
+          "label": "Text \u2014 subtle"
         },
         {
           "type": "color",
           "id": "text_emphasis",
-          "label": "Text — emphasis"
+          "label": "Text \u2014 emphasis"
         },
         {
           "type": "color",
@@ -225,7 +225,7 @@
         {
           "type": "color",
           "id": "border_emphasis",
-          "label": "Border — emphasis"
+          "label": "Border \u2014 emphasis"
         },
         {
           "type": "color",
@@ -256,96 +256,27 @@
           "type": "text",
           "id": "url",
           "label": "Google Fonts URL",
-          "info": "Full stylesheet URL from Google Fonts (e.g. https://fonts.googleapis.com/css2?family=Inter…). Leave blank for system fonts."
+          "info": "Full stylesheet URL from Google Fonts (e.g. https://fonts.googleapis.com/css2?family=Inter\u2026). Leave blank for system fonts."
         }
       ]
     },
     {
-      "name": "Max Width Schemes",
+      "name": "Container Scale",
       "type": "group",
-      "id": "width_schemes",
+      "id": "container_scale",
       "settings": [
         {
           "type": "text",
           "id": "title",
           "label": "Name",
-          "default": "Default Width Scheme"
-        },
-        {
-          "type": "select",
-          "id": "width",
-          "label": "Width",
-          "options": [
-            {
-              "value": "sm",
-              "label": "Small"
-            },
-            {
-              "value": "md",
-              "label": "Medium"
-            },
-            {
-              "value": "lg",
-              "label": "Large"
-            },
-            {
-              "value": "xl",
-              "label": "x-Large"
-            },
-            {
-              "value": "2xl",
-              "label": "2x-Large"
-            },
-            {
-              "value": "3xl",
-              "label": "3x-Large"
-            },
-            {
-              "value": "4xl",
-              "label": "4x-Large"
-            },
-            {
-              "value": "5xl",
-              "label": "5x-Large"
-            },
-            {
-              "value": "6xl",
-              "label": "6x-Large"
-            },
-            {
-              "value": "7xl",
-              "label": "7x-Large"
-            },
-            {
-              "value": "fit",
-              "label": "Fit Content"
-            },
-            {
-              "value": "full",
-              "label": "Full"
-            },
-            {
-              "value": "half",
-              "label": "Half"
-            },
-            {
-              "value": "third",
-              "label": "Third"
-            },
-            {
-              "value": "custom",
-              "label": "Custom"
-            }
-          ],
-          "default": "fit"
+          "default": "Container"
         },
         {
           "type": "text",
-          "id": "custom_width",
-          "label": "Width (rem)",
-          "info": "Enter a number in rem units (e.g. 80 for 80rem ≈ 1280px at base font size).",
-          "default": "93.5",
-          "conditional": "setting.width == 'custom'"
+          "id": "max_width",
+          "label": "Max Width",
+          "info": "Any CSS max-width value: rem (e.g. 56rem), %, or \"none\" for unbounded.",
+          "default": "56rem"
         }
       ]
     },
@@ -501,103 +432,83 @@
           }
         }
       },
-      "width_schemes": {
-        "fit": {
+      "container_scale": {
+        "narrow": {
           "settings": {
-            "title": "Fit Content",
-            "width": "fit",
-            "custom_width": "fit-content"
+            "title": "Narrow",
+            "max_width": "20rem"
           }
         },
-        "full": {
+        "tight": {
           "settings": {
-            "title": "Full",
-            "width": "full",
-            "custom_width": "100%"
+            "title": "Tight",
+            "max_width": "24rem"
           }
         },
-        "half": {
+        "compact": {
           "settings": {
-            "title": "Half",
-            "width": "half",
-            "custom_width": "50%"
+            "title": "Compact",
+            "max_width": "28rem"
           }
         },
-        "third": {
+        "card": {
           "settings": {
-            "title": "Third",
-            "width": "third",
-            "custom_width": "33%"
+            "title": "Card",
+            "max_width": "32rem"
           }
         },
-        "wide-6xl": {
+        "snug": {
           "settings": {
-            "title": "Wide 6XL",
-            "width": "6xl",
-            "custom_width": "64"
+            "title": "Snug",
+            "max_width": "36rem"
           }
         },
-        "wide-7xl": {
+        "read": {
           "settings": {
-            "title": "Wide 7XL",
-            "width": "7xl",
-            "custom_width": "80"
+            "title": "Read",
+            "max_width": "42rem"
           }
         },
-        "narrow-sm": {
+        "column": {
           "settings": {
-            "title": "Narrow SM",
-            "width": "sm",
-            "custom_width": "24"
+            "title": "Column",
+            "max_width": "48rem"
           }
         },
-        "narrow-md": {
+        "regular": {
           "settings": {
-            "title": "Narrow MD",
-            "width": "md",
-            "custom_width": "28"
+            "title": "Regular",
+            "max_width": "56rem"
           }
         },
-        "narrow-lg": {
+        "broad": {
           "settings": {
-            "title": "Narrow LG",
-            "width": "lg",
-            "custom_width": "32"
+            "title": "Broad",
+            "max_width": "64rem"
           }
         },
-        "narrow-xl": {
+        "wide": {
           "settings": {
-            "title": "Narrow XL",
-            "width": "xl",
-            "custom_width": "36"
+            "title": "Wide",
+            "max_width": "72rem"
           }
         },
-        "narrow-2xl": {
+        "canvas": {
           "settings": {
-            "title": "Narrow 2XL",
-            "width": "2xl",
-            "custom_width": "42"
+            "title": "Canvas",
+            "max_width": "80rem"
           }
         },
-        "narrow-3xl": {
+        "extra-wide": {
           "settings": {
-            "title": "Narrow 3XL",
-            "width": "3xl",
-            "custom_width": "48"
+            "title": "Extra Wide",
+            "max_width": "96rem"
           }
         },
-        "standard-4xl": {
+        "unbounded": {
           "settings": {
-            "title": "Standard 4XL",
-            "width": "4xl",
-            "custom_width": "56"
-          }
-        },
-        "standard-5xl": {
-          "settings": {
-            "title": "Standard 5XL",
-            "width": "5xl",
-            "custom_width": "64"
+            "title": "Unbounded",
+            "max_width": "none"
           }
         }
       }

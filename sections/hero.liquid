@@ -63,7 +63,7 @@
 
 {% comment %} --- 3. Content Pipeline --- {% endcomment %}
 {% assign content_pipeline = content_classes
-  | push: 'width-{{ s.width_scheme }}'
+  | push: 'width-{{ s.width }}'
   | push: 'limit-width gap-6 transition-all'
   | push: 'section-align-content-{{ s.content_align }}'
   | push: 'section-align-v-{{ s.vertical_align }}'
@@ -150,16 +150,16 @@
       "content": "Layout"
     },
     {
-      "type": "width_scheme",
+      "type": "width",
       "id": "width_bg",
       "label": "Background Width",
-      "default": "full"
+      "default": "fill"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Content Width",
-      "default": "standard"
+      "default": "fill"
     },
     {
       "type": "select",
@@ -674,7 +674,11 @@
           }
         }
       },
-      "block_order": ["hero_heading", "hero_subtext", "hero_cta"]
+      "block_order": [
+        "hero_heading",
+        "hero_subtext",
+        "hero_cta"
+      ]
     }
   ]
 }

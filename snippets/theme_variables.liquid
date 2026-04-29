@@ -55,66 +55,28 @@
       }
     {% endfor %}
 
-    {% for scheme in width_schemes %}
-      {% assign width = scheme[1].settings.width %}
-      {% capture width_scheme %}
-        {% case width %}
-          {% when 'sm' %}
-            --limit-width: 24rem;
-          {% when 'md' %}
-            --limit-width: 28rem;
-          {% when 'lg' %}
-            --limit-width: 32rem;
-          {% when 'xl' %}
-            --limit-width: 36rem;
-          {% when '2xl' %}
-            --limit-width: 42rem;
-          {% when '3xl' %}
-            --limit-width: 48rem;
-          {% when '4xl' %}
-            --limit-width: 56rem;
-          {% when '5xl' %}
-            --limit-width: 64rem;
-          {% when '6xl' %}
-            --limit-width: 72rem;
-          {% when '7xl' %}
-            --limit-width: 80rem;
-          {% when 'fit' %}
-            --limit-width: fit-content;
-          {% when 'full' %}
-            --limit-width: 100%;
-          {% when 'half' %}
-            --limit-width: 50%;
-            flex: 0 0 50%;
-          {% when 'third' %}
-            --limit-width: 33.333%;
-            flex: 0 0 33.333%;
-          {% when 'custom' %}
-            --limit-width: {{ scheme[1].settings.custom_width }}rem;
-          {% when 'auto' %}
-            --limit-width: auto;
-          {% else %}
-            --limit-width: {{ width }};
-        {% endcase %}
-      {% endcapture %}
-      .width-{{ scheme[0] }} { {{ width_scheme }} }
-
-      {% if width == 'half' or width == 'third' %}
-        @media (max-width: 767px) {
-          .width-{{ scheme[0] }} {
-            --limit-width: 100%;
-          }
-        }
-      {% endif %}
-
-      {% if width == 'fit' %}
-        @media (max-width: 767px) {
-          .direction-responsive > .width-fit {
-            --limit-width: 100%;
-          }
-        }
-      {% endif %}
+    {% comment %}
+      Width — site-defined container scale + fixed structural variants.
+      Container-tier classes only set `--limit-width`; the `.limit-width`
+      utility class (from theme.css) is responsible for applying the
+      var as `max-width` and centering. This matches the legacy contract
+      and avoids forcing `width: 100%` / `margin-inline: auto` on blocks
+      that should flow naturally (which caused alignment regressions).
+    {% endcomment %}
+    {% for c in container_scale %}
+      .width-{{ c[0] }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; }
     {% endfor %}
+
+    .width-fit  { --limit-width: fit-content; width: fit-content; }
+    .width-fill { --limit-width: 100%; width: 100%; }
+    .width-half    { --limit-width: 50%;     flex: 0 0 50%; }
+    .width-third   { --limit-width: 33.333%; flex: 0 0 33.333%; }
+    .width-quarter { --limit-width: 25%;     flex: 0 0 25%; }
+
+    @media (max-width: 767px) {
+      .width-half, .width-third, .width-quarter { --limit-width: 100%; flex: 0 0 100%; }
+      .direction-responsive > .width-fit { --limit-width: 100%; }
+    }
 
     .font-heading { font-family: var(--font-{{ typography.heading_font_scheme }}); }
     .font-body    { font-family: var(--font-{{ typography.body_font_scheme }}); }

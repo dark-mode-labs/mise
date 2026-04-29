@@ -1,7 +1,7 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Class Array Building --- {% endcomment %}
-{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all rounded-global width-full height-full'
+{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all rounded-global width-fill height-full'
   | push: 'text-align-{{ s.text_align }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'

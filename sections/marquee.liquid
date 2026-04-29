@@ -15,7 +15,7 @@
 {% comment %} --- 1. Container Class Pipeline --- {% endcomment %}
 {% assign container_classes = 'text-primary border-y border-default limit-width'
   | push: bg_class
-  | push: 'width-{{ s.width_scheme }}'
+  | push: 'width-{{ s.width }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
@@ -69,10 +69,10 @@
       "content": "Layout"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Max Content Width",
-      "default": "full"
+      "default": "fill"
     },
     {
       "type": "text",

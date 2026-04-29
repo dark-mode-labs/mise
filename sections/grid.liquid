@@ -15,7 +15,7 @@
 
 {% comment %} --- 1. Section Spacing & Dimensions --- {% endcomment %}
 {% assign container_classes = 'grid-layout-overlay limit-width'
-  | push: 'width-{{ s.width_scheme }}'
+  | push: 'width-{{ s.width }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
   | push: 'is-{{ s.height }}'
@@ -315,16 +315,16 @@
       "default": "center"
     },
     {
-      "type": "width_scheme",
+      "type": "width",
       "id": "width_bg",
       "label": "Background Width",
-      "default": "full"
+      "default": "fill"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Content Width",
-      "default": "standard"
+      "default": "fill"
     },
     {
       "type": "header",
@@ -587,7 +587,9 @@
                   }
                 }
               },
-              "block_order": ["title"],
+              "block_order": [
+                "title"
+              ],
               "settings": {}
             },
             "grp_2": {
@@ -600,7 +602,9 @@
                   }
                 }
               },
-              "block_order": ["title"],
+              "block_order": [
+                "title"
+              ],
               "settings": {}
             },
             "grp_3": {
@@ -613,18 +617,26 @@
                   }
                 }
               },
-              "block_order": ["title"],
+              "block_order": [
+                "title"
+              ],
               "settings": {}
             }
           },
-          "block_order": ["grp_1", "grp_2", "grp_3"],
+          "block_order": [
+            "grp_1",
+            "grp_2",
+            "grp_3"
+          ],
           "settings": {
             "content_align": "center",
             "direction": "row"
           }
         }
       },
-      "block_order": ["group"]
+      "block_order": [
+        "group"
+      ]
     }
   ]
 }

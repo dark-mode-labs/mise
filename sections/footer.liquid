@@ -7,7 +7,7 @@
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
 {% comment %} --- Section Container Classes --- {% endcomment %}
-{% assign container_classes = 'width-{{ s.width_scheme }} limit-width'
+{% assign container_classes = 'width-{{ s.width }} limit-width'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
@@ -71,7 +71,9 @@
 {
   "name": "Footer",
   "restriction": {
-    "groups": ["footer"]
+    "groups": [
+      "footer"
+    ]
   },
   "settings": [
     {
@@ -103,10 +105,10 @@
       "default": "center"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Content Width",
-      "default": "standard"
+      "default": "fill"
     },
     {
       "type": "header",
@@ -395,6 +397,9 @@
   "blocks": [
     {
       "type": "group"
+    },
+    {
+      "type": "brand-logo"
     },
     {
       "type": "_footer-nav"

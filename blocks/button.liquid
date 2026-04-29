@@ -25,7 +25,7 @@
   | push: 'margin-mx-{{ s.margin_horizontal }}'
 %}
 
-{% if s.width == 'full' %}
+{% if s.width == 'fill' %}
   {% assign wrapper_classes = wrapper_classes | push: 'w-full block' %}
 {% else %}
   {% assign wrapper_classes = wrapper_classes | push: 'inline-block' %}
@@ -167,7 +167,7 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% assign font_family = 'btn' %}
+{% assign font_family = 'button' %}
 {% if s.font_family_override and s.font_scheme != blank %}
   {% assign font_family = s.font_scheme %}
 {% endif %}
@@ -760,19 +760,15 @@
       "type": "select",
       "id": "width",
       "label": "Width",
-      "default": "auto",
+      "default": "fit",
       "options": [
-        {
-          "value": "auto",
-          "label": "Auto"
-        },
-        {
-          "value": "full",
-          "label": "Full Width"
-        },
         {
           "value": "fit",
           "label": "Fit Content"
+        },
+        {
+          "value": "fill",
+          "label": "Fill Parent"
         }
       ]
     },
