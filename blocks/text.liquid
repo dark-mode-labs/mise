@@ -1,10 +1,10 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign wrapper_classes = 'text-align-{{ s.text_align }}'
-  | push: 'margin-my-{{ s.margin_vertical }}'
-  | push: 'margin-mx-{{ s.margin_horizontal }}'
-%}
+{% assign wrapper_classes = '' | push: 'margin-my-{{ s.margin_vertical }}' | push: 'margin-mx-{{ s.margin_horizontal }}' %}
+{% if s.text_align != blank %}
+  {% assign wrapper_classes = wrapper_classes | push: 'text-align-{{ s.text_align }}' %}
+{% endif %}
 
 {% if s.numeric == 'tabular' %}
   {% assign wrapper_classes = wrapper_classes | push: 'tabular-nums min-w-[3ch]' %}
@@ -34,8 +34,8 @@
 
 {% if s.margin_horizontal == 'custom' %}
   {% assign styles = styles
-    | push: '--space-pl: {{ s.margin_horizontal_custom_left }}rem'
-    | push: '--space-pr: {{ s.margin_horizontal_custom_right }}rem'
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
   %}
 {% endif %}
 

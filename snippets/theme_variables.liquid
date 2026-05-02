@@ -4,22 +4,17 @@
       --space-base: 1rem;
 
       {% comment %}
-        Spacing tokens are inherently responsive via clamp().
         ALL tiers — built-ins (xs/sm/md/lg/xl/2xl/3xl) AND per-site
-        synth tiers — live in `theme.space_scale`. Built-in defaults
-        ship via settings_schema.json presets; transpiler synthesizes
-        additional tiers when source has responsive spacing pairs
-        (e.g. `px-6 xl:px-16` → `synth-1_5-4_0rem`).
-        Each entry is either:
-          - { value: '<length>' }  → flat token
-          - { min, max, vw }       → clamp(min, vw, max) responsive token
+        synth tiers — live in `theme.space_scale` carrying a single
+        flat `value`. Built-in defaults ship via settings_schema.json
+        presets; transpiler synthesizes additional tiers when source
+        has responsive spacing pairs (`px-6 xl:px-16` → `synth-1_5rem`
+        picking the desktop value).
       {% endcomment %}
       {% for s in space_scale %}
         {% unless s[1].settings.structural %}
           {% if s[1].settings.value != blank %}
       --space-{{ s[0] }}: {{ s[1].settings.value }};
-          {% elsif s[1].settings.min != blank and s[1].settings.max != blank %}
-      --space-{{ s[0] }}: clamp({{ s[1].settings.min }}, {{ s[1].settings.vw | default: '5vw' }}, {{ s[1].settings.max }});
           {% endif %}
         {% endunless %}
       {% endfor %}
@@ -298,13 +293,6 @@
           {% else %}
         .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; height: {{ h[1].settings.value }}; }
           {% endif %}
-        {% elsif h[1].settings.min != blank and h[1].settings.max != blank %}
-          {% capture clamp_expr %}clamp({{ h[1].settings.min }}, {{ h[1].settings.vw | default: '40vw' }}, {{ h[1].settings.max }}){% endcapture %}
-          {% if h[1].settings.floor %}
-        .height-{{ h[0] }} { --tier-height: {{ clamp_expr }}; min-height: {{ clamp_expr }}; height: auto; }
-          {% else %}
-        .height-{{ h[0] }} { --tier-height: {{ clamp_expr }}; height: {{ clamp_expr }}; }
-          {% endif %}
         {% endif %}
       {% endunless %}
     {% endfor %}
@@ -321,12 +309,30 @@
       that a flat tier can't express. Built-in tiers (jumbo/display/
       h1..h6/body/small/caption) ship flat at Tailwind-equivalent values.
     {% endcomment %}
+    {% comment %}
+      Mobile auto-scale: tiers carry a single flat `value` (the desktop
+      intent). On small viewports, large display tiers (jumbo/display/h1)
+      shrink ~40% so brand-defined desktop sizes don't overflow narrow
+      columns. Mid headings (h2/h3) shrink ~25%; body and below stay
+      unchanged so caption/small don't collapse below readable size.
+      One global knob per band — no per-tier clamp data needed.
+    {% endcomment %}
     {% for t in text_scale %}
       {% unless t[1].settings.structural %}
         {% if t[1].settings.value != blank %}
+          {% case t[0] %}
+            {% when 'jumbo', 'display' %}
         .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
-        {% elsif t[1].settings.min != blank and t[1].settings.max != blank %}
-        .fs-{{ t[0] }} { font-size: clamp({{ t[1].settings.min }}, {{ t[1].settings.vw | default: '5vw' }}, {{ t[1].settings.max }}); }
+        @media (max-width: 767px) { .fs-{{ t[0] }} { font-size: calc({{ t[1].settings.value }} * 0.55); } }
+            {% when 'h1' %}
+        .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
+        @media (max-width: 767px) { .fs-{{ t[0] }} { font-size: calc({{ t[1].settings.value }} * 0.65); } }
+            {% when 'h2', 'h3' %}
+        .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
+        @media (max-width: 767px) { .fs-{{ t[0] }} { font-size: calc({{ t[1].settings.value }} * 0.75); } }
+            {% else %}
+        .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
+          {% endcase %}
         {% endif %}
       {% endunless %}
     {% endfor %}

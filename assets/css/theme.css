@@ -398,32 +398,6 @@
     @apply text-right;
   }
 
-  /* Golden ratio based media constraints */
-  .media-wrapper.mh-sm {
-    max-height: 38.2vh;
-    aspect-ratio: 1.618 / 1;
-  }
-
-  .media-wrapper.mh-md {
-    max-height: 61.8vh;
-    aspect-ratio: 1.618 / 1;
-  }
-
-  .media-wrapper.mh-lg {
-    max-height: 78.6vh;
-    aspect-ratio: 1.618 / 1;
-  }
-
-  .media-wrapper.mh-xl {
-    max-height: 100vh;
-    aspect-ratio: 1.618 / 1;
-  }
-
-  .media-wrapper.mh-auto {
-    max-height: none;
-    aspect-ratio: auto;
-  }
-
   /* Split layout media - content-driven, height fills 100%, flex respects bounds */
   .hero-media-split .media-wrapper {
     aspect-ratio: auto;
@@ -455,10 +429,6 @@
   .section-layout[class*="height-"]:not(.height-auto):not(.height-full) {
     min-height: var(--tier-height, auto);
     height: auto;
-  }
-
-  .media-block.is-thumbnail {
-    height: clamp(4.5rem, 20vw, 8.125rem);
   }
 
   /* MEDIA & CONTENT OVERLAY/SPLIT SYSTEMS */
@@ -633,10 +603,6 @@
 
   .menu-cols-1-2-3 {
     @apply grid-cols-1 md:grid-cols-2 xl:grid-cols-3;
-  }
-
-  .menu-cols-default {
-    @apply grid-cols-1;
   }
 
   .menu-cols-1-1-1 {

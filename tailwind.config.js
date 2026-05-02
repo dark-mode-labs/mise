@@ -53,6 +53,7 @@ export default {
         'content': '20',  // Text, buttons, standard blocks
         'floating': '30', // Pinned elements inside a section (Marquees, badges)
         'header': '40',   // Sticky site header
+        'header-top': '45', // Announcement bar above header
         'overlay': '50',  // Slide-out drawers/cart
         'modal': '60',    // Centered popups
         'toast': '70',    // Notifications

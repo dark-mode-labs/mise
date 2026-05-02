@@ -87,10 +87,11 @@
     {% comment %} Media Layer {% endcomment %}
     <div class="{{ media_classes }} width-{{ s.width_bg }} limit-width">
       {% comment %} Primary Media Slot {% endcomment %}
-      {% assign media_1_classes = 'hero-media-inner absolute inset-0' %}
-      {% if has_media_2 -%}
-        {%- assign media_1_classes = media_1_classes | append: ' w-1/2 border-r border-default' -%}
-      {%- endif %}
+      {% if has_media_2 %}
+        {% assign media_1_classes = 'hero-media-inner relative w-1/2 border-r border-default' %}
+      {% else %}
+        {% assign media_1_classes = 'hero-media-inner absolute inset-0' %}
+      {% endif %}
 
       <div class="{{ media_1_classes }}">
         {% render 'media',

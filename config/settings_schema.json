@@ -727,10 +727,10 @@
         "xs": { "settings": { "title": "XS", "value": "0.5rem" } },
         "sm": { "settings": { "title": "Small", "value": "1rem" } },
         "md": { "settings": { "title": "Medium", "value": "1.5rem" } },
-        "lg": { "settings": { "title": "Large", "min": "2rem", "vw": "4vw", "max": "2.5rem" } },
-        "xl": { "settings": { "title": "XL", "min": "2.5rem", "vw": "5vw", "max": "4rem" } },
-        "2xl": { "settings": { "title": "2XL", "min": "3.5rem", "vw": "7vw", "max": "6rem" } },
-        "3xl": { "settings": { "title": "3XL", "min": "4.5rem", "vw": "9vw", "max": "8rem" } },
+        "lg": { "settings": { "title": "Large", "value": "2.5rem" } },
+        "xl": { "settings": { "title": "XL", "value": "4rem" } },
+        "2xl": { "settings": { "title": "2XL", "value": "6rem" } },
+        "3xl": { "settings": { "title": "3XL", "value": "8rem" } },
         "custom": { "settings": { "title": "Custom", "structural": true } }
       },
       "text_scale": {
