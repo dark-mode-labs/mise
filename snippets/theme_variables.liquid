@@ -168,6 +168,24 @@
         {% assign mw = c[1].settings.max_width %}
         {% if mw contains 'rem' or mw contains 'px' %}
         @media (min-width: {{ mw }}) { .direction-responsive.bp-{{ c[0] }} { flex-direction: row; } }
+        {% comment %}
+          Per-bp collapse: when parent is direction-responsive.bp-<tier>
+          AND viewport is BELOW that tier's bp, the parent renders as
+          column (per .direction-responsive base in theme.css). Children
+          carrying width-half/third/quarter must collapse to full-width
+          in that range, otherwise they render at 50%/33%/25% of column
+          width — squeezed garbage. The global `@media (max-width: 767px)`
+          rule below covers up-to-mobile, but for higher bp tiers (lg=
+          broad=1024, xl=canvas=1280) we need the collapse to extend
+          across iPad-Mini/Air. Emit a per-tier max-width rule here.
+        {% endcomment %}
+        @media (max-width: calc({{ mw }} - 0.0625rem)) {
+          .direction-responsive.bp-{{ c[0] }} > .width-half,
+          .direction-responsive.bp-{{ c[0] }} > .width-third,
+          .direction-responsive.bp-{{ c[0] }} > .width-quarter
+            { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
+          .direction-responsive.bp-{{ c[0] }} > .width-fit { --limit-width: 100%; }
+        }
         {% endif %}
       {% endunless %}
     {% endfor %}
