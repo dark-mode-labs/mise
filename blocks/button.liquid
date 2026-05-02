@@ -9,12 +9,16 @@
 {% assign bg_color_value = blank %}
 {% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
   {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
 {% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
 {% assign border_color_value = blank %}
 {% if s.border_role == 'palette' and s.border_role_palette != blank %}
   {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'gradient' and s.border_role_gradient != blank %}
+  {% assign border_color_value = 'var(--gradient-{{ s.border_role_gradient }})' %}
 {% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
   {% assign border_color_value = s.border_role_custom %}
 {% endif %}
@@ -28,7 +32,18 @@
 {% if s.width == 'fill' %}
   {% assign wrapper_classes = wrapper_classes | push: 'w-full block' %}
 {% else %}
-  {% assign wrapper_classes = wrapper_classes | push: 'inline-block' %}
+  {% comment %}
+    Use the existing `width-fit limit-width` mise pattern so the
+    wrapper's cross-axis size is explicitly `fit-content` instead of
+    `auto`. In a flex-column parent (mise group default), `auto`
+    cross-axis size lets `align-items: stretch` (CSS default) expand
+    the button to full width — losing the inline-block intent. With
+    explicit `fit-content`, the button stays content-width regardless
+    of the parent's flex alignment, while still respecting
+    `align-self: auto` so parent's `content_align: center/end` still
+    positions it correctly along the cross-axis.
+  {% endcomment %}
+  {% assign wrapper_classes = wrapper_classes | push: 'inline-block width-fit limit-width' %}
 {% endif %}
 
 {% if s.surface_override %}
@@ -40,6 +55,9 @@
     | push: 'group-border-{{ s.border_mode }}'
     | push: 'group-border-size-{{ s.border_size }}'
   %}
+  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' and s.border_role != 'gradient' %}
+    {% assign wrapper_classes = wrapper_classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
   {% if s.border_mode == 'custom' %}
     {% assign wrapper_classes = wrapper_classes
       | push_if: 'group-border-custom-left', s.border_custom_left
@@ -271,6 +289,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ],
       "conditional": "setting.style == 'primary'"
@@ -288,6 +310,13 @@
       "id": "bg_role_custom",
       "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom' and setting.style == 'primary'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
     },
     {
       "type": "header",
@@ -648,6 +677,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ],
       "conditional": "setting.border_mode != 'none'"
@@ -665,6 +698,13 @@
       "id": "border_role_custom",
       "label": "Raw Border",
       "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "border_role_gradient",
+      "label": "Border Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.border_role == 'gradient'"
     },
     {
       "type": "select",

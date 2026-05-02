@@ -3,6 +3,14 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'footer-block' %}
 
+{% if s.width and s.width != blank %}
+  {% assign classes = classes | push: 'width-{{ s.width }}' %}
+{% endif %}
+
+{% if s.text_align != blank and s.text_align != 'inherit' %}
+  {% assign classes = classes | push: 'text-align-{{ s.text_align }}' %}
+{% endif %}
+
 {% if s.surface_override %}
   {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
@@ -53,7 +61,16 @@
   {{ context.attached_attributes }}
 >
   <details class="group" open>
-    <summary class="flex items-center justify-between cursor-pointer md:cursor-default list-none mb-4">
+    {% comment %}
+      Mobile: `flex items-center justify-between` puts the heading at
+      the start and the collapse chevron at the end. Desktop (md+):
+      chevron is `md:hidden`, leaving only the heading — flex with one
+      child still pins it to the start, ignoring the wrapper's
+      text-align. `md:block` reverts the summary to plain block flow
+      on desktop so `.text-align-{X}` from the wrapper inherits down
+      and the heading honors source intent.
+    {% endcomment %}
+    <summary class="flex items-center justify-between md:block cursor-pointer md:cursor-default list-none mb-4">
       {% render 'typography',
         text: s.heading,
         display_size: s.display_size,
@@ -83,6 +100,35 @@
       "id": "heading",
       "label": "Heading",
       "default": "Quick Links"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Width"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "inherit"
     },
     {
       "type": "header",

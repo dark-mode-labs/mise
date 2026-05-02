@@ -3,6 +3,8 @@
 {% assign bg_color_value = blank %}
 {% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
   {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
 {% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
@@ -23,15 +25,30 @@
   {% assign bg_class = 'bg-' | append: bg_role_safe %}
 {% endif %}
 
-{% comment %} --- 3. Container Class Pipeline --- {% endcomment %}
-{% assign container_classes = 'section-layout limit-width'
+{% comment %}
+  --- 3. Container class pipelines (TWO LAYERS) ---
+  Sections render as two stacked `limit-width` boxes:
+
+    bg layer     – carries the section background + padding + height.
+                   Width is `width_bg` (default fill ⇒ full-bleed).
+    content layer – caps the actual content area. Width is `width`
+                   (default fill ⇒ matches bg). Centered via mx-auto.
+
+  When `width_bg: fill` and `width: canvas` (the common ultra-wide
+  pattern), the bg paints the whole viewport but the content is
+  capped at canvas (1280px) and centered. When both are `fill` (the
+  default) the two collapse and behavior matches the pre-refactor
+  single wrapper.
+{% endcomment %}
+{% assign bg_layer_classes = 'section-layout limit-width'
   | push: bg_class
-  | push: 'width-{{ s.width }}'
+  | push: 'width-{{ s.width_bg }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
-  | push: 'is-{{ s.height }}'
+  | push: 'height-{{ s.height }}'
 %}
-{% assign container_class_str = container_classes | join: ' ' %}
+{% assign bg_layer_class_str = bg_layer_classes | join: ' ' %}
+{% assign content_layer_class_str = 'section-content limit-width width-' | append: s.width %}
 
 {% comment %} --- 4. Style Pipeline (spacing + bg layer) --- {% endcomment %}
 {% assign styles = blank %}
@@ -50,9 +67,6 @@
   %}
 {% endif %}
 
-{% if s.height == 'custom' %}
-  {% assign styles = styles | push: '--max-h: {{ s.height_custom }}vh' %}
-{% endif %}
 
 {% if bg_color_value != blank %}
   {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
@@ -75,11 +89,13 @@
   {{ context.attached_attributes }}
 >
   <div
-    class="{{ container_class_str }}"
+    class="{{ bg_layer_class_str }}"
     style="{{ style_str }}"
   >
-    <div class="{{ inner_class_str }}">
-      {% content_for 'blocks' %}
+    <div class="{{ content_layer_class_str }}">
+      <div class="{{ inner_class_str }}">
+        {% content_for 'blocks' %}
+      </div>
     </div>
   </div>
 </section>
@@ -95,51 +111,22 @@
     {
       "type": "width",
       "id": "width",
-      "label": "Max Content Width",
+      "label": "Content Width",
+      "info": "Caps the content area. Centered (mx-auto) when capped below the section's bg width.",
       "default": "fill"
     },
     {
-      "type": "select",
-      "id": "height",
-      "label": "Section Height",
-      "options": [
-        {
-          "value": "auto",
-          "label": "Auto (Fit Content)"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "Fullscreen"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
-      "default": "auto"
+      "type": "width",
+      "id": "width_bg",
+      "label": "Background Width",
+      "info": "Where the section background extends. `Fill` = full-bleed; narrower tiers cap the bg layer too.",
+      "default": "fill"
     },
     {
-      "type": "range",
-      "id": "height_custom",
-      "label": "Custom Height",
-      "min": 10,
-      "max": 100,
-      "step": 5,
-      "default": 56,
-      "unit": "vh",
-      "conditional": "setting.height == 'custom'"
+      "type": "height",
+      "id": "height",
+      "label": "Section Height",
+      "default": "auto"
     },
     {
       "type": "select",
@@ -414,6 +401,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ]
     },
@@ -430,6 +421,13 @@
       "id": "bg_role_custom",
       "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
     }
   ],
   "blocks": [

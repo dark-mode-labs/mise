@@ -3,6 +3,8 @@
 {% assign bg_color_value = blank %}
 {% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
   {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
 {% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
@@ -40,6 +42,7 @@
   | push: bg_class
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push_if: 'backdrop-blur-md', s.enable_glass
 %}
 
 {% assign header_class_str = header_classes | join: ' ' %}
@@ -397,6 +400,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ]
     },
@@ -413,6 +420,20 @@
       "id": "bg_role_custom",
       "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Glass Effect",
+      "info": "Frosted-glass backdrop-blur on the header. The bg color/alpha and any border come from the existing `bg_role` / border settings — `enable_glass` only adds the blur layer.",
+      "default": false
     }
   ],
   "presets": [

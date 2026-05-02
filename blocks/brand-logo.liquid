@@ -8,8 +8,17 @@
 {% endif %}
 {% assign asset_src = shop.logo_src | default: s.logo %}
 
-{% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign classes = 'flex items-center justify-center relative z-content group-hover:opacity-100 text-primary' %}
+{% comment %}
+  Wrapper Classes. NOTE: previously included `justify-center` which
+  forced the logo centered horizontally regardless of source intent.
+  Source patterns universally use `flex items-center gap-X` (no
+  `justify-*`) — the brand-logo block must inherit alignment from its
+  parent flex container (header has `justify-between`, footer first
+  column has no justify → left-aligns naturally). Hardcoding
+  `justify-center` was breaking the footer logo (always centered) and
+  any non-default header layout.
+{% endcomment %}
+{% assign classes = 'flex items-center relative z-content group-hover:opacity-100 text-primary' %}
 
 {% if s.surface_override %}
   {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}

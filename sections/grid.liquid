@@ -3,12 +3,16 @@
 {% assign bg_color_value = blank %}
 {% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
   {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
 {% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
 {% assign overlay_color_value = blank %}
 {% if s.overlay_role == 'palette' and s.overlay_role_palette != blank %}
   {% assign overlay_color_value = 'var(--palette-{{ s.overlay_role_palette }})' %}
+{% elsif s.overlay_role == 'gradient' and s.overlay_role_gradient != blank %}
+  {% assign overlay_color_value = 'var(--gradient-{{ s.overlay_role_gradient }})' %}
 {% elsif s.overlay_role == 'custom' and s.overlay_role_custom != blank %}
   {% assign overlay_color_value = s.overlay_role_custom %}
 {% endif %}
@@ -18,7 +22,7 @@
   | push: 'width-{{ s.width }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
-  | push: 'is-{{ s.height }}'
+  | push: 'height-{{ s.height }}'
 %}
 
 {% assign spacing_styles = blank %}
@@ -33,9 +37,6 @@
     | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
     | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
   %}
-{% endif %}
-{% if s.height == 'custom' %}
-  {% assign spacing_styles = spacing_styles | push: '--max-h: {{ s.height_custom }}vh' %}
 {% endif %}
 
 {% assign container_class_str = container_classes | join: ' ' %}
@@ -57,7 +58,7 @@
 {% if overlay_color_value != blank %}{% assign has_overlay = true %}{% endif %}
 
 {% comment %} --- 3. Flex Grid Logic --- {% endcomment %}
-{% assign flex_classes = 'flex flex-wrap -mx-4'
+{% assign flex_classes = 'flex flex-wrap'
   | push: 'justify-content-{{ s.justify_content }}'
   | push_if: 'stagger-load', s.animate_stagger
 %}
@@ -101,7 +102,8 @@
           role: s.overlay_role,
           alpha: s.overlay_alpha,
           palette_token: s.overlay_role_palette,
-          custom_color: s.overlay_role_custom
+          custom_color: s.overlay_role_custom,
+          gradient_token: s.overlay_role_gradient
         %}
       </div>
     </div>
@@ -176,6 +178,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ]
     },
@@ -192,6 +198,13 @@
       "id": "bg_role_custom",
       "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
     },
     {
       "type": "header",
@@ -242,6 +255,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ]
     },
@@ -258,6 +275,13 @@
       "id": "overlay_role_custom",
       "label": "Raw Overlay",
       "conditional": "setting.overlay_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "overlay_role_gradient",
+      "label": "Overlay Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.overlay_role == 'gradient'"
     },
     {
       "type": "range",
@@ -331,47 +355,10 @@
       "content": "Spacing"
     },
     {
-      "type": "select",
+      "type": "height",
       "id": "height",
       "label": "Section Height",
-      "options": [
-        {
-          "value": "auto",
-          "label": "Auto (Fit Content)"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "Fullscreen"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "auto"
-    },
-    {
-      "type": "range",
-      "id": "height_custom",
-      "label": "Custom Height",
-      "min": 10,
-      "max": 100,
-      "step": 5,
-      "default": 50,
-      "unit": "vh",
-      "conditional": "setting.height == 'custom'"
     },
     {
       "type": "select",

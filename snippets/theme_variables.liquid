@@ -2,14 +2,46 @@
     {% capture stylesheet %}
     :root {
       --space-base: 1rem;
-      --space-xs: 0.5rem;
-      --space-sm: 1rem;
-      --space-md: 1.5rem;
 
-      --space-lg: clamp(2rem, 4vw, 2.5rem);
-      --space-xl: clamp(2.5rem, 5vw, 4rem);
-      --space-2xl: clamp(3.5rem, 7vw, 6rem);
-      --space-3xl: clamp(4.5rem, 9vw, 8rem);
+      {% comment %}
+        Spacing tokens are inherently responsive via clamp().
+        ALL tiers — built-ins (xs/sm/md/lg/xl/2xl/3xl) AND per-site
+        synth tiers — live in `theme.space_scale`. Built-in defaults
+        ship via settings_schema.json presets; transpiler synthesizes
+        additional tiers when source has responsive spacing pairs
+        (e.g. `px-6 xl:px-16` → `synth-1_5-4_0rem`).
+        Each entry is either:
+          - { value: '<length>' }  → flat token
+          - { min, max, vw }       → clamp(min, vw, max) responsive token
+      {% endcomment %}
+      {% for s in space_scale %}
+        {% unless s[1].settings.structural %}
+          {% if s[1].settings.value != blank %}
+      --space-{{ s[0] }}: {{ s[1].settings.value }};
+          {% elsif s[1].settings.min != blank and s[1].settings.max != blank %}
+      --space-{{ s[0] }}: clamp({{ s[1].settings.min }}, {{ s[1].settings.vw | default: '5vw' }}, {{ s[1].settings.max }});
+          {% endif %}
+        {% endunless %}
+      {% endfor %}
+    }
+
+    {% comment %}
+      Single source of truth for spacing class rules — emitted from
+      `theme.space_scale`. Structural tiers (`none`, `custom`) have
+      specialized CSS in theme.css and skip this loop.
+    {% endcomment %}
+    {% for s in space_scale %}
+      {% unless s[1].settings.structural %}
+      .padding-py-{{ s[0] }} { padding-top: var(--space-{{ s[0] }}); padding-bottom: var(--space-{{ s[0] }}); }
+      .padding-px-{{ s[0] }} { padding-left: var(--space-{{ s[0] }}); padding-right: var(--space-{{ s[0] }}); }
+      .margin-my-{{ s[0] }} { margin-top: var(--space-{{ s[0] }}); margin-bottom: var(--space-{{ s[0] }}); }
+      .margin-mx-{{ s[0] }} { margin-left: var(--space-{{ s[0] }}); margin-right: var(--space-{{ s[0] }}); }
+      .gap-{{ s[0] }} { gap: var(--space-{{ s[0] }}); }
+      .direction-row.gap-{{ s[0] }}, .direction-responsive.gap-{{ s[0] }} { --children-gap: var(--space-{{ s[0] }}); }
+      {% endunless %}
+    {% endfor %}
+
+    :root {
 
       --type-scale: {{ typography.type_scale | divided_by: 100.0 }};
       --radius-global: {{ layout.corner_radius }}px;
@@ -23,6 +55,16 @@
         which the surface block below resolves to var(--palette-X).
       {% endcomment %}
       {% for token in palette %} --palette-{{ token[0] }}: {{ token[1].settings.value }}; {% endfor %}
+
+      {% comment %}
+        --- Brand gradient tokens ---
+        Site-defined gradients (linear/radial/conic). Block-level
+        `*_role: gradient` references these via `var(--gradient-id)`.
+        Composite by nature so they don't fold into a palette token —
+        keeping them centralized here means a brand-redesign edit
+        propagates to every surface that paints with the gradient.
+      {% endcomment %}
+      {% for token in gradients %} --gradient-{{ token[0] }}: {{ token[1].settings.value }}; {% endfor %}
     }
 
     {% comment %}
@@ -63,24 +105,237 @@
       and avoids forcing `width: 100%` / `margin-inline: auto` on blocks
       that should flow naturally (which caused alignment regressions).
     {% endcomment %}
+    {% comment %}
+      Container scale loop: skip `structural: true` entries because
+      they have specialized CSS rules below (flex: 0 0 X% on
+      half/third/quarter, fit-content sizing on fit/fill) that the
+      loop's `--limit-width: <value>` emit can't replicate. The
+      structural entries still appear in `theme.container_scale` so
+      the editor's width picker lists them.
+    {% endcomment %}
+    {% comment %}
+      Container tiers split into two groups:
+      - `synth-*` (synthesized from source `w-N` Tailwind) are FIXED
+        widths — icon containers etc. need to hold their size even
+        when a flex parent has `align-items: center` (which would
+        otherwise shrink them to content). Emit explicit `width:`.
+      - All other named tiers (canvas, extra-wide, c-* from inline
+        `max-width:`, named anchors) are MAX-width caps. Element
+        fills parent up to the cap. Emit only `--limit-width:`,
+        block-limit-width handles `width: 100%; max-width: var(...)`.
+    {% endcomment %}
     {% for c in container_scale %}
-      .width-{{ c[0] }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; }
+      {% unless c[1].settings.structural %}
+        {% if c[0] contains 'synth-' %}
+          {%- comment -%}
+            Synth tiers represent literal pixel widths from source `w-N`
+            (icon backgrounds, fixed-size containers etc.). They MUST
+            keep their declared width — `flex-shrink: 0` prevents a
+            sibling with flex-grow from compressing the icon below 48px
+            and rendering it as an oval. Different from `width-fit`
+            (where shrinking-to-fit IS desired in tight viewports).
+          {%- endcomment -%}
+          .width-{{ c[0] }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; width: {{ c[1].settings.max_width | default: '100%' }}; max-width: 100%; flex-shrink: 0; }
+        {% else %}
+          .width-{{ c[0] }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; }
+        {% endif %}
+      {% endunless %}
     {% endfor %}
+
+    {% comment %}
+      Direction-breakpoint media queries — emitted per container_scale
+      tier so block settings can reference any tier name for "switch
+      from column to row at this width". This unifies the breakpoint
+      vocabulary with the width vocabulary: each container tier
+      doubles as a breakpoint reference. group.liquid emits a
+      `bp-<tier>` modifier class from `direction_breakpoint`. Skip
+      structural tiers (auto/full/fit/half/etc.) and any tier whose
+      max_width isn't a pixel/rem length.
+    {% endcomment %}
+    {% comment %}
+      Reverse-order modifier (responsive_order_override: reverse on group):
+      below the breakpoint (column mode), flip child order. Above the
+      breakpoint, the per-tier `bp-<tier>` rules below set
+      `flex-direction: row` which overrides column-reverse — so children
+      render in source order at desktop. Mirrors Tailwind's
+      `flex-col-reverse <bp>:flex-row`. Placed BEFORE the bp media
+      queries so cascade order ensures desktop rules win.
+    {% endcomment %}
+    .direction-responsive.responsive-order-reverse { flex-direction: column-reverse; }
+
+    {% for c in container_scale %}
+      {% unless c[1].settings.structural %}
+        {% assign mw = c[1].settings.max_width %}
+        {% if mw contains 'rem' or mw contains 'px' %}
+        @media (min-width: {{ mw }}) { .direction-responsive.bp-{{ c[0] }} { flex-direction: row; } }
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
+    {% comment %}
+      Default `direction-responsive` (no `bp-*` modifier) — switches to
+      row at md=768 to match mise's prior hardcoded behavior. Lets
+      blocks like `_header-actions` that don't emit a bp-* modifier
+      still get the column→row switch they expect. Specificity is
+      lower than `.direction-responsive.bp-*`, so explicit bp blocks
+      still win.
+    {% endcomment %}
+    @media (min-width: 768px) {
+      .direction-responsive:not([class*="bp-"]) { flex-direction: row; }
+    }
 
     .width-fit  { --limit-width: fit-content; width: fit-content; }
     .width-fill { --limit-width: 100%; width: 100%; }
-    .width-half    { --limit-width: 50%;     flex: 0 0 50%; }
-    .width-third   { --limit-width: 33.333%; flex: 0 0 33.333%; }
-    .width-quarter { --limit-width: 25%;     flex: 0 0 25%; }
+    .width-half    { --limit-width: 50%;     flex: 0 0 calc(50%     - (var(--children-gap, 0px) * 1) / 2); }
+    .width-third   { --limit-width: 33.333%; flex: 0 0 calc(33.333% - (var(--children-gap, 0px) * 2) / 3); }
+    .width-quarter { --limit-width: 25%;     flex: 0 0 calc(25%     - (var(--children-gap, 0px) * 3) / 4); }
+
+    {% comment %}
+      Half/third/quarter assume the row holds an equal-width set
+      (2/3/4 children). With gap on the parent flex, each child must
+      give back its share of the gap so the row sums to 100%:
+      `(N-1) * gap` total → each loses `(N-1)/N * gap`.
+
+      We can't read the gap directly via inheritance: every block
+      sets its own `--space-gap` (gap-custom) or uses one of the
+      named tokens (`--space-xs/sm/md/lg/xl`), so a child shadows
+      whatever the parent declared. Instead the parent ROW re-
+      exposes its actual gap as `--children-gap` via compound
+      selectors — these match only when an element is *both*
+      direction-row/responsive AND has a specific gap-* class.
+      A child card inside (direction-column) won't match, so
+      `--children-gap` propagates cleanly via inheritance.
+    {% endcomment %}
+    .direction-row, .direction-responsive { --children-gap: 0px; }
+    .direction-row.gap-custom, .direction-responsive.gap-custom { --children-gap: var(--space-gap); }
+    {% comment %}
+      Per-tier `--children-gap` mappings are emitted alongside the
+      `.gap-<tier>` rules above (single loop, single source of truth).
+    {% endcomment %}
+
 
     @media (max-width: 767px) {
-      .width-half, .width-third, .width-quarter { --limit-width: 100%; flex: 0 0 100%; }
+      {% comment %}
+        Mobile collapse: half/third/quarter become full-width.
+        `flex-basis` semantics depend on parent direction —
+        `0 0 100%` in flex-row means "full width per child" (correct,
+        each card on its own row), but in flex-col it means "full
+        HEIGHT per child" (wrong — each child consumes full parent
+        height, ballooning the page). Scope the flex rule to row/
+        responsive parents; for column parents set `width: 100%`.
+      {% endcomment %}
+      {% comment %}
+        At mobile, direction-responsive parents resolve to column
+        (axis-swap CSS in theme.css), so children share the column
+        semantics: flex-basis is HEIGHT, not width. Group responsive
+        with column for the mobile-collapse rule.
+      {% endcomment %}
+      .direction-row > .width-half,
+      .direction-row > .width-third,
+      .direction-row > .width-quarter
+        { --limit-width: 100%; flex: 0 0 100%; }
+      .direction-column > .width-half,
+      .direction-column > .width-third,
+      .direction-column > .width-quarter,
+      .direction-responsive > .width-half,
+      .direction-responsive > .width-third,
+      .direction-responsive > .width-quarter
+        { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
       .direction-responsive > .width-fit { --limit-width: 100%; }
     }
+
+    {% comment %}
+      Height scale loop: same structural-skip rule the width loop
+      uses. The loop emits `height: <value>` for every non-structural
+      tier in `height_scale` (anchored or synthesized). Structural
+      entries (`auto` / `full`) get specialized rules immediately
+      below — `.height-full` carries `flex: 1 1 0%` so the block
+      participates in flex stretch correctly, which the loop's
+      value-only emit can't replicate. Sections that previously
+      rendered as `is-sm`/`is-md`/`is-lg`/`is-xl` now use the same
+      tier vocabulary so block + section heights share one system.
+    {% endcomment %}
+    {% comment %}
+      Each height_scale tier carries both a value AND a `floor` flag:
+        - `floor: true`  → emits `min-height: VALUE; height: auto`
+                           (block grows past tier if content taller)
+        - `floor: false` → emits `height: VALUE` (fixed render height)
+      `--tier-height` always carries the value so layout-section overrides
+      (hero, section) can read it as `min-height` for their own always-floor
+      behavior, regardless of the tier's flag.
+
+      This puts the fixed-vs-floor decision on the SCALE itself — any
+      block consuming the tier inherits the right semantic. No block-level
+      override needed. Maps cleanly to source: `h-N` picks a fixed tier
+      (default), `min-h-N` picks a floor tier (transpiler mints `synth-min-Xrem`
+      / `synth-min-100vh` etc.).
+    {% endcomment %}
+    {% for h in height_scale %}
+      {% unless h[1].settings.structural %}
+        {% if h[1].settings.value != blank %}
+          {% if h[1].settings.floor_fill %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; min-height: {{ h[1].settings.value }}; height: 100%; flex: 1 1 {{ h[1].settings.value }}; }
+          {% elsif h[1].settings.floor %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; min-height: {{ h[1].settings.value }}; height: auto; }
+          {% else %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; height: {{ h[1].settings.value }}; }
+          {% endif %}
+        {% elsif h[1].settings.min != blank and h[1].settings.max != blank %}
+          {% capture clamp_expr %}clamp({{ h[1].settings.min }}, {{ h[1].settings.vw | default: '40vw' }}, {{ h[1].settings.max }}){% endcapture %}
+          {% if h[1].settings.floor %}
+        .height-{{ h[0] }} { --tier-height: {{ clamp_expr }}; min-height: {{ clamp_expr }}; height: auto; }
+          {% else %}
+        .height-{{ h[0] }} { --tier-height: {{ clamp_expr }}; height: {{ clamp_expr }}; }
+          {% endif %}
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
+    .height-auto { height: auto; }
+    .height-full { height: 100%; flex: 1 1 0%; min-height: 0; }
+    .height-custom { height: var(--block-height, auto); }
+
+    {% comment %}
+      Type tiers (.fs-<id>) — flat (`value`) or responsive clamp
+      (`min`/`max`/`vw`). Source HTML's `text-5xl sm:text-6xl md:text-7xl
+      lg:text-8xl` pattern can mint a single clamp tier scaling between
+      the smallest and largest sizes — preserving responsive typography
+      that a flat tier can't express. Built-in tiers (jumbo/display/
+      h1..h6/body/small/caption) ship flat at Tailwind-equivalent values.
+    {% endcomment %}
+    {% for t in text_scale %}
+      {% unless t[1].settings.structural %}
+        {% if t[1].settings.value != blank %}
+        .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
+        {% elsif t[1].settings.min != blank and t[1].settings.max != blank %}
+        .fs-{{ t[0] }} { font-size: clamp({{ t[1].settings.min }}, {{ t[1].settings.vw | default: '5vw' }}, {{ t[1].settings.max }}); }
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
 
     .font-heading { font-family: var(--font-{{ typography.heading_font_scheme }}); }
     .font-body    { font-family: var(--font-{{ typography.body_font_scheme }}); }
     .font-button  { font-family: var(--font-{{ typography.button_font_scheme }}); }
+    {% comment %}
+      Per-scheme `.font-{key}` utility classes. Mirrors the source's
+      Tailwind-config `fontFamily` keys (e.g. `accent: ["Kalam",
+      "cursive"]` → `class="font-accent"`). Without this loop, only
+      heading/body/button utilities get a CSS rule and any
+      brand-extended family class falls through to the inherited
+      font (visible as the wrong typeface on accent/script/display
+      headings).
+
+      Structural schemes (`heading`, `body`, `button`) are flagged
+      `structural: true` in settings_schema.json and SKIPPED here —
+      they have dedicated rules above that pull from the typography
+      mapping vars (`heading_font_scheme` etc.), not the scheme name
+      directly. Emitting again would duplicate and conflict.
+    {% endcomment %}
+    {% for scheme in font_schemes %}
+      {% unless scheme[1].settings.structural %}
+      .font-{{ scheme[0] }} { font-family: var(--font-{{ scheme[0] }}); }
+      {% endunless %}
+    {% endfor %}
   {% endcapture %}
   {{ stylesheet | strip_newlines }}
 </style>

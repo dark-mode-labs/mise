@@ -281,6 +281,159 @@
       ]
     },
     {
+      "name": "Height Scale",
+      "type": "group",
+      "id": "height_scale",
+      "info": "Height tiers — flat (single `value`) or responsive (`min`/`max`/`vw` rendered as clamp()). Each tier renders to .height-<id>. The `floor` flag controls whether the tier sets `height` (fixed) or `min-height` (block can grow past it). Structural tiers (`auto`, `full`, `custom`) have specialized CSS in theme.css and skip the dynamic loop.",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Height"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Flat value",
+          "info": "If set, the tier is a flat (non-responsive) height. Mutually exclusive with min/max/vw.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "min",
+          "label": "Mobile floor",
+          "info": "Lower bound of clamp() — the height at narrow viewports.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "max",
+          "label": "Desktop ceiling",
+          "info": "Upper bound of clamp() — the height at wide viewports.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "vw",
+          "label": "Viewport rate",
+          "info": "Middle term of clamp(min, X, max). Use vw for width-driven scaling, vh for viewport-relative.",
+          "default": ""
+        },
+        {
+          "type": "checkbox",
+          "id": "floor",
+          "label": "Behaves as a floor (min-height)",
+          "info": "When on, blocks using this tier render with `min-height` — block can grow past the tier value if its content is taller. When off (default), the tier sets a fixed `height`. Source HTML's `min-h-N` maps to floor tiers; `h-N` maps to fixed tiers.",
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "Type Scale",
+      "type": "group",
+      "id": "text_scale",
+      "info": "Typography tiers — flat (`value`) or responsive (`min`/`max`/`vw` rendered as clamp()). Each tier renders to .fs-<id>. Built-in tiers: jumbo/display/h1..h6/body/small/caption. Transpiler synthesizes additional tiers when source HTML uses responsive text-size patterns (e.g. `text-5xl sm:text-6xl md:text-7xl lg:text-8xl` mints a clamp tier scaling 48px → 96px). Structural tiers have specialized CSS in theme.css and skip the dynamic loop.",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Type"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Flat value",
+          "info": "If set, the tier is a flat (non-responsive) font size. Mutually exclusive with min/max/vw.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "min",
+          "label": "Mobile floor",
+          "info": "Lower bound of clamp() — the size at narrow viewports.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "max",
+          "label": "Desktop ceiling",
+          "info": "Upper bound of clamp() — the size at wide viewports.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "vw",
+          "label": "Viewport rate",
+          "info": "Middle term of clamp(min, X, max). vw lets the tier scale with viewport width.",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "Space Scale",
+      "type": "group",
+      "id": "space_scale",
+      "info": "Spacing tiers — flat (single `value`) or responsive (`min`/`max`/`vw` rendered as clamp()). Each tier renders to --space-<id> for padding/margin/gap classes. Built-ins (none/xs/sm/md/lg/xl/2xl/3xl/custom) live in defaults; transpiler synthesizes additional tiers from source HTML responsive spacing pairs. Structural tiers (`none` zero-out, `custom` per-instance values via --space-pl/pr/pt/pb/mt/mb/ml/mr/gap) have specialized CSS rules in theme.css; the dynamic loop in theme_variables.liquid skips them.",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Space"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Flat value",
+          "info": "If set, the tier is a flat (non-responsive) length. Mutually exclusive with min/max/vw.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "min",
+          "label": "Mobile floor",
+          "info": "Lower bound of clamp() — the value at narrow viewports.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "max",
+          "label": "Desktop ceiling",
+          "info": "Upper bound of clamp() — the value at wide viewports.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "vw",
+          "label": "Viewport rate",
+          "info": "Middle term of clamp(min, X, max). Typically max-rem * 1.25 vw so the clamp hits max around the xl breakpoint (1280px).",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "Brand Gradients",
+      "type": "group",
+      "id": "gradients",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "New Gradient"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Gradient",
+          "info": "Any CSS gradient (linear-gradient, radial-gradient, conic-gradient).",
+          "default": "linear-gradient(to bottom, #000, transparent)"
+        }
+      ]
+    },
+    {
       "name": "Preconnect Schemes",
       "type": "group",
       "id": "preconnect_schemes",
@@ -320,21 +473,24 @@
           "settings": {
             "title": "Heading",
             "name": "Inter",
-            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+            "structural": true
           }
         },
         "body": {
           "settings": {
             "title": "Body",
             "name": "Inter",
-            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+            "structural": true
           }
         },
         "button": {
           "settings": {
             "title": "Button",
             "name": "Inter",
-            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+            "structural": true
           }
         }
       },
@@ -433,6 +589,41 @@
         }
       },
       "container_scale": {
+        "fit": {
+          "settings": {
+            "title": "Fit Content",
+            "max_width": "fit-content",
+            "structural": true
+          }
+        },
+        "fill": {
+          "settings": {
+            "title": "Fill Parent",
+            "max_width": "100%",
+            "structural": true
+          }
+        },
+        "half": {
+          "settings": {
+            "title": "Half (1/2)",
+            "max_width": "50%",
+            "structural": true
+          }
+        },
+        "third": {
+          "settings": {
+            "title": "Third (1/3)",
+            "max_width": "33.333%",
+            "structural": true
+          }
+        },
+        "quarter": {
+          "settings": {
+            "title": "Quarter (1/4)",
+            "max_width": "25%",
+            "structural": true
+          }
+        },
         "narrow": {
           "settings": {
             "title": "Narrow",
@@ -511,6 +702,49 @@
             "max_width": "none"
           }
         }
+      },
+      "height_scale": {
+        "auto":            { "settings": { "title": "Auto",            "value": "auto", "structural": true } },
+        "full":            { "settings": { "title": "Full Height",     "value": "100%", "structural": true } },
+        "tiny":            { "settings": { "title": "Tiny",            "value": "3.5rem" } },
+        "small":           { "settings": { "title": "Small",           "value": "4rem" } },
+        "compact":         { "settings": { "title": "Compact",         "value": "8rem" } },
+        "card-short":      { "settings": { "title": "Card Short",      "value": "12rem" } },
+        "card-banner":     { "settings": { "title": "Card Banner",     "value": "14rem" } },
+        "card":            { "settings": { "title": "Card",            "value": "16rem" } },
+        "card-mid":        { "settings": { "title": "Card Mid",        "value": "18rem" } },
+        "card-tall":       { "settings": { "title": "Card Tall",       "value": "20rem" } },
+        "feature":         { "settings": { "title": "Feature",         "value": "24rem" } },
+        "gallery":         { "settings": { "title": "Gallery",         "value": "32rem" } },
+        "viewport-short":  { "settings": { "title": "Viewport Short",  "value": "38vh" } },
+        "viewport-mid":    { "settings": { "title": "Viewport Mid",    "value": "62vh" } },
+        "viewport-tall":   { "settings": { "title": "Viewport Tall",   "value": "78vh" } },
+        "screen":          { "settings": { "title": "Screen",          "value": "100vh" } },
+        "custom":          { "settings": { "title": "Custom",          "structural": true } }
+      },
+      "space_scale": {
+        "none": { "settings": { "title": "None", "value": "0", "structural": true } },
+        "xs": { "settings": { "title": "XS", "value": "0.5rem" } },
+        "sm": { "settings": { "title": "Small", "value": "1rem" } },
+        "md": { "settings": { "title": "Medium", "value": "1.5rem" } },
+        "lg": { "settings": { "title": "Large", "min": "2rem", "vw": "4vw", "max": "2.5rem" } },
+        "xl": { "settings": { "title": "XL", "min": "2.5rem", "vw": "5vw", "max": "4rem" } },
+        "2xl": { "settings": { "title": "2XL", "min": "3.5rem", "vw": "7vw", "max": "6rem" } },
+        "3xl": { "settings": { "title": "3XL", "min": "4.5rem", "vw": "9vw", "max": "8rem" } },
+        "custom": { "settings": { "title": "Custom", "structural": true } }
+      },
+      "text_scale": {
+        "caption": { "settings": { "title": "Caption", "value": "0.75rem" } },
+        "small":   { "settings": { "title": "Small",   "value": "0.875rem" } },
+        "body":    { "settings": { "title": "Body",    "value": "1rem" } },
+        "h6":      { "settings": { "title": "H6",      "value": "1.125rem" } },
+        "h5":      { "settings": { "title": "H5",      "value": "1.25rem" } },
+        "h4":      { "settings": { "title": "H4",      "value": "1.5rem" } },
+        "h3":      { "settings": { "title": "H3",      "value": "1.875rem" } },
+        "h2":      { "settings": { "title": "H2",      "value": "2.25rem" } },
+        "h1":      { "settings": { "title": "H1",      "value": "3rem" } },
+        "display": { "settings": { "title": "Display", "value": "4.5rem" } },
+        "jumbo":   { "settings": { "title": "Jumbo",   "value": "6rem" } }
       }
     }
   }

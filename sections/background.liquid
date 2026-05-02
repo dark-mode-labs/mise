@@ -27,6 +27,7 @@
       alpha: 100,
       palette_token: s.bg_role_palette,
       custom_color: s.bg_role_custom,
+      gradient_token: s.bg_role_gradient,
       behind: false
     %}
     {% if s.image != blank %}
@@ -84,6 +85,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ]
     },
@@ -100,6 +105,13 @@
       "id": "bg_role_custom",
       "label": "Raw Background",
       "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
     },
     {
       "type": "image_picker",

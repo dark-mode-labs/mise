@@ -1,24 +1,24 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign classes = 'media-block w-full h-full relative overflow-hidden rounded-global' | push: 'is-{{ s.height }}' %}
+{% assign classes = 'media-block relative overflow-hidden rounded-global limit-width'
+  | push: 'width-{{ s.width | default: "fill" }}'
+  | push: 'height-{{ s.height }}'
+%}
 
 {% assign classes = classes
-    | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override
-    | push_if: 'shadow-md', s.show_shadow
-  %}
+  | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override
+  | push_if: 'shadow-md', s.show_shadow
+%}
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign styles = blank %}
 
 {% assign styles = styles
-    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
-  %}
-{% if s.height == 'custom' %}
-  {% assign styles = styles | push: '--max-h: {{ s.custom_height }}rem' %}
-{% endif %}
+  | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+%}
 
 {% assign block_styles = styles | join: ';' %}
 
@@ -49,9 +49,21 @@
       "type": "header",
       "content": "Content"
     },
-    { "type": "image_picker", "id": "image", "label": "Desktop Image" },
-    { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
-    { "type": "text", "id": "video_url", "label": "Video URL (MP4)" },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile Image"
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Video URL (MP4)"
+    },
     {
       "type": "checkbox",
       "id": "show_controls",
@@ -66,48 +78,47 @@
       "default": false,
       "conditional": "setting.video_url != blank"
     },
-
     {
       "type": "header",
       "content": "Layout"
     },
     {
-      "type": "select",
-      "id": "height",
-      "label": "Image Height",
-      "options": [
-        { "value": "auto",      "label": "Auto (Fit Content)" },
-        { "value": "sm",        "label": "Small" },
-        { "value": "md",        "label": "Medium" },
-        { "value": "lg",        "label": "Large" },
-        { "value": "xl",        "label": "Fullscreen" },
-        { "value": "full",      "label": "Full" },
-        { "value": "thumbnail", "label": "Thumbnail" },
-        { "value": "custom",    "label": "Custom" }
-      ],
-      "default": "auto"
+      "type": "width",
+      "id": "width",
+      "label": "Width",
+      "default": "fill"
     },
     {
-      "type": "range",
-      "id": "custom_height",
-      "label": "Custom Height",
-      "min": 2,
-      "max": 50,
-      "step": 0.5,
-      "default": 19,
-      "unit": "rem",
-      "conditional": "setting.height == 'custom'"
+      "type": "height",
+      "id": "height",
+      "label": "Image Height",
+      "default": "auto"
     },
     {
       "type": "select",
       "id": "aspect_ratio",
       "label": "Aspect Ratio",
       "options": [
-        { "value": "auto", "label": "Natural" },
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "video", "label": "Video (16:9)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "landscape", "label": "Landscape (4:3)" }
+        {
+          "value": "auto",
+          "label": "Natural"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "video",
+          "label": "Video (16:9)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
       ],
       "default": "auto"
     },
@@ -116,8 +127,14 @@
       "id": "object_fit",
       "label": "Object Fit",
       "options": [
-        { "value": "cover", "label": "Cover (Fill)" },
-        { "value": "contain", "label": "Contain (Fit)" }
+        {
+          "value": "cover",
+          "label": "Cover (Fill)"
+        },
+        {
+          "value": "contain",
+          "label": "Contain (Fit)"
+        }
       ],
       "default": "cover"
     },
@@ -125,14 +142,19 @@
       "type": "header",
       "content": "Style"
     },
-    { "type": "checkbox", "id": "enable_hover", "label": "Enable Hover Zoom", "default": false },
+    {
+      "type": "checkbox",
+      "id": "enable_hover",
+      "label": "Enable Hover Zoom",
+      "default": false
+    },
     {
       "type": "checkbox",
       "id": "show_shadow",
       "label": "Show Shadow",
       "default": false
     },
-        {
+    {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"

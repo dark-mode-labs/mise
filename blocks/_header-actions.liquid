@@ -6,8 +6,32 @@
   {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
+{% comment %}
+  Layout is property-driven AND CSS-driven. The liquid emits the
+  setting values straight as classes (`direction-X`, `vertical-Y`,
+  `content-Z`); theme.css handles the axis-swap (in column,
+  `vertical-*` resolves to `justify-content`; in row, to
+  `align-items`). One source of truth for the axis math.
+
+  Mobile note: child blocks render inline alongside cart/search
+  but are hidden on narrow viewports (TODO: route them through
+  the existing header-drawer — tracked separately).
+{% endcomment %}
+{% assign actions_classes = 'header-actions flex'
+  | push: 'direction-{{ s.direction }}'
+  | push: 'gap-{{ s.gap }}'
+  | push: scheme_class
+%}
+{% if s.vertical_align != blank %}
+  {% assign actions_classes = actions_classes | push: 'vertical-{{ s.vertical_align }}' %}
+{% endif %}
+{% if s.content_align != blank %}
+  {% assign actions_classes = actions_classes | push: 'content-{{ s.content_align }}' %}
+{% endif %}
+
 <div
-  class="header-actions flex items-center gap-4 {{ scheme_class }}"
+  class="{{ actions_classes | join: ' ' }}"
+  style="{% if s.gap == 'custom' %}--space-gap: {{ s.gap_custom }}rem;{% endif %}"
   {{ context.attached_attributes }}
 >
   {% if s.show_search %}
@@ -16,9 +40,17 @@
     </a>
   {% endif %}
 
-  <div class="hidden md:block">
+  {% comment %}
+    Wrapper is `display: contents` on md+ so children participate in
+    the parent flex (with the parent's `direction-X`/`gap-Y`/
+    `vertical-Z`/`content-W` classes governing layout — no
+    duplication). On mobile, `display: none` hides the children
+    entirely. TODO: route mobile children into header-drawer.
+  {% endcomment %}
+  <div class="header-actions-children hidden md:contents">
     {% content_for 'blocks' %}
   </div>
+
   {% if s.show_cart %}
     <a data-action="open-cart" class="p-2 hover:opacity-70 relative group text-on-control">
       <span class="sr-only">Cart</span>
@@ -38,19 +70,78 @@
     { "type": "checkbox", "id": "show_cart", "label": "Show Cart", "default": true },
     {
       "type": "header",
-      "content": "Style"
+      "content": "Layout"
     },
-        {
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "row", "label": "Row" },
+        { "value": "column", "label": "Column" },
+        { "value": "responsive", "label": "Responsive" }
+      ],
+      "default": "row"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Align",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "stretch", "label": "Stretch" }
+      ],
+      "default": "middle"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Content Align",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "between", "label": "Space Between" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "gap",
+      "label": "Gap",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "xs", "label": "XS" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "XL" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "sm"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
+      "conditional": "setting.gap == 'custom'"
+    },
+    {
       "type": "header",
-      "content": "Overrides",
-      "conditional": "true"
+      "content": "Overrides"
     },
     {
       "type": "checkbox",
       "id": "surface_override",
       "label": "Override Color Scheme",
-      "default": false,
-      "conditional": "true"
+      "default": false
     },
     {
       "type": "surface",

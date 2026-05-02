@@ -1,42 +1,25 @@
 {% assign tag_el = tag | default: 'p' %}
 
-{% comment %} --- Display Size & Font Family Defaults --- {% endcomment %}
-{% assign size_class = 'text-base' %}
+{% comment %}
+  Display size → `fs-<tier>` class. The CSS class with the actual
+  font-size is emitted by `theme_variables.liquid` from `theme.text_scale`,
+  so any tier id (built-in like `h1`/`body` OR synth like
+  `synth-text-3_0rem-6_0rem` from a responsive `text-Nxl sm:text-Mxl`
+  pattern) maps cleanly. Family default falls back from the tier's
+  conventional bucket: heading-tier names use `heading`, body-tier
+  names use `body`. Unknown ids default to body family.
+{% endcomment %}
+{% if display_size != blank %}
+  {% assign size_class = 'fs-' | append: display_size %}
+{% else %}
+  {% assign size_class = 'fs-body' %}
+{% endif %}
 
 {% case display_size %}
-  {% when 'display' %}
-    {% assign size_class = 'fs-display' %}
+  {% when 'display' or 'h1' or 'h2' or 'h3' or 'h4' or 'h5' or 'h6' or 'jumbo' %}
     {% assign family = family | default: 'heading' %}
-  {% when 'h1' %}
-    {% assign size_class = 'fs-h1' %}
-    {% assign family = family | default: 'heading' %}
-  {% when 'h2' %}
-    {% assign size_class = 'fs-h2' %}
-    {% assign family = family | default: 'heading' %}
-  {% when 'h3' %}
-    {% assign size_class = 'fs-h3' %}
-    {% assign family = family | default: 'heading' %}
-  {% when 'h4' %}
-    {% assign size_class = 'fs-h4' %}
-    {% assign family = family | default: 'heading' %}
-  {% when 'h5' %}
-    {% assign size_class = 'fs-h5' %}
-    {% assign family = family | default: 'heading' %}
-  {% when 'h6' %}
-    {% assign size_class = 'fs-h6' %}
-    {% assign family = family | default: 'heading' %}
-  {% when 'body' %}
-    {% assign size_class = 'text-base' %}
+  {% else %}
     {% assign family = family | default: 'body' %}
-  {% when 'caption' %}
-    {% assign size_class = 'text-xs' %}
-    {% assign family = family | default: 'body' %}
-  {% when 'small' %}
-    {% assign size_class = 'text-sm' %}
-    {% assign family = family | default: 'body' %}
-  {% when 'jumbo' %}
-    {% assign size_class = 'fs-jumbo' %}
-    {% assign family = family | default: 'heading' %}
 {% endcase %}
 
 {% comment %} --- Class Array Building --- {% endcomment %}
