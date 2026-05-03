@@ -25,11 +25,6 @@
 {% endif %}
 
 {% comment %} --- Class Array Building --- {% endcomment %}
-{% comment %}
-  `block-limit-width` (= `w-full max-w-[var(--limit-width)]`) is the
-  base sizing primitive — fills parent up to the width tier's cap.
-  Always emit it; the cap is harmless when no width tier is set.
-{% endcomment %}
 {% assign classes = 'group-block transition-all rounded-global rotate-custom block-limit-width'
   | push: layout_class
   | push: justify_class
@@ -52,34 +47,16 @@
   | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
 %}
 
-{% comment %}
-  Background layer: scheme-driven via .bg-<role>. Skipped when an
-  escape-hatch (bg_color_override) is in play — that case is rendered via
-  inline style further down to support free hex/gradient bgs.
-{% endcomment %}
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
-{% comment %}
-  `direction-X` already lives in `layout_class` (above) when the
-  block is flex; for grid the layout_class is the grid template.
-  Don't double-emit. flex-wrap and grow/initial only apply to flex.
-{% endcomment %}
 {% if s.layout_mode != 'grid' %}
   {% assign classes = classes | push_if: 'flex-wrap', s.wrap_content %}
 
   {% if s.grow_content %}
     {%- comment -%}
-      `flex-1` (= flex: 1 1 0%) — basis: 0, grow to fill, can shrink. The
-      child starts from 0 width and consumes available space; sibling
-      `width-fit` / `width-synth-*` children keep their natural max-content
-      basis. Earlier we used `flex-grow` (= flex-grow: 1 only, basis: auto),
-      which made the basis = max-content of THIS child, competing with
-      sibling fit-children for parent space and shrinking them when the
-      sum exceeded available width. Visible as catering card "from $65"
-      wrapping to two lines because the left column's long description
-      max-content compressed the right column past its content size.
+      flex-1 (basis: 0) so width-fit siblings keep their max-content basis.
     {%- endcomment -%}
     {% assign classes = classes | push: 'flex-1' %}
   {% else %}
@@ -97,7 +74,12 @@
     | push: 'group-border-{{ s.border_mode }}'
     | push: 'group-border-size-{{ s.border_size }}'
   %}
-  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' and s.border_role != 'gradient' %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
     {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
   {% endif %}
   {% if s.border_mode == 'custom' %}
@@ -136,7 +118,6 @@
     {% assign classes = classes | push: 'responsive-order-reverse' %}
   {% endif %}
 {% endif %}
-
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
 {% if s.position == 'absolute' %}

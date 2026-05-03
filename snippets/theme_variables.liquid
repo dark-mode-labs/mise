@@ -92,43 +92,15 @@
     {% endfor %}
 
     {% comment %}
-      Width — site-defined container scale + fixed structural variants.
-      Container-tier classes only set `--limit-width`; the `.limit-width`
-      utility class (from theme.css) is responsible for applying the
-      var as `max-width` and centering. This matches the legacy contract
-      and avoids forcing `width: 100%` / `margin-inline: auto` on blocks
-      that should flow naturally (which caused alignment regressions).
-    {% endcomment %}
-    {% comment %}
-      Container scale loop: skip `structural: true` entries because
-      they have specialized CSS rules below (flex: 0 0 X% on
-      half/third/quarter, fit-content sizing on fit/fill) that the
-      loop's `--limit-width: <value>` emit can't replicate. The
-      structural entries still appear in `theme.container_scale` so
-      the editor's width picker lists them.
-    {% endcomment %}
-    {% comment %}
-      Container tiers split into two groups:
-      - `synth-*` (synthesized from source `w-N` Tailwind) are FIXED
-        widths — icon containers etc. need to hold their size even
-        when a flex parent has `align-items: center` (which would
-        otherwise shrink them to content). Emit explicit `width:`.
-      - All other named tiers (canvas, extra-wide, c-* from inline
-        `max-width:`, named anchors) are MAX-width caps. Element
-        fills parent up to the cap. Emit only `--limit-width:`,
-        block-limit-width handles `width: 100%; max-width: var(...)`.
+      Width tiers. Synth tiers (from source `w-N`) get an explicit `width:`
+      + `flex-shrink: 0` so flex parents can't compress fixed-size icons.
+      Named tiers only set `--limit-width`; .limit-width handles max-width.
+      Structural tiers (fit/fill/half/third/quarter) have dedicated CSS rules
+      below.
     {% endcomment %}
     {% for c in container_scale %}
       {% unless c[1].settings.structural %}
         {% if c[0] contains 'synth-' %}
-          {%- comment -%}
-            Synth tiers represent literal pixel widths from source `w-N`
-            (icon backgrounds, fixed-size containers etc.). They MUST
-            keep their declared width — `flex-shrink: 0` prevents a
-            sibling with flex-grow from compressing the icon below 48px
-            and rendering it as an oval. Different from `width-fit`
-            (where shrinking-to-fit IS desired in tight viewports).
-          {%- endcomment -%}
           .width-{{ c[0] }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; width: {{ c[1].settings.max_width | default: '100%' }}; max-width: 100%; flex-shrink: 0; }
         {% else %}
           .width-{{ c[0] }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; }
@@ -137,23 +109,10 @@
     {% endfor %}
 
     {% comment %}
-      Direction-breakpoint media queries — emitted per container_scale
-      tier so block settings can reference any tier name for "switch
-      from column to row at this width". This unifies the breakpoint
-      vocabulary with the width vocabulary: each container tier
-      doubles as a breakpoint reference. group.liquid emits a
-      `bp-<tier>` modifier class from `direction_breakpoint`. Skip
-      structural tiers (auto/full/fit/half/etc.) and any tier whose
-      max_width isn't a pixel/rem length.
-    {% endcomment %}
-    {% comment %}
-      Reverse-order modifier (responsive_order_override: reverse on group):
-      below the breakpoint (column mode), flip child order. Above the
-      breakpoint, the per-tier `bp-<tier>` rules below set
-      `flex-direction: row` which overrides column-reverse — so children
-      render in source order at desktop. Mirrors Tailwind's
-      `flex-col-reverse <bp>:flex-row`. Placed BEFORE the bp media
-      queries so cascade order ensures desktop rules win.
+      Direction-breakpoint media queries per container_scale tier.
+      `bp-<tier>` on direction-responsive switches column→row above
+      the tier width; below it, half/third/quarter collapse to full.
+      Reverse-order rule emitted first so desktop bp rules cascade-win.
     {% endcomment %}
     .direction-responsive.responsive-order-reverse { flex-direction: column-reverse; }
 
@@ -162,17 +121,6 @@
         {% assign mw = c[1].settings.max_width %}
         {% if mw contains 'rem' or mw contains 'px' %}
         @media (min-width: {{ mw }}) { .direction-responsive.bp-{{ c[0] }} { flex-direction: row; } }
-        {% comment %}
-          Per-bp collapse: when parent is direction-responsive.bp-<tier>
-          AND viewport is BELOW that tier's bp, the parent renders as
-          column (per .direction-responsive base in theme.css). Children
-          carrying width-half/third/quarter must collapse to full-width
-          in that range, otherwise they render at 50%/33%/25% of column
-          width — squeezed garbage. The global `@media (max-width: 767px)`
-          rule below covers up-to-mobile, but for higher bp tiers (lg=
-          broad=1024, xl=canvas=1280) we need the collapse to extend
-          across iPad-Mini/Air. Emit a per-tier max-width rule here.
-        {% endcomment %}
         @media (max-width: calc({{ mw }} - 0.0625rem)) {
           .direction-responsive.bp-{{ c[0] }} > .width-half,
           .direction-responsive.bp-{{ c[0] }} > .width-third,

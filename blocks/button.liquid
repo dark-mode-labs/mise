@@ -32,17 +32,10 @@
 {% if s.width == 'fill' %}
   {% assign wrapper_classes = wrapper_classes | push: 'w-full block' %}
 {% else %}
-  {% comment %}
-    Use the existing `width-fit limit-width` mise pattern so the
-    wrapper's cross-axis size is explicitly `fit-content` instead of
-    `auto`. In a flex-column parent (mise group default), `auto`
-    cross-axis size lets `align-items: stretch` (CSS default) expand
-    the button to full width — losing the inline-block intent. With
-    explicit `fit-content`, the button stays content-width regardless
-    of the parent's flex alignment, while still respecting
-    `align-self: auto` so parent's `content_align: center/end` still
-    positions it correctly along the cross-axis.
-  {% endcomment %}
+  {%- comment -%}
+    Explicit fit-content so flex-column parent's `align-items: stretch`
+    doesn't expand the button past its content.
+  {%- endcomment -%}
   {% assign wrapper_classes = wrapper_classes | push: 'inline-block width-fit limit-width' %}
 {% endif %}
 
@@ -55,7 +48,12 @@
     | push: 'group-border-{{ s.border_mode }}'
     | push: 'group-border-size-{{ s.border_size }}'
   %}
-  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' and s.border_role != 'gradient' %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
     {% assign wrapper_classes = wrapper_classes | push: 'border-{{ s.border_role }}' %}
   {% endif %}
   {% if s.border_mode == 'custom' %}
@@ -173,7 +171,6 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-
 {% assign color_role = s.text_role %}
 {% if s.text_role == 'custom' or s.text_role == 'palette' %}
   {% assign color_role = 'on-button' %}
@@ -194,12 +191,7 @@
         data-action-args="{{ s.action_args | escape }}"
       {% endif %}
     >
-      {% render 'typography',
-        text: s.label,
-        type_style: s.type_style,
-        color_role: color_role,
-        class: utility_classes
-      %}
+      {% render 'typography', text: s.label, type_style: s.type_style, color_role: color_role, class: utility_classes %}
     </button>
   {% elsif s.trigger == 'link' %}
     <a
@@ -212,12 +204,7 @@
       {% endif %}
       class="{{ inner_class_str }}"
     >
-      {% render 'typography',
-        type_style: s.type_style,
-        text: s.label,
-                color_role: color_role,
-        class: utility_classes
-      %}
+      {% render 'typography', type_style: s.type_style, text: s.label, color_role: color_role, class: utility_classes %}
     </a>
   {% endif %}
 </div>
