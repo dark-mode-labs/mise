@@ -1,39 +1,79 @@
 {% assign s = section.settings %}
 
-{% comment %} --- 1. Container Class Pipeline --- {% endcomment %}
-{% assign container_classes = 'bg-body section-layout limit-width'
-  | push: 'width-{{ s.width_scheme }}'
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
+{% comment %}
+  --- 1. Surface scoping (CSS-var context) ---
+  Sections always introduce a surface scope (they're the natural surface
+  boundary in the layout tree). Defaults to `default` so descendants always
+  inherit a usable set of CSS variables.
+{% endcomment %}
+{% assign surface_safe = s.surface_id | default: 'default' %}
+{% assign surface_class = 'surface-' | append: surface_safe %}
+
+{% comment %} --- 2. Background role (paints from active surface) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = '' %}
+{% if bg_color_value == blank and bg_role_safe != 'none' %}
+  {% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% endif %}
+
+{% comment %}
+  --- 3. Container class pipelines (TWO LAYERS) ---
+  Sections render as two stacked `limit-width` boxes:
+
+    bg layer     – carries the section background + padding + height.
+                   Width is `width_bg` (default fill ⇒ full-bleed).
+    content layer – caps the actual content area. Width is `width`
+                   (default fill ⇒ matches bg). Centered via mx-auto.
+
+  When `width_bg: fill` and `width: canvas` (the common ultra-wide
+  pattern), the bg paints the whole viewport but the content is
+  capped at canvas (1280px) and centered. When both are `fill` (the
+  default) the two collapse and behavior matches the pre-refactor
+  single wrapper.
+{% endcomment %}
+{% assign bg_layer_classes = 'section-layout limit-width'
+  | push: bg_class
+  | push: 'width-{{ s.width_bg }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
-  | push: 'is-{{ s.height }}'
+  | push: 'height-{{ s.height }}'
 %}
+{% assign bg_layer_class_str = bg_layer_classes | join: ' ' %}
+{% assign content_layer_class_str = 'section-content limit-width width-' | append: s.width %}
 
-{% assign container_class_str = container_classes | join: ' ' %}
-
-{% comment %} --- 2. Spacing Style Pipeline --- {% endcomment %}
-{% assign spacing_styles = blank %}
+{% comment %} --- 4. Style Pipeline (spacing + bg layer) --- {% endcomment %}
+{% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
-  {% assign spacing_styles = spacing_styles
+  {% assign styles = styles
     | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
     | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
   %}
 {% endif %}
 
 {% if s.padding_horizontal == 'custom' %}
-  {% assign spacing_styles = spacing_styles
+  {% assign styles = styles
     | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
     | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
   %}
 {% endif %}
 
-{% if s.height == 'custom' %}
-  {% assign spacing_styles = spacing_styles | push: '--max-h: {{ s.height_custom }}vh' %}
+
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
+{% assign style_str = styles | join: ';' %}
 
-{% assign spacing_style_str = spacing_styles | join: ';' %}
-
-{% comment %} --- 3. Inner Flex Pipeline --- {% endcomment %}
+{% comment %} --- 5. Inner Flex Pipeline --- {% endcomment %}
 {% assign inner_classes = 'flex flex-auto gap-6'
   | push: 'flex-{{ s.flex_direction }}'
   | push: 'section-align-content-{{ s.content_align }}'
@@ -41,20 +81,21 @@
   | push: 'section-align-text-{{ s.text_align }}'
   | push_if: 'stagger-load', s.animate_stagger
 %}
-
 {% assign inner_class_str = inner_classes | join: ' ' %}
 
 {% comment %} --- Component Render --- {% endcomment %}
 <section
-  class="color-{{ s.color_scheme | default: 'none' }}"
+  class="{{ surface_class }}"
   {{ context.attached_attributes }}
 >
   <div
-    class="{{ container_class_str }}"
-    style="{{ spacing_style_str }}"
+    class="{{ bg_layer_class_str }}"
+    style="{{ style_str }}"
   >
-    <div class="{{ inner_class_str }}">
-      {% content_for 'blocks' %}
+    <div class="{{ content_layer_class_str }}">
+      <div class="{{ inner_class_str }}">
+        {% content_for 'blocks' %}
+      </div>
     </div>
   </div>
 </section>
@@ -63,57 +104,67 @@
 {
   "name": "Generic section",
   "settings": [
-    { "type": "header", "content": "Layout" },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
-      "label": "Max Content Width",
-      "default": "standard"
+      "type": "header",
+      "content": "Layout"
     },
     {
-      "type": "select",
+      "type": "width",
+      "id": "width",
+      "label": "Content Width",
+      "info": "Caps the content area. Centered (mx-auto) when capped below the section's bg width.",
+      "default": "fill"
+    },
+    {
+      "type": "width",
+      "id": "width_bg",
+      "label": "Background Width",
+      "info": "Where the section background extends. `Fill` = full-bleed; narrower tiers cap the bg layer too.",
+      "default": "fill"
+    },
+    {
+      "type": "height",
       "id": "height",
       "label": "Section Height",
-      "options": [
-        { "value": "auto", "label": "Auto (Fit Content)" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Fullscreen" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "auto"
-    },
-    {
-      "type": "range",
-      "id": "height_custom",
-      "label": "Custom Height",
-      "min": 10,
-      "max": 100,
-      "step": 5,
-      "default": 56,
-      "unit": "vh",
-      "conditional": "setting.height == 'custom'"
     },
     {
       "type": "select",
       "id": "flex_direction",
       "label": "Flex Direction",
       "options": [
-        { "value": "col", "label": "Column" },
-        { "value": "row", "label": "Row" }
+        {
+          "value": "col",
+          "label": "Column"
+        },
+        {
+          "value": "row",
+          "label": "Row"
+        }
       ],
       "default": "col"
     },
-    { "type": "header", "content": "Alignment" },
+    {
+      "type": "header",
+      "content": "Alignment"
+    },
     {
       "type": "select",
       "id": "content_align",
       "label": "Content Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "center"
     },
@@ -122,9 +173,18 @@
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "center"
     },
@@ -133,26 +193,29 @@
       "id": "vertical_align",
       "label": "Vertical Alignment",
       "options": [
-        { "value": "top", "label": "Top" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom" }
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
       ],
       "default": "middle"
     },
-    { "type": "header", "content": "Section Spacing" },
     {
-      "type": "select",
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "Extra Small" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Extra Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -178,18 +241,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "Extra Small" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Extra Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "xs"
     },
     {
@@ -218,19 +272,129 @@
       "type": "header",
       "content": "Animation"
     },
-    { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
-    { "type": "header", "content": "Theme" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+    {
+      "type": "checkbox",
+      "id": "animate_stagger",
+      "label": "Stagger",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override surface",
+      "default": false,
+      "info": "When enabled, this section introduces its own surface scope. Otherwise descendants inherit the surface from the parent (page default unless a surrounding section overrode it)."
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Surface",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    }
   ],
   "blocks": [
-    { "type": "@theme" },
-    { "type": "scroll-indicator" },
-    { "type": "text" },
-    { "type": "spacer" },
-    { "type": "_marquee" },
-    { "type": "media" },
-    { "type": "group" },
-    { "type": "button" }
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "scroll-indicator"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "spacer"
+    },
+    {
+      "type": "_marquee"
+    },
+    {
+      "type": "media"
+    },
+    {
+      "type": "group"
+    },
+    {
+      "type": "button"
+    }
   ],
   "presets": [
     {
@@ -241,21 +405,32 @@
       "blocks": {
         "heading": {
           "type": "text",
-          "settings": { "content": "Our Story", "display_size": "h2", "tag": "h2", "font_weight": "bold" }
+          "settings": {
+            "content": "Our Story",
+            "tag": "h2",
+            "type_style": "heading-1"
+          }
         },
         "body": {
           "type": "text",
           "settings": {
             "content": "Founded in 2025, we believe in honest ingredients and good vibes.",
-            "display_size": "body"
+            "type_style": "body"
           }
         },
         "btn": {
           "type": "button",
-          "settings": { "label": "Learn More", "style": "link" }
+          "settings": {
+            "label": "Learn More",
+            "style": "link"
+          }
         }
       },
-      "block_order": ["heading", "body", "btn"]
+      "block_order": [
+        "heading",
+        "body",
+        "btn"
+      ]
     }
   ]
 }

@@ -1,20 +1,28 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign classes = 'icon icon-size inline-flex items-center justify-center flex-shrink-0 text-body'
+{% assign classes = 'icon icon-size inline-flex items-center justify-center flex-shrink-0'
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
 
-{% unless s.inherit_styles %}
-  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
-{% endunless %}
+{% assign color_role = 'text-{{ s.text_role }}' %}
+{% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
 
-{% assign block_classes = classes | join: ' ' %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}
+  {% assign color_role = 'text-primary' %}
+{% endif %}
+{% assign block_classes = classes | push: color_role | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
 {% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -47,10 +55,9 @@
 
 {% assign styles = styles | push: '--icon-size: {{ s.icon_size }}rem' %}
 
-{% unless s.inherit_styles %}
-  {% assign styles = styles | push_if: '--color-text: {{ s.text_color }}', s.text_color_override %}
-{% endunless %}
-
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
 {% assign block_styles = styles | join: ';' %}
 
 {% comment %} --- Component Render --- {% endcomment %}
@@ -87,17 +94,9 @@
       "content": "Layout"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -123,17 +122,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -159,18 +150,9 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_vertical",
       "label": "Vertical Margin",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -196,18 +178,9 @@
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_horizontal",
       "label": "Horizontal Margin",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -237,36 +210,81 @@
       "content": "Style"
     },
     {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Theme Colors",
-      "default": true
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
-      "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Icon Color",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Color",
-      "default": "#000000",
-      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
     }
   ]
 }

@@ -1,22 +1,28 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign wrapper_classes = 'text-align-{{ s.text_align }}'
-  | push: 'margin-my-{{ s.margin_vertical }}'
-  | push: 'margin-mx-{{ s.margin_horizontal }}'
-%}
+{% assign wrapper_classes = '' | push: 'margin-my-{{ s.margin_vertical }}' | push: 'margin-mx-{{ s.margin_horizontal }}' %}
+{% if s.text_align != blank %}
+  {% assign wrapper_classes = wrapper_classes | push: 'text-align-{{ s.text_align }}' %}
+{% endif %}
 
 {% if s.numeric == 'tabular' %}
   {% assign wrapper_classes = wrapper_classes | push: 'tabular-nums min-w-[3ch]' %}
 {% endif %}
 
-{% unless s.inherit_styles %}
-  {% assign wrapper_classes = wrapper_classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
-{% endunless %}
+{% if s.surface_override %}
+  {% assign wrapper_classes = wrapper_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
 
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
 {% assign styles = blank %}
 
 {% if s.margin_vertical == 'custom' %}
@@ -28,31 +34,18 @@
 
 {% if s.margin_horizontal == 'custom' %}
   {% assign styles = styles
-    | push: '--space-pl: {{ s.margin_horizontal_custom_left }}rem'
-    | push: '--space-pr: {{ s.margin_horizontal_custom_right }}rem'
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
   %}
 {% endif %}
 
-{% if s.text_tracking == 'custom' %}
-  {% assign styles = styles | push: '--text-tracking: {{ s.text_tracking_custom }}em' %}
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
 {% endif %}
-
-{% if s.text_leading == 'custom' %}
-  {% assign styles = styles | push: '--text-leading: {{ s.text_leading_custom | divided_by: 100.0 }}' %}
-{% endif %}
-
-{% unless s.inherit_styles %}
-  {% assign styles = styles | push_if: '--color-text: {{ s.text_color }}', s.text_color_override %}
-{% endunless %}
-
 {% assign wrapper_style_str = styles | join: ';' %}
 
 {% comment %} --- Typography Utilities --- {% endcomment %}
 {% assign utilities = blank | push_if: 'italic', s.italic | push_if: 'hyphens-auto', s.enable_hyphens %}
-
-{% unless s.text_transform == 'none' %}
-  {% assign utilities = utilities | push: s.text_transform %}
-{% endunless %}
 
 {% case s.text_wrap %}
   {% when 'nowrap' -%}
@@ -70,19 +63,11 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% comment %} --- Font & Color Logic --- {% endcomment %}
-{% assign font_family = blank %}
-{% if s.font_family_override and s.font_scheme != blank %}
-  {% assign font_family = s.font_scheme %}
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}
+  {% comment %} Both routes paint via `var(--text)` (set inline above). {% endcomment %}
+  {% assign color_role = 'primary' %}
 {% endif %}
-
-{% assign color_role = s.color_role %}
-{% unless s.inherit_styles %}
-  {% if s.text_color_override %}
-    {% assign color_role = 'primary' %}
-  {% endif %}
-{% endunless %}
-
 {% comment %} --- Component Render --- {% endcomment %}
 <div
   class="{{ wrapper_class_str }}"
@@ -92,12 +77,8 @@
   {% render 'typography',
     text: s.content,
     tag: s.tag,
-    display_size: s.display_size,
-    weight: s.font_weight,
+    type_style: s.type_style,
     class: utility_classes,
-    tracking: s.text_tracking,
-    leading: s.text_leading,
-    family: font_family,
     color_role: color_role
   %}
 </div>
@@ -117,40 +98,54 @@
       "content": "Typography"
     },
     {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "body"
+    },
+    {
       "type": "select",
       "id": "tag",
       "label": "HTML Tag",
       "default": "div",
       "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" },
-        { "value": "h3", "label": "H3" },
-        { "value": "h4", "label": "H4" },
-        { "value": "h5", "label": "H5" },
-        { "value": "h6", "label": "H6" },
-        { "value": "p", "label": "Paragraph" },
-        { "value": "div", "label": "Div" },
-        { "value": "span", "label": "Span" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "display_size",
-      "label": "Size",
-      "default": "base",
-      "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" },
-        { "value": "h3", "label": "H3" },
-        { "value": "h4", "label": "H4" },
-        { "value": "h5", "label": "H5" },
-        { "value": "h6", "label": "H6" },
-        { "value": "display", "label": "Display" },
-        { "value": "body", "label": "Body" },
-        { "value": "caption", "label": "Caption" },
-        { "value": "small", "label": "Small" },
-        { "value": "jumbo", "label": "Jumbo" },
-        { "value": "base", "label": "Base" }
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "p",
+          "label": "Paragraph"
+        },
+        {
+          "value": "div",
+          "label": "Div"
+        },
+        {
+          "value": "span",
+          "label": "Span"
+        }
       ]
     },
     {
@@ -158,25 +153,24 @@
       "id": "text_align",
       "label": "Alignment",
       "options": [
-        { "value": "", "label": "Inherit" },
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "",
+          "label": "Inherit"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": ""
-    },
-    {
-      "type": "select",
-      "id": "font_weight",
-      "label": "Weight",
-      "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "bold", "label": "Bold" },
-        { "value": "extrabold", "label": "Extra Bold" },
-        { "value": "black", "label": "Black" }
-      ],
-      "default": "normal"
     },
     {
       "type": "select",
@@ -184,61 +178,15 @@
       "label": "Number Style",
       "default": "default",
       "options": [
-        { "value": "default", "label": "Default" },
-        { "value": "tabular", "label": "Tabular" }
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "tabular",
+          "label": "Tabular"
+        }
       ]
-    },
-    {
-      "type": "select",
-      "id": "text_tracking",
-      "label": "Tracking",
-      "options": [
-        { "value": "tighter", "label": "Tighter" },
-        { "value": "tight", "label": "Tight" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "wider", "label": "Wider" },
-        { "value": "widest", "label": "Widest" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "normal"
-    },
-    {
-      "type": "range",
-      "id": "text_tracking_custom",
-      "label": "Custom Tracking",
-      "min": -0.1,
-      "max": 0.5,
-      "step": 0.025,
-      "default": 0,
-      "unit": "em",
-      "conditional": "setting.text_tracking == 'custom'"
-    },
-    {
-      "type": "select",
-      "id": "text_leading",
-      "label": "Leading",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "tight", "label": "Tight" },
-        { "value": "snug", "label": "Snug" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "relaxed", "label": "Relaxed" },
-        { "value": "loose", "label": "Loose" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "normal"
-    },
-    {
-      "type": "range",
-      "id": "text_leading_custom",
-      "label": "Custom Leading",
-      "min": 80,
-      "max": 200,
-      "step": 5,
-      "default": 100,
-      "unit": "%",
-      "conditional": "setting.text_leading == 'custom'"
     },
     {
       "type": "checkbox",
@@ -253,33 +201,8 @@
       "default": false
     },
     {
-      "type": "checkbox",
-      "id": "font_family_override",
-      "label": "Override Font",
-      "default": false
-    },
-    {
-      "type": "font_scheme",
-      "id": "font_scheme",
-      "label": "Font",
-      "default": "",
-      "conditional": "setting.font_family_override == true"
-    },
-    {
       "type": "header",
       "content": "Layout & Style"
-    },
-    {
-      "type": "select",
-      "id": "text_transform",
-      "label": "Text Transform",
-      "default": "none",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "uppercase", "label": "Uppercase" },
-        { "value": "capitalize", "label": "Capitalize" },
-        { "value": "lowercase", "label": "Lowercase" }
-      ]
     },
     {
       "type": "select",
@@ -287,9 +210,18 @@
       "label": "Text Wrapping",
       "default": "wrap",
       "options": [
-        { "value": "wrap", "label": "Wrap" },
-        { "value": "nowrap", "label": "No Wrap" },
-        { "value": "balance", "label": "Balance" }
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "No Wrap"
+        },
+        {
+          "value": "balance",
+          "label": "Balance"
+        }
       ]
     },
     {
@@ -298,9 +230,18 @@
       "label": "Overflow",
       "default": "visible",
       "options": [
-        { "value": "visible", "label": "Visible" },
-        { "value": "hidden", "label": "Hidden (Clip)" },
-        { "value": "ellipsis", "label": "Ellipsis (Truncate)" }
+        {
+          "value": "visible",
+          "label": "Visible"
+        },
+        {
+          "value": "hidden",
+          "label": "Hidden (Clip)"
+        },
+        {
+          "value": "ellipsis",
+          "label": "Ellipsis (Truncate)"
+        }
       ]
     },
     {
@@ -308,19 +249,10 @@
       "content": "Layout"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_vertical",
       "label": "Vertical margin",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "auto"
+      "default": "none"
     },
     {
       "type": "range",
@@ -345,19 +277,10 @@
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_horizontal",
       "label": "Horizontal margin",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "auto"
+      "default": "none"
     },
     {
       "type": "range",
@@ -386,49 +309,81 @@
       "content": "Style"
     },
     {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Global Styles",
-      "default": true
-    },
-    {
       "type": "select",
-      "id": "color_role",
+      "id": "text_role",
       "label": "Text Color Role",
       "default": "primary",
       "options": [
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "accent", "label": "Accent" }
-      ],
-      "conditional": "setting.inherit_styles or setting.text_color_override != true"
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
-      "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Text Color",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Color",
-      "default": "#ffffff",
-      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
     }
   ]
 }

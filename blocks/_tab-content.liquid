@@ -15,6 +15,13 @@
   "name": "Tab Content",
   "settings": [
     {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "body"
+    },
+    {
       "type": "header",
       "content": "Binding"
     },
@@ -25,7 +32,11 @@
       "default": "{{ context.item.uuid }}"
     }
   ],
-  "blocks": [{ "type": "@theme" }],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
   "presets": [
     {
       "name": "Tab Content",
@@ -62,13 +73,14 @@
                           "type": "media",
                           "settings": {
                             "image": "{{ context.item.asset.url }}",
-                            "placeholder": "scene-1",
                             "object_fit": "cover",
                             "aspect_ratio": "landscape"
                           }
                         }
                       },
-                      "block_order": ["img"]
+                      "block_order": [
+                        "img"
+                      ]
                     },
                     "menu-card-content": {
                       "type": "group",
@@ -86,8 +98,7 @@
                           "settings": {
                             "content": "{{ context.item.description }}",
                             "text_align": "left",
-                            "display_size": "caption",
-                            "text_transform": "none"
+                            "type_style": "caption"
                           }
                         },
                         "info": {
@@ -99,8 +110,7 @@
                                 "tag": "span",
                                 "content": "{{ context.item.amount | money }}",
                                 "text_align": "right",
-                                "font_weight": "bold",
-                                "display_size": "body"
+                                "type_style": "body"
                               }
                             },
                             "title": {
@@ -110,8 +120,7 @@
                                 "content": "{{ context.item.name }}",
                                 "text_wrap": "balance",
                                 "text_align": "left",
-                                "font_weight": "bold",
-                                "display_size": "body"
+                                "type_style": "body"
                               }
                             }
                           },
@@ -124,10 +133,16 @@
                             "padding_vertical": "xs",
                             "padding_horizontal": "none"
                           },
-                          "block_order": ["title", "price"]
+                          "block_order": [
+                            "title",
+                            "price"
+                          ]
                         }
                       },
-                      "block_order": ["info", "desc"]
+                      "block_order": [
+                        "info",
+                        "desc"
+                      ]
                     },
                     "menu-card-footer": {
                       "type": "group",
@@ -150,7 +165,9 @@
                           }
                         }
                       },
-                      "block_order": ["btn"]
+                      "block_order": [
+                        "btn"
+                      ]
                     }
                   },
                   "settings": {
@@ -159,13 +176,19 @@
                   }
                 }
               },
-              "block_order": ["menu-card-full"]
+              "block_order": [
+                "menu-card-full"
+              ]
             }
           },
-          "block_order": ["items"]
+          "block_order": [
+            "items"
+          ]
         }
       },
-      "block_order": ["items-in-collection"]
+      "block_order": [
+        "items-in-collection"
+      ]
     }
   ]
 }

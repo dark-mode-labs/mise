@@ -1,40 +1,6 @@
 {
   "schema": [
     {
-      "name": "Typography",
-      "id": "typography",
-      "settings": [
-        {
-          "type": "font_scheme",
-          "id": "heading_font_scheme",
-          "label": "Heading Font",
-          "default": "default"
-        },
-        {
-          "type": "font_scheme",
-          "id": "body_font_scheme",
-          "label": "Body Font",
-          "default": "default"
-        },
-        {
-          "type": "font_scheme",
-          "id": "button_font_scheme",
-          "label": "Button / UI Font",
-          "default": "default"
-        },
-        {
-          "type": "range",
-          "id": "type_scale",
-          "label": "Type Scale",
-          "min": 80,
-          "max": 120,
-          "step": 5,
-          "default": 100,
-          "unit": "%"
-        }
-      ]
-    },
-    {
       "name": "Layout",
       "id": "layout",
       "settings": [
@@ -104,93 +70,133 @@
       ]
     },
     {
-      "name": "Color Schemes",
+      "name": "Brand Palette",
       "type": "group",
-      "id": "color_schemes",
+      "id": "palette",
       "settings": [
         {
           "type": "text",
           "id": "title",
           "label": "Name",
-          "default": "Default Color Scheme"
+          "default": "New Token"
+        },
+        {
+          "type": "color",
+          "id": "value",
+          "label": "Color",
+          "default": "rgba(0, 0, 0, 1)",
+          "info": "Hex (e.g. #ea580c) or CSS gradient string."
+        }
+      ]
+    },
+    {
+      "name": "Surfaces",
+      "type": "group",
+      "id": "surfaces",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "New Surface"
         },
         {
           "type": "header",
-          "content": "Base Colors"
+          "content": "Background slots",
+          "info": "Hex / gradient / @palette-token reference. Leave empty to default to transparent."
         },
         {
           "type": "color",
           "id": "background",
-          "label": "Background",
-          "default": "rgba(255, 255, 255, 1)"
+          "label": "Background"
         },
         {
           "type": "color",
-          "id": "text",
-          "label": "Text",
-          "default": "rgba(255, 255, 255, 1)"
-        },
-        {
-          "type": "color",
-          "id": "text_secondary",
-          "label": "Secondary Text",
-          "default": "rgba(102, 102, 102, 1)"
-        },
-        {
-          "type": "color",
-          "id": "accent",
-          "label": "Accent / Links",
-          "default": "rgba(0, 0, 0, 1)"
+          "id": "background_alt",
+          "label": "Background (alt)"
         },
         {
           "type": "color",
           "id": "surface",
-          "label": "Surface / Card Background",
-          "default": "rgba(245, 245, 245, 1)"
+          "label": "Surface"
         },
         {
           "type": "color",
-          "id": "border",
-          "label": "Borders",
-          "default": "rgba(255, 255, 255, 1)"
+          "id": "surface_alt",
+          "label": "Surface (alt)"
         },
         {
           "type": "color",
-          "id": "shadow",
-          "label": "Shadows",
-          "default": "rgba(0, 0, 0, 1)"
-        },
-        {
-          "type": "header",
-          "content": "Buttons"
+          "id": "accent_bg",
+          "label": "Accent BG"
         },
         {
           "type": "color",
           "id": "button_bg",
-          "label": "Solid Button Background",
-          "default": "rgba(255, 255, 255, 1)"
+          "label": "Button BG"
         },
         {
           "type": "color",
-          "id": "button_text",
-          "label": "Solid Button Label",
-          "default": "rgba(255, 255, 255, 1)"
+          "id": "control_bg",
+          "label": "Control BG"
         },
         {
           "type": "header",
-          "content": "UI Controls (Arrows/Dots)"
+          "content": "Text slots"
         },
         {
           "type": "color",
-          "id": "ui_bg",
-          "label": "Control Background",
-          "default": "rgba(255, 255, 255, 1)"
+          "id": "text",
+          "label": "Text \u2014 primary"
         },
         {
           "type": "color",
-          "id": "ui_text",
-          "label": "Control Icon/Text",
-          "default": "rgba(0, 0, 0, 1)"
+          "id": "text_secondary",
+          "label": "Text \u2014 secondary"
+        },
+        {
+          "type": "color",
+          "id": "text_subtle",
+          "label": "Text \u2014 subtle"
+        },
+        {
+          "type": "color",
+          "id": "text_emphasis",
+          "label": "Text \u2014 emphasis"
+        },
+        {
+          "type": "color",
+          "id": "text_on_accent",
+          "label": "Text on accent"
+        },
+        {
+          "type": "color",
+          "id": "text_on_button",
+          "label": "Text on button"
+        },
+        {
+          "type": "color",
+          "id": "text_on_control",
+          "label": "Text on control"
+        },
+        {
+          "type": "header",
+          "content": "Borders & shadow"
+        },
+        {
+          "type": "color",
+          "id": "border",
+          "label": "Border"
+        },
+        {
+          "type": "color",
+          "id": "border_emphasis",
+          "label": "Border \u2014 emphasis"
+        },
+        {
+          "type": "color",
+          "id": "shadow",
+          "label": "Shadow"
         }
       ]
     },
@@ -209,91 +215,255 @@
           "type": "text",
           "id": "name",
           "label": "Font Family",
-          "info": "CSS font-family value used for --font-heading, --font-body, --font-button. E.g. 'Inter', 'Playfair Display', sans-serif.",
+          "info": "CSS font-family value used for --font-heading, --font-body, --font-button, --font-accent. E.g. 'Inter', 'Playfair Display', sans-serif.",
           "default": "sans-serif"
         },
         {
           "type": "text",
           "id": "url",
           "label": "Google Fonts URL",
-          "info": "Full stylesheet URL from Google Fonts (e.g. https://fonts.googleapis.com/css2?family=Inter…). Leave blank for system fonts."
+          "info": "Full stylesheet URL from Google Fonts (e.g. https://fonts.googleapis.com/css2?family=Inter\u2026). Leave blank for system fonts."
         }
       ]
     },
     {
-      "name": "Max Width Schemes",
+      "name": "Type Styles",
       "type": "group",
-      "id": "width_schemes",
+      "id": "type_styles",
+      "info": "Type styles bundle font family, size, weight, tracking, leading, and transform into one named treatment. Text-rendering blocks reference a single `type_style: <id>` instead of setting all dimensions individually. Single-dimension `font_size` (flat rem) \u2014 mobile responsiveness handled by CSS-side media queries on the rendered .ts-<id> class.",
       "settings": [
         {
           "type": "text",
           "id": "title",
           "label": "Name",
-          "default": "Default Width Scheme"
+          "default": "New Type Style"
         },
         {
-          "type": "select",
-          "id": "width",
-          "label": "Width",
-          "options": [
-            {
-              "value": "sm",
-              "label": "Small"
-            },
-            {
-              "value": "md",
-              "label": "Medium"
-            },
-            {
-              "value": "lg",
-              "label": "Large"
-            },
-            {
-              "value": "xl",
-              "label": "x-Large"
-            },
-            {
-              "value": "2xl",
-              "label": "2x-Large"
-            },
-            {
-              "value": "3xl",
-              "label": "3x-Large"
-            },
-            {
-              "value": "4xl",
-              "label": "4x-Large"
-            },
-            {
-              "value": "fit",
-              "label": "Fit Content"
-            },
-            {
-              "value": "full",
-              "label": "Full"
-            },
-            {
-              "value": "half",
-              "label": "Half"
-            },
-            {
-              "value": "third",
-              "label": "Third"
-            },
-            {
-              "value": "custom",
-              "label": "Custom"
-            }
-          ],
-          "default": "fit"
+          "type": "font_scheme",
+          "id": "font_ref",
+          "label": "Font",
+          "info": "Picks one of the named font schemes (heading / body / button / brand-extended).",
+          "default": "body"
         },
         {
           "type": "text",
-          "id": "custom_width",
-          "label": "Width (rem)",
-          "info": "Enter a number in rem units (e.g. 80 for 80rem ≈ 1280px at base font size).",
-          "default": "93.5",
-          "conditional": "setting.width == 'custom'"
+          "id": "font_size",
+          "label": "Font Size",
+          "info": "Flat font-size value (e.g. `3rem`). Single-dimension only \u2014 mobile shrink applied via CSS media queries on .ts-<id>, not per-style data.",
+          "default": "1rem"
+        },
+        {
+          "type": "select",
+          "id": "weight",
+          "label": "Weight",
+          "default": "normal",
+          "options": [
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "semibold",
+              "label": "Semibold"
+            },
+            {
+              "value": "bold",
+              "label": "Bold"
+            },
+            {
+              "value": "extrabold",
+              "label": "Extra Bold"
+            },
+            {
+              "value": "black",
+              "label": "Black"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "tracking",
+          "label": "Tracking",
+          "default": "normal",
+          "options": [
+            {
+              "value": "tighter",
+              "label": "Tighter"
+            },
+            {
+              "value": "tight",
+              "label": "Tight"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "wide",
+              "label": "Wide"
+            },
+            {
+              "value": "wider",
+              "label": "Wider"
+            },
+            {
+              "value": "widest",
+              "label": "Widest"
+            },
+            {
+              "value": "ultra-wide",
+              "label": "Ultra Wide"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "leading",
+          "label": "Leading",
+          "default": "normal",
+          "options": [
+            {
+              "value": "none",
+              "label": "None (1)"
+            },
+            {
+              "value": "tight",
+              "label": "Tight (1.25)"
+            },
+            {
+              "value": "snug",
+              "label": "Snug (1.375)"
+            },
+            {
+              "value": "normal",
+              "label": "Normal (1.5)"
+            },
+            {
+              "value": "relaxed",
+              "label": "Relaxed (1.625)"
+            },
+            {
+              "value": "loose",
+              "label": "Loose (2)"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "transform",
+          "label": "Transform",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "uppercase",
+              "label": "Uppercase"
+            },
+            {
+              "value": "lowercase",
+              "label": "Lowercase"
+            },
+            {
+              "value": "capitalize",
+              "label": "Capitalize"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Container Scale",
+      "type": "group",
+      "id": "container_scale",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Container"
+        },
+        {
+          "type": "text",
+          "id": "max_width",
+          "label": "Max Width",
+          "info": "Any CSS max-width value: rem (e.g. 56rem), %, or \"none\" for unbounded.",
+          "default": "56rem"
+        }
+      ]
+    },
+    {
+      "name": "Height Scale",
+      "type": "group",
+      "id": "height_scale",
+      "info": "Height tiers — single `value` (any CSS length: rem, %, vh, etc.). Each tier renders to .height-<id>. The `floor` flag controls whether the tier sets `height` (fixed) or `min-height` (block can grow past it). Structural tiers (`auto`, `full`, `custom`) have specialized CSS in theme.css and skip the dynamic loop.",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Height"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "info": "Any CSS length: rem (e.g. `16rem`), %, vh (e.g. `100vh`), or `auto`.",
+          "default": ""
+        },
+        {
+          "type": "checkbox",
+          "id": "floor",
+          "label": "Behaves as a floor (min-height)",
+          "info": "When on, blocks using this tier render with `min-height` — block can grow past the tier value if its content is taller. When off (default), the tier sets a fixed `height`. Source HTML's `min-h-N` maps to floor tiers; `h-N` maps to fixed tiers.",
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "Space Scale",
+      "type": "group",
+      "id": "space_scale",
+      "info": "Spacing tiers — single `value` (any CSS length: rem, em, etc.). Each tier renders to --space-<id> for padding/margin/gap classes. Built-ins (none/xs/sm/md/lg/xl/2xl/3xl/custom) live in defaults; transpiler synthesizes additional tiers from source HTML spacing values. Structural tiers (`none` zero-out, `custom` per-instance values via --space-pl/pr/pt/pb/mt/mb/ml/mr/gap) have specialized CSS rules in theme.css; the dynamic loop in theme_variables.liquid skips them.",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Space"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "info": "Any CSS length: rem (e.g. `1rem`, `1.5rem`), em, or px.",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "Brand Gradients",
+      "type": "group",
+      "id": "gradients",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "New Gradient"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Gradient",
+          "info": "Any CSS gradient (linear-gradient, radial-gradient, conic-gradient).",
+          "default": "linear-gradient(to bottom, #000, transparent)"
         }
       ]
     },
@@ -326,32 +496,183 @@
       "layout": {
         "corner_radius": 0
       },
-      "typography": {
-        "type_scale": 100,
-        "heading_font_scheme": "heading",
-        "body_font_scheme": "body",
-        "button_font_scheme": "button"
-      },
       "font_schemes": {
         "heading": {
           "settings": {
             "title": "Heading",
             "name": "Inter",
-            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+            "structural": true
           }
         },
         "body": {
           "settings": {
             "title": "Body",
             "name": "Inter",
-            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+            "structural": true
           }
         },
         "button": {
           "settings": {
             "title": "Button",
             "name": "Inter",
-            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+            "structural": true
+          }
+        },
+        "accent": {
+          "settings": {
+            "title": "Accent",
+            "name": "Inter",
+            "url": "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+            "structural": true
+          }
+        }
+      },
+      "type_styles": {
+        "display-jumbo": {
+          "settings": {
+            "title": "Display Jumbo",
+            "font_ref": "heading",
+            "font_size": "6rem",
+            "weight": "black",
+            "tracking": "tighter",
+            "leading": "none",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "display-1": {
+          "settings": {
+            "title": "Display 1",
+            "font_ref": "heading",
+            "font_size": "4.5rem",
+            "weight": "extrabold",
+            "tracking": "tight",
+            "leading": "none",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "display-2": {
+          "settings": {
+            "title": "Display 2",
+            "font_ref": "heading",
+            "font_size": "3rem",
+            "weight": "bold",
+            "tracking": "tight",
+            "leading": "tight",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "heading-1": {
+          "settings": {
+            "title": "Heading 1",
+            "font_ref": "heading",
+            "font_size": "2.25rem",
+            "weight": "bold",
+            "tracking": "tight",
+            "leading": "tight",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "heading-2": {
+          "settings": {
+            "title": "Heading 2",
+            "font_ref": "heading",
+            "font_size": "1.875rem",
+            "weight": "bold",
+            "tracking": "normal",
+            "leading": "snug",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "heading-3": {
+          "settings": {
+            "title": "Heading 3",
+            "font_ref": "heading",
+            "font_size": "1.5rem",
+            "weight": "semibold",
+            "tracking": "normal",
+            "leading": "snug",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "body-lg": {
+          "settings": {
+            "title": "Body Large",
+            "font_ref": "body",
+            "font_size": "1.125rem",
+            "weight": "normal",
+            "tracking": "normal",
+            "leading": "relaxed",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "body": {
+          "settings": {
+            "title": "Body",
+            "font_ref": "body",
+            "font_size": "1rem",
+            "weight": "normal",
+            "tracking": "normal",
+            "leading": "normal",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "body-sm": {
+          "settings": {
+            "title": "Body Small",
+            "font_ref": "body",
+            "font_size": "0.875rem",
+            "weight": "normal",
+            "tracking": "normal",
+            "leading": "normal",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "caption": {
+          "settings": {
+            "title": "Caption",
+            "font_ref": "body",
+            "font_size": "0.75rem",
+            "weight": "medium",
+            "tracking": "wide",
+            "leading": "tight",
+            "transform": "uppercase",
+            "structural": true
+          }
+        },
+        "button": {
+          "settings": {
+            "title": "Button",
+            "font_ref": "button",
+            "font_size": "1rem",
+            "weight": "semibold",
+            "tracking": "wide",
+            "leading": "none",
+            "transform": "uppercase",
+            "structural": true
+          }
+        },
+        "nav": {
+          "settings": {
+            "title": "Nav",
+            "font_ref": "button",
+            "font_size": "1rem",
+            "weight": "medium",
+            "tracking": "normal",
+            "leading": "none",
+            "transform": "none",
+            "structural": true
           }
         }
       },
@@ -370,137 +691,366 @@
           }
         }
       },
-      "color_schemes": {
+      "palette": {
+        "neutral-0": {
+          "settings": {
+            "title": "Neutral 0",
+            "value": "#ffffff"
+          }
+        },
+        "neutral-100": {
+          "settings": {
+            "title": "Neutral 100",
+            "value": "#f5f5f4"
+          }
+        },
+        "neutral-300": {
+          "settings": {
+            "title": "Neutral 300",
+            "value": "#d6d3d1"
+          }
+        },
+        "neutral-500": {
+          "settings": {
+            "title": "Neutral 500",
+            "value": "#78716c"
+          }
+        },
+        "neutral-700": {
+          "settings": {
+            "title": "Neutral 700",
+            "value": "#44403c"
+          }
+        },
+        "neutral-900": {
+          "settings": {
+            "title": "Neutral 900",
+            "value": "#1c1917"
+          }
+        },
+        "brand": {
+          "settings": {
+            "title": "Brand",
+            "value": "#0891b2"
+          }
+        },
+        "brand-soft": {
+          "settings": {
+            "title": "Brand Soft",
+            "value": "#bae6fd"
+          }
+        }
+      },
+      "surfaces": {
         "default": {
           "settings": {
-            "title": "Default Color Scheme",
-            "text": "#1A3A4A",
-            "ui_bg": "#FFFFFF",
-            "accent": "#0891B2",
-            "border": "#BAE6FD",
-            "shadow": "rgba(8, 145, 178, 0.15)",
-            "surface": "#F0F9FF",
-            "ui_text": "#1A3A4A",
-            "button_bg": "#0891B2",
-            "background": "#FDFEFE",
-            "button_text": "#FFFFFF",
-            "text_secondary": "#5B7C8D"
+            "title": "Default",
+            "background": "@neutral-0",
+            "background_alt": "@neutral-100",
+            "surface": "@neutral-100",
+            "surface_alt": "@neutral-300",
+            "accent_bg": "@brand",
+            "button_bg": "@brand",
+            "control_bg": "@brand",
+            "text": "@neutral-900",
+            "text_secondary": "@neutral-700",
+            "text_subtle": "@neutral-500",
+            "text_emphasis": "@brand",
+            "text_on_accent": "@neutral-0",
+            "text_on_button": "@neutral-0",
+            "text_on_control": "@neutral-0",
+            "border": "@neutral-300",
+            "border_emphasis": "@brand",
+            "shadow": "rgba(8, 145, 178, 0.15)"
           }
         },
         "none": {
           "settings": {
-            "title": "No Color Scheme",
-            "text": "",
-            "ui_bg": "",
-            "accent": "",
-            "border": "",
-            "shadow": "",
-            "surface": "",
-            "ui_text": "",
-            "button_bg": "",
-            "background": "",
-            "button_text": "",
-            "text_secondary": ""
+            "title": "No Surface"
           }
         }
       },
-      "width_schemes": {
+      "container_scale": {
         "fit": {
           "settings": {
             "title": "Fit Content",
-            "width": "fit-content",
-            "custom_width": "fit-content"
+            "max_width": "fit-content",
+            "structural": true
           }
         },
-        "full": {
+        "fill": {
           "settings": {
-            "title": "Full",
-            "width": "full",
-            "custom_width": "100%"
+            "title": "Fill Parent",
+            "max_width": "100%",
+            "structural": true
           }
         },
         "half": {
           "settings": {
-            "title": "Half",
-            "width": "half",
-            "custom_width": "50%"
+            "title": "Half (1/2)",
+            "max_width": "50%",
+            "structural": true
           }
         },
         "third": {
           "settings": {
-            "title": "Third",
-            "width": "third",
-            "custom_width": "33%"
+            "title": "Third (1/3)",
+            "max_width": "33.333%",
+            "structural": true
           }
         },
-        "wide-6xl": {
+        "quarter": {
           "settings": {
-            "title": "Wide 6XL",
-            "width": "6xl",
-            "custom_width": "64"
+            "title": "Quarter (1/4)",
+            "max_width": "25%",
+            "structural": true
           }
         },
-        "wide-7xl": {
+        "narrow": {
           "settings": {
-            "title": "Wide 7XL",
-            "width": "7xl",
-            "custom_width": "80"
+            "title": "Narrow",
+            "max_width": "20rem"
           }
         },
-        "narrow-sm": {
+        "tight": {
           "settings": {
-            "title": "Narrow SM",
-            "width": "sm",
-            "custom_width": "24"
+            "title": "Tight",
+            "max_width": "24rem"
           }
         },
-        "narrow-md": {
+        "compact": {
           "settings": {
-            "title": "Narrow MD",
-            "width": "md",
-            "custom_width": "28"
+            "title": "Compact",
+            "max_width": "28rem"
           }
         },
-        "narrow-lg": {
+        "card": {
           "settings": {
-            "title": "Narrow LG",
-            "width": "lg",
-            "custom_width": "32"
+            "title": "Card",
+            "max_width": "32rem"
           }
         },
-        "narrow-xl": {
+        "snug": {
           "settings": {
-            "title": "Narrow XL",
-            "width": "xl",
-            "custom_width": "36"
+            "title": "Snug",
+            "max_width": "36rem"
           }
         },
-        "narrow-2xl": {
+        "read": {
           "settings": {
-            "title": "Narrow 2XL",
-            "width": "2xl",
-            "custom_width": "42"
+            "title": "Read",
+            "max_width": "42rem"
           }
         },
-        "narrow-3xl": {
+        "column": {
           "settings": {
-            "title": "Narrow 3XL",
-            "width": "3xl",
-            "custom_width": "48"
+            "title": "Column",
+            "max_width": "48rem"
           }
         },
-        "standard-4xl": {
+        "regular": {
           "settings": {
-            "title": "Standard 4XL",
-            "width": "4xl",
-            "custom_width": "56"
+            "title": "Regular",
+            "max_width": "56rem"
           }
         },
-        "standard-5xl": {
+        "broad": {
           "settings": {
-            "title": "Standard 5XL",
-            "width": "5xl",
-            "custom_width": "64"
+            "title": "Broad",
+            "max_width": "64rem"
+          }
+        },
+        "wide": {
+          "settings": {
+            "title": "Wide",
+            "max_width": "72rem"
+          }
+        },
+        "canvas": {
+          "settings": {
+            "title": "Canvas",
+            "max_width": "80rem"
+          }
+        },
+        "extra-wide": {
+          "settings": {
+            "title": "Extra Wide",
+            "max_width": "96rem"
+          }
+        },
+        "unbounded": {
+          "settings": {
+            "title": "Unbounded",
+            "max_width": "none"
+          }
+        }
+      },
+      "height_scale": {
+        "auto": {
+          "settings": {
+            "title": "Auto",
+            "value": "auto",
+            "structural": true
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full Height",
+            "value": "100%",
+            "structural": true
+          }
+        },
+        "tiny": {
+          "settings": {
+            "title": "Tiny",
+            "value": "3.5rem"
+          }
+        },
+        "small": {
+          "settings": {
+            "title": "Small",
+            "value": "4rem"
+          }
+        },
+        "compact": {
+          "settings": {
+            "title": "Compact",
+            "value": "8rem"
+          }
+        },
+        "card-short": {
+          "settings": {
+            "title": "Card Short",
+            "value": "12rem"
+          }
+        },
+        "card-banner": {
+          "settings": {
+            "title": "Card Banner",
+            "value": "14rem"
+          }
+        },
+        "card": {
+          "settings": {
+            "title": "Card",
+            "value": "16rem"
+          }
+        },
+        "card-mid": {
+          "settings": {
+            "title": "Card Mid",
+            "value": "18rem"
+          }
+        },
+        "card-tall": {
+          "settings": {
+            "title": "Card Tall",
+            "value": "20rem"
+          }
+        },
+        "feature": {
+          "settings": {
+            "title": "Feature",
+            "value": "24rem"
+          }
+        },
+        "gallery": {
+          "settings": {
+            "title": "Gallery",
+            "value": "32rem"
+          }
+        },
+        "viewport-short": {
+          "settings": {
+            "title": "Viewport Short",
+            "value": "38vh"
+          }
+        },
+        "viewport-mid": {
+          "settings": {
+            "title": "Viewport Mid",
+            "value": "62vh"
+          }
+        },
+        "viewport-tall": {
+          "settings": {
+            "title": "Viewport Tall",
+            "value": "78vh"
+          }
+        },
+        "screen": {
+          "settings": {
+            "title": "Screen",
+            "value": "100vh"
+          }
+        },
+        "custom": {
+          "settings": {
+            "title": "Custom",
+            "structural": true
+          }
+        }
+      },
+      "space_scale": {
+        "none": {
+          "settings": {
+            "title": "None",
+            "value": "0",
+            "structural": true
+          }
+        },
+        "xxs": {
+          "settings": {
+            "title": "XXS",
+            "value": "0.25rem"
+          }
+        },
+        "xs": {
+          "settings": {
+            "title": "XS",
+            "value": "0.5rem"
+          }
+        },
+        "sm": {
+          "settings": {
+            "title": "Small",
+            "value": "1rem"
+          }
+        },
+        "md": {
+          "settings": {
+            "title": "Medium",
+            "value": "1.5rem"
+          }
+        },
+        "lg": {
+          "settings": {
+            "title": "Large",
+            "value": "2.5rem"
+          }
+        },
+        "xl": {
+          "settings": {
+            "title": "XL",
+            "value": "4rem"
+          }
+        },
+        "2xl": {
+          "settings": {
+            "title": "2XL",
+            "value": "6rem"
+          }
+        },
+        "3xl": {
+          "settings": {
+            "title": "3XL",
+            "value": "8rem"
+          }
+        },
+        "custom": {
+          "settings": {
+            "title": "Custom",
+            "structural": true
           }
         }
       }

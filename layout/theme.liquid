@@ -14,10 +14,14 @@
     {% render 'stylesheets', font_schemes: settings.font_schemes %}
     {% render 'scripts' %}
     {% render 'theme_variables',
-      typography: settings.typography,
       layout: settings.layout,
-      color_schemes: settings.color_schemes,
-      width_schemes: settings.width_schemes,
+      palette: settings.palette,
+      surfaces: settings.surfaces,
+      container_scale: settings.container_scale,
+      height_scale: settings.height_scale,
+      space_scale: settings.space_scale,
+      type_styles: settings.type_styles,
+      gradients: settings.gradients,
       font_schemes: settings.font_schemes
     %}
 

@@ -1,7 +1,15 @@
 {% assign s = section.settings %}
 
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
 {% comment %} --- Section Container Classes --- {% endcomment %}
-{% assign container_classes = 'width-{{ s.width_scheme }} limit-width'
+{% assign container_classes = 'width-{{ s.width }} limit-width'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
@@ -27,13 +35,33 @@
 
 {% assign spacing_style_str = spacing_styles | join: ';' %}
 
+{% comment %} --- Background class + styles (unified bg primitive) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign styles = blank %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
 {% comment %} --- Component Render --- {% endcomment %}
 <footer
-  class="section-footer color-{{ s.color_scheme | default: 'none' }} bg-body text-body"
+  class="section-footer surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} text-primary relative isolate"
+  style="{{ style_str }}"
   {{ context.attached_attributes }}
 >
+  {% render 'bg-overlay',
+    role: s.overlay_role,
+    alpha: s.overlay_alpha,
+    palette_token: s.overlay_role_palette,
+    custom_color: s.overlay_role_custom,
+    gradient_token: s.overlay_role_gradient,
+    behind: true
+  %}
   <div
-    class="{{ container_class_str }}"
+    class="{{ container_class_str }} relative"
     style="{{ spacing_style_str }}"
   >
     <div class="flex flex-auto flex-col md:flex-row justify-content-{{ s.justify_content }}">
@@ -45,41 +73,54 @@
 {% schema %}
 {
   "name": "Footer",
-  "restriction": { "groups": ["footer"] },
+  "restriction": {
+    "groups": [
+      "footer"
+    ]
+  },
   "settings": [
-    { "type": "header", "content": "Layout" },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
     {
       "type": "select",
       "id": "justify_content",
       "label": "Alignment",
       "options": [
-        { "value": "start", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "Right" },
-        { "value": "between", "label": "Space Between" }
+        {
+          "value": "start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Right"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        }
       ],
       "default": "center"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Content Width",
-      "default": "standard"
+      "default": "fill"
     },
-    { "type": "header", "content": "Section Spacing" },
     {
-      "type": "select",
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "Extra Small" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Extra Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "sm"
     },
     {
@@ -103,18 +144,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "Extra Small" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Extra Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "xs"
     },
     {
@@ -137,14 +169,209 @@
       "default": 0,
       "conditional": "setting.padding_horizontal == 'custom'"
     },
-    { "type": "header", "content": "Bottom Bar" },
-    { "type": "textarea", "id": "copyright_text", "label": "Copyright Text", "default": "{{ shop.name }}" },
-    { "type": "checkbox", "id": "show_policy", "label": "Show Policy Links", "default": true },
-    { "type": "checkbox", "id": "show_payment", "label": "Show Payment Icons", "default": true },
-
-    { "type": "header", "content": "Theme" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+    {
+      "type": "header",
+      "content": "Bottom Bar"
+    },
+    {
+      "type": "textarea",
+      "id": "copyright_text",
+      "label": "Copyright Text",
+      "default": "{{ shop.name }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_policy",
+      "label": "Show Policy Links",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment",
+      "label": "Show Payment Icons",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "overlay_role_custom",
+      "label": "Raw Overlay",
+      "conditional": "setting.overlay_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "overlay_role_gradient",
+      "label": "Overlay Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.overlay_role == 'gradient'"
+    },
+    {
+      "type": "range",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
+    }
   ],
-  "blocks": [{ "type": "group" }, { "type": "_footer-nav" }, { "type": "_footer-newsletter" }]
+  "blocks": [
+    {
+      "type": "group"
+    },
+    {
+      "type": "brand-logo"
+    },
+    {
+      "type": "_footer-nav"
+    },
+    {
+      "type": "_footer-newsletter"
+    }
+  ]
 }
 {% endschema %}

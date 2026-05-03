@@ -1,22 +1,37 @@
 {% assign s = block.settings %}
+
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
 {% assign asset_src = shop.logo_src | default: s.logo %}
 
-{% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign classes = 'flex items-center justify-center relative z-content group-hover:opacity-100 text-body' %}
+{% comment %}
+  Wrapper Classes. NOTE: previously included `justify-center` which
+  forced the logo centered horizontally regardless of source intent.
+  Source patterns universally use `flex items-center gap-X` (no
+  `justify-*`) — the brand-logo block must inherit alignment from its
+  parent flex container (header has `justify-between`, footer first
+  column has no justify → left-aligns naturally). Hardcoding
+  `justify-center` was breaking the footer logo (always centered) and
+  any non-default header layout.
+{% endcomment %}
+{% assign classes = 'flex items-center relative z-content group-hover:opacity-100 text-primary' %}
 
-{% unless s.inherit_styles %}
-  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
-{% endunless %}
+{% if s.surface_override %}
+  {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
 
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Text Fallback Styles --- {% endcomment %}
 {% assign styles = blank %}
 
-{% unless s.inherit_styles %}
-  {% assign styles = styles | push_if: '--color-text: {{ s.text_color }}', s.text_color_override %}
-{% endunless %}
-
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
 {% assign text_styles = styles | join: ';' %}
 
 {% comment %} --- Component Render --- {% endcomment %}
@@ -34,7 +49,7 @@
     </div>
   {% else %}
     <span
-      class="text-xl font-bold font-heading tracking-widest whitespace-nowrap"
+      class="ts-heading-3 whitespace-nowrap"
       style="{{ text_styles }}"
     >
       {{ shop.name }}
@@ -46,7 +61,12 @@
 {
   "name": "Brand Logo",
   "settings": [
-    { "type": "image_picker", "id": "logo", "label": "Logo", "conditional": "shop.logo_src == blank" },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo",
+      "conditional": "shop.logo_src == blank"
+    },
     {
       "type": "range",
       "id": "logo_width",
@@ -54,7 +74,7 @@
       "min": 3,
       "max": 25,
       "step": 0.5,
-      "default": 8,
+      "default": 3,
       "unit": "rem"
     },
     {
@@ -63,37 +83,82 @@
       "conditional": "shop.logo_src == blank"
     },
     {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Styles",
-      "default": true,
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
       "conditional": "shop.logo_src == blank"
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette' and shop.logo_src == blank"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom' and shop.logo_src == blank"
     },
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
-      "default": "default",
-      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+      "conditional": "shop.logo_src == blank"
     },
     {
       "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Text Color",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true and shop.logo_src == blank"
+      "conditional": "shop.logo_src == blank"
     },
     {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Text Color",
-      "default": "#ffffff",
-      "conditional": "setting.inherit_styles != true and setting.text_color_override and shop.logo_src == blank"
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "shop.logo_src == blank and setting.surface_override == true"
     }
   ]
 }

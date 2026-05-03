@@ -1,7 +1,12 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Class Array Building --- {% endcomment %}
-{% assign classes = 'carousel-block transition-all rounded-global rotate-custom block-limit-width'
+{% assign radius_class = 'rounded-global' %}
+{% if s.border_radius_override %}
+  {% assign radius_class = 'rounded-custom' %}
+{% endif %}
+{% assign classes = 'carousel-block transition-all rotate-custom block-limit-width'
+  | push: radius_class
   | push: 'height-{{ s.height }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
@@ -15,18 +20,23 @@
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
 
+{% comment %}
+  Background layer: scheme-driven via .bg-<role>. Escape-hatch
+  (bg_color_override) is rendered as inline style further down.
+{% endcomment %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
+  {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
+{% endif %}
+
 {% if s.animate_fade != 'none' %}
   {% assign classes = classes | push: 'fade-{{ s.animate_fade }}' %}
 {% endif %}
 
 {% unless s.grow_content %}
-  {% assign classes = classes | push: 'width-{{ s.width_scheme }}' %}
+  {% assign classes = classes | push: 'width-{{ s.width }}' %}
 {% endunless %}
 
-{% unless s.inherit_styles %}
-  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" | push: 'bg-surface' %}
-{% endunless %}
-
+{% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
 {% if s.position == 'absolute' %}
   {% assign classes = classes | push: 'absolute' | push: 'anchor-{{ s.inset }}' %}
 {% elsif s.position == 'relative' %}
@@ -47,11 +57,41 @@
       | push_if: 'group-border-custom-bottom', s.border_custom_bottom
     %}
   {% endif %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
+    {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
 {% endunless %}
 
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'gradient' and s.border_role_gradient != blank %}
+  {% assign border_color_value = 'var(--gradient-{{ s.border_role_gradient }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
 {% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -87,39 +127,30 @@
 {% endif %}
 
 {% unless s.border_mode == 'none' %}
-  {% assign styles = styles
-    | push_if: '--color-border: {{ s.border_color }}', s.border_color_override
-    | push: '--border-style: {{ s.border_style }}'
-  %}
+  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if border_color_value != blank -%}
+    {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
+  {%- endif %}
 {% endunless %}
 
-{% unless s.inherit_styles %}
-  {% assign styles = styles
-    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--color-surface: {{ s.bg_color }}', s.bg_color_override
-    | push_if: '--color-shadow: {{ s.shadow_color }}', s.shadow_color_override
-    | push_if: '--color-text: {{ s.text_color }}', s.text_color_override
-  %}
-{% endunless %}
-
-{% assign block_styles = styles | join: ';' %}
-
-{% comment %} --- Overlay Styles Array Building --- {% endcomment %}
-{% assign overlay_styles = blank %}
-{% if s.enable_overlay %}
-  {% assign overlay_styles = overlay_styles
-    | push: 'background: {{ s.overlay_color }}'
-    | push: 'opacity: {{ s.overlay_opacity | divided_by: 100.0 }}'
-  %}
+{% assign styles = styles
+  | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+%}
+{% if text_color_value != blank %}{% assign styles = styles | push: '--text: {{ text_color_value }}' %}{% endif %}
+{% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
-
-{% assign overlay_style_str = overlay_styles | join: ';' %}
+{% assign block_styles = styles | join: ';' %}
 
 {% comment %} --- Nav Direction Logic --- {% endcomment %}
 {% assign wrapper_classes = blank %}
 {% if s.show_arrows %}
   {% if s.nav_anchor contains 'top-' %}{% assign wrapper_classes = wrapper_classes | push: 'has-nav-top' %}{% endif %}
-  {% if s.nav_anchor contains 'bottom-' %}{% assign nav_dir = wrapper_classes | push: 'has-nav-bottom' %}{% endif %}
+  {% if s.nav_anchor contains 'bottom-' -%}
+    {%- assign wrapper_classes = wrapper_classes | push: 'has-nav-bottom' -%}
+  {%- endif %}
 {% endif %}
 {% case s.content_align %}
   {% when 'left' %}
@@ -141,7 +172,7 @@
   {{ context.attached_attributes }}
 >
   <div
-    class="slideshow-wrapper relative w-full h-full flex flex-col {{ wrapper_classes }}"
+    class="slideshow-wrapper relative isolate w-full h-full flex flex-col {{ wrapper_classes }}"
     data-behavior="slideshow"
     data-autoplay="{{ s.autoplay }}"
     data-speed="{{ s.autoplay_speed }}"
@@ -170,7 +201,7 @@
 
         {% if s.show_counter %}
           <div class="slideshow-counter-wrapper tabular-nums">
-            {% render 'typography', tag: 'span', display_size: s.display_size, weight: s.font_weight %}
+            {% render 'typography', type_style: s.type_style, tag: 'span' %}
           </div>
         {% endif %}
 
@@ -185,13 +216,17 @@
       </div>
     {% endif %}
 
+    {% render 'bg-overlay',
+      role: s.overlay_role,
+      alpha: s.overlay_alpha,
+      palette_token: s.overlay_role_palette,
+      custom_color: s.overlay_role_custom,
+      gradient_token: s.overlay_role_gradient,
+      behind: true
+    %}
     <div class="slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-{{ s.gap }}">
       {% content_for 'blocks' %}
     </div>
-
-    {% if s.enable_overlay %}
-      <div class="rounded-global absolute inset-0 pointer-events-none" style="{{ overlay_style_str }}"></div>
-    {% endif %}
   </div>
 </div>
 
@@ -199,7 +234,17 @@
 {
   "name": "Carousel",
   "settings": [
-    { "type": "header", "content": "Layout" },
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "body"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
     {
       "type": "range",
       "id": "columns_mobile",
@@ -238,7 +283,10 @@
       "default": 0,
       "info": "Percentage of the next card to reveal. Set to 0 for exact fit."
     },
-    { "type": "header", "content": "Navigation" },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
     {
       "type": "checkbox",
       "id": "show_arrows",
@@ -250,8 +298,14 @@
       "id": "arrow_icon",
       "label": "Arrow Style",
       "options": [
-        { "value": "chevron-left", "label": "Chevron" },
-        { "value": "arrow-left", "label": "Arrow" }
+        {
+          "value": "chevron-left",
+          "label": "Chevron"
+        },
+        {
+          "value": "arrow-left",
+          "label": "Arrow"
+        }
       ],
       "default": "chevron-left",
       "conditional": "setting.show_arrows"
@@ -266,12 +320,30 @@
       "id": "nav_anchor",
       "label": "Anchor",
       "options": [
-        { "value": "top-left", "label": "Top Left" },
-        { "value": "top-right", "label": "Top Right" },
-        { "value": "top-center", "label": "Top Center" },
-        { "value": "bottom-left", "label": "Bottom Left" },
-        { "value": "bottom-right", "label": "Bottom Right" },
-        { "value": "bottom-center", "label": "Bottom Center" }
+        {
+          "value": "top-left",
+          "label": "Top Left"
+        },
+        {
+          "value": "top-right",
+          "label": "Top Right"
+        },
+        {
+          "value": "top-center",
+          "label": "Top Center"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom Center"
+        }
       ],
       "default": "top-right",
       "conditional": "setting.show_arrows"
@@ -305,9 +377,18 @@
       "id": "nav_size",
       "label": "Button Size",
       "options": [
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" }
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        }
       ],
       "default": "md",
       "conditional": "setting.show_arrows"
@@ -317,9 +398,18 @@
       "id": "nav_shape",
       "label": "Button Shape",
       "options": [
-        { "value": "circle", "label": "Circle" },
-        { "value": "rounded", "label": "Rounded" },
-        { "value": "square", "label": "Square" }
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "rounded",
+          "label": "Rounded"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        }
       ],
       "default": "circle",
       "conditional": "setting.show_arrows"
@@ -336,42 +426,16 @@
       "conditional": "setting.show_counter"
     },
     {
-      "type": "select",
-      "id": "display_size",
-      "label": "Counter Size",
-      "default": "small",
-      "options": [
-        { "value": "body", "label": "Body" },
-        { "value": "small", "label": "Small" },
-        { "value": "caption", "label": "Caption" }
-      ],
-      "conditional": "setting.show_counter"
-    },
-    {
-      "type": "select",
-      "id": "font_weight",
-      "label": "Counter Weight",
-      "default": "medium",
-      "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "bold", "label": "Bold" }
-      ],
-      "conditional": "setting.show_counter"
-    },
-    {
       "type": "checkbox",
       "id": "infinite_scroll",
       "label": "Infinite Loop",
-      "default": false,
-      "conditional": "setting.layout_mode == 'slider'"
+      "default": false
     },
     {
       "type": "checkbox",
       "id": "autoplay",
       "label": "Autoplay",
-      "default": false,
-      "conditional": "setting.layout_mode == 'slider'"
+      "default": false
     },
     {
       "type": "range",
@@ -383,19 +447,15 @@
       "conditional": "setting.autoplay == true"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Max Content Width",
-      "default": "full"
+      "default": "fill"
     },
     {
-      "type": "select",
+      "type": "height",
       "id": "height",
       "label": "Height",
-      "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "full", "label": "Full Height" }
-      ],
       "default": "auto"
     },
     {
@@ -403,27 +463,193 @@
       "id": "content_align",
       "label": "Horizontal Alignment",
       "options": [
-        { "value": "left", "label": "Left / Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right / End" },
-        { "value": "between", "label": "Space Between" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "left",
+          "label": "Left / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right / End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
-    { "type": "header", "content": "Padding/Margins" },
+    {
+      "type": "checkbox",
+      "id": "grow_content",
+      "label": "Grow Content",
+      "default": false
+    },
     {
       "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect Ratio",
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Natural"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "video",
+          "label": "Video (16:9)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position Type",
+      "default": "relative",
+      "options": [
+        {
+          "value": "relative",
+          "label": "Relative"
+        },
+        {
+          "value": "absolute",
+          "label": "Absolute"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "inset",
+      "label": "Anchor",
+      "default": "top-left",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top Left"
+        },
+        {
+          "value": "top-right",
+          "label": "Top Right"
+        },
+        {
+          "value": "top-center",
+          "label": "Top Center"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "center-right",
+          "label": "Center Right"
+        },
+        {
+          "value": "center-left",
+          "label": "Center Left"
+        },
+        {
+          "value": "cover",
+          "label": "Cover"
+        }
+      ],
+      "conditional": "setting.position == 'absolute'"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Padding/Margins"
+    },
+    {
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -449,18 +675,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -486,18 +703,9 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_vertical",
       "label": "Vertical margin",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -523,18 +731,9 @@
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_horizontal",
       "label": "Horizontal margin",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -560,18 +759,9 @@
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "gap",
       "label": "Gap",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "XL" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -589,27 +779,133 @@
       "type": "header",
       "content": "Animation"
     },
-    { "type": "checkbox", "id": "animate_float", "label": "Float", "default": false },
-    { "type": "checkbox", "id": "animate_scale_in", "label": "Scale In", "default": false },
-    { "type": "checkbox", "id": "animate_stagger", "label": "Stagger", "default": false },
+    {
+      "type": "checkbox",
+      "id": "animate_float",
+      "label": "Float",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_scale_in",
+      "label": "Scale In",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_stagger",
+      "label": "Stagger",
+      "default": false
+    },
     {
       "type": "select",
       "id": "animate_fade",
       "label": "Fade Animation",
       "default": "none",
       "options": [
-        { "value": "in", "label": "In" },
-        { "value": "up", "label": "Up" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "in",
+          "label": "In"
+        },
+        {
+          "value": "up",
+          "label": "Up"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
     },
     {
       "type": "header",
       "content": "Style"
     },
-    { "type": "checkbox", "id": "inherit_styles", "label": "Inherit Theme Styles", "default": true },
-    { "type": "checkbox", "id": "shadow", "label": "Show Shadow", "default": false },
-    { "type": "checkbox", "id": "overflow_hidden", "label": "Clip Content", "default": false },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow",
+      "label": "Show Shadow",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "overflow_hidden",
+      "label": "Clip Content",
+      "default": false
+    },
     {
       "type": "header",
       "content": "Borders"
@@ -620,10 +916,73 @@
       "label": "Border",
       "default": "none",
       "options": [
-        { "value": "custom", "label": "Custom" },
-        { "value": "full", "label": "Full" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
+    },
+    {
+      "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "border_role_gradient",
+      "label": "Border Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.border_role == 'gradient'"
     },
     {
       "type": "select",
@@ -631,10 +990,22 @@
       "label": "Border Style",
       "default": "solid",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "dashed", "label": "Dashed" },
-        { "value": "dotted", "label": "Dotted" },
-        { "value": "double", "label": "Double" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
       ]
     },
     {
@@ -670,72 +1041,148 @@
       "id": "border_size",
       "label": "Border Size",
       "options": [
-        { "value": "xxs", "label": "XXS", "info": "1px" },
-        { "value": "xs", "label": "XS", "info": "2px" },
-        { "value": "sm", "label": "Small", "info": "4px" },
-        { "value": "md", "label": "Medium", "info": "6px" },
-        { "value": "lg", "label": "Large", "info": "8px" }
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
       ],
       "default": "md",
       "conditional": "setting.border_mode != 'none'"
     },
     {
       "type": "header",
-      "content": "Overlay Style"
+      "content": "Overlay"
     },
     {
-      "type": "checkbox",
-      "id": "enable_overlay",
-      "label": "Use Overlay",
-      "default": false
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
     },
     {
       "type": "color",
-      "id": "overlay_color",
-      "label": "Tint / Background Color",
-      "default": "",
-      "conditional": "setting.enable_overlay == true"
+      "id": "overlay_role_custom",
+      "label": "Raw Overlay",
+      "conditional": "setting.overlay_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "overlay_role_gradient",
+      "label": "Overlay Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.overlay_role == 'gradient'"
     },
     {
       "type": "range",
-      "id": "overlay_opacity",
-      "label": "Opacity",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
       "min": 0,
       "max": 100,
+      "step": 5,
       "default": 100,
-      "conditional": "setting.enable_overlay == true"
+      "unit": "%",
+      "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Scheme",
-      "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "checkbox",
-      "id": "bg_color_override",
-      "label": "Override Background",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color",
-      "id": "bg_color",
-      "label": "Custom Background",
-      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
     },
     {
       "type": "checkbox",
       "id": "border_radius_override",
       "label": "Override Border Radius",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "range",
@@ -745,52 +1192,35 @@
       "label": "Radius",
       "default": 0,
       "unit": "px",
-      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
+      "conditional": "setting.border_radius_override"
     },
     {
       "type": "checkbox",
       "id": "shadow_color_override",
       "label": "Override Shadow Color",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "color",
       "id": "shadow_color",
       "label": "Custom Shadow Color",
       "default": "rgba(0,0,0,1)",
-      "conditional": "setting.inherit_styles != true and setting.shadow_color_override"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_color_override",
-      "label": "Override Border Color",
-      "default": false,
-      "conditional": "setting.inherit_styles != true and setting.border_mode != 'none'"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "Custom Border Color",
-      "default": "#ffffff",
-      "conditional": "setting.inherit_styles != true and setting.border_color_override and setting.border_mode != 'none'"
-    },
-    {
-      "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Text Color",
-      "default": false,
-      "conditional": "setting.show_counter and setting.inherit_styles != true"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Counter Color",
-      "default": "#ffffff",
-      "conditional": "setting.show_counter and setting.inherit_styles != true and setting.text_color_override"
+      "conditional": "setting.shadow_color_override"
     }
   ],
-  "blocks": [{ "type": "@theme" }],
-  "presets": [{ "name": "Group", "settings": {}, "blocks": {}, "block_order": [] }]
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Group",
+      "settings": {},
+      "blocks": {},
+      "block_order": []
+    }
+  ]
 }
 {% endschema %}

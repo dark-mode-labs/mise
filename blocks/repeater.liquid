@@ -46,17 +46,35 @@
 {
   "name": "Repeater Template",
   "settings": [
-    { "type": "header", "content": "Data Source" },
+    {
+      "type": "header",
+      "content": "Data Source"
+    },
     {
       "type": "select",
       "id": "data_source_type",
       "label": "Type",
       "options": [
-        { "value": "json", "label": "JSON" },
-        { "value": "inherit", "label": "Inherit" },
-        { "value": "item_collection", "label": "Items in Collection" },
-        { "value": "locations", "label": "Locations" },
-        { "value": "collections_in", "label": "Collections" }
+        {
+          "value": "json",
+          "label": "JSON"
+        },
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        },
+        {
+          "value": "item_collection",
+          "label": "Items in Collection"
+        },
+        {
+          "value": "locations",
+          "label": "Locations"
+        },
+        {
+          "value": "collections_in",
+          "label": "Collections"
+        }
       ]
     },
     {
@@ -85,7 +103,27 @@
       "conditional": "setting.data_source_type == 'collections_in'"
     }
   ],
-  "blocks": [{ "type": "@theme" }, { "type": "_menu-card-full" }, { "type": "_tab-head" }, { "type": "_tab-content" }],
-  "presets": [{ "name": "Repeater Template", "settings": {}, "blocks": {}, "block_order": [] }]
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "_menu-card-full"
+    },
+    {
+      "type": "_tab-head"
+    },
+    {
+      "type": "_tab-content"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Repeater Template",
+      "settings": {},
+      "blocks": {},
+      "block_order": []
+    }
+  ]
 }
 {% endschema %}

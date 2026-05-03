@@ -1,26 +1,67 @@
 {% assign s = block.settings %}
 
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'gradient' and s.border_role_gradient != blank %}
+  {% assign border_color_value = 'var(--gradient-{{ s.border_role_gradient }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
+
+{% assign radius_class = 'rounded-global' %}
+{% if s.border_radius_override %}
+  {% assign radius_class = 'rounded-custom' %}
+{% endif %}
+
 {% comment %} --- 1. Wrapper Classes (Outer DIV) --- {% endcomment %}
-{% assign wrapper_classes = 'rounded-global whitespace-nowrap'
+{% assign wrapper_classes = 'whitespace-nowrap'
+  | push: radius_class
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
 %}
 
-{% if s.width == 'full' %}
+{% if s.width == 'fill' %}
   {% assign wrapper_classes = wrapper_classes | push: 'w-full block' %}
 {% else %}
-  {% assign wrapper_classes = wrapper_classes | push: 'inline-block' %}
+  {%- comment -%}
+    Explicit fit-content so flex-column parent's `align-items: stretch`
+    doesn't expand the button past its content.
+  {%- endcomment -%}
+  {% assign wrapper_classes = wrapper_classes | push: 'inline-block width-fit limit-width' %}
 {% endif %}
 
-{% unless s.inherit_styles %}
-  {% assign wrapper_classes = wrapper_classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
-{% endunless %}
+{% if s.surface_override %}
+  {% assign wrapper_classes = wrapper_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
 
 {% unless s.border_mode == 'none' %}
   {% assign wrapper_classes = wrapper_classes
     | push: 'group-border-{{ s.border_mode }}'
     | push: 'group-border-size-{{ s.border_size }}'
   %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
+    {% assign wrapper_classes = wrapper_classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
   {% if s.border_mode == 'custom' %}
     {% assign wrapper_classes = wrapper_classes
       | push_if: 'group-border-custom-left', s.border_custom_left
@@ -34,7 +75,8 @@
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
 
 {% comment %} --- 2. Inner Classes (Button / Link) --- {% endcomment %}
-{% assign inner_classes = 'rounded-global w-full flex'
+{% assign inner_classes = 'w-full flex'
+  | push: radius_class
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
@@ -46,6 +88,11 @@
     {%- assign inner_classes = inner_classes | push: 'btn-link' %}
   {% else -%}
     {%- assign inner_classes = inner_classes | push: 'btn-primary' %}
+    {%- comment -%} Slot-role bg paints via `.bg-{role}` so the surface slot wins over --button-bg. {%- endcomment -%}
+    {% assign btn_slot_roles = 'body,body-alt,surface,surface-alt,accent,control' | split: ',' %}
+    {% if btn_slot_roles contains s.bg_role %}
+      {%- assign inner_classes = inner_classes | push: 'bg-{{ s.bg_role }}' %}
+    {% endif %}
 {% endcase %}
 
 {% case s.content_align %}
@@ -103,37 +150,22 @@
   %}
 {% endif %}
 
-{% if s.text_tracking == 'custom' %}
-  {% assign styles = styles | push: '--text-tracking: {{ s.text_tracking_custom }}em' %}
-{% endif %}
-
-{% if s.text_leading == 'custom' %}
-  {% assign styles = styles | push: '--text-leading: {{ s.text_leading_custom | divided_by: 100.0 }}' %}
-{% endif %}
-
 {% unless s.border_mode == 'none' %}
-  {% assign styles = styles
-    | push_if: '--color-border: {{ s.border_color }}', s.border_color_override
-    | push: '--border-style: {{ s.border_style }}'
-  %}
+  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if border_color_value != blank -%}
+    {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
+  {%- endif %}
 {% endunless %}
 
-{% unless s.inherit_styles %}
-  {% assign styles = styles
-    | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
-    | push_if: '--color-btn-bg: {{ s.bg_color }}', s.bg_color_override
-    | push_if: '--color-btn-text: {{ s.text_color }}', s.text_color_override
-  %}
-{% endunless %}
-
+{% assign styles = styles | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override %}
+{% if bg_color_value != blank %}{% assign styles = styles | push: '--button-bg: {{ bg_color_value }}' %}{% endif %}
+{% if text_color_value != blank -%}
+  {%- assign styles = styles | push: '--text-on-button: {{ text_color_value }}' -%}
+{%- endif %}
 {% assign wrapper_style_str = styles | join: ';' %}
 
 {% comment %} --- 4. Typography Utilities & Config --- {% endcomment %}
 {% assign utilities = blank %}
-
-{% if s.text_transform != 'none' %}
-  {% assign utilities = utilities | push: s.text_transform %}
-{% endif %}
 
 {% case s.text_wrap %}
   {% when 'nowrap' -%}
@@ -151,17 +183,10 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% assign font_family = 'btn' %}
-{% if s.font_family_override and s.font_scheme != blank %}
-  {% assign font_family = s.font_scheme %}
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}
+  {% assign color_role = 'on-button' %}
 {% endif %}
-
-{% assign color_role = s.color_role %}
-{% unless s.inherit_styles %}
-  {% if s.text_color_override %}
-    {% assign color_role = 'button' %}
-  {% endif %}
-{% endunless %}
 
 {% comment %} --- 5. Component Render --- {% endcomment %}
 <div
@@ -178,14 +203,7 @@
         data-action-args="{{ s.action_args | escape }}"
       {% endif %}
     >
-      {% render 'typography',
-        text: s.label,
-        display_size: s.display_size,
-        weight: s.font_weight,
-        color_role: color_role,
-        family: font_family,
-        class: utility_classes
-      %}
+      {% render 'typography', text: s.label, type_style: s.type_style, color_role: color_role, class: utility_classes %}
     </button>
   {% elsif s.trigger == 'link' %}
     <a
@@ -198,14 +216,7 @@
       {% endif %}
       class="{{ inner_class_str }}"
     >
-      {% render 'typography',
-        text: s.label,
-        display_size: s.display_size,
-        weight: s.font_weight,
-        color_role: color_role,
-        family: font_family,
-        class: utility_classes
-      %}
+      {% render 'typography', type_style: s.type_style, text: s.label, color_role: color_role, class: utility_classes %}
     </a>
   {% endif %}
 </div>
@@ -214,142 +225,137 @@
 {
   "name": "Button",
   "settings": [
-    { "type": "text", "id": "label", "label": "Label", "default": "Book Now" },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Book Now"
+    },
     {
       "type": "select",
       "id": "style",
       "label": "Style",
       "default": "primary",
       "options": [
-        { "value": "primary", "label": "Solid" },
-        { "value": "outline", "label": "Outline" },
-        { "value": "link", "label": "Link" }
+        {
+          "value": "primary",
+          "label": "Solid"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "link",
+          "label": "Link"
+        }
       ]
     },
-    { "type": "header", "content": "Trigger" },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Button Background",
+      "default": "button",
+      "options": [
+        { "value": "button", "label": "Button" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "conditional": "setting.style == 'primary'"
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette' and setting.style == 'primary'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom' and setting.style == 'primary'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "header",
+      "content": "Trigger"
+    },
     {
       "type": "select",
       "id": "trigger",
       "label": "Trigger",
       "default": "link",
       "options": [
-        { "value": "link", "label": "Link" },
-        { "value": "action", "label": "Action" }
+        {
+          "value": "link",
+          "label": "Link"
+        },
+        {
+          "value": "action",
+          "label": "Action"
+        }
       ]
     },
-    { "type": "url", "id": "link", "label": "Link", "conditional": "setting.trigger == 'link'" },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "conditional": "setting.trigger == 'link'"
+    },
     {
       "type": "select",
       "id": "link_target",
       "label": "Open link in",
       "options": [
-        { "value": "_blank", "label": "New Tab" },
-        { "value": "_self", "label": "Current Tab" }
+        {
+          "value": "_blank",
+          "label": "New Tab"
+        },
+        {
+          "value": "_self",
+          "label": "Current Tab"
+        }
       ],
       "default": "_self",
       "conditional": "setting.trigger == 'link'"
     },
-    { "type": "text", "id": "action", "label": "Action Type", "conditional": "setting.trigger == 'action'" },
-    { "type": "text", "id": "action_args", "label": "Action Arguments", "conditional": "setting.trigger == 'action'" },
+    {
+      "type": "text",
+      "id": "action",
+      "label": "Action Type",
+      "conditional": "setting.trigger == 'action'"
+    },
+    {
+      "type": "text",
+      "id": "action_args",
+      "label": "Action Arguments",
+      "conditional": "setting.trigger == 'action'"
+    },
     {
       "type": "header",
       "content": "Typography"
     },
     {
-      "type": "select",
-      "id": "display_size",
-      "label": "Size",
-      "default": "body",
-      "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" },
-        { "value": "h3", "label": "H3" },
-        { "value": "h4", "label": "H4" },
-        { "value": "h5", "label": "H5" },
-        { "value": "h6", "label": "H6" },
-        { "value": "display", "label": "Display" },
-        { "value": "body", "label": "Body" },
-        { "value": "caption", "label": "Caption" },
-        { "value": "small", "label": "Small" },
-        { "value": "jumbo", "label": "Jumbo" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "font_weight",
-      "label": "Weight",
-      "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "bold", "label": "Bold" },
-        { "value": "extrabold", "label": "Extra Bold" },
-        { "value": "black", "label": "Black" }
-      ],
-      "default": "normal"
-    },
-    {
-      "type": "select",
-      "id": "text_tracking",
-      "label": "Tracking",
-      "options": [
-        { "value": "tighter", "label": "Tighter" },
-        { "value": "tight", "label": "Tight" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "wider", "label": "Wider" },
-        { "value": "widest", "label": "Widest" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "normal"
-    },
-    {
-      "type": "range",
-      "id": "text_tracking_custom",
-      "label": "Custom Tracking",
-      "min": -0.1,
-      "max": 0.5,
-      "step": 0.025,
-      "default": 0,
-      "unit": "em",
-      "conditional": "setting.text_tracking == 'custom'"
-    },
-    {
-      "type": "select",
-      "id": "text_leading",
-      "label": "Leading",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "tight", "label": "Tight" },
-        { "value": "snug", "label": "Snug" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "relaxed", "label": "Relaxed" },
-        { "value": "loose", "label": "Loose" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "normal"
-    },
-    {
-      "type": "range",
-      "id": "text_leading_custom",
-      "label": "Custom Leading",
-      "min": 80,
-      "max": 200,
-      "step": 5,
-      "default": 100,
-      "unit": "%",
-      "conditional": "setting.text_leading == 'custom'"
-    },
-    {
-      "type": "select",
-      "id": "text_transform",
-      "label": "Text Transform",
-      "default": "none",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "uppercase", "label": "Uppercase" },
-        { "value": "capitalize", "label": "Capitalize" },
-        { "value": "lowercase", "label": "Lowercase" }
-      ]
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "button"
     },
     {
       "type": "select",
@@ -357,9 +363,18 @@
       "label": "Text Wrapping",
       "default": "wrap",
       "options": [
-        { "value": "wrap", "label": "Wrap" },
-        { "value": "nowrap", "label": "No Wrap" },
-        { "value": "balance", "label": "Balance" }
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "No Wrap"
+        },
+        {
+          "value": "balance",
+          "label": "Balance"
+        }
       ]
     },
     {
@@ -368,23 +383,19 @@
       "label": "Overflow",
       "default": "visible",
       "options": [
-        { "value": "visible", "label": "Visible" },
-        { "value": "hidden", "label": "Hidden (Clip)" },
-        { "value": "ellipsis", "label": "Ellipsis (Truncate)" }
+        {
+          "value": "visible",
+          "label": "Visible"
+        },
+        {
+          "value": "hidden",
+          "label": "Hidden (Clip)"
+        },
+        {
+          "value": "ellipsis",
+          "label": "Ellipsis (Truncate)"
+        }
       ]
-    },
-    {
-      "type": "checkbox",
-      "id": "font_family_override",
-      "label": "Override Font",
-      "default": false
-    },
-    {
-      "type": "font_scheme",
-      "id": "font_scheme",
-      "label": "Font",
-      "default": "",
-      "conditional": "setting.font_family_override == true"
     },
     {
       "type": "header",
@@ -396,10 +407,73 @@
       "label": "Border",
       "default": "none",
       "options": [
-        { "value": "custom", "label": "Custom" },
-        { "value": "full", "label": "Full" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
+    },
+    {
+      "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "border_role_gradient",
+      "label": "Border Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.border_role == 'gradient'"
     },
     {
       "type": "select",
@@ -407,10 +481,22 @@
       "label": "Border Style",
       "default": "solid",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "dashed", "label": "Dashed" },
-        { "value": "dotted", "label": "Dotted" },
-        { "value": "double", "label": "Double" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
       ]
     },
     {
@@ -446,11 +532,31 @@
       "id": "border_size",
       "label": "Border Size",
       "options": [
-        { "value": "xxs", "label": "XXS", "info": "1px" },
-        { "value": "xs", "label": "XS", "info": "2px" },
-        { "value": "sm", "label": "Small", "info": "4px" },
-        { "value": "md", "label": "Medium", "info": "6px" },
-        { "value": "lg", "label": "Large", "info": "8px" }
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
       ],
       "default": "md",
       "conditional": "setting.border_mode != 'none'"
@@ -463,10 +569,16 @@
       "type": "select",
       "id": "width",
       "label": "Width",
-      "default": "auto",
+      "default": "fit",
       "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "full", "label": "Full Width" }
+        {
+          "value": "fit",
+          "label": "Fit Content"
+        },
+        {
+          "value": "fill",
+          "label": "Fill Parent"
+        }
       ]
     },
     {
@@ -474,11 +586,26 @@
       "id": "content_align",
       "label": "Horizontal Alignment",
       "options": [
-        { "value": "left", "label": "Left / Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right / End" },
-        { "value": "between", "label": "Space Between" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "left",
+          "label": "Left / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right / End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
     {
@@ -486,25 +613,32 @@
       "id": "vertical_align",
       "label": "Vertical Alignment",
       "options": [
-        { "value": "top", "label": "Top / Start" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom / End" },
-        { "value": "between", "label": "Space Between" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "top",
+          "label": "Top / Start"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "xs"
     },
     {
@@ -530,17 +664,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "md"
     },
     {
@@ -566,18 +692,9 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_vertical",
       "label": "Vertical margin",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -603,18 +720,9 @@
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_horizontal",
       "label": "Horizontal margin",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "xs", "label": "XS" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "auto", "label": "Auto" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "none"
     },
     {
@@ -644,73 +752,88 @@
       "content": "Style"
     },
     {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Theme Colors",
-      "default": true,
-      "info": "Uncheck to customize button colors manually."
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "on-button",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
     },
     {
-      "type": "select",
-      "id": "color_role",
-      "label": "Text Color Role",
-      "default": "button",
-      "options": [
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "accent", "label": "Accent" }
-      ],
-      "conditional": "setting.inherit_styles or setting.text_color_override != true"
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
-    },
-    {
-      "type": "checkbox",
-      "id": "bg_color_override",
-      "label": "Override Background",
-      "default": false,
-      "conditional": "setting.inherit_styles != true"
-    },
-    {
-      "type": "color",
-      "id": "bg_color",
-      "label": "Custom Background",
-      "default": "#000000",
-      "conditional": "setting.inherit_styles != true and setting.bg_color_override"
-    },
-    {
-      "type": "checkbox",
-      "id": "text_color_override",
-      "label": "Override Text Color",
-      "default": false,
-      "conditional": "setting.inherit_styles != true"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Custom Text Color",
-      "default": "#ffffff",
-      "conditional": "setting.inherit_styles != true and setting.text_color_override"
+      "conditional": "setting.surface_override == true"
     },
     {
       "type": "checkbox",
       "id": "border_radius_override",
       "label": "Override Border Radius",
       "default": false,
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
       "type": "range",
@@ -720,21 +843,7 @@
       "max": 1000,
       "default": 4,
       "unit": "px",
-      "conditional": "setting.inherit_styles != true and setting.border_radius_override"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_color_override",
-      "label": "Override Border Color",
-      "default": false,
-      "conditional": "setting.inherit_styles != true and setting.border_mode != 'none'"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "Custom Border Color",
-      "default": "#ffffff",
-      "conditional": "setting.inherit_styles != true and setting.border_color_override and setting.border_mode != 'none'"
+      "conditional": "setting.border_radius_override"
     }
   ]
 }

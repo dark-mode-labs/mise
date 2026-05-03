@@ -1,14 +1,35 @@
 {% assign s = section.settings %}
 
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
+{% comment %} --- Background class + styles (unified bg primitive) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign styles = blank %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
 <section
-  class="section-announcement color-{{ s.color_scheme | default: 'none' }} bg-body z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-std"
+  class="section-announcement surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} z-header-top ts-caption group select-none border-b border-default"
+  style="{{ style_str }}"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
   data-speed="{{ s.autoplay_speed }}"
   data-infinite="true"
   {{ context.attached_attributes }}
 >
-  <div class="width-{{ s.width_scheme }} limit-width">
+  <div class="width-{{ s.width }} limit-width">
     <div class="slideshow-track flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing">
       {% content_for 'blocks' %}
     </div>
@@ -40,40 +61,155 @@
 {% schema %}
 {
   "name": "Announcement Bar",
-  "restriction": { "groups": ["header"] },
+  "restriction": {
+    "groups": ["header"]
+  },
   "settings": [
     {
       "type": "header",
       "content": "Layout"
     },
     {
-      "type": "width_scheme",
-      "id": "width_scheme",
+      "type": "width",
+      "id": "width",
       "label": "Max Content Width",
-      "default": "full"
+      "default": "fill"
     },
     {
       "type": "header",
       "content": "Behavior"
     },
-    { "type": "checkbox", "id": "autoplay", "label": "Autoplay", "default": true },
-    { "type": "range", "id": "autoplay_speed", "label": "Speed (s)", "min": 3, "max": 10, "default": 5 },
-    { "type": "checkbox", "id": "show_arrows", "label": "Show Arrows on Hover", "default": true },
-    { "type": "checkbox", "id": "show_close", "label": "Show Close Button", "default": false },
-
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Speed (s)",
+      "min": 3,
+      "max": 10,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Arrows on Hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close",
+      "label": "Show Close Button",
+      "default": false
+    },
     {
       "type": "header",
       "content": "Theme"
     },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color Palette", "default": "default" }
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    }
   ],
-  "blocks": [{ "type": "_announcement" }],
+  "blocks": [
+    {
+      "type": "_announcement"
+    }
+  ],
   "presets": [
     {
       "name": "Announcement Bar",
       "blocks": {
-        "msg1": { "type": "_announcement", "settings": { "text": "Reserve Now" } },
-        "msg2": { "type": "_announcement", "settings": { "text": "Live Music Friday" } }
+        "msg1": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Reserve Now"
+          }
+        },
+        "msg2": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Live Music Friday"
+          }
+        }
       },
       "block_order": ["msg1", "msg2"]
     }

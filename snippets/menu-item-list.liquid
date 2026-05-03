@@ -13,7 +13,7 @@
 {% capture tag_string %}{% for flag in item.dietary_flags %}{{ flag.name | downcase }},{% endfor %}{% endcapture %}
 
 <div
-  class="menu-item group w-full {{ padding }} border-b border-dashed border-body/10 last:border-0 break-inside-avoid overflow-hidden"
+  class="menu-item group w-full {{ padding }} border-b border-dashed border-default/10 last:border-0 break-inside-avoid overflow-hidden"
   data-filter-item
   data-tags="{{ tag_string }}"
 >
@@ -21,7 +21,7 @@
     <div class="flex-grow flex flex-col w-full min-w-0">
       <div class="flex flex-nowrap items-start justify-between gap-x-4 w-full">
         <div class="flex-1 min-w-0 flex flex-wrap items-center gap-2 pr-2">
-          <h4 class="font-heading font-bold text-lg md:text-xl leading-tight">
+          <h4 class="ts-heading-3">
             {{ item.name }}
           </h4>
           {% if item.dietary_flags.size > 0 %}
@@ -36,10 +36,9 @@
           {% endif %}
         </div>
 
-        <div class="flex-none w-auto text-right font-bold font-heading text-lg leading-tight">
+        <div class="flex-none w-auto text-right ts-heading-3">
           {% if use_body_layout %}
             <span class="whitespace-nowrap">
-              {% comment %} {% if item.modifier_groups.size > 0 %}From {% endif %} {% endcomment %}
               {{ item.amount | plus: 0 | money }}
             </span>
           {% else %}
@@ -51,7 +50,7 @@
                   {% assign modifiers = group.modifiers | sort: 'amount_delta' %}
                   {% for mod in modifiers %}
                     <div class="whitespace-nowrap flex items-center justify-end">
-                      <span class="text-xs opacity-70 uppercase tracking-wide mr-2">{{ mod.name }}</span>
+                      <span class="ts-caption opacity-70 mr-2">{{ mod.name }}</span>
                       <span>
                         {{ item.amount | plus: mod.amount_delta | money }}
                       </span>
@@ -65,27 +64,27 @@
       </div>
 
       {% if item.description != blank %}
-        <div class="opacity-70 text-sm mt-1 max-w-prose leading-relaxed">
+        <div class="ts-body-sm opacity-70 mt-1 max-w-prose">
           {{ item.description }}
         </div>
       {% endif %}
 
       {% if use_body_layout %}
-        <div class="mt-4 pt-4 border-t border-dashed border-body/10 w-full">
+        <div class="mt-4 pt-4 border-t border-dashed border-default/10 w-full">
           {% if group_count > 1 %}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
               {% for group in item.modifier_groups %}
                 {% if group.modifiers.size > 0 %}
                   <div class="flex flex-col gap-2">
-                    <h5 class="text-[0.625rem] font-bold uppercase tracking-widest opacity-50 border-b border-body/10 pb-1 mb-1">
+                    <h5 class="ts-caption opacity-50 border-b border-default/10 pb-1 mb-1">
                       {{ group.name }}
                     </h5>
                     <ul class="flex flex-col gap-1">
                       {% for mod in group.modifiers %}
-                        <li class="flex justify-between text-sm opacity-80">
+                        <li class="ts-body-sm flex justify-between opacity-80">
                           <span>{{ mod.name }}</span>
                           {% if mod.amount_delta > 0 %}
-                            <span class="opacity-60 font-bold text-xs">+{{ mod.amount_delta | money }}</span>
+                            <span class="ts-caption opacity-60">+{{ mod.amount_delta | money }}</span>
                           {% endif %}
                         </li>
                       {% endfor %}
@@ -97,15 +96,15 @@
           {% else %}
             {% assign group = item.modifier_groups.first %}
             <div class="flex flex-col gap-2">
-              <h5 class="text-[0.625rem] font-bold uppercase tracking-widest opacity-50 mb-1">
+              <h5 class="ts-caption opacity-50 mb-1">
                 {{ group.name | default: 'Options' }}
               </h5>
-              <div class="flex flex-col gap-1 text-sm opacity-80">
+              <div class="ts-body-sm flex flex-col gap-1 opacity-80">
                 {% for mod in group.modifiers %}
                   <div class="flex justify-between items-baseline">
                     <span>{{ mod.name }}</span>
                     {% if mod.amount_delta > 0 %}
-                      <span class="opacity-60 font-bold text-xs">+{{ mod.amount_delta | money }}</span>
+                      <span class="ts-caption opacity-60">+{{ mod.amount_delta | money }}</span>
                     {% endif %}
                   </div>
                 {% endfor %}

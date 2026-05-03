@@ -13,28 +13,14 @@
             {% if link.links != blank %}
               <details class="group">
                 <summary class="flex items-center justify-between py-2 cursor-pointer list-none select-none">
-                  {% render 'typography',
-                    text: link.title,
-                    display_size: display_size,
-                    weight: font_weight,
-                    color_role: color_role,
-                    family: font_family,
-                    class: utilities
-                  %}
+                  {% render 'typography', text: link.title, type_style: type_style | default: 'nav', color_role: color_role | default: 'on-button' %}
                   {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90' %}
                 </summary>
-                <ul class="pl-4 mt-2 space-y-3 border-l border-current/20">
+                <ul class="pl-4 mt-2 flex flex-col gap-md border-l border-current/20">
                   {% for child in link.links %}
                     <li>
-                      <a href="{{ child.url }}" class="block text-base opacity-80 hover:opacity-100 py-1">
-                        {% render 'typography',
-                          text: link.title,
-                          display_size: display_size,
-                          weight: font_weight,
-                          color_role: color_role,
-                          family: font_family,
-                          class: utilities
-                        %}
+                      <a href="{{ child.url }}" class="block opacity-80 hover:opacity-100 py-1">
+                        {% render 'typography', text: child.title, type_style: type_style | default: 'nav', color_role: color_role | default: 'on-button' %}
                       </a>
                     </li>
                   {% endfor %}
@@ -45,14 +31,7 @@
                 href="{{ link.url }}"
                 class="block py-2"
               >
-                {% render 'typography',
-                  text: link.title,
-                  display_size: display_size,
-                  weight: font_weight,
-                  color_role: color_role,
-                  family: font_family,
-                  class: utilities
-                %}
+                {% render 'typography', text: link.title, type_style: type_style | default: 'nav', color_role: color_role | default: 'on-button' %}
               </a>
             {% endif %}
           </li>
@@ -60,9 +39,13 @@
       </ul>
     </nav>
     <div class="p-6 border-t border-current/10 bg-black/5">
-      <p class="text-xs text-btn opacity-60 uppercase tracking-widest text-center">
-        {{ shop.name }} &copy; {{ 'now' | date: '%Y' }}
-      </p>
+      {%
+        render 'typography',
+        text: shop.name | append: ' © ' | append: 'now' | date: '%Y',
+        type_style: 'caption',
+        color_role: 'on-button',
+        class: 'opacity-60 text-center'
+      %}
     </div>
   </div>
 </div>

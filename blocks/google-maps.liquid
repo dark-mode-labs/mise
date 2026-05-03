@@ -13,8 +13,8 @@
 {% endif %}
 
 <div
-  class="media-block w-full h-full is-{{ s.height }}"
-  style="{% if s.height == 'custom' %}--max-h: {{ s.custom_height }}rem;{% endif %}"
+  class="media-block w-full h-full height-{{ s.height }}"
+  style=""
   {{ context.attached_attributes }}
 >
   <iframe
@@ -36,36 +36,20 @@
       "type": "header",
       "content": "Location"
     },
-    { "type": "collection", "id": "location", "label": "Select Location" },
+    {
+      "type": "collection",
+      "id": "location",
+      "label": "Select Location"
+    },
     {
       "type": "header",
       "content": "Layout"
     },
     {
-      "type": "select",
+      "type": "height",
       "id": "height",
       "label": "Image Height",
-      "options": [
-        { "value": "auto", "label": "Auto (Fit Content)" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "Fullscreen" },
-        { "value": "thumbnail", "label": "Thumbnail" },
-        { "value": "custom", "label": "Custom" }
-      ],
       "default": "auto"
-    },
-    {
-      "type": "range",
-      "id": "custom_height",
-      "label": "Custom Height",
-      "min": 2,
-      "max": 50,
-      "step": 0.5,
-      "default": 19,
-      "unit": "rem",
-      "conditional": "setting.height == 'custom'"
     }
   ]
 }

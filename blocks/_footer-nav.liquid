@@ -3,11 +3,32 @@
 {% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'footer-block' %}
 
-{% unless s.inherit_styles %}
-  {% assign classes = classes | push: "color-{{ s.color_scheme | default: 'none' }}" %}
-{% endunless %}
+{% if s.width and s.width != blank %}
+  {% assign classes = classes | push: 'width-{{ s.width }}' %}
+{% endif %}
+
+{% if s.text_align != blank and s.text_align != 'inherit' %}
+  {% assign classes = classes | push: 'text-align-{{ s.text_align }}' %}
+{% endif %}
+
+{% if s.surface_override %}
+  {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
 
 {% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
+{% assign styles = blank %}
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
+{% assign block_styles = styles | join: ';' %}
 
 {% comment %} --- Typography Utilities --- {% endcomment %}
 {% assign utilities = blank %}
@@ -19,31 +40,34 @@
     {% assign utilities = utilities | push: 'text-balance' %}
 {% endcase %}
 
-{% if s.text_transform != 'none' %}
-  {% assign utilities = utilities | push: s.text_transform %}
-{% endif %}
-
 {% assign utility_classes = utilities | join: ' ' %}
 
 {% comment %} --- Font Family --- {% endcomment %}
-{% assign font_family = 'btn' %}
-{% if s.font_family_override and s.font_scheme != blank %}
-  {% assign font_family = s.font_scheme %}
-{% endif %}
 
 {% comment %} --- Component Render --- {% endcomment %}
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}{% assign color_role = 'primary' %}{% endif %}
 <div
   class="{{ block_classes }}"
+  style="{{ block_styles }}"
   {{ context.attached_attributes }}
 >
   <details class="group" open>
-    <summary class="flex items-center justify-between cursor-pointer md:cursor-default list-none mb-4">
+    {% comment %}
+      Mobile: `flex items-center justify-between` puts the heading at
+      the start and the collapse chevron at the end. Desktop (md+):
+      chevron is `md:hidden`, leaving only the heading — flex with one
+      child still pins it to the start, ignoring the wrapper's
+      text-align. `md:block` reverts the summary to plain block flow
+      on desktop so `.text-align-{X}` from the wrapper inherits down
+      and the heading honors source intent.
+    {% endcomment %}
+    <summary class="flex items-center justify-between md:block cursor-pointer md:cursor-default list-none mb-4">
       {% render 'typography',
         text: s.heading,
-        display_size: s.display_size,
-        weight: s.font_weight,
+        type_style: s.type_style,
         class: utility_classes,
-        family: font_family
+        color_role: color_role
       %}
       {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}
     </summary>
@@ -55,54 +79,61 @@
 {% schema %}
 {
   "name": "Nav Group",
-  "blocks": [{ "type": "_nav-group" }],
+  "blocks": [
+    {
+      "type": "_nav-group"
+    }
+  ],
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Quick Links" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Quick Links"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Width"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "inherit"
+    },
     {
       "type": "header",
       "content": "Style"
-    },
-    {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Styles",
-      "default": true
     },
     {
       "type": "header",
       "content": "Typography"
     },
     {
-      "type": "select",
-      "id": "display_size",
-      "label": "Size",
-      "default": "body",
-      "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" },
-        { "value": "h3", "label": "H3" },
-        { "value": "h4", "label": "H4" },
-        { "value": "h5", "label": "H5" },
-        { "value": "h6", "label": "H6" },
-        { "value": "display", "label": "Display" },
-        { "value": "body", "label": "Body" },
-        { "value": "caption", "label": "Caption" },
-        { "value": "small", "label": "Small" },
-        { "value": "jumbo", "label": "Jumbo" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "font_weight",
-      "label": "Weight",
-      "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "bold", "label": "Bold" },
-        { "value": "extrabold", "label": "Extra Bold" },
-        { "value": "black", "label": "Black" }
-      ],
-      "default": "normal"
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "nav"
     },
     {
       "type": "select",
@@ -110,47 +141,96 @@
       "label": "Text Wrapping",
       "default": "nowrap",
       "options": [
-        { "value": "wrap", "label": "Wrap" },
-        { "value": "nowrap", "label": "No Wrap" },
-        { "value": "balance", "label": "Balance" }
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "No Wrap"
+        },
+        {
+          "value": "balance",
+          "label": "Balance"
+        }
       ]
     },
     {
       "type": "select",
-      "id": "text_transform",
-      "label": "Text Transform",
-      "default": "none",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "uppercase", "label": "Uppercase" },
-        { "value": "capitalize", "label": "Capitalize" },
-        { "value": "lowercase", "label": "Lowercase" }
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
     },
     {
-      "type": "checkbox",
-      "id": "font_family_override",
-      "label": "Override Font",
-      "default": false
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
     },
     {
-      "type": "font_scheme",
-      "id": "font_scheme",
-      "label": "Font",
-      "default": "",
-      "conditional": "setting.font_family_override == true"
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.surface_override == true"
     }
   ]
 }

@@ -78,10 +78,6 @@ Tools to communicate ethos, sourcing, and atmosphere.
 - **Technical**: Supports Full Height (`100svh`) to prevent mobile browser bar jumps.
 - **Media**: Handles HTML5 background video with seamless poster fallbacks and automatic dimming layers for text legibility.
 
-**`media-with-content` (Section)**: The versatile storyteller.
-- **Layout**: Robust 50/50 grid that stacks vertically on mobile.
-- **Rhythm**: Supports alternating alignment (Image Left / Image Right) to create visual flow.
-
 **`slideshow` (Section)**: The visual carousel.
 - **Performance**: Uses native scroll snapping (CSS Scroll Snap) instead of heavy JS libraries.
 - **Content**: Supports mixed media (Video/Image) slides with independent text overlay positioning.

@@ -2,9 +2,9 @@
 
 {% assign scheme_class = blank %}
 
-{% unless s.inherit_styles %}
-  {% assign scheme_class="color-{{ s.color_scheme | default: 'none' }}" %}
-{% endunless %}
+{% if s.surface_override %}
+  {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
 
 <div
   class="footer-block flex flex-col gap-6 items-start {{ scheme_class }}"
@@ -16,29 +16,34 @@
 {% schema %}
 {
   "name": "Brand & Socials",
-  "blocks": [{ "type": "@theme" }],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
   "settings": [
     {
       "type": "header",
       "content": "Style"
     },
     {
-      "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Styles",
-      "default": true
-    },
-    {
       "type": "header",
       "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "true"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.surface_override == true"
     }
   ]
 }

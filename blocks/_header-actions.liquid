@@ -2,25 +2,43 @@
 
 {% assign scheme_class = blank %}
 
-{% unless s.inherit_styles %}
-  {% assign scheme_class = "color-{{ s.color_scheme | default: 'none' }}" %}
-{% endunless %}
+{% if s.surface_override %}
+  {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
+
+{% assign text_color_class = 'text-' | append: s.text_role %}
+
+{% assign actions_classes = 'header-actions flex'
+  | push: 'direction-{{ s.direction }}'
+  | push: 'gap-{{ s.gap }}'
+  | push: scheme_class
+  | push: text_color_class
+%}
+{% if s.vertical_align != blank %}
+  {% assign actions_classes = actions_classes | push: 'vertical-{{ s.vertical_align }}' %}
+{% endif %}
+{% if s.content_align != blank %}
+  {% assign actions_classes = actions_classes | push: 'content-{{ s.content_align }}' %}
+{% endif %}
 
 <div
-  class="header-actions flex items-center gap-4 {{ scheme_class }}"
+  class="{{ actions_classes | join: ' ' }}"
+  style="{% if s.gap == 'custom' %}--space-gap: {{ s.gap_custom }}rem;{% endif %}"
   {{ context.attached_attributes }}
 >
   {% if s.show_search %}
-    <a href="/search" class="p-2 hover:opacity-70 text-control"
+    <a href="/search" class="p-2 hover:opacity-70"
       ><span class="sr-only">Search</span>{% render 'icon', name: 'search', class: 'w-5 h-5' %}
     </a>
   {% endif %}
 
-  <div class="hidden md:block">
+  {% comment %} display:contents on md+ so children participate in parent flex; hidden below md. {% endcomment %}
+  <div class="header-actions-children hidden md:contents">
     {% content_for 'blocks' %}
   </div>
+
   {% if s.show_cart %}
-    <a data-action="open-cart" class="p-2 hover:opacity-70 relative group text-control">
+    <a data-action="open-cart" class="p-2 hover:opacity-70 relative group">
       <span class="sr-only">Cart</span>
       {% render 'icon', name: 'bag', class: 'w-5 h-5' %}
       <span
@@ -34,32 +52,160 @@
 {
   "name": "Header Actions",
   "settings": [
-    { "type": "checkbox", "id": "show_search", "label": "Show Search", "default": true },
-    { "type": "checkbox", "id": "show_cart", "label": "Show Cart", "default": true },
     {
-      "type": "header",
-      "content": "Style"
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search",
+      "default": true
     },
     {
       "type": "checkbox",
-      "id": "inherit_styles",
-      "label": "Inherit Styles",
+      "id": "show_cart",
+      "label": "Show Cart",
       "default": true
     },
     {
       "type": "header",
-      "content": "Overrides",
-      "conditional": "setting.inherit_styles != true"
+      "content": "Theme"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color Palette",
+      "type": "select",
+      "id": "text_role",
+      "label": "Icon Color Role",
+      "info": "Cart and search icons inherit this role. Match it to header-menu's text role for visual consistency.",
+      "default": "on-button",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        {
+          "value": "row",
+          "label": "Row"
+        },
+        {
+          "value": "column",
+          "label": "Column"
+        },
+        {
+          "value": "responsive",
+          "label": "Responsive"
+        }
+      ],
+      "default": "row"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Align",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ],
+      "default": "middle"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Content Align",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "space",
+      "id": "gap",
+      "label": "Gap",
+      "default": "sm"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
+      "conditional": "setting.gap == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Overrides"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
       "default": "default",
-      "conditional": "setting.inherit_styles != true"
+      "conditional": "setting.surface_override == true"
     }
   ],
-  "blocks": [{ "type": "button" }, { "type": "group" }],
-  "presets": [{ "name": "Action Button", "settings": {}, "blocks": {}, "block_order": [] }]
+  "blocks": [
+    {
+      "type": "button"
+    },
+    {
+      "type": "group"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Action Button",
+      "settings": {},
+      "blocks": {},
+      "block_order": []
+    }
+  ]
 }
 {% endschema %}
