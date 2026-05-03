@@ -280,7 +280,7 @@
       {% assign ts = style[1].settings %}
       {% if ts.font_size != blank %}
         {% capture ts_weight %}{% case ts.weight %}{% when 'thin' %}100{% when 'extralight' %}200{% when 'light' %}300{% when 'normal' %}400{% when 'medium' %}500{% when 'semibold' %}600{% when 'bold' %}700{% when 'extrabold' %}800{% when 'black' %}900{% else %}400{% endcase %}{% endcapture %}
-        {% capture ts_tracking %}{% case ts.tracking %}{% when 'tighter' %}-0.05em{% when 'tight' %}-0.025em{% when 'wide' %}0.025em{% when 'wider' %}0.05em{% when 'widest' %}0.1em{% else %}0{% endcase %}{% endcapture %}
+        {% capture ts_tracking %}{% case ts.tracking %}{% when 'tighter' %}-0.05em{% when 'tight' %}-0.025em{% when 'wide' %}0.025em{% when 'wider' %}0.05em{% when 'widest' %}0.1em{% when 'ultra-wide' %}0.25em{% else %}0{% endcase %}{% endcapture %}
         {% capture ts_leading %}{% case ts.leading %}{% when 'none' %}1{% when 'tight' %}1.25{% when 'snug' %}1.375{% when 'relaxed' %}1.625{% when 'loose' %}2{% else %}1.5{% endcase %}{% endcapture %}
     .ts-{{ ts_id }} { font-family: var(--font-{{ ts.font_ref | default: 'body' }}); font-size: {{ ts.font_size }}; font-weight: {{ ts_weight }}; letter-spacing: {{ ts_tracking }}; line-height: {{ ts_leading }}; text-transform: {{ ts.transform | default: 'none' }}; }
         {% comment %}

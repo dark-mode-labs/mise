@@ -313,6 +313,10 @@
             {
               "value": "widest",
               "label": "Widest"
+            },
+            {
+              "value": "ultra-wide",
+              "label": "Ultra Wide"
             }
           ]
         },

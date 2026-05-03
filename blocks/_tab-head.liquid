@@ -16,6 +16,31 @@
 {% elsif s.overlay_role == 'custom' and s.overlay_role_custom != blank %}
   {% assign overlay_color_value = s.overlay_role_custom %}
 {% endif %}
+{% assign overlay_color_inactive_value = blank %}
+{% if s.overlay_role_inactive == 'palette' and s.overlay_role_inactive_palette != blank %}
+  {% assign overlay_color_inactive_value = 'var(--palette-{{ s.overlay_role_inactive_palette }})' %}
+{% elsif s.overlay_role_inactive == 'gradient' and s.overlay_role_inactive_gradient != blank %}
+  {% assign overlay_color_inactive_value = 'var(--gradient-{{ s.overlay_role_inactive_gradient }})' %}
+{% elsif s.overlay_role_inactive == 'custom' and s.overlay_role_inactive_custom != blank %}
+  {% assign overlay_color_inactive_value = s.overlay_role_inactive_custom %}
+{% endif %}
+{% comment %} Slot roles emit a class (text-{role}); palette/custom/gradient override --text inline. {% endcomment %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'gradient' and s.text_role_gradient != blank %}
+  {% assign text_color_value = 'var(--gradient-{{ s.text_role_gradient }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
+{% assign text_color_inactive_value = blank %}
+{% if s.text_role_inactive == 'palette' and s.text_role_inactive_palette != blank %}
+  {% assign text_color_inactive_value = 'var(--palette-{{ s.text_role_inactive_palette }})' %}
+{% elsif s.text_role_inactive == 'gradient' and s.text_role_inactive_gradient != blank %}
+  {% assign text_color_inactive_value = 'var(--gradient-{{ s.text_role_inactive_gradient }})' %}
+{% elsif s.text_role_inactive == 'custom' and s.text_role_inactive_custom != blank %}
+  {% assign text_color_inactive_value = s.text_role_inactive_custom %}
+{% endif %}
 {% assign classes = '' %}
 {% assign styles = '' %}
 {% assign active_state_classes = '' %}
@@ -24,6 +49,7 @@
 {% assign inactive_state_styles = '' %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
+{% assign classes = classes | push_if: 'rounded-global', s.border_radius_override %}
 {% assign styles = styles | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override %}
 {% if border_color_value != blank %}
   {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
@@ -49,10 +75,19 @@
     Custom color/gradient encodes its own alpha — don't
     multiply with --overlay-opacity. Opacity stays 1.
   {% endcomment %}
-  {% assign inactive_state_styles = inactive_state_styles
-    | push: '--overlay-bg:{{ s.overlay_color_inactive }}'
-    | push: '--overlay-opacity:1'
-  %}
+  {% assign inactive_state_styles = inactive_state_styles | push: '--overlay-opacity:1' %}
+  {% if overlay_color_inactive_value != blank -%}
+    {%- assign inactive_state_styles = inactive_state_styles
+      | push: '--overlay-bg:{{ overlay_color_inactive_value }}'
+    -%}
+  {%- endif %}
+{% endif %}
+
+{% if text_color_inactive_value != blank %}
+  {% assign inactive_state_classes = inactive_state_classes | push: 'text-primary' %}
+  {% assign inactive_state_styles = inactive_state_styles | push: '--text:{{ text_color_inactive_value }}' %}
+{% elsif s.text_role_inactive != blank and s.text_role_inactive != 'none' %}
+  {% assign inactive_state_classes = inactive_state_classes | push: 'text-{{ s.text_role_inactive }}' %}
 {% endif %}
 
 {% unless s.border_mode == 'none' %}
@@ -80,6 +115,13 @@
   {% if overlay_color_value != blank -%}
     {%- assign active_state_styles = active_state_styles | push: '--overlay-bg:{{ overlay_color_value }}' -%}
   {%- endif %}
+{% endif %}
+
+{% if text_color_value != blank %}
+  {% assign active_state_classes = active_state_classes | push: 'text-primary' %}
+  {% assign active_state_styles = active_state_styles | push: '--text:{{ text_color_value }}' %}
+{% elsif s.text_role != blank and s.text_role != 'none' %}
+  {% assign active_state_classes = active_state_classes | push: 'text-{{ s.text_role }}' %}
 {% endif %}
 
 <div
@@ -303,6 +345,26 @@
       "conditional": "setting.enable_overlay == true"
     },
     {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "conditional": "setting.enable_overlay == true"
+    },
+    {
       "type": "palette",
       "id": "overlay_role_palette",
       "label": "Overlay Palette Token",
@@ -314,7 +376,54 @@
       "type": "color",
       "id": "overlay_role_custom",
       "label": "Overlay Color",
-      "conditional": "setting.enable_overlay == true"
+      "conditional": "setting.overlay_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "overlay_role_gradient",
+      "label": "Overlay Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.overlay_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color",
+      "default": "none",
+      "info": "Text color when this tab is active. Inherited by child text/icon blocks via --text.",
+      "options": [
+        { "value": "none", "label": "Inherit" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "text_role_gradient",
+      "label": "Text Gradient",
+      "conditional": "setting.text_role == 'gradient'"
     },
     {
       "type": "header",
@@ -440,13 +549,6 @@
       "default": false
     },
     {
-      "type": "color",
-      "id": "overlay_color_inactive",
-      "label": "Tint / Background Color",
-      "default": "",
-      "conditional": "setting.enable_overlay_inactive == true"
-    },
-    {
       "type": "range",
       "id": "overlay_opacity_inactive",
       "label": "Opacity",
@@ -454,6 +556,84 @@
       "max": 100,
       "default": 100,
       "conditional": "setting.enable_overlay_inactive == true"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role_inactive",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "conditional": "setting.enable_overlay_inactive == true"
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_inactive_palette",
+      "label": "Overlay Palette Token",
+      "default": "brand",
+      "conditional": "setting.overlay_role_inactive == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "overlay_role_inactive_custom",
+      "label": "Overlay Color",
+      "conditional": "setting.overlay_role_inactive == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "overlay_role_inactive_gradient",
+      "label": "Overlay Gradient",
+      "conditional": "setting.overlay_role_inactive == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "text_role_inactive",
+      "label": "Text Color",
+      "default": "none",
+      "info": "Text color when this tab is inactive. Inherited by child text/icon blocks via --text.",
+      "options": [
+        { "value": "none", "label": "Inherit" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_inactive_palette",
+      "label": "Text Palette Token",
+      "default": "brand",
+      "conditional": "setting.text_role_inactive == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_inactive_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role_inactive == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "text_role_inactive_gradient",
+      "label": "Text Gradient",
+      "conditional": "setting.text_role_inactive == 'gradient'"
     },
     {
       "type": "header",
@@ -516,14 +696,10 @@
               }
             }
           },
-          "block_order": [
-            "header-text"
-          ]
+          "block_order": ["header-text"]
         }
       },
-      "block_order": [
-        "tab-header"
-      ]
+      "block_order": ["tab-header"]
     }
   ]
 }
