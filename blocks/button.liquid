@@ -23,8 +23,14 @@
   {% assign border_color_value = s.border_role_custom %}
 {% endif %}
 
+{% assign radius_class = 'rounded-global' %}
+{% if s.border_radius_override %}
+  {% assign radius_class = 'rounded-custom' %}
+{% endif %}
+
 {% comment %} --- 1. Wrapper Classes (Outer DIV) --- {% endcomment %}
-{% assign wrapper_classes = 'rounded-global whitespace-nowrap'
+{% assign wrapper_classes = 'whitespace-nowrap'
+  | push: radius_class
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
 %}
@@ -69,7 +75,8 @@
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
 
 {% comment %} --- 2. Inner Classes (Button / Link) --- {% endcomment %}
-{% assign inner_classes = 'rounded-global w-full flex'
+{% assign inner_classes = 'w-full flex'
+  | push: radius_class
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
@@ -150,7 +157,7 @@
   {%- endif %}
 {% endunless %}
 
-{% assign styles = styles | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override %}
+{% assign styles = styles | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override %}
 {% if bg_color_value != blank %}{% assign styles = styles | push: '--button-bg: {{ bg_color_value }}' %}{% endif %}
 {% if text_color_value != blank -%}
   {%- assign styles = styles | push: '--text-on-button: {{ text_color_value }}' -%}

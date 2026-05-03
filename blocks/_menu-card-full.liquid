@@ -1,7 +1,12 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Class Array Building --- {% endcomment %}
-{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all rounded-global width-fill height-full'
+{% assign radius_class = 'rounded-global' %}
+{% if s.border_radius_override %}
+  {% assign radius_class = 'rounded-custom' %}
+{% endif %}
+{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all width-fill height-full'
+  | push: radius_class
   | push: 'text-align-{{ s.text_align }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
@@ -28,7 +33,12 @@
     | push: 'group-border-{{ s.border_mode }}'
     | push: 'group-border-size-{{ s.border_size }}'
   %}
-  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' and s.border_role != 'gradient' %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
     {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
   {% endif %}
   {% if s.border_mode == 'custom' %}
@@ -95,7 +105,7 @@
 {% endif %}
 
 {% assign styles = styles
-  | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
   | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
 %}
 
@@ -727,9 +737,7 @@
               }
             }
           },
-          "block_order": [
-            "img"
-          ]
+          "block_order": ["img"]
         },
         "menu-card-content": {
           "type": "group",
@@ -782,16 +790,10 @@
                 "padding_vertical": "xs",
                 "padding_horizontal": "none"
               },
-              "block_order": [
-                "title",
-                "price"
-              ]
+              "block_order": ["title", "price"]
             }
           },
-          "block_order": [
-            "info",
-            "desc"
-          ]
+          "block_order": ["info", "desc"]
         },
         "menu-card-footer": {
           "type": "group",
@@ -814,9 +816,7 @@
               }
             }
           },
-          "block_order": [
-            "btn"
-          ]
+          "block_order": ["btn"]
         }
       },
       "settings": {

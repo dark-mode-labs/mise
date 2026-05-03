@@ -198,6 +198,7 @@
     width: 100%;
     height: 100%;
   }
+
   .media-wrapper img,
   .media-wrapper video,
   .media-wrapper .placeholder-svg {
@@ -329,29 +330,78 @@
      margin-mx-X) are dynamically emitted from `theme.space_scale` in
      theme_variables.liquid — single source of truth. Only `*-none`
      and `*-custom` (special-case CSS variables) live here. */
-  .gap-none { gap: 0; }
-  .gap-custom { gap: var(--space-gap); }
+  .gap-none {
+    gap: 0;
+  }
 
-  .padding-py-none { padding-top: 0; padding-bottom: 0; }
-  .padding-py-custom { padding-top: var(--space-pt); padding-bottom: var(--space-pb); }
+  .gap-custom {
+    gap: var(--space-gap);
+  }
 
-  .padding-px-none { padding-left: 0; padding-right: 0; }
-  .padding-px-custom { padding-left: var(--space-pl); padding-right: var(--space-pr); }
+  .padding-py-none {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 
-  .margin-my-none { margin-top: 0; margin-bottom: 0; }
-  .margin-my-auto { margin-top: auto; margin-bottom: auto; }
+  .padding-py-custom {
+    padding-top: var(--space-pt);
+    padding-bottom: var(--space-pb);
+  }
+
+  .padding-px-none {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .padding-px-custom {
+    padding-left: var(--space-pl);
+    padding-right: var(--space-pr);
+  }
+
+  .margin-my-none {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .margin-my-auto {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
   /* `auto-top` / `auto-bottom` mirror source's `mt-auto` / `mb-auto`
      semantics — top-only or bottom-only auto margin. In a flex-col
      parent, `auto-top` pushes the child to the bottom (the badge-on-
      bottom-of-frame pattern); `auto-bottom` pushes to top. The
      symmetric `auto` (both auto) centers vertically. Don't conflate. */
-  .margin-my-auto-top { margin-top: auto; margin-bottom: 0; }
-  .margin-my-auto-bottom { margin-top: 0; margin-bottom: auto; }
-  .margin-my-custom { margin-top: var(--space-mt); margin-bottom: var(--space-mb); }
+  .margin-my-auto-top {
+    margin-top: auto;
+    margin-bottom: 0;
+  }
 
-  .margin-mx-none { margin-left: 0; margin-right: 0; }
-  .margin-mx-auto { margin-left: auto; margin-right: auto; }
-  .margin-mx-custom { margin-left: var(--space-ml); margin-right: var(--space-mr); }
+  .margin-my-auto-bottom {
+    margin-top: 0;
+    margin-bottom: auto;
+  }
+
+  .margin-my-custom {
+    margin-top: var(--space-mt);
+    margin-bottom: var(--space-mb);
+  }
+
+  .margin-mx-none {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .margin-mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .margin-mx-custom {
+    margin-left: var(--space-ml);
+    margin-right: var(--space-mr);
+  }
 
   .icon svg {
     @apply w-full h-full;
@@ -508,7 +558,8 @@
     display: flex;
     flex-direction: column;
   }
-  .media-block > .media-wrapper {
+
+  .media-block>.media-wrapper {
     flex: 1 1 auto;
     min-height: 0;
   }
@@ -656,6 +707,14 @@
     border-radius: var(--radius-global);
   }
 
+  .rounded-custom {
+    border-radius: var(--radius-custom);
+  }
+
+  .rounded-inherit {
+    border-radius: var(--radius-custom, var(--radius-global));
+  }
+
   .text-size-small {
     @apply text-sm;
   }
@@ -753,7 +812,9 @@
      `bp-<tier>` modifier class from the block's `direction_breakpoint`
      setting. Default (no bp class) switches at the `column` tier —
      mise's prior hardcoded md breakpoint preserved. */
-  .direction-responsive { flex-direction: column; }
+  .direction-responsive {
+    flex-direction: column;
+  }
 
   /* Property-driven semantic axis classes. The block templates emit
      `direction-X vertical-Y content-Z` straight from settings — no
@@ -763,24 +824,73 @@
      The combination with the direction class resolves to the right
      `align-items` / `justify-content` so the same setting reads
      intuitively whether the block is row, column, or responsive. */
-  .direction-row.vertical-top    { align-items: flex-start; }
-  .direction-row.vertical-middle { align-items: center; }
-  .direction-row.vertical-bottom { align-items: flex-end; }
-  .direction-row.vertical-stretch{ align-items: stretch; }
-  .direction-row.content-left    { justify-content: flex-start; }
-  .direction-row.content-center  { justify-content: center; }
-  .direction-row.content-right   { justify-content: flex-end; }
-  .direction-row.content-between { justify-content: space-between; }
-  .direction-row.content-around  { justify-content: space-around; }
+  .direction-row.vertical-top {
+    align-items: flex-start;
+  }
 
-  .direction-column.vertical-top    { justify-content: flex-start; }
-  .direction-column.vertical-middle { justify-content: center; }
-  .direction-column.vertical-bottom { justify-content: flex-end; }
-  .direction-column.vertical-between{ justify-content: space-between; }
-  .direction-column.content-left    { align-items: flex-start; }
-  .direction-column.content-center  { align-items: center; }
-  .direction-column.content-right   { align-items: flex-end; }
-  .direction-column.content-stretch { align-items: stretch; }
+  .direction-row.vertical-middle {
+    align-items: center;
+  }
+
+  .direction-row.vertical-bottom {
+    align-items: flex-end;
+  }
+
+  .direction-row.vertical-stretch {
+    align-items: stretch;
+  }
+
+  .direction-row.content-left {
+    justify-content: flex-start;
+  }
+
+  .direction-row.content-center {
+    justify-content: center;
+  }
+
+  .direction-row.content-right {
+    justify-content: flex-end;
+  }
+
+  .direction-row.content-between {
+    justify-content: space-between;
+  }
+
+  .direction-row.content-around {
+    justify-content: space-around;
+  }
+
+  .direction-column.vertical-top {
+    justify-content: flex-start;
+  }
+
+  .direction-column.vertical-middle {
+    justify-content: center;
+  }
+
+  .direction-column.vertical-bottom {
+    justify-content: flex-end;
+  }
+
+  .direction-column.vertical-between {
+    justify-content: space-between;
+  }
+
+  .direction-column.content-left {
+    align-items: flex-start;
+  }
+
+  .direction-column.content-center {
+    align-items: center;
+  }
+
+  .direction-column.content-right {
+    align-items: flex-end;
+  }
+
+  .direction-column.content-stretch {
+    align-items: stretch;
+  }
 
   /* Grid layout vertical/content alignment — mirrors the flex rules
      so a group block with `layout_mode: grid` honors the same
@@ -788,14 +898,37 @@
      these, source `items-center` on a `grid` container emitted the
      `vertical-middle` class but no CSS rule applied, leaving cells
      at the default `align-items: normal` (= stretch). */
-  .grid.vertical-top    { align-items: start; }
-  .grid.vertical-middle { align-items: center; }
-  .grid.vertical-bottom { align-items: end; }
-  .grid.vertical-stretch{ align-items: stretch; }
-  .grid.content-left    { justify-items: start; }
-  .grid.content-center  { justify-items: center; }
-  .grid.content-right   { justify-items: end; }
-  .grid.content-stretch { justify-items: stretch; }
+  .grid.vertical-top {
+    align-items: start;
+  }
+
+  .grid.vertical-middle {
+    align-items: center;
+  }
+
+  .grid.vertical-bottom {
+    align-items: end;
+  }
+
+  .grid.vertical-stretch {
+    align-items: stretch;
+  }
+
+  .grid.content-left {
+    justify-items: start;
+  }
+
+  .grid.content-center {
+    justify-items: center;
+  }
+
+  .grid.content-right {
+    justify-items: end;
+  }
+
+  .grid.content-stretch {
+    justify-items: stretch;
+  }
 
   /* Responsive: column on mobile, row on md+. Below md the column
      mapping applies; above md, the row mapping wins via media query.
@@ -804,9 +937,21 @@
      mobile so children don't stretch full-width when there's no
      explicit `content_align`. This matches source's `items-center`
      semantics (cross-axis center, regardless of direction). */
-  .direction-responsive.vertical-top    { justify-content: flex-start; align-items: flex-start; }
-  .direction-responsive.vertical-middle { justify-content: center; align-items: center; }
-  .direction-responsive.vertical-bottom { justify-content: flex-end; align-items: flex-end; }
+  .direction-responsive.vertical-top {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .direction-responsive.vertical-middle {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .direction-responsive.vertical-bottom {
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
   /* `content-*` is intentionally NOT applied at base (column mode) for
      direction-responsive. At mobile/column, source patterns like
      `flex-col md:flex-row md:justify-end` intend the alignment to ONLY
@@ -814,16 +959,49 @@
      would right-align children stacked vertically on mobile — which is
      never the user's intent. The md+ media query below activates the
      alignment when the layout switches to row. */
-  .direction-responsive.content-stretch { align-items: stretch; }
+  .direction-responsive.content-stretch {
+    align-items: stretch;
+  }
+
   @media (min-width: 768px) {
-    .direction-responsive.vertical-top    { align-items: flex-start; justify-content: initial; }
-    .direction-responsive.vertical-middle { align-items: center; justify-content: initial; }
-    .direction-responsive.vertical-bottom { align-items: flex-end; justify-content: initial; }
-    .direction-responsive.vertical-stretch{ align-items: stretch; }
-    .direction-responsive.content-left    { justify-content: flex-start; align-items: initial; }
-    .direction-responsive.content-center  { justify-content: center; align-items: initial; }
-    .direction-responsive.content-right   { justify-content: flex-end; align-items: initial; }
-    .direction-responsive.content-between { justify-content: space-between; align-items: initial; }
+    .direction-responsive.vertical-top {
+      align-items: flex-start;
+      justify-content: initial;
+    }
+
+    .direction-responsive.vertical-middle {
+      align-items: center;
+      justify-content: initial;
+    }
+
+    .direction-responsive.vertical-bottom {
+      align-items: flex-end;
+      justify-content: initial;
+    }
+
+    .direction-responsive.vertical-stretch {
+      align-items: stretch;
+    }
+
+    .direction-responsive.content-left {
+      justify-content: flex-start;
+      align-items: initial;
+    }
+
+    .direction-responsive.content-center {
+      justify-content: center;
+      align-items: initial;
+    }
+
+    .direction-responsive.content-right {
+      justify-content: flex-end;
+      align-items: initial;
+    }
+
+    .direction-responsive.content-between {
+      justify-content: space-between;
+      align-items: initial;
+    }
   }
 
   .group-border-size-xxs {
@@ -1067,24 +1245,69 @@
     }
   }
 
-  .bg-body        { background: var(--background); }
-  .bg-body-alt    { background: var(--background-alt); }
-  .bg-surface     { background: var(--surface); }
-  .bg-surface-alt { background: var(--surface-alt); }
-  .bg-accent      { background: var(--accent-bg); }
-  .bg-button      { background: var(--button-bg); }
-  .bg-control     { background: var(--control-bg); }
+  .bg-body {
+    background: var(--background);
+  }
 
-  .text-primary    { color: var(--text, currentColor); }
-  .text-secondary  { color: var(--text-secondary, currentColor); }
-  .text-subtle     { color: var(--text-subtle, currentColor); }
-  .text-emphasis   { color: var(--text-emphasis, currentColor); }
-  .text-on-accent  { color: var(--text-on-accent, currentColor); }
-  .text-on-button  { color: var(--text-on-button, currentColor); }
-  .text-on-control { color: var(--text-on-control, currentColor); }
+  .bg-body-alt {
+    background: var(--background-alt);
+  }
 
-  .border-default  { border-color: var(--border, transparent); }
-  .border-emphasis { border-color: var(--border-emphasis, transparent); }
+  .bg-surface {
+    background: var(--surface);
+  }
+
+  .bg-surface-alt {
+    background: var(--surface-alt);
+  }
+
+  .bg-accent {
+    background: var(--accent-bg);
+  }
+
+  .bg-button {
+    background: var(--button-bg);
+  }
+
+  .bg-control {
+    background: var(--control-bg);
+  }
+
+  .text-primary {
+    color: var(--text, currentColor);
+  }
+
+  .text-secondary {
+    color: var(--text-secondary, currentColor);
+  }
+
+  .text-subtle {
+    color: var(--text-subtle, currentColor);
+  }
+
+  .text-emphasis {
+    color: var(--text-emphasis, currentColor);
+  }
+
+  .text-on-accent {
+    color: var(--text-on-accent, currentColor);
+  }
+
+  .text-on-button {
+    color: var(--text-on-button, currentColor);
+  }
+
+  .text-on-control {
+    color: var(--text-on-control, currentColor);
+  }
+
+  .border-default {
+    border-color: var(--border, transparent);
+  }
+
+  .border-emphasis {
+    border-color: var(--border-emphasis, transparent);
+  }
 }
 
 @layer base {

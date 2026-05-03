@@ -32,7 +32,7 @@
 
 {% if overlay_value != blank %}
   <div
-    class="rounded-global absolute inset-0 pointer-events-none{{ overlay_z }}"
+    class="rounded-inherit absolute inset-0 pointer-events-none{{ overlay_z }}"
     style="background: {{ overlay_value }};"
   ></div>
 {% elsif role and role != 'none' and role != 'palette' and role != 'gradient' and role != 'custom' %}

@@ -1,7 +1,12 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign classes = 'media-block relative overflow-hidden rounded-global limit-width'
+{% assign radius_class = 'rounded-global' %}
+{% if s.border_radius_override %}
+  {% assign radius_class = 'rounded-custom' %}
+{% endif %}
+{% assign classes = 'media-block relative overflow-hidden limit-width'
+  | push: radius_class
   | push: 'width-{{ s.width | default: "fill" }}'
   | push: 'height-{{ s.height }}'
 %}
@@ -16,7 +21,7 @@
 {% assign styles = blank %}
 
 {% assign styles = styles
-  | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
   | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
 %}
 

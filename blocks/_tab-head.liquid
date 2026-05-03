@@ -49,8 +49,12 @@
 {% assign inactive_state_styles = '' %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
-{% assign classes = classes | push_if: 'rounded-global', s.border_radius_override %}
-{% assign styles = styles | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override %}
+{% if s.border_radius_override %}
+  {% assign classes = classes | push: 'rounded-custom' %}
+  {% assign styles = styles | push: '--radius-custom: {{ s.border_radius }}px' %}
+{% else %}
+  {% assign classes = classes | push: 'rounded-global' %}
+{% endif %}
 {% if border_color_value != blank %}
   {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
 {% endif %}

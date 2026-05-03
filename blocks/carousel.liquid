@@ -1,7 +1,12 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Class Array Building --- {% endcomment %}
-{% assign classes = 'carousel-block transition-all rounded-global rotate-custom block-limit-width'
+{% assign radius_class = 'rounded-global' %}
+{% if s.border_radius_override %}
+  {% assign radius_class = 'rounded-custom' %}
+{% endif %}
+{% assign classes = 'carousel-block transition-all rotate-custom block-limit-width'
+  | push: radius_class
   | push: 'height-{{ s.height }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
@@ -52,7 +57,12 @@
       | push_if: 'group-border-custom-bottom', s.border_custom_bottom
     %}
   {% endif %}
-  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' and s.border_role != 'gradient' %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
     {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
   {% endif %}
 {% endunless %}
@@ -124,7 +134,7 @@
 {% endunless %}
 
 {% assign styles = styles
-  | push_if: '--radius-global: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
   | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
 %}
 {% if text_color_value != blank %}{% assign styles = styles | push: '--text: {{ text_color_value }}' %}{% endif %}
@@ -138,7 +148,9 @@
 {% assign wrapper_classes = blank %}
 {% if s.show_arrows %}
   {% if s.nav_anchor contains 'top-' %}{% assign wrapper_classes = wrapper_classes | push: 'has-nav-top' %}{% endif %}
-  {% if s.nav_anchor contains 'bottom-' %}{% assign wrapper_classes = wrapper_classes | push: 'has-nav-bottom' %}{% endif %}
+  {% if s.nav_anchor contains 'bottom-' -%}
+    {%- assign wrapper_classes = wrapper_classes | push: 'has-nav-bottom' -%}
+  {%- endif %}
 {% endif %}
 {% case s.content_align %}
   {% when 'left' %}
