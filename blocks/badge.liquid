@@ -134,6 +134,13 @@
   "name": "Badge Pill",
   "settings": [
     {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "caption"
+    },
+    {
       "type": "header",
       "content": "General Styles"
     },
@@ -220,27 +227,9 @@
       "content": "Padding/Margins"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "xs"
     },
     {
@@ -266,31 +255,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "md"
     },
     {
@@ -316,55 +283,15 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_vertical",
       "label": "Vertical margin",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_horizontal",
       "label": "Horizontal margin",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -412,27 +339,9 @@
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "gap",
       "label": "Gap",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "xs"
     },
     {
@@ -846,9 +755,7 @@
           "type": "text",
           "settings": {
             "content": "Premium",
-            "display_size": "caption",
-            "text_transform": "uppercase",
-            "font_weight": "bold"
+            "type_style": "caption"
           }
         }
       },

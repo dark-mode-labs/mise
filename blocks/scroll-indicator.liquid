@@ -33,7 +33,7 @@
   {{ context.attached_attributes }}
 >
   {% if s.label != blank %}
-    {% render 'typography', text: s.label, tag: 'span', display_size: 'caption', weight: 'bold', class: 'uppercase' %}
+    {% render 'typography', type_style: s.type_style, text: s.label, tag: 'span' %}
   {% endif %}
 
   <div class="animate-bounce">
@@ -45,6 +45,13 @@
 {
   "name": "Scroll Indicator",
   "settings": [
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "nav"
+    },
     {
       "type": "header",
       "content": "Layout"

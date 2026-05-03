@@ -637,7 +637,7 @@
       "type": "container_scale",
       "id": "direction_breakpoint",
       "label": "Direction breakpoint",
-      "info": "When direction is `responsive`, this controls the viewport width at which the layout switches from column to row. Tier name references `theme.container_scale` — each container tier doubles as a breakpoint reference (column=768px=md, broad=1024px=lg, canvas=1280px=xl, extra-wide=1536px=2xl). Default `column` (768px) preserves mise's prior hardcoded md behavior.",
+      "info": "When direction is `responsive`, this controls the viewport width at which the layout switches from column to row. Tier name references `theme.container_scale` \u2014 each container tier doubles as a breakpoint reference (column=768px=md, broad=1024px=lg, canvas=1280px=xl, extra-wide=1536px=2xl). Default `column` (768px) preserves mise's prior hardcoded md behavior.",
       "default": "column",
       "conditional": "setting.direction == 'responsive'"
     },
@@ -664,39 +664,9 @@
       "content": "Padding/Margins"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -722,39 +692,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -780,47 +720,9 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_vertical",
       "label": "Vertical margin",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "auto",
-          "label": "Auto (center)"
-        },
-        {
-          "value": "auto-top",
-          "label": "Auto top (push to bottom)"
-        },
-        {
-          "value": "auto-bottom",
-          "label": "Auto bottom (push to top)"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -846,39 +748,9 @@
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_horizontal",
       "label": "Horizontal margin",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "auto",
-          "label": "Auto"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -904,39 +776,9 @@
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "gap",
       "label": "Gap",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {

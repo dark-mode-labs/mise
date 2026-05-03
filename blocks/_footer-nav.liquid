@@ -40,17 +40,9 @@
     {% assign utilities = utilities | push: 'text-balance' %}
 {% endcase %}
 
-{% if s.text_transform != 'none' %}
-  {% assign utilities = utilities | push: s.text_transform %}
-{% endif %}
-
 {% assign utility_classes = utilities | join: ' ' %}
 
 {% comment %} --- Font Family --- {% endcomment %}
-{% assign font_family = 'button' %}
-{% if s.font_family_override and s.font_scheme != blank %}
-  {% assign font_family = s.font_scheme %}
-{% endif %}
 
 {% comment %} --- Component Render --- {% endcomment %}
 {% assign color_role = s.text_role %}
@@ -73,10 +65,8 @@
     <summary class="flex items-center justify-between md:block cursor-pointer md:cursor-default list-none mb-4">
       {% render 'typography',
         text: s.heading,
-        display_size: s.display_size,
-        weight: s.font_weight,
+        type_style: s.type_style,
         class: utility_classes,
-        family: font_family,
         color_role: color_role
       %}
       {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}
@@ -139,84 +129,11 @@
       "content": "Typography"
     },
     {
-      "type": "select",
-      "id": "display_size",
-      "label": "Size",
-      "default": "body",
-      "options": [
-        {
-          "value": "h1",
-          "label": "H1"
-        },
-        {
-          "value": "h2",
-          "label": "H2"
-        },
-        {
-          "value": "h3",
-          "label": "H3"
-        },
-        {
-          "value": "h4",
-          "label": "H4"
-        },
-        {
-          "value": "h5",
-          "label": "H5"
-        },
-        {
-          "value": "h6",
-          "label": "H6"
-        },
-        {
-          "value": "display",
-          "label": "Display"
-        },
-        {
-          "value": "body",
-          "label": "Body"
-        },
-        {
-          "value": "caption",
-          "label": "Caption"
-        },
-        {
-          "value": "small",
-          "label": "Small"
-        },
-        {
-          "value": "jumbo",
-          "label": "Jumbo"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "font_weight",
-      "label": "Weight",
-      "options": [
-        {
-          "value": "normal",
-          "label": "Normal"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "bold",
-          "label": "Bold"
-        },
-        {
-          "value": "extrabold",
-          "label": "Extra Bold"
-        },
-        {
-          "value": "black",
-          "label": "Black"
-        }
-      ],
-      "default": "normal"
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "nav"
     },
     {
       "type": "select",
@@ -235,30 +152,6 @@
         {
           "value": "balance",
           "label": "Balance"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "text_transform",
-      "label": "Text Transform",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "uppercase",
-          "label": "Uppercase"
-        },
-        {
-          "value": "capitalize",
-          "label": "Capitalize"
-        },
-        {
-          "value": "lowercase",
-          "label": "Lowercase"
         }
       ]
     },
@@ -319,19 +212,6 @@
       "id": "text_role_custom",
       "label": "Raw Text Color",
       "conditional": "setting.text_role == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "font_family_override",
-      "label": "Override Font",
-      "default": false
-    },
-    {
-      "type": "font_scheme",
-      "id": "font_scheme",
-      "label": "Font",
-      "default": "",
-      "conditional": "setting.font_family_override == true"
     },
     {
       "type": "header",

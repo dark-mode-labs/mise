@@ -38,24 +38,22 @@
     <div class="{{ padding }} flex-grow flex flex-col justify-between gap-2 min-w-0">
       <div>
         <div class="flex flex-nowrap justify-between items-start gap-3">
-          <h3 class="font-heading font-bold text-lg leading-tight flex-1 min-w-0 pr-1">
+          <h3 class="ts-heading-3 flex-1 min-w-0 pr-1">
             {{ item.name }}
           </h3>
 
           <div class="text-right flex-shrink-0">
             {% if modifier_count > 0 or is_complex %}
-              <span class="block text-[0.625rem] uppercase tracking-wider opacity-60 font-bold leading-none mb-1"
-                >From</span
-              >
+              <span class="ts-caption block opacity-60 mb-1">From</span>
             {% endif %}
-            <span class="font-bold text-lg leading-none block">
+            <span class="ts-heading-3 block">
               {{ item.amount | plus: 0 | money }}
             </span>
           </div>
         </div>
 
         {% if item.description != blank %}
-          <div class="text-sm opacity-70 line-clamp-2 mt-1.5">
+          <div class="ts-body-sm opacity-70 line-clamp-2 mt-1.5">
             {{ item.description }}
           </div>
         {% endif %}
@@ -67,9 +65,9 @@
             {% for group in item.modifier_groups %}
               {% assign sorted_modifiers = group.modifiers | sort: 'amount_delta' %}
               {% for mod in sorted_modifiers %}
-                <div class="flex items-center gap-1 bg-body/5 border border-default/10 px-1.5 py-1 rounded-sm text-[0.625rem] md:text-xs">
-                  <span class="opacity-70 uppercase font-bold">{{ mod.name }}</span>
-                  <span class="font-bold">
+                <div class="ts-caption flex items-center gap-1 bg-body/5 border border-default/10 px-1.5 py-1 rounded-sm">
+                  <span class="opacity-70">{{ mod.name }}</span>
+                  <span>
                     {{ item.amount | plus: mod.amount_delta | money }}
                   </span>
                 </div>
@@ -129,10 +127,10 @@
     </div>
 
     <div class="{{ padding }} flex-grow flex flex-col gap-3">
-      <h3 class="font-heading font-bold text-lg leading-tight">{{ item.name }}</h3>
+      <h3 class="ts-heading-3">{{ item.name }}</h3>
 
       {% if item.description != blank %}
-        <div class="text-sm opacity-70 line-clamp-2 flex-grow">
+        <div class="ts-body-sm opacity-70 line-clamp-2 flex-grow">
           {{ item.description }}
         </div>
       {% endif %}
@@ -141,8 +139,8 @@
         {% if is_complex %}
           <div class="flex items-center justify-between">
             <div class="flex flex-col">
-              <span class="text-[0.625rem] uppercase tracking-widest opacity-60 font-bold">Starts at</span>
-              <span class="font-bold text-lg">{{ item.amount | plus: 0 | money }}</span>
+              <span class="ts-caption opacity-60">Starts at</span>
+              <span class="ts-heading-3">{{ item.amount | plus: 0 | money }}</span>
             </div>
           </div>
         {% elsif modifier_count > 0 %}
@@ -151,8 +149,8 @@
               {% assign sorted_modifiers = group.modifiers | sort: 'amount_delta' %}
               {% for mod in sorted_modifiers %}
                 <div class="flex items-center justify-between w-full text-left bg-body/5 px-2 py-1.5 rounded-sm">
-                  <span class="text-xs uppercase font-bold opacity-70">{{ mod.name }}</span>
-                  <span class="text-sm font-bold">
+                  <span class="ts-caption opacity-70">{{ mod.name }}</span>
+                  <span class="ts-body-sm">
                     {{ item.amount | plus: mod.amount_delta | money }}
                   </span>
                 </div>
@@ -161,7 +159,7 @@
           </div>
         {% else %}
           <div class="flex items-center justify-between">
-            <span class="font-bold text-lg">{{ item.amount | plus: 0 | money }}</span>
+            <span class="ts-heading-3">{{ item.amount | plus: 0 | money }}</span>
           </div>
         {% endif %}
       </div>

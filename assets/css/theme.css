@@ -1089,11 +1089,10 @@
 
 @layer base {
   html {
-    /* Fixed root, multiplied by the theme-level --type-scale knob. rem == 16px
-       at type-scale 1.0, matching Tailwind / industry-standard convention.
-       Responsive type lives at the tier level (clamp-based space/height
-       scales) or the source level (`text-3xl md:text-5xl`), not here. */
-    font-size: calc(1em * var(--type-scale));
+    /* Inherit browser default root font-size — rem anchors to this.
+       All design-system text values are rem; no px in type/spacing
+       tier emit. Per-tier mobile responsive scale lives at the
+       `.ts-<id>` level via media queries in theme_variables. */
     box-sizing: border-box;
   }
 

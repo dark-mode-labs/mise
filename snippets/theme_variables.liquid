@@ -38,7 +38,6 @@
 
     :root {
 
-      --type-scale: {{ typography.type_scale | divided_by: 100.0 }};
       --radius-global: {{ layout.corner_radius }}px;
 
       {% for scheme in font_schemes %} --font-{{ scheme[0] }}: "{{ scheme[1].settings.name }}", sans-serif; {% endfor %}
@@ -302,63 +301,65 @@
     .height-custom { height: var(--block-height, auto); }
 
     {% comment %}
-      Type tiers (.fs-<id>) — flat (`value`) or responsive clamp
-      (`min`/`max`/`vw`). Source HTML's `text-5xl sm:text-6xl md:text-7xl
-      lg:text-8xl` pattern can mint a single clamp tier scaling between
-      the smallest and largest sizes — preserving responsive typography
-      that a flat tier can't express. Built-in tiers (jumbo/display/
-      h1..h6/body/small/caption) ship flat at Tailwind-equivalent values.
-    {% endcomment %}
-    {% comment %}
-      Mobile auto-scale: tiers carry a single flat `value` (the desktop
-      intent). On small viewports, large display tiers (jumbo/display/h1)
-      shrink ~40% so brand-defined desktop sizes don't overflow narrow
-      columns. Mid headings (h2/h3) shrink ~25%; body and below stay
-      unchanged so caption/small don't collapse below readable size.
-      One global knob per band — no per-tier clamp data needed.
-    {% endcomment %}
-    {% for t in text_scale %}
-      {% unless t[1].settings.structural %}
-        {% if t[1].settings.value != blank %}
-          {% case t[0] %}
-            {% when 'jumbo', 'display' %}
-        .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
-        @media (max-width: 767px) { .fs-{{ t[0] }} { font-size: calc({{ t[1].settings.value }} * 0.55); } }
-            {% when 'h1' %}
-        .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
-        @media (max-width: 767px) { .fs-{{ t[0] }} { font-size: calc({{ t[1].settings.value }} * 0.65); } }
-            {% when 'h2', 'h3' %}
-        .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
-        @media (max-width: 767px) { .fs-{{ t[0] }} { font-size: calc({{ t[1].settings.value }} * 0.75); } }
-            {% else %}
-        .fs-{{ t[0] }} { font-size: {{ t[1].settings.value }}; }
-          {% endcase %}
-        {% endif %}
-      {% endunless %}
-    {% endfor %}
-
-    .font-heading { font-family: var(--font-{{ typography.heading_font_scheme }}); }
-    .font-body    { font-family: var(--font-{{ typography.body_font_scheme }}); }
-    .font-button  { font-family: var(--font-{{ typography.button_font_scheme }}); }
-    {% comment %}
-      Per-scheme `.font-{key}` utility classes. Mirrors the source's
-      Tailwind-config `fontFamily` keys (e.g. `accent: ["Kalam",
-      "cursive"]` → `class="font-accent"`). Without this loop, only
-      heading/body/button utilities get a CSS rule and any
-      brand-extended family class falls through to the inherited
-      font (visible as the wrong typeface on accent/script/display
-      headings).
-
-      Structural schemes (`heading`, `body`, `button`) are flagged
-      `structural: true` in settings_schema.json and SKIPPED here —
-      they have dedicated rules above that pull from the typography
-      mapping vars (`heading_font_scheme` etc.), not the scheme name
-      directly. Emitting again would duplicate and conflict.
+      Per-scheme `.font-{key}` utility classes — every scheme in
+      `font_schemes` gets a class that paints `var(--font-<id>)`.
+      Type styles reference these via `font_ref` (mapped to font-family
+      in the .ts-<id> rules below).
     {% endcomment %}
     {% for scheme in font_schemes %}
-      {% unless scheme[1].settings.structural %}
-      .font-{{ scheme[0] }} { font-family: var(--font-{{ scheme[0] }}); }
-      {% endunless %}
+    .font-{{ scheme[0] }} { font-family: var(--font-{{ scheme[0] }}); }
+    {% endfor %}
+
+    {% comment %}
+      Type styles — Tier-2 of the 3-tier typography system. Each
+      `.ts-<id>` bundles family / size / weight / tracking / leading /
+      transform into one named treatment. Text-rendering blocks
+      reference a single `type_style: <id>` instead of setting all six
+      dimensions individually (see font system redesign §2 Tier 2).
+
+      Tracking / leading enums map to em / unitless values inline. No
+      block-level fallback needed since the schema gates settings to
+      enum vocabulary.
+
+      Mobile shrink: large display tiers (display-jumbo / display-1)
+      shrink ~45% on small viewports; display-2 / heading-1 shrink
+      ~35%; heading-2/3 shrink ~25%. Body and below stay unchanged.
+      Same band multipliers as the `fs-*` mobile auto-scale; one global
+      knob per band, no per-style data.
+    {% endcomment %}
+    {% for style in type_styles %}
+      {% assign ts_id = style[0] %}
+      {% assign ts = style[1].settings %}
+      {% if ts.font_size != blank %}
+        {% capture ts_weight %}{% case ts.weight %}{% when 'thin' %}100{% when 'extralight' %}200{% when 'light' %}300{% when 'normal' %}400{% when 'medium' %}500{% when 'semibold' %}600{% when 'bold' %}700{% when 'extrabold' %}800{% when 'black' %}900{% else %}400{% endcase %}{% endcapture %}
+        {% capture ts_tracking %}{% case ts.tracking %}{% when 'tighter' %}-0.05em{% when 'tight' %}-0.025em{% when 'wide' %}0.025em{% when 'wider' %}0.05em{% when 'widest' %}0.1em{% else %}0{% endcase %}{% endcapture %}
+        {% capture ts_leading %}{% case ts.leading %}{% when 'none' %}1{% when 'tight' %}1.25{% when 'snug' %}1.375{% when 'relaxed' %}1.625{% when 'loose' %}2{% else %}1.5{% endcase %}{% endcapture %}
+    .ts-{{ ts_id }} { font-family: var(--font-{{ ts.font_ref | default: 'body' }}); font-size: {{ ts.font_size }}; font-weight: {{ ts_weight }}; letter-spacing: {{ ts_tracking }}; line-height: {{ ts_leading }}; text-transform: {{ ts.transform | default: 'none' }}; }
+        {% comment %}
+          Mobile shrink: bucketed by id-prefix. The transpiler emits
+          synth ids as `synth-ts-<size>-...` so they don't share the
+          canonical id pattern; the canonical 12 cover the standard
+          bands. Synth tiers stay at their desktop size on mobile —
+          they're already brand-specific outliers, not part of the
+          default scale that needs the band scaling.
+        {% endcomment %}
+        {% case ts_id %}
+          {% when 'display-jumbo', 'display-1' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.55); } }
+          {% when 'display-2', 'heading-1' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.65); } }
+          {% when 'heading-2', 'heading-3' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.75); } }
+        {% endcase %}
+        {% comment %}
+          Synth tiers carry an explicit `font_size_mobile` when source
+          has responsive `text-X1 sm:text-X2 ...` patterns. Emit the
+          mobile shrink to match source's smallest variant.
+        {% endcomment %}
+        {% if ts.font_size_mobile != blank %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: {{ ts.font_size_mobile }}; } }
+        {% endif %}
+      {% endif %}
     {% endfor %}
   {% endcapture %}
   {{ stylesheet | strip_newlines }}

@@ -24,10 +24,10 @@
 >
   {% if depth == 0 %}
     <div class="flex items-end justify-between border-b-2 border-default mb-8 pb-2">
-      <h3 class="font-heading text-3xl font-bold uppercase tracking-wide">{{ category.name }}</h3>
+      <h3 class="ts-heading-1">{{ category.name }}</h3>
     </div>
   {% else %}
-    <h4 class="font-heading text-xl font-bold mb-6 opacity-80">{{ category.name }}</h4>
+    <h4 class="ts-heading-3 mb-6 opacity-80">{{ category.name }}</h4>
   {% endif %}
 
   {% assign items = category.items %}

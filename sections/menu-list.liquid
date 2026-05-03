@@ -110,12 +110,12 @@
   >
     <div class="text-center mx-auto mb-16 fade-up">
       {% if s.heading != blank %}
-        {% render 'typography', text: s.heading, tag: 'h2', display_size: 'display', color_role: 'primary' %}
+        {% render 'typography', text: s.heading, tag: 'h2', type_style: 'display-1', color_role: 'primary' %}
       {% endif %}
 
       {% if s.subtext != blank %}
         <div class="text-secondary mt-4">
-          {% render 'typography', text: s.subtext, tag: 'div', display_size: 'body', color_role: 'secondary' %}
+          {% render 'typography', text: s.subtext, tag: 'div', type_style: 'body', color_role: 'secondary' %}
         </div>
       {% endif %}
     </div>
@@ -204,8 +204,8 @@
     </div>
 
     <div id="filter-empty-state" class="hidden w-full py-20 text-center opacity-50">
-      <p class="text-xl font-heading font-bold">No items found matching your filters.</p>
-      <button type="button" data-action="clear-filters" class="mt-4 underline text-sm hover:opacity-100">
+      <p class="ts-heading-3">No items found matching your filters.</p>
+      <button type="button" data-action="clear-filters" class="ts-body-sm mt-4 underline hover:opacity-100">
         Clear Filters
       </button>
     </div>
@@ -547,39 +547,9 @@
       "content": "Spacing"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "Extra Small"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "Extra Large"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -605,39 +575,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "Extra Small"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "Extra Large"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "xs"
     },
     {

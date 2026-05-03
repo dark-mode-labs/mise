@@ -194,39 +194,9 @@
       "content": "Section Spacing"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "Extra Small"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "Extra Large"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -252,39 +222,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "Extra Small"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "Extra Large"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -641,16 +581,15 @@
           "type": "text",
           "settings": {
             "content": "Taste the Season",
-            "display_size": "display",
             "tag": "h1",
-            "font_weight": "bold"
+            "type_style": "display-1"
           }
         },
         "hero_subtext": {
           "type": "text",
           "settings": {
             "content": "Locally sourced ingredients.",
-            "display_size": "body"
+            "type_style": "body"
           }
         },
         "hero_cta": {

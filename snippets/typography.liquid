@@ -1,106 +1,26 @@
-{% assign tag_el = tag | default: 'p' %}
-
 {% comment %}
-  Display size → `fs-<tier>` class. The CSS class with the actual
-  font-size is emitted by `theme_variables.liquid` from `theme.text_scale`,
-  so any tier id (built-in like `h1`/`body` OR synth like
-  `synth-text-3_0rem-6_0rem` from a responsive `text-Nxl sm:text-Mxl`
-  pattern) maps cleanly. Family default falls back from the tier's
-  conventional bucket: heading-tier names use `heading`, body-tier
-  names use `body`. Unknown ids default to body family.
+  Typography snippet — emits a single text element with `.ts-<id>` for
+  the bundled type style + `.text-<role>` for color. Tag is independent
+  of style; same `.ts-heading-1` can apply to <h2>, <p>, or <span>.
+
+  Args:
+    text       — content to render
+    tag        — semantic HTML tag (h1..h6/p/span/div). Defaults to 'p'.
+    type_style — Tier-2 style id (display-jumbo / heading-1 / body / etc.)
+    color_role — primary | secondary | subtle | emphasis | on-accent |
+                 on-button | on-control. Defaults to primary.
+    class      — extra utility classes (italic, hyphens-auto, etc.).
 {% endcomment %}
-{% if display_size != blank %}
-  {% assign size_class = 'fs-' | append: display_size %}
-{% else %}
-  {% assign size_class = 'fs-body' %}
-{% endif %}
-
-{% case display_size %}
-  {% when 'display' or 'h1' or 'h2' or 'h3' or 'h4' or 'h5' or 'h6' or 'jumbo' %}
-    {% assign family = family | default: 'heading' %}
-  {% else %}
-    {% assign family = family | default: 'body' %}
-{% endcase %}
-
-{% comment %} --- Class Array Building --- {% endcomment %}
-{% assign classes = blank | push: size_class %}
-
-{% if family != blank %}
-  {% assign family_class = 'font-' | append: family %}
-  {% assign classes = classes | push: family_class %}
-{% endif %}
-
-{% case weight %}
-  {% when 'normal' -%}
-    {%- assign classes = classes | push: 'font-normal' %}
-  {% when 'medium' -%}
-    {%- assign classes = classes | push: 'font-medium' %}
-  {% when 'bold' -%}
-    {%- assign classes = classes | push: 'font-bold' %}
-  {% when 'extrabold' -%}
-    {%- assign classes = classes | push: 'font-extrabold' %}
-  {% when 'black' -%}
-    {%- assign classes = classes | push: 'font-black' %}
-{% endcase %}
-
-{% case tracking %}
-  {% when 'tighter' -%}
-    {%- assign classes = classes | push: 'tracking-tighter' %}
-  {% when 'tight' -%}
-    {%- assign classes = classes | push: 'tracking-tight' %}
-  {% when 'wide' -%}
-    {%- assign classes = classes | push: 'tracking-wide' %}
-  {% when 'wider' -%}
-    {%- assign classes = classes | push: 'tracking-wider' %}
-  {% when 'widest' -%}
-    {%- assign classes = classes | push: 'tracking-widest' %}
-  {% when 'custom' -%}
-    {%- assign classes = classes | push: 'tracking-custom' %}
-  {% else -%}
-    {%- assign classes = classes | push: 'tracking-normal' %}
-{% endcase %}
-
-{% case leading %}
-  {% when 'none' -%}
-    {%- assign classes = classes | push: 'leading-none' %}
-  {% when 'tight' -%}
-    {%- assign classes = classes | push: 'leading-tight' %}
-  {% when 'snug' -%}
-    {%- assign classes = classes | push: 'leading-snug' %}
-  {% when 'relaxed' -%}
-    {%- assign classes = classes | push: 'leading-relaxed' %}
-  {% when 'loose' -%}
-    {%- assign classes = classes | push: 'leading-loose' %}
-  {% when 'custom' -%}
-    {%- assign classes = classes | push: 'leading-custom' %}
-  {% else -%}
-    {%- assign classes = classes | push: 'leading-normal' %}
-{% endcase %}
-
+{% assign tag_el = tag | default: 'p' %}
+{% assign style_class = 'ts-' | append: type_style | default: 'ts-body' %}
+{% if type_style == blank %}{% assign style_class = 'ts-body' %}{% endif %}
 {% case color_role %}
-  {% when 'secondary' -%}
-    {%- assign classes = classes | push: 'text-secondary' %}
-  {% when 'subtle' -%}
-    {%- assign classes = classes | push: 'text-subtle' %}
-  {% when 'emphasis' -%}
-    {%- assign classes = classes | push: 'text-emphasis' %}
-  {% when 'on-accent' -%}
-    {%- assign classes = classes | push: 'text-on-accent' %}
-  {% when 'on-button' -%}
-    {%- assign classes = classes | push: 'text-on-button' %}
-  {% when 'on-control' -%}
-    {%- assign classes = classes | push: 'text-on-control' %}
-  {% else -%}
-    {%- assign classes = classes | push: 'text-primary' %}
+  {% when 'secondary'  %}{% assign color_class = 'text-secondary' %}
+  {% when 'subtle'     %}{% assign color_class = 'text-subtle' %}
+  {% when 'emphasis'   %}{% assign color_class = 'text-emphasis' %}
+  {% when 'on-accent'  %}{% assign color_class = 'text-on-accent' %}
+  {% when 'on-button'  %}{% assign color_class = 'text-on-button' %}
+  {% when 'on-control' %}{% assign color_class = 'text-on-control' %}
+  {% else              %}{% assign color_class = 'text-primary' %}
 {% endcase %}
-
-{% if class != blank %}
-  {% assign classes = classes | push: class %}
-{% endif %}
-
-{% assign block_classes = classes | join: ' ' %}
-
-{% comment %} --- Component Render --- {% endcomment %}
-<{{ tag_el }} class="{{ block_classes }}">
-  {{ text }}
-</{{ tag_el }}>
+<{{ tag_el }} class="{{ style_class }} {{ color_class }} {{ class }}">{{ text }}</{{ tag_el }}>

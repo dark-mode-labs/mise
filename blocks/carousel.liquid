@@ -189,7 +189,7 @@
 
         {% if s.show_counter %}
           <div class="slideshow-counter-wrapper tabular-nums">
-            {% render 'typography', tag: 'span', display_size: s.display_size, weight: s.font_weight %}
+            {% render 'typography', type_style: s.type_style, tag: 'span' %}
           </div>
         {% endif %}
 
@@ -222,6 +222,13 @@
 {
   "name": "Carousel",
   "settings": [
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "body"
+    },
     {
       "type": "header",
       "content": "Layout"
@@ -404,48 +411,6 @@
     {
       "type": "header",
       "content": "Counter Style",
-      "conditional": "setting.show_counter"
-    },
-    {
-      "type": "select",
-      "id": "display_size",
-      "label": "Counter Size",
-      "default": "small",
-      "options": [
-        {
-          "value": "body",
-          "label": "Body"
-        },
-        {
-          "value": "small",
-          "label": "Small"
-        },
-        {
-          "value": "caption",
-          "label": "Caption"
-        }
-      ],
-      "conditional": "setting.show_counter"
-    },
-    {
-      "type": "select",
-      "id": "font_weight",
-      "label": "Counter Weight",
-      "default": "medium",
-      "options": [
-        {
-          "value": "normal",
-          "label": "Normal"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "bold",
-          "label": "Bold"
-        }
-      ],
       "conditional": "setting.show_counter"
     },
     {
@@ -670,39 +635,9 @@
       "content": "Padding/Margins"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -728,39 +663,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -786,39 +691,9 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_vertical",
       "label": "Vertical margin",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "auto",
-          "label": "Auto"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -844,39 +719,9 @@
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_horizontal",
       "label": "Horizontal margin",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "auto",
-          "label": "Auto"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -902,39 +747,9 @@
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "gap",
       "label": "Gap",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {

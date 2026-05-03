@@ -79,6 +79,13 @@
   "name": "Slide",
   "settings": [
     {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "body"
+    },
+    {
       "type": "header",
       "content": "Media"
     },
@@ -372,9 +379,8 @@
           "type": "text",
           "settings": {
             "content": "New Slide",
-            "display_size": "display",
             "tag": "h1",
-            "font_weight": "bold"
+            "type_style": "display-1"
           }
         },
         "button": {

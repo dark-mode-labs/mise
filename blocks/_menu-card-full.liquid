@@ -142,6 +142,13 @@
   "name": "Menu Card",
   "settings": [
     {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "body"
+    },
+    {
       "type": "header",
       "content": "General Styles"
     },
@@ -166,39 +173,9 @@
       "default": "left"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -224,39 +201,9 @@
       "conditional": "setting.padding_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -282,39 +229,9 @@
       "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_vertical",
       "label": "Vertical margin",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "auto",
-          "label": "Auto"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -340,39 +257,9 @@
       "conditional": "setting.margin_vertical == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "margin_horizontal",
       "label": "Horizontal margin",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "auto",
-          "label": "Auto"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -398,39 +285,9 @@
       "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
-      "type": "select",
+      "type": "space",
       "id": "gap",
       "label": "Gap",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "xs",
-          "label": "XS"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "XL"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        }
-      ],
       "default": "none"
     },
     {
@@ -890,8 +747,7 @@
               "settings": {
                 "content": "{{ context.item.description }}",
                 "text_align": "left",
-                "display_size": "caption",
-                "text_transform": "none"
+                "type_style": "caption"
               }
             },
             "info": {
@@ -903,8 +759,7 @@
                     "tag": "span",
                     "content": "{{ context.item.amount | money }}",
                     "text_align": "right",
-                    "font_weight": "bold",
-                    "display_size": "body"
+                    "type_style": "body"
                   }
                 },
                 "title": {
@@ -914,8 +769,7 @@
                     "content": "{{ context.item.name }}",
                     "text_wrap": "balance",
                     "text_align": "left",
-                    "font_weight": "bold",
-                    "display_size": "body"
+                    "type_style": "body"
                   }
                 }
               },
