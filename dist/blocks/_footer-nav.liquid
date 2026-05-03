@@ -1,0 +1,237 @@
+{% assign s = block.settings %}
+
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'footer-block' %}
+
+{% if s.width and s.width != blank %}
+  {% assign classes = classes | push: 'width-{{ s.width }}' %}
+{% endif %}
+
+{% if s.text_align != blank and s.text_align != 'inherit' %}
+  {% assign classes = classes | push: 'text-align-{{ s.text_align }}' %}
+{% endif %}
+
+{% if s.surface_override %}
+  {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
+{% assign styles = blank %}
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Typography Utilities --- {% endcomment %}
+{% assign utilities = blank %}
+
+{% case s.text_wrap %}
+  {% when 'nowrap' %}
+    {% assign utilities = utilities | push: 'whitespace-nowrap' %}
+  {% when 'balance' %}
+    {% assign utilities = utilities | push: 'text-balance' %}
+{% endcase %}
+
+{% assign utility_classes = utilities | join: ' ' %}
+
+{% comment %} --- Font Family --- {% endcomment %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}{% assign color_role = 'primary' %}{% endif %}
+<div
+  class="{{ block_classes }}"
+  style="{{ block_styles }}"
+  {{ context.attached_attributes }}
+>
+  <details class="group" open>
+    {% comment %}
+      Mobile: `flex items-center justify-between` puts the heading at
+      the start and the collapse chevron at the end. Desktop (md+):
+      chevron is `md:hidden`, leaving only the heading — flex with one
+      child still pins it to the start, ignoring the wrapper's
+      text-align. `md:block` reverts the summary to plain block flow
+      on desktop so `.text-align-{X}` from the wrapper inherits down
+      and the heading honors source intent.
+    {% endcomment %}
+    <summary class="flex items-center justify-between md:block cursor-pointer md:cursor-default list-none mb-4">
+      {% render 'typography',
+        text: s.heading,
+        type_style: s.type_style,
+        class: utility_classes,
+        color_role: color_role
+      %}
+      {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}
+    </summary>
+
+    {% content_for 'blocks' %}
+  </details>
+</div>
+
+{% schema %}
+{
+  "name": "Nav Group",
+  "blocks": [
+    {
+      "type": "_nav-group"
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Quick Links"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Width"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "nav"
+    },
+    {
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "nowrap",
+      "options": [
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "No Wrap"
+        },
+        {
+          "value": "balance",
+          "label": "Balance"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "true"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    }
+  ]
+}
+{% endschema %}

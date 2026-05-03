@@ -1,0 +1,828 @@
+{% assign s = block.settings %}
+
+{% comment %} --- Class Array Building --- {% endcomment %}
+{% assign radius_class = 'rounded-global' %}
+{% if s.border_radius_override %}
+  {% assign radius_class = 'rounded-custom' %}
+{% endif %}
+{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all width-fill height-full'
+  | push: radius_class
+  | push: 'text-align-{{ s.text_align }}'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: 'margin-my-{{ s.margin_vertical }}'
+  | push: 'margin-mx-{{ s.margin_horizontal }}'
+  | push: 'gap-{{ s.gap }}'
+  | push_if: 'shadow-lg', s.shadow
+  | push_if: 'overflow-hidden', s.overflow_hidden
+  | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
+%}
+
+{% comment %}
+  Background layer: scheme-driven via .bg-<role>. Escape-hatch
+  (bg_color_override) is rendered as inline style further down.
+{% endcomment %}
+{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
+  {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
+{% endif %}
+
+{% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
+{% comment %} Borders {% endcomment %}
+{% unless s.border_mode == 'none' %}
+  {% assign classes = classes
+    | push: 'group-border-{{ s.border_mode }}'
+    | push: 'group-border-size-{{ s.border_size }}'
+  %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
+    {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
+  {% if s.border_mode == 'custom' %}
+    {% assign classes = classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
+  {% endif %}
+{% endunless %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'gradient' and s.border_role_gradient != blank %}
+  {% assign border_color_value = 'var(--gradient-{{ s.border_role_gradient }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
+{% assign styles = blank %}
+
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.margin_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
+    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.margin_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.gap == 'custom' %}
+  {% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}
+{% endif %}
+
+{% assign styles = styles
+  | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+%}
+
+{% unless s.border_mode == 'none' %}
+  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if border_color_value != blank -%}
+    {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
+  {%- endif %}
+{% endunless %}
+
+{% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% if s.opacity < 100 %}
+  {% assign styles = styles | push: 'opacity: {{ s.opacity | divided_by: 100.0 }}' %}
+{% endif %}
+
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+<div
+  class="{{ block_classes }}"
+  style="{{ block_styles }}"
+  data-action-args="{{ context.item.uuid }}"
+  data-action="add-item"
+  {{ context.attached_attributes }}
+>
+  {% render 'bg-overlay',
+    role: s.overlay_role,
+    alpha: s.overlay_alpha,
+    palette_token: s.overlay_role_palette,
+    custom_color: s.overlay_role_custom,
+    gradient_token: s.overlay_role_gradient,
+    behind: true
+  %}
+  {% content_for 'block', type: 'group', id: 'menu-card-header' %}
+  {% content_for 'block', type: 'group', id: 'menu-card-content' %}
+  {% content_for 'block', type: 'group', id: 'menu-card-footer' %}
+</div>
+
+{% schema %}
+{
+  "name": "Menu Card",
+  "settings": [
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "body"
+    },
+    {
+      "type": "header",
+      "content": "General Styles"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "space",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_vertical",
+      "label": "Vertical margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_horizontal",
+      "label": "Horizontal margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "gap",
+      "label": "Gap",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 6,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
+      "conditional": "setting.gap == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Borders"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "border_role_gradient",
+      "label": "Border Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.border_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "border_size",
+      "label": "Border Size",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
+      ],
+      "default": "md",
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "overlay_role_custom",
+      "label": "Raw Overlay",
+      "conditional": "setting.overlay_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "overlay_role_gradient",
+      "label": "Overlay Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.overlay_role == 'gradient'"
+    },
+    {
+      "type": "range",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow",
+      "label": "Show Shadow",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Glass Effect",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "overflow_hidden",
+      "label": "Clip Content",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "min": 0,
+      "max": 100,
+      "label": "Opacity",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "true"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 1000,
+      "label": "Radius",
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.border_radius_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow_color_override",
+      "label": "Override Shadow Color",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color",
+      "label": "Custom Shadow Color",
+      "default": "rgba(0,0,0,1)",
+      "conditional": "setting.shadow_color_override"
+    }
+  ],
+  "presets": [
+    {
+      "name": "full-menu-card",
+      "blocks": {
+        "menu-card-header": {
+          "type": "group",
+          "name": "Heading",
+          "static": true,
+          "settings": {
+            "gap": "none",
+            "padding_vertical": "none",
+            "padding_horizontal": "none"
+          },
+          "blocks": {
+            "img": {
+              "type": "media",
+              "settings": {
+                "image": "{{ context.item.asset.url }}",
+                "object_fit": "cover",
+                "aspect_ratio": "landscape"
+              }
+            }
+          },
+          "block_order": ["img"]
+        },
+        "menu-card-content": {
+          "type": "group",
+          "name": "Content",
+          "static": true,
+          "settings": {
+            "gap": "sm",
+            "padding_vertical": "xs",
+            "padding_horizontal": "md",
+            "grow_content": true
+          },
+          "blocks": {
+            "desc": {
+              "type": "text",
+              "settings": {
+                "content": "{{ context.item.description }}",
+                "text_align": "left",
+                "type_style": "caption"
+              }
+            },
+            "info": {
+              "type": "group",
+              "blocks": {
+                "price": {
+                  "type": "text",
+                  "settings": {
+                    "tag": "span",
+                    "content": "{{ context.item.amount | money }}",
+                    "text_align": "right",
+                    "type_style": "body"
+                  }
+                },
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "tag": "h3",
+                    "content": "{{ context.item.name }}",
+                    "text_wrap": "balance",
+                    "text_align": "left",
+                    "type_style": "body"
+                  }
+                }
+              },
+              "settings": {
+                "gap": "xs",
+                "width": "full",
+                "direction": "row",
+                "content_align": "between",
+                "vertical_align": "top",
+                "padding_vertical": "xs",
+                "padding_horizontal": "none"
+              },
+              "block_order": ["title", "price"]
+            }
+          },
+          "block_order": ["info", "desc"]
+        },
+        "menu-card-footer": {
+          "type": "group",
+          "name": "Footer",
+          "static": true,
+          "settings": {
+            "gap": "xs",
+            "padding_vertical": "xs",
+            "padding_horizontal": "md"
+          },
+          "blocks": {
+            "btn": {
+              "type": "button",
+              "settings": {
+                "label": "Order Now",
+                "width": "full",
+                "content_align": "center",
+                "trigger": "action",
+                "action": "add-item"
+              }
+            }
+          },
+          "block_order": ["btn"]
+        }
+      },
+      "settings": {
+        "gap": "none",
+        "shadow": true
+      }
+    }
+  ]
+}
+{% endschema %}

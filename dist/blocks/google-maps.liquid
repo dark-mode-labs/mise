@@ -1,0 +1,56 @@
+{% assign s = block.settings %}
+
+{% assign api_key = shop.config.maps_api_key %}
+{% assign map_src = 'https://www.google.com/maps/embed/v1/place?key=' | append: api_key | append: '&q=' %}
+
+{% if s.location != blank %}
+  {% assign args = 'location_identifier' | push: s.location %}
+  {% assign location = 'location' | data_source: 'fetch', args %}
+  {% assign address = shop.name | append: ', ' | append: location.formatted_address | url_encode %}
+  {% assign map_src = map_src | append: address %}
+{% else %}
+  {% assign map_src = map_src | append: shop.name %}
+{% endif %}
+
+<div
+  class="media-block w-full h-full height-{{ s.height }}"
+  style=""
+  {{ context.attached_attributes }}
+>
+  <iframe
+    width="100%"
+    height="100%"
+    style="border:0;"
+    loading="lazy"
+    allowfullscreen=""
+    referrerpolicy="no-referrer-when-downgrade"
+    src="{{ map_src }}"
+  >
+  </iframe>
+</div>
+{% schema %}
+{
+  "name": "Google Map Embed",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Location"
+    },
+    {
+      "type": "collection",
+      "id": "location",
+      "label": "Select Location"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "height",
+      "id": "height",
+      "label": "Image Height",
+      "default": "auto"
+    }
+  ]
+}
+{% endschema %}

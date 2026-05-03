@@ -1,0 +1,52 @@
+{% comment %}
+  Renders an overlay layer. Inputs:
+    role           — overlay_role: 'none' | scheme role | 'palette'
+                     | 'gradient' | 'custom'
+    alpha          — overlay_alpha (0..100). ONLY applied for scheme-role
+                     overlays. When role == 'palette' / 'gradient' /
+                     'custom', the value already encodes its own alpha;
+                     opacity stays 1.
+    palette_token  — overlay_role_palette token name (e.g. 'brand')
+    gradient_token — overlay_role_gradient token name (e.g. 'gradient',
+                     'gradient-2'). Resolves to var(--gradient-X).
+    custom_color   — overlay_role_custom raw value (hex / rgba / gradient)
+    behind         — false: paints ON TOP (hero/grid/_slide media dim)
+                     true:  paints BEHIND siblings as a bg layer
+                            (footer/group/badge/_menu-card-full/carousel —
+                             host must include `isolate`).
+{% endcomment %}
+
+{% assign overlay_z = '' %}
+{% if behind %}
+  {% assign overlay_z = ' -z-10' %}
+{% endif %}
+
+{% assign overlay_value = blank %}
+{% if role == 'palette' and palette_token != blank %}
+  {% assign overlay_value = 'var(--palette-{{ palette_token }})' %}
+{% elsif role == 'gradient' and gradient_token != blank %}
+  {% assign overlay_value = 'var(--gradient-{{ gradient_token }})' %}
+{% elsif role == 'custom' and custom_color != blank %}
+  {% assign overlay_value = custom_color %}
+{% endif %}
+
+{% if overlay_value != blank %}
+  <div
+    class="rounded-inherit absolute inset-0 pointer-events-none{{ overlay_z }}"
+    style="background: {{ overlay_value }};"
+  ></div>
+{% elsif role and role != 'none' and role != 'palette' and role != 'gradient' and role != 'custom' %}
+  {% comment %}
+    Scheme-role overlay: paint via `.bg-<role>` with
+    opacity = alpha/100. Use 0..1 form for max browser
+    compatibility. Default to 1 if alpha unset.
+  {% endcomment %}
+  {% assign overlay_alpha_value = 1 %}
+  {% if alpha != blank and alpha != null %}
+    {% assign overlay_alpha_value = alpha | divided_by: 100.0 %}
+  {% endif %}
+  <div
+    class="rounded-inherit absolute inset-0 pointer-events-none{{ overlay_z }} bg-{{ role }}"
+    style="opacity: {{ overlay_alpha_value }};"
+  ></div>
+{% endif %}

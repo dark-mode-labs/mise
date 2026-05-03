@@ -1,0 +1,134 @@
+{% assign s = section.settings %}
+
+{% comment %}
+  Page-level fixed background. Sits behind everything (`-z-50`, inset-0,
+  pointer-events-none). The unified `bg-overlay` snippet paints either a
+  scheme role OR a custom hex/gradient — same primitive every other block
+  uses for its bg, so the page-level surface participates in the same
+  role vocabulary as section/group bgs.
+
+  Inputs:
+    bg_role          — bg color slot (none|body|surface|...|custom)
+    bg_role_custom   — escape-hatch hex/rgba/gradient when bg_role=custom
+    image            — page-level fixed background image
+{% endcomment %}
+
+{% assign render_section = false %}
+{% if s.bg_role and s.bg_role != 'none' %}{% assign render_section = true %}{% endif %}
+{% if s.image != blank %}{% assign render_section = true %}{% endif %}
+
+{% if render_section %}
+  <section
+    class="fixed inset-0 -z-50 pointer-events-none surface-{{ s.surface_id | default: 'default' }}"
+    {{ context.attached_attributes }}
+  >
+    {% render 'bg-overlay',
+      role: s.bg_role,
+      alpha: 100,
+      palette_token: s.bg_role_palette,
+      custom_color: s.bg_role_custom,
+      gradient_token: s.bg_role_gradient,
+      behind: false
+    %}
+    {% if s.image != blank %}
+      {% render 'media', src: s.image, fit: 'cover', loading: 'eager' %}
+    {% endif %}
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Global Background",
+  "settings": [
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Global Background"
+    }
+  ]
+}
+{% endschema %}

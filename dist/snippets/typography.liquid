@@ -1,0 +1,26 @@
+{% comment %}
+  Typography snippet — emits a single text element with `.ts-<id>` for
+  the bundled type style + `.text-<role>` for color. Tag is independent
+  of style; same `.ts-heading-1` can apply to <h2>, <p>, or <span>.
+
+  Args:
+    text       — content to render
+    tag        — semantic HTML tag (h1..h6/p/span/div). Defaults to 'p'.
+    type_style — Tier-2 style id (display-jumbo / heading-1 / body / etc.)
+    color_role — primary | secondary | subtle | emphasis | on-accent |
+                 on-button | on-control. Defaults to primary.
+    class      — extra utility classes (italic, hyphens-auto, etc.).
+{% endcomment %}
+{% assign tag_el = tag | default: 'p' %}
+{% assign style_class = 'ts-' | append: type_style | default: 'ts-body' %}
+{% if type_style == blank %}{% assign style_class = 'ts-body' %}{% endif %}
+{% case color_role %}
+  {% when 'secondary'  %}{% assign color_class = 'text-secondary' %}
+  {% when 'subtle'     %}{% assign color_class = 'text-subtle' %}
+  {% when 'emphasis'   %}{% assign color_class = 'text-emphasis' %}
+  {% when 'on-accent'  %}{% assign color_class = 'text-on-accent' %}
+  {% when 'on-button'  %}{% assign color_class = 'text-on-button' %}
+  {% when 'on-control' %}{% assign color_class = 'text-on-control' %}
+  {% else              %}{% assign color_class = 'text-primary' %}
+{% endcase %}
+<{{ tag_el }} class="{{ style_class }} {{ color_class }} {{ class }}">{{ text }}</{{ tag_el }}>

@@ -1,0 +1,44 @@
+<div
+  class="w-full {% case block.settings.show_responsive %}{% when 'desktop' %}hidden md:block{% when 'mobile' %}block md:hidden{% endcase %}"
+  {{ context.attached_attributes }}
+>
+  {% render 'spacer', height: block.settings.spacer_height %}
+</div>
+
+{% schema %}
+{
+  "name": "Spacer",
+  "settings": [
+    {
+      "type": "range",
+      "id": "spacer_height",
+      "label": "Height (rem)",
+      "min": 0.5,
+      "max": 10,
+      "step": 0.25,
+      "default": 2.5,
+      "unit": "rem"
+    },
+    {
+      "type": "select",
+      "id": "show_responsive",
+      "label": "Responsive",
+      "default": "both",
+      "options": [
+        {
+          "label": "Both",
+          "value": "both"
+        },
+        {
+          "label": "Mobile Only",
+          "value": "mobile"
+        },
+        {
+          "label": "Desktop Only",
+          "value": "desktop"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

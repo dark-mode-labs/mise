@@ -1,0 +1,1261 @@
+{% assign s = block.settings %}
+
+{% comment %} --- Layout (property + CSS-driven, no axis-swap in liquid) --- {% endcomment %}
+{% if s.layout_mode == 'grid' %}
+  {% assign layout_class = 'grid grid-cols-[repeat(auto-fit,minmax(min(var(--width-grid-col),100%),1fr))]' %}
+{% else %}
+  {% assign layout_class = 'flex direction-{{ s.direction }}' %}
+{% endif %}
+
+{% comment %}
+  Alignment is emitted as semantic `vertical-X content-Y` classes;
+  the `direction-X.vertical-Y` / `direction-X.content-Y` rules in
+  theme.css handle the axis-swap so the same setting renders
+  intuitively whether the block is row, column, or responsive.
+  Skip emission when the setting is blank — an empty `content-`
+  / `vertical-` class would dirty the markup and match nothing.
+{% endcomment %}
+{% assign align_class = blank %}
+{% assign justify_class = blank %}
+{% if s.vertical_align != blank %}
+  {% assign align_class = 'vertical-{{ s.vertical_align }}' %}
+{% endif %}
+{% if s.content_align != blank %}
+  {% assign justify_class = 'content-{{ s.content_align }}' %}
+{% endif %}
+
+{% comment %} --- Class Array Building --- {% endcomment %}
+{% assign radius_class = 'rounded-global' %}
+{% if s.border_radius_override %}
+  {% assign radius_class = 'rounded-custom' %}
+{% endif %}
+{% assign classes = 'group-block transition-all rotate-custom block-limit-width'
+  | push: radius_class
+  | push: layout_class
+  | push: justify_class
+  | push: align_class
+  | push: 'text-align-{{ s.text_align }}'
+  | push: 'height-{{ s.height }}'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: 'gap-{{ s.gap }}'
+  | push: 'margin-my-{{ s.margin_vertical }}'
+  | push: 'margin-mx-{{ s.margin_horizontal }}'
+  | push: 'aspect-{{ s.aspect_ratio }}'
+  | push: 'cursor-{{ s.cursor }}'
+  | push_if: 'float', s.animate_float
+  | push_if: 'scale-in', s.animate_scale_in
+  | push_if: 'stagger-load', s.animate_stagger
+  | push_if: 'hover-shadow', s.animate_shadow_hover
+  | push_if: 'shadow-lg', s.shadow
+  | push_if: 'overflow-hidden', s.overflow_hidden
+  | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
+%}
+
+{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
+  {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
+{% endif %}
+
+{% if s.layout_mode != 'grid' %}
+  {% assign classes = classes | push_if: 'flex-wrap', s.wrap_content %}
+
+  {% if s.grow_content %}
+    {%- comment -%}
+      flex-1 (basis: 0) so width-fit siblings keep their max-content basis.
+    {%- endcomment -%}
+    {% assign classes = classes | push: 'flex-1' %}
+  {% else %}
+    {% assign classes = classes | push: 'flex-initial' %}
+  {% endif %}
+{% endif %}
+
+{% if s.animate_fade != 'none' %}
+  {% assign classes = classes | push: 'fade-{{ s.animate_fade }}' %}
+{% endif %}
+
+{% comment %} Borders {% endcomment %}
+{% unless s.border_mode == 'none' %}
+  {% assign classes = classes
+    | push: 'group-border-{{ s.border_mode }}'
+    | push: 'group-border-size-{{ s.border_size }}'
+  %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
+    {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
+  {% if s.border_mode == 'custom' %}
+    {% assign classes = classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
+  {% endif %}
+{% endunless %}
+
+{% comment %} Layout & Styling Flags {% endcomment %}
+{% assign classes = classes | push: 'width-{{ s.width }}' %}
+
+{% comment %}
+  Direction breakpoint modifier — pairs with `direction: responsive`
+  to control the viewport width at which column→row switches. Always
+  emit a `bp-<tier>` class so the per-tier media query (emitted by
+  theme_variables.liquid from container_scale) is the single source
+  of breakpoint truth. Default `column` tier ≈ 768px = mise's prior
+  hardcoded md breakpoint (preserves existing renders).
+{% endcomment %}
+{% if s.direction == 'responsive' %}
+  {% assign bp_tier = s.direction_breakpoint | default: 'column' %}
+  {% if bp_tier == blank %}{% assign bp_tier = 'column' %}{% endif %}
+  {% assign classes = classes | push: 'bp-{{ bp_tier }}' %}
+  {% comment %}
+    Reverse-order modifier: below breakpoint (column mode), flip child
+    order. Above breakpoint (row mode), per-tier `bp-<tier>` rules in
+    theme_variables.liquid emit `flex-direction: row` which overrides
+    column-reverse — children render in source order at desktop.
+    Mirrors Tailwind's `flex-col-reverse <bp>:flex-row` pattern.
+  {% endcomment %}
+  {% if s.responsive_order_override == 'reverse' %}
+    {% assign classes = classes | push: 'responsive-order-reverse' %}
+  {% endif %}
+{% endif %}
+
+{% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
+{% if s.position == 'absolute' %}
+  {% assign classes = classes | push: 'absolute' | push: 'anchor-{{ s.inset }}' %}
+{% else %}
+  {% comment %}
+    Always 'relative' (unless absolute) so the bg-overlay layer
+    and any nested absolute children anchor to this group instead of
+    escaping to a distant positioned ancestor.
+  {% endcomment %}
+  {% assign classes = classes | push: 'relative' %}
+{% endif %}
+
+{% comment %} Finalize Class Output {% endcomment %}
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'gradient' and s.border_role_gradient != blank %}
+  {% assign border_color_value = 'var(--gradient-{{ s.border_role_gradient }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
+{% assign styles = blank %}
+
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.margin_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
+    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.margin_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+{% if s.gap == 'custom' %}{% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}{% endif %}
+{% if s.layout_mode == 'grid' %}
+  {% assign styles = styles | push: '--width-grid-col: {{ s.min_column_width }}rem' %}
+{% endif %}
+
+{% unless s.border_mode == 'none' %}
+  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if border_color_value != blank -%}
+    {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
+  {%- endif %}
+{% endunless %}
+
+{% assign styles = styles | push: '--rotation: {{ s.rotation }}deg' %}
+
+{% assign styles = styles
+  | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
+  | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+%}
+{% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% comment %} Finalize Style Output {% endcomment %}
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Content Generation --- {% endcomment %}
+{% capture content %}
+  {% comment %}
+    Optional bg image layer. Painted as an absolute-positioned `media`
+    behind both the bg-overlay tint and the group's own children. This
+    lets a group block serve as an image frame holding child editorial
+    content (badges, stats cards) ON TOP of the image. When `bg_image`
+    is unset the layer isn't rendered and group behaves identically to
+    before.
+  {% endcomment %}
+  {% if s.bg_image != blank %}
+    <div class="absolute inset-0 -z-10 pointer-events-none rounded-inherit overflow-hidden">
+      {% render 'media',
+        src: s.bg_image,
+        src_mobile: s.bg_image_mobile,
+        fit: 'cover',
+        loading: 'lazy'
+      %}
+    </div>
+  {% endif %}
+  {% render 'bg-overlay',
+       role: s.overlay_role,
+       alpha: s.overlay_alpha,
+       palette_token: s.overlay_role_palette,
+       custom_color: s.overlay_role_custom,
+       gradient_token: s.overlay_role_gradient,
+       behind: true
+  %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+{% if s.trigger == 'link' and s.link %}
+  <a
+    class="isolate {{ block_classes }}"
+    style="{{ block_styles }}"
+    href="{{ s.link }}"
+    {% if s.link_target == '_blank' %}
+      target="_blank" rel="noopener"
+    {% endif %}
+    {{ context.attached_attributes }}
+  >
+    {{ content }}
+  </a>
+{% else %}
+  <div
+    class="isolate {{ block_classes }}"
+    style="{{ block_styles }}"
+    {{ context.attached_attributes }}
+    {% if s.trigger == 'action' %}
+      data-action="{{ s.action | escape }}"
+      {% if s.action_args != blank %}data-action-args="{{ s.action_args | escape }}"{% endif %}
+    {% endif %}
+  >
+    {{ content }}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Group",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout Mode"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Mode",
+      "options": [
+        {
+          "value": "flex",
+          "label": "Flex (Standard)"
+        },
+        {
+          "value": "grid",
+          "label": "CSS Grid (Auto-Fit)"
+        }
+      ],
+      "default": "flex"
+    },
+    {
+      "type": "range",
+      "id": "min_column_width",
+      "label": "Min Item Width (Grid Only)",
+      "min": 6,
+      "max": 32,
+      "step": 0.5,
+      "default": 16,
+      "unit": "rem",
+      "conditional": "setting.layout_mode == 'grid'"
+    },
+    {
+      "type": "header",
+      "content": "Flex Settings",
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "Vertical (Column)"
+        },
+        {
+          "value": "row",
+          "label": "Horizontal (Row)"
+        },
+        {
+          "value": "responsive",
+          "label": "Responsive"
+        }
+      ],
+      "default": "column",
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right / End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top / Start"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "wrap_content",
+      "label": "Wrap Content",
+      "default": false,
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "checkbox",
+      "id": "grow_content",
+      "label": "Grow Content",
+      "default": false,
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect Ratio",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Natural"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "video",
+          "label": "Video (16:9)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position Type",
+      "options": [
+        {
+          "value": "relative",
+          "label": "Relative"
+        },
+        {
+          "value": "absolute",
+          "label": "Absolute"
+        }
+      ],
+      "default": "relative"
+    },
+    {
+      "type": "select",
+      "id": "inset",
+      "label": "Anchor",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top Left"
+        },
+        {
+          "value": "top-right",
+          "label": "Top Right"
+        },
+        {
+          "value": "top-center",
+          "label": "Top Center"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "center-right",
+          "label": "Center Right"
+        },
+        {
+          "value": "center-left",
+          "label": "Center Left"
+        },
+        {
+          "value": "cover",
+          "label": "Cover"
+        }
+      ],
+      "default": "top-left",
+      "conditional": "setting.position == 'absolute'"
+    },
+    {
+      "type": "header",
+      "content": "Action Trigger"
+    },
+    {
+      "type": "select",
+      "id": "trigger",
+      "label": "Trigger",
+      "default": "none",
+      "options": [
+        {
+          "value": "link",
+          "label": "Link"
+        },
+        {
+          "value": "action",
+          "label": "Action"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "conditional": "setting.trigger == 'link'"
+    },
+    {
+      "type": "select",
+      "id": "link_target",
+      "label": "Open link in",
+      "options": [
+        {
+          "value": "_blank",
+          "label": "New Tab"
+        },
+        {
+          "value": "_self",
+          "label": "Current Tab"
+        }
+      ],
+      "default": "_self",
+      "conditional": "setting.trigger == 'link'"
+    },
+    {
+      "type": "text",
+      "id": "action",
+      "label": "Action Type",
+      "conditional": "setting.trigger == 'action'"
+    },
+    {
+      "type": "text",
+      "id": "action_args",
+      "label": "Action Arguments",
+      "conditional": "setting.trigger == 'action'"
+    },
+    {
+      "type": "header",
+      "content": "General Styles"
+    },
+    {
+      "type": "select",
+      "subtype": "cursor",
+      "id": "cursor",
+      "label": "Cursor",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "pointer",
+          "label": "Pointer"
+        },
+        {
+          "value": "not-allowed",
+          "label": "Not Allowed"
+        },
+        {
+          "value": "help",
+          "label": "Help"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Max Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "height",
+      "id": "height",
+      "label": "Height",
+      "default": "auto"
+    },
+    {
+      "type": "container_scale",
+      "id": "direction_breakpoint",
+      "label": "Direction breakpoint",
+      "info": "When direction is `responsive`, this controls the viewport width at which the layout switches from column to row. Tier name references `theme.container_scale` \u2014 each container tier doubles as a breakpoint reference (column=768px=md, broad=1024px=lg, canvas=1280px=xl, extra-wide=1536px=2xl). Default `column` (768px) preserves mise's prior hardcoded md behavior.",
+      "default": "column",
+      "conditional": "setting.direction == 'responsive'"
+    },
+    {
+      "type": "select",
+      "id": "responsive_order_override",
+      "label": "Responsive Order Override",
+      "info": "Below the direction breakpoint (column mode), reverse the visual order of children. Above the breakpoint (row mode), children render in source order regardless. Mirrors Tailwind's `flex-col-reverse <bp>:flex-row` pattern.",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal Order"
+        },
+        {
+          "value": "reverse",
+          "label": "Reverse Order"
+        }
+      ],
+      "default": "normal",
+      "conditional": "setting.direction == 'responsive'"
+    },
+    {
+      "type": "header",
+      "content": "Padding/Margins"
+    },
+    {
+      "type": "space",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_vertical",
+      "label": "Vertical margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_horizontal",
+      "label": "Horizontal margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "gap",
+      "label": "Gap",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 6,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
+      "conditional": "setting.gap == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_float",
+      "label": "Float",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_scale_in",
+      "label": "Scale In",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_stagger",
+      "label": "Stagger",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_shadow_hover",
+      "label": "Hover Shadow",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "animate_fade",
+      "label": "Fade Animation",
+      "default": "none",
+      "options": [
+        {
+          "value": "in",
+          "label": "In"
+        },
+        {
+          "value": "up",
+          "label": "Up"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image_mobile",
+      "label": "Background Image (Mobile)"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow",
+      "label": "Show Shadow",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Glass Effect",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "overflow_hidden",
+      "label": "Clip Content",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "rotation",
+      "label": "Rotation",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "default": 0,
+      "unit": "deg"
+    },
+    {
+      "type": "header",
+      "content": "Borders"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "border_role_gradient",
+      "label": "Border Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.border_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "border_size",
+      "label": "Border Size",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
+      ],
+      "default": "md",
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "overlay_role_custom",
+      "label": "Raw Overlay",
+      "conditional": "setting.overlay_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "overlay_role_gradient",
+      "label": "Overlay Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.overlay_role == 'gradient'"
+    },
+    {
+      "type": "range",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "true"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 1000,
+      "label": "Radius",
+      "default": 0,
+      "unit": "px",
+      "conditional": "setting.border_radius_override"
+    },
+    {
+      "type": "checkbox",
+      "id": "shadow_color_override",
+      "label": "Override Shadow Color",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color",
+      "label": "Custom Shadow Color",
+      "default": "rgba(0,0,0,1)",
+      "conditional": "setting.shadow_color_override"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Group",
+      "settings": {},
+      "blocks": {},
+      "block_order": []
+    }
+  ]
+}
+{% endschema %}

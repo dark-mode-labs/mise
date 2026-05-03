@@ -1,0 +1,50 @@
+{% assign s = block.settings %}
+
+{% assign scheme_class = blank %}
+
+{% if s.surface_override %}
+  {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
+
+<div
+  class="footer-block flex flex-col gap-6 items-start {{ scheme_class }}"
+  {{ context.attached_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Brand & Socials",
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "true"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    }
+  ]
+}
+{% endschema %}

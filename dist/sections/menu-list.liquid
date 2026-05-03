@@ -1,0 +1,705 @@
+{% assign s = section.settings %}
+
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+{% if s.display_scope == 'full_menu' and s.menu != blank %}
+  {% assign args = 'source' | push: 'menu' | push: 'menu_identifier' | push: s.menu %}
+{% elsif s.display_scope == 'category' and s.category != blank %}
+  {% assign args = 'source'
+    | push: 'menu_category'
+    | push: 'menu_identifier'
+    | push: s.menu
+    | push: 'category_identifier'
+    | push: s.category
+  %}
+{% endif %}
+{% if args != blank %}
+  {% assign category_assignments = 'category_assignment' | data_source: 'list', args %}
+  {% assign dietary_flags = category_assignments | map: 'category.items.dietary_flags' | uniq %}
+  {% assign disclaimers = category_assignments | map: 'menu.disclaimers' | uniq %}
+  {% if s.display_scope == 'full_menu' %}
+    {% assign root_categories = category_assignments | where_blank: 'category.parent_uuid' %}
+  {% elsif s.display_scope == 'category' %}
+    {% assign root_categories = category_assignments | list %}
+  {% endif %}
+{% endif %}
+
+{% assign styles = blank %}
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+{% if s.nav_layout == 'horizontal' %}
+  {% assign styles = styles | push: 'top: {{ s.nav_sticky_offset }}rem' %}
+{% endif %}
+
+{% capture section_spacing_class %}
+  padding-py-{{ s.padding_vertical }}
+  padding-px-{{ s.padding_horizontal }}
+{% endcapture %}
+
+{% assign animation_class = '' %}
+{% if s.animate_stagger %}
+  {% assign animation_class = 'stagger-load' %}
+{% endif %}
+
+{% assign column_class = 'menu-cols-' | append: s.column_preset | replace: ':', '-' %}
+{% assign grid_gap_x_class = 'menu-gap-x-' | append: s.grid_gap_x %}
+{% assign grid_gap_y_class = 'menu-gap-y-' | append: s.grid_gap_y %}
+{% assign card_padding_class = 'menu-card-p-' | append: s.card_padding %}
+{% assign list_padding_class = 'menu-list-row-' | append: s.list_row_padding %}
+{% assign list_image_class = 'menu-list-img-' | append: s.list_image_size %}
+
+{% assign grid_class = 'grid'
+  | append: ' '
+  | append: column_class
+  | append: ' '
+  | append: grid_gap_x_class
+  | append: ' '
+  | append: grid_gap_y_class
+%}
+
+{% assign main_flex_direction = 'flex-col lg:flex-row' %}
+{% assign nav_container_class = 'hidden lg:block w-64 flex-shrink-0 sticky self-start z-floating top-32' %}
+{% assign nav_wrapper_class = 'flex flex-col gap-2 border-l-2 border-default/10 pl-4 overflow-y-auto no-scrollbar' %}
+{% assign link_base_class = 'block border-l-2 border-transparent -ml-[1.125rem] pl-[0.875rem] [&.is-active]:border-default [&.is-active]:pl-4' %}
+{% assign sublink_base_class = 'block' %}
+
+{% if s.nav_layout == 'horizontal' %}
+  {% capture sticky_style %}top: {{ s.nav_sticky_offset }}rem;{% endcapture %}
+  {% assign main_flex_direction = 'flex-col' %}
+  {% assign nav_container_class = 'w-full sticky z-floating bg-[var(--background)] border-b border-default/10 mb-8 transition-[top] duration-200' %}
+  {% assign nav_wrapper_class = 'flex flex-row items-center gap-6 overflow-x-auto no-scrollbar py-3 px-1' %}
+  {% assign link_base_class = 'whitespace-nowrap border-b-2 border-transparent pb-2 transition-all duration-300 [&.is-active]:border-default [&.is-active]:opacity-100 [&.is-active]:font-bold' %}
+  {% assign sublink_base_class = 'hidden' %}
+{% endif %}
+
+{% comment %} --- Background class + bg styles into single styles list --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
+<section
+  class="menu-list surface-{{ s.surface_id | default: 'default' }}"
+  data-spy-scope
+  data-filter-scope
+  {{ context.attached_attributes }}
+>
+  <div
+    class="{{ bg_class }} width-{{ s.width }} limit-width {{ section_spacing_class }}"
+    style="{{ style_str }}"
+  >
+    <div class="text-center mx-auto mb-16 fade-up">
+      {% if s.heading != blank %}
+        {% render 'typography', text: s.heading, tag: 'h2', type_style: 'display-1', color_role: 'primary' %}
+      {% endif %}
+
+      {% if s.subtext != blank %}
+        <div class="text-secondary mt-4">
+          {% render 'typography', text: s.subtext, tag: 'div', type_style: 'body', color_role: 'secondary' %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="flex {{ main_flex_direction }} relative">
+      {% if s.show_nav and root_categories != blank %}
+        <div
+          class="{{ nav_container_class }}"
+          style="{{ sticky_style }}"
+          {% if s.enable_filtering %}
+            data-behavior="menu-filter"
+          {% endif %}
+        >
+          <div class="{% if s.nav_layout == 'horizontal' %}flex items-center justify-between gap-4 max-w-none px-4{% else %}flex flex-col gap-6{% endif %}">
+            {% if s.enable_filtering %}
+              <div class="relative {% if s.nav_layout == 'horizontal' %}w-48 hidden md:block flex-shrink-0 order-2 ml-auto{% else %}w-[85%] order-1{% endif %}">
+                <input
+                  type="text"
+                  placeholder="Search menu..."
+                  class="ts-body-sm w-full bg-transparent border border-default rounded-full px-4 py-2 focus:border-default focus:outline-none transition-colors placeholder:text-secondary"
+                  data-filter-search
+                >
+                {% render 'icon',
+                  name: 'search',
+                  class: 'absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none'
+                %}
+              </div>
+            {% endif %}
+            {% if s.enable_filtering and dietary_flags.size > 0 %}
+              <div
+                class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-default pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
+                data-filter-tags
+              >
+                {% for tag in dietary_flags %}
+                  {% assign tag_name = tag.name | downcase %}
+                  <button
+                    type="button"
+                    data-filter-tag="{{ tag_name }}"
+                    title="Filter by {{ tag.name }}"
+                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-default rounded-full ts-caption text-secondary hover:text-primary hover:border-default{% else %}px-2 py-1 border border-default rounded ts-caption text-secondary hover:text-primary hover:border-default{% endif %} transition-all [&.is-active]:bg-[var(--text)] [&.is-active]:text-[var(--background)] [&.is-active]:opacity-100"
+                  >
+                    {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
+                  </button>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <nav
+              data-behavior="menu-spy"
+              class="{{ nav_wrapper_class }} flex-grow min-w-0 {% if s.nav_layout == 'vertical' %}order-3{% else %}order-1{% endif %}"
+            >
+              {% for parent in root_categories %}
+                {% render 'menu-nav-recursive',
+                  category: parent.category,
+                  category_assignments: category_assignments,
+                  depth: 0,
+                  nav_layout: s.nav_layout,
+                  link_base_class: link_base_class,
+                  sublink_base_class: sublink_base_class
+                %}
+              {% endfor %}
+            </nav>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="flex-grow flex flex-col gap-20" data-filter-container>
+        {% for parent in root_categories %}
+          {% render 'menu-category-recursive',
+            category: parent.category,
+            category_assignments: category_assignments,
+            depth: 0,
+            grid_class: grid_class,
+            animation_class: animation_class,
+            spy_target: parent.uuid,
+            card_padding_class: card_padding_class,
+            list_padding_class: list_padding_class,
+            list_image_class: list_image_class,
+            layout_style: s.layout_style,
+            aspect_ratio: s.aspect_ratio,
+            card_image_position: s.card_image_position,
+            nav_layout: s.nav_layout
+          %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div id="filter-empty-state" class="hidden w-full py-20 text-center opacity-50">
+      <p class="ts-heading-3">No items found matching your filters.</p>
+      <button type="button" data-action="clear-filters" class="ts-body-sm mt-4 underline hover:opacity-100">
+        Clear Filters
+      </button>
+    </div>
+
+    {% if disclaimers.size > 0 %}
+      <div class="ts-caption w-full text-center mt-20 flex flex-col gap-3 opacity-60 mx-auto border-t border-default/10 pt-8">
+        {% for disclaimer in disclaimers %}
+          <p>{{ disclaimer.text }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Menu View",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Data Source"
+    },
+    {
+      "type": "collection",
+      "id": "menu",
+      "label": "Select Menu"
+    },
+    {
+      "type": "select",
+      "id": "display_scope",
+      "label": "Display Scope",
+      "options": [
+        {
+          "value": "full_menu",
+          "label": "Full Menu (All Categories)"
+        },
+        {
+          "value": "category",
+          "label": "Specific Category Only"
+        }
+      ],
+      "default": "full_menu"
+    },
+    {
+      "type": "collection",
+      "id": "category",
+      "label": "Category Name",
+      "info": "Select category to display.",
+      "conditional": "setting.display_scope == 'category'"
+    },
+    {
+      "type": "header",
+      "content": "Filtering & Search"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable Filtering Bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Navigation",
+      "conditional": "setting.display_scope == 'full_menu'"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav",
+      "label": "Show Sticky Navigation",
+      "default": true,
+      "conditional": "setting.display_scope == 'full_menu'"
+    },
+    {
+      "type": "select",
+      "id": "nav_layout",
+      "label": "Navigation Layout",
+      "options": [
+        {
+          "value": "vertical",
+          "label": "Vertical Sidebar (Desktop Only)"
+        },
+        {
+          "value": "horizontal",
+          "label": "Horizontal Top Bar"
+        }
+      ],
+      "default": "vertical",
+      "info": "Horizontal layout works best for menus with many top-level categories.",
+      "conditional": "setting.show_nav"
+    },
+    {
+      "type": "range",
+      "id": "nav_sticky_offset",
+      "label": "Sticky Top Offset (Horizontal Nav Layout)",
+      "info": "Adjust this to clear your site header if the menu is being covered.",
+      "min": 0,
+      "max": 10,
+      "step": 0.25,
+      "default": 5,
+      "unit": "rem",
+      "conditional": "setting.show_nav and setting.nav_layout == 'horizontal'"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Layout Style",
+      "options": [
+        {
+          "value": "list",
+          "label": "List"
+        },
+        {
+          "value": "card-standard",
+          "label": "Standard Card"
+        },
+        {
+          "value": "card-compact",
+          "label": "Compact Card"
+        }
+      ],
+      "default": "list"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Card Image Ratio",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        }
+      ],
+      "default": "landscape",
+      "conditional": "setting.layout_style != 'list'"
+    },
+    {
+      "type": "select",
+      "id": "card_image_position",
+      "label": "Card Image Position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "conditional": "setting.layout_style == 'card-compact'"
+    },
+    {
+      "type": "select",
+      "id": "column_preset",
+      "label": "Column Presets",
+      "options": [
+        {
+          "value": "1:1:1",
+          "label": "1 (Small), 1 (Medium), 1 (Large)"
+        },
+        {
+          "value": "1:2:2",
+          "label": "1 (Small), 2 (Medium), 2 (Large)"
+        },
+        {
+          "value": "1:2:3",
+          "label": "1 (Small), 2 (Medium), 3 (Large)"
+        }
+      ],
+      "default": "1:2:3"
+    },
+    {
+      "type": "header",
+      "content": "Layout Tuning"
+    },
+    {
+      "type": "select",
+      "id": "grid_gap_x",
+      "label": "Horizontal Grid Gap",
+      "options": [
+        {
+          "value": "tight",
+          "label": "Tight"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "relaxed",
+          "label": "Relaxed"
+        },
+        {
+          "value": "loose",
+          "label": "Loose"
+        }
+      ],
+      "default": "relaxed"
+    },
+    {
+      "type": "select",
+      "id": "grid_gap_y",
+      "label": "Vertical Grid Gap",
+      "options": [
+        {
+          "value": "tight",
+          "label": "Tight"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "relaxed",
+          "label": "Relaxed"
+        },
+        {
+          "value": "loose",
+          "label": "Loose"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "card_padding",
+      "label": "Card Internal Padding",
+      "options": [
+        {
+          "value": "tight",
+          "label": "Tight"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "relaxed",
+          "label": "Relaxed"
+        },
+        {
+          "value": "loose",
+          "label": "Loose"
+        }
+      ],
+      "default": "normal",
+      "conditional": "setting.layout_style != 'list'"
+    },
+    {
+      "type": "select",
+      "id": "list_row_padding",
+      "label": "List View Row Height",
+      "options": [
+        {
+          "value": "tight",
+          "label": "Tight"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "relaxed",
+          "label": "Relaxed"
+        },
+        {
+          "value": "loose",
+          "label": "Loose"
+        }
+      ],
+      "default": "normal",
+      "conditional": "setting.layout_style == 'list'"
+    },
+    {
+      "type": "select",
+      "id": "list_image_size",
+      "label": "List View Image Size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium",
+      "conditional": "setting.layout_style == 'list'"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Max Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Menu"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "space",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_stagger",
+      "label": "Stagger",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Menu View"
+    }
+  ]
+}
+{% endschema %}

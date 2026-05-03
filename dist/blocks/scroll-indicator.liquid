@@ -1,0 +1,163 @@
+{% assign s = block.settings %}
+
+{% comment %} --- Wrapper Classes --- {% endcomment %}
+{% assign classes = 'absolute w-full z-floating flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80' %}
+
+{% if s.surface_override %}
+  {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
+
+{% assign block_classes = classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
+{% assign styles = blank %}
+
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
+{% assign styles = styles | push: 'bottom: {{ s.bottom_offset }}rem' %}
+
+{% assign block_styles = styles | join: ';' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+<div
+  class="{{ block_classes }}"
+  style="{{ block_styles }}"
+  onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });"
+  {{ context.attached_attributes }}
+>
+  {% if s.label != blank %}
+    {% render 'typography', type_style: s.type_style, text: s.label, tag: 'span' %}
+  {% endif %}
+
+  <div class="animate-bounce">
+    {% render 'icon', name: 'chevron-down', class: 'w-5 h-5 text-primary' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Scroll Indicator",
+  "settings": [
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "nav"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "bottom_offset",
+      "label": "Bottom Offset",
+      "info": "Lift up to clear marquees.",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 2,
+      "unit": "rem"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Scroll"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "true"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    }
+  ]
+}
+{% endschema %}

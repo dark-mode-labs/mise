@@ -1,0 +1,314 @@
+<style>
+    {% capture stylesheet %}
+    :root {
+      --space-base: 1rem;
+
+      {% comment %}
+        ALL tiers — built-ins (xs/sm/md/lg/xl/2xl/3xl) AND per-site
+        synth tiers — live in `theme.space_scale` carrying a single
+        flat `value`. Built-in defaults ship via settings_schema.json
+        presets; transpiler synthesizes additional tiers when source
+        has responsive spacing pairs (`px-6 xl:px-16` → `synth-1_5rem`
+        picking the desktop value).
+      {% endcomment %}
+      {% for s in space_scale %}
+        {% unless s[1].settings.structural %}
+          {% if s[1].settings.value != blank %}
+      --space-{{ s[0] }}: {{ s[1].settings.value }};
+          {% endif %}
+        {% endunless %}
+      {% endfor %}
+    }
+
+    {% comment %}
+      Single source of truth for spacing class rules — emitted from
+      `theme.space_scale`. Structural tiers (`none`, `custom`) have
+      specialized CSS in theme.css and skip this loop.
+    {% endcomment %}
+    {% for s in space_scale %}
+      {% unless s[1].settings.structural %}
+      .padding-py-{{ s[0] }} { padding-top: var(--space-{{ s[0] }}); padding-bottom: var(--space-{{ s[0] }}); }
+      .padding-px-{{ s[0] }} { padding-left: var(--space-{{ s[0] }}); padding-right: var(--space-{{ s[0] }}); }
+      .margin-my-{{ s[0] }} { margin-top: var(--space-{{ s[0] }}); margin-bottom: var(--space-{{ s[0] }}); }
+      .margin-mx-{{ s[0] }} { margin-left: var(--space-{{ s[0] }}); margin-right: var(--space-{{ s[0] }}); }
+      .gap-{{ s[0] }} { gap: var(--space-{{ s[0] }}); }
+      .direction-row.gap-{{ s[0] }}, .direction-responsive.gap-{{ s[0] }} { --children-gap: var(--space-{{ s[0] }}); }
+      {% endunless %}
+    {% endfor %}
+
+    :root {
+
+      --radius-global: {{ layout.corner_radius }}px;
+
+      {% for scheme in font_schemes %} --font-{{ scheme[0] }}: "{{ scheme[1].settings.name }}", sans-serif; {% endfor %}
+
+      {% comment %}
+        --- Brand palette tokens ---
+        Each entry in the palette group emits a single CSS custom property at
+        :root. Slot values inside surfaces reference these via @palette-id
+        which the surface block below resolves to var(--palette-X).
+      {% endcomment %}
+      {% for token in palette %} --palette-{{ token[0] }}: {{ token[1].settings.value }}; {% endfor %}
+
+      {% comment %}
+        --- Brand gradient tokens ---
+        Site-defined gradients (linear/radial/conic). Block-level
+        `*_role: gradient` references these via `var(--gradient-id)`.
+        Composite by nature so they don't fold into a palette token —
+        keeping them centralized here means a brand-redesign edit
+        propagates to every surface that paints with the gradient.
+      {% endcomment %}
+      {% for token in gradients %} --gradient-{{ token[0] }}: {{ token[1].settings.value }}; {% endfor %}
+    }
+
+    {% comment %}
+      --- Surfaces ---
+      Each slot emits one CSS custom property. Slot values may be:
+        @palette-id     → resolves to var(--palette-id)
+        #aabbcc         → solid hex
+        rgba(...)       → solid rgba
+        linear-gradient → gradient image (consumed via `background:` shorthand)
+        ""              → unset (defaults to transparent)
+    {% endcomment %}
+
+    {% for surface in surfaces %}
+      {%- assign s = surface[1].settings -%}
+      .surface-{{ surface[0] }} {
+         {% assign slots = 'background|background_alt|surface|surface_alt|accent_bg|button_bg|control_bg|text|text_secondary|text_subtle|text_emphasis|text_on_accent|text_on_button|text_on_control|border|border_emphasis|shadow' | split: '|' %}
+        {%- for slot_id in slots -%}
+          {%- assign slot_val = s[slot_id] | default: '' -%}
+          {%- assign css_var = '--' | append: slot_id | replace: '_', '-' -%}
+          {% assign first_slot_char = slot_val | slice: 0, 1 %}
+          {%- if slot_val == blank -%}
+            {{ css_var }}: transparent;
+          {%- elsif first_slot_char == '@' -%}
+            {%- assign ref = slot_val | remove_first: '@' -%}
+            {{ css_var }}: var(--palette-{{ ref }});
+          {%- else -%}
+            {{ css_var }}: {{ slot_val }};
+          {%- endif -%}
+        {%- endfor -%}
+      }
+    {% endfor %}
+
+    {% comment %}
+      Width tiers. Synth tiers (from source `w-N`) get an explicit `width:`
+      + `flex-shrink: 0` so flex parents can't compress fixed-size icons.
+      Named tiers only set `--limit-width`; .limit-width handles max-width.
+      Structural tiers (fit/fill/half/third/quarter) have dedicated CSS rules
+      below.
+    {% endcomment %}
+    {% for c in container_scale %}
+      {% unless c[1].settings.structural %}
+        {% if c[0] contains 'synth-' %}
+          .width-{{ c[0] }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; width: {{ c[1].settings.max_width | default: '100%' }}; max-width: 100%; flex-shrink: 0; }
+        {% else %}
+          .width-{{ c[0] }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; }
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
+    {% comment %}
+      Direction-breakpoint media queries per container_scale tier.
+      `bp-<tier>` on direction-responsive switches column→row above
+      the tier width; below it, half/third/quarter collapse to full.
+      Reverse-order rule emitted first so desktop bp rules cascade-win.
+    {% endcomment %}
+    .direction-responsive.responsive-order-reverse { flex-direction: column-reverse; }
+
+    {% for c in container_scale %}
+      {% unless c[1].settings.structural %}
+        {% assign mw = c[1].settings.max_width %}
+        {% if mw contains 'rem' or mw contains 'px' %}
+        @media (min-width: {{ mw }}) { .direction-responsive.bp-{{ c[0] }} { flex-direction: row; } }
+        @media (max-width: calc({{ mw }} - 0.0625rem)) {
+          .direction-responsive.bp-{{ c[0] }} > .width-half,
+          .direction-responsive.bp-{{ c[0] }} > .width-third,
+          .direction-responsive.bp-{{ c[0] }} > .width-quarter
+            { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
+          .direction-responsive.bp-{{ c[0] }} > .width-fit { --limit-width: 100%; }
+        }
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
+    {% comment %}
+      Default `direction-responsive` (no `bp-*` modifier) — switches to
+      row at md=768 to match mise's prior hardcoded behavior. Lets
+      blocks like `_header-actions` that don't emit a bp-* modifier
+      still get the column→row switch they expect. Specificity is
+      lower than `.direction-responsive.bp-*`, so explicit bp blocks
+      still win.
+    {% endcomment %}
+    @media (min-width: 768px) {
+      .direction-responsive:not([class*="bp-"]) { flex-direction: row; }
+    }
+
+    .width-fit  { --limit-width: fit-content; width: fit-content; }
+    .width-fill { --limit-width: 100%; width: 100%; }
+    .width-half    { --limit-width: 50%;     flex: 0 0 calc(50%     - (var(--children-gap, 0px) * 1) / 2); }
+    .width-third   { --limit-width: 33.333%; flex: 0 0 calc(33.333% - (var(--children-gap, 0px) * 2) / 3); }
+    .width-quarter { --limit-width: 25%;     flex: 0 0 calc(25%     - (var(--children-gap, 0px) * 3) / 4); }
+
+    {% comment %}
+      Half/third/quarter assume the row holds an equal-width set
+      (2/3/4 children). With gap on the parent flex, each child must
+      give back its share of the gap so the row sums to 100%:
+      `(N-1) * gap` total → each loses `(N-1)/N * gap`.
+
+      We can't read the gap directly via inheritance: every block
+      sets its own `--space-gap` (gap-custom) or uses one of the
+      named tokens (`--space-xs/sm/md/lg/xl`), so a child shadows
+      whatever the parent declared. Instead the parent ROW re-
+      exposes its actual gap as `--children-gap` via compound
+      selectors — these match only when an element is *both*
+      direction-row/responsive AND has a specific gap-* class.
+      A child card inside (direction-column) won't match, so
+      `--children-gap` propagates cleanly via inheritance.
+    {% endcomment %}
+    .direction-row, .direction-responsive { --children-gap: 0px; }
+    .direction-row.gap-custom, .direction-responsive.gap-custom { --children-gap: var(--space-gap); }
+    {% comment %}
+      Per-tier `--children-gap` mappings are emitted alongside the
+      `.gap-<tier>` rules above (single loop, single source of truth).
+    {% endcomment %}
+
+
+    @media (max-width: 767px) {
+      {% comment %}
+        Mobile collapse: half/third/quarter become full-width.
+        `flex-basis` semantics depend on parent direction —
+        `0 0 100%` in flex-row means "full width per child" (correct,
+        each card on its own row), but in flex-col it means "full
+        HEIGHT per child" (wrong — each child consumes full parent
+        height, ballooning the page). Scope the flex rule to row/
+        responsive parents; for column parents set `width: 100%`.
+      {% endcomment %}
+      {% comment %}
+        At mobile, direction-responsive parents resolve to column
+        (axis-swap CSS in theme.css), so children share the column
+        semantics: flex-basis is HEIGHT, not width. Group responsive
+        with column for the mobile-collapse rule.
+      {% endcomment %}
+      .direction-row > .width-half,
+      .direction-row > .width-third,
+      .direction-row > .width-quarter
+        { --limit-width: 100%; flex: 0 0 100%; }
+      .direction-column > .width-half,
+      .direction-column > .width-third,
+      .direction-column > .width-quarter,
+      .direction-responsive > .width-half,
+      .direction-responsive > .width-third,
+      .direction-responsive > .width-quarter
+        { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
+      .direction-responsive > .width-fit { --limit-width: 100%; }
+    }
+
+    {% comment %}
+      Height scale loop: same structural-skip rule the width loop
+      uses. The loop emits `height: <value>` for every non-structural
+      tier in `height_scale` (anchored or synthesized). Structural
+      entries (`auto` / `full`) get specialized rules immediately
+      below — `.height-full` carries `flex: 1 1 0%` so the block
+      participates in flex stretch correctly, which the loop's
+      value-only emit can't replicate. Sections that previously
+      rendered as `is-sm`/`is-md`/`is-lg`/`is-xl` now use the same
+      tier vocabulary so block + section heights share one system.
+    {% endcomment %}
+    {% comment %}
+      Each height_scale tier carries both a value AND a `floor` flag:
+        - `floor: true`  → emits `min-height: VALUE; height: auto`
+                           (block grows past tier if content taller)
+        - `floor: false` → emits `height: VALUE` (fixed render height)
+      `--tier-height` always carries the value so layout-section overrides
+      (hero, section) can read it as `min-height` for their own always-floor
+      behavior, regardless of the tier's flag.
+
+      This puts the fixed-vs-floor decision on the SCALE itself — any
+      block consuming the tier inherits the right semantic. No block-level
+      override needed. Maps cleanly to source: `h-N` picks a fixed tier
+      (default), `min-h-N` picks a floor tier (transpiler mints `synth-min-Xrem`
+      / `synth-min-100vh` etc.).
+    {% endcomment %}
+    {% for h in height_scale %}
+      {% unless h[1].settings.structural %}
+        {% if h[1].settings.value != blank %}
+          {% if h[1].settings.floor_fill %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; min-height: {{ h[1].settings.value }}; height: 100%; flex: 1 1 {{ h[1].settings.value }}; }
+          {% elsif h[1].settings.floor %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; min-height: {{ h[1].settings.value }}; height: auto; }
+          {% else %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; height: {{ h[1].settings.value }}; }
+          {% endif %}
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
+    .height-auto { height: auto; }
+    .height-full { height: 100%; flex: 1 1 0%; min-height: 0; }
+    .height-custom { height: var(--block-height, auto); }
+
+    {% comment %}
+      Per-scheme `.font-{key}` utility classes — every scheme in
+      `font_schemes` gets a class that paints `var(--font-<id>)`.
+      Type styles reference these via `font_ref` (mapped to font-family
+      in the .ts-<id> rules below).
+    {% endcomment %}
+    {% for scheme in font_schemes %}
+    .font-{{ scheme[0] }} { font-family: var(--font-{{ scheme[0] }}); }
+    {% endfor %}
+
+    {% comment %}
+      Type styles — Tier-2 of the 3-tier typography system. Each
+      `.ts-<id>` bundles family / size / weight / tracking / leading /
+      transform into one named treatment. Text-rendering blocks
+      reference a single `type_style: <id>` instead of setting all six
+      dimensions individually (see font system redesign §2 Tier 2).
+
+      Tracking / leading enums map to em / unitless values inline. No
+      block-level fallback needed since the schema gates settings to
+      enum vocabulary.
+
+      Mobile shrink: large display tiers (display-jumbo / display-1)
+      shrink ~45% on small viewports; display-2 / heading-1 shrink
+      ~35%; heading-2/3 shrink ~25%. Body and below stay unchanged.
+      Same band multipliers as the `fs-*` mobile auto-scale; one global
+      knob per band, no per-style data.
+    {% endcomment %}
+    {% for style in type_styles %}
+      {% assign ts_id = style[0] %}
+      {% assign ts = style[1].settings %}
+      {% if ts.font_size != blank %}
+        {% capture ts_weight %}{% case ts.weight %}{% when 'thin' %}100{% when 'extralight' %}200{% when 'light' %}300{% when 'normal' %}400{% when 'medium' %}500{% when 'semibold' %}600{% when 'bold' %}700{% when 'extrabold' %}800{% when 'black' %}900{% else %}400{% endcase %}{% endcapture %}
+        {% capture ts_tracking %}{% case ts.tracking %}{% when 'tighter' %}-0.05em{% when 'tight' %}-0.025em{% when 'wide' %}0.025em{% when 'wider' %}0.05em{% when 'widest' %}0.1em{% when 'ultra-wide' %}0.25em{% else %}0{% endcase %}{% endcapture %}
+        {% capture ts_leading %}{% case ts.leading %}{% when 'none' %}1{% when 'tight' %}1.25{% when 'snug' %}1.375{% when 'relaxed' %}1.625{% when 'loose' %}2{% else %}1.5{% endcase %}{% endcapture %}
+    .ts-{{ ts_id }} { font-family: var(--font-{{ ts.font_ref | default: 'body' }}); font-size: {{ ts.font_size }}; font-weight: {{ ts_weight }}; letter-spacing: {{ ts_tracking }}; line-height: {{ ts_leading }}; text-transform: {{ ts.transform | default: 'none' }}; }
+        {% comment %}
+          Mobile shrink: bucketed by id-prefix. The transpiler emits
+          synth ids as `synth-ts-<size>-...` so they don't share the
+          canonical id pattern; the canonical 12 cover the standard
+          bands. Synth tiers stay at their desktop size on mobile —
+          they're already brand-specific outliers, not part of the
+          default scale that needs the band scaling.
+        {% endcomment %}
+        {% case ts_id %}
+          {% when 'display-jumbo', 'display-1' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.55); } }
+          {% when 'display-2', 'heading-1' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.65); } }
+          {% when 'heading-2', 'heading-3' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.75); } }
+        {% endcase %}
+        {% comment %}
+          Synth tiers carry an explicit `font_size_mobile` when source
+          has responsive `text-X1 sm:text-X2 ...` patterns. Emit the
+          mobile shrink to match source's smallest variant.
+        {% endcomment %}
+        {% if ts.font_size_mobile != blank %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: {{ ts.font_size_mobile }}; } }
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% endcapture %}
+  {{ stylesheet | strip_newlines }}
+</style>

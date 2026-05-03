@@ -1,0 +1,195 @@
+{% assign s = block.settings %}
+
+<div
+  {{ context.attached_attributes }}
+  class="tab-content aria-[expanded=false]:hidden"
+  data-behavior="tab-content"
+  data-action-args="{{ s.tab_id }}"
+  data-tab-group="{{ section.id }}"
+  aria-expanded="false"
+>
+  {% content_for 'blocks' %}
+</div>
+{% schema %}
+{
+  "name": "Tab Content",
+  "settings": [
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
+      "default": "body"
+    },
+    {
+      "type": "header",
+      "content": "Binding"
+    },
+    {
+      "type": "text",
+      "id": "tab_id",
+      "label": "Tab Identifier",
+      "default": "{{ context.item.uuid }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tab Content",
+      "settings": {},
+      "blocks": {
+        "items-in-collection": {
+          "type": "group",
+          "settings": {
+            "layout_mode": "grid",
+            "gap": "md"
+          },
+          "blocks": {
+            "items": {
+              "type": "repeater",
+              "settings": {
+                "data_source_type": "item_collection",
+                "item_collection": "{{ context.item.uuid }}"
+              },
+              "blocks": {
+                "menu-card-full": {
+                  "type": "_menu-card-full",
+                  "blocks": {
+                    "menu-card-header": {
+                      "type": "group",
+                      "name": "Heading",
+                      "static": true,
+                      "settings": {
+                        "gap": "none",
+                        "padding_vertical": "none",
+                        "padding_horizontal": "none"
+                      },
+                      "blocks": {
+                        "img": {
+                          "type": "media",
+                          "settings": {
+                            "image": "{{ context.item.asset.url }}",
+                            "object_fit": "cover",
+                            "aspect_ratio": "landscape"
+                          }
+                        }
+                      },
+                      "block_order": [
+                        "img"
+                      ]
+                    },
+                    "menu-card-content": {
+                      "type": "group",
+                      "name": "Content",
+                      "static": true,
+                      "settings": {
+                        "gap": "sm",
+                        "padding_vertical": "xs",
+                        "padding_horizontal": "md",
+                        "grow_content": true
+                      },
+                      "blocks": {
+                        "desc": {
+                          "type": "text",
+                          "settings": {
+                            "content": "{{ context.item.description }}",
+                            "text_align": "left",
+                            "type_style": "caption"
+                          }
+                        },
+                        "info": {
+                          "type": "group",
+                          "blocks": {
+                            "price": {
+                              "type": "text",
+                              "settings": {
+                                "tag": "span",
+                                "content": "{{ context.item.amount | money }}",
+                                "text_align": "right",
+                                "type_style": "body"
+                              }
+                            },
+                            "title": {
+                              "type": "text",
+                              "settings": {
+                                "tag": "h3",
+                                "content": "{{ context.item.name }}",
+                                "text_wrap": "balance",
+                                "text_align": "left",
+                                "type_style": "body"
+                              }
+                            }
+                          },
+                          "settings": {
+                            "gap": "xs",
+                            "width": "full",
+                            "direction": "row",
+                            "content_align": "between",
+                            "vertical_align": "top",
+                            "padding_vertical": "xs",
+                            "padding_horizontal": "none"
+                          },
+                          "block_order": [
+                            "title",
+                            "price"
+                          ]
+                        }
+                      },
+                      "block_order": [
+                        "info",
+                        "desc"
+                      ]
+                    },
+                    "menu-card-footer": {
+                      "type": "group",
+                      "name": "Footer",
+                      "static": true,
+                      "settings": {
+                        "gap": "xs",
+                        "padding_vertical": "xs",
+                        "padding_horizontal": "md"
+                      },
+                      "blocks": {
+                        "btn": {
+                          "type": "button",
+                          "settings": {
+                            "label": "Order Now",
+                            "width": "full",
+                            "content_align": "center",
+                            "trigger": "action",
+                            "action": "add-item"
+                          }
+                        }
+                      },
+                      "block_order": [
+                        "btn"
+                      ]
+                    }
+                  },
+                  "settings": {
+                    "gap": "none",
+                    "shadow": true
+                  }
+                }
+              },
+              "block_order": [
+                "menu-card-full"
+              ]
+            }
+          },
+          "block_order": [
+            "items"
+          ]
+        }
+      },
+      "block_order": [
+        "items-in-collection"
+      ]
+    }
+  ]
+}
+{% endschema %}

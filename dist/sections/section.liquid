@@ -1,0 +1,437 @@
+{% assign s = section.settings %}
+
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
+{% comment %}
+  --- 1. Surface scoping (CSS-var context) ---
+  Sections always introduce a surface scope (they're the natural surface
+  boundary in the layout tree). Defaults to `default` so descendants always
+  inherit a usable set of CSS variables.
+{% endcomment %}
+{% assign surface_safe = s.surface_id | default: 'default' %}
+{% assign surface_class = 'surface-' | append: surface_safe %}
+
+{% comment %} --- 2. Background role (paints from active surface) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = '' %}
+{% if bg_color_value == blank and bg_role_safe != 'none' %}
+  {% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% endif %}
+
+{% comment %}
+  --- 3. Container class pipelines (TWO LAYERS) ---
+  Sections render as two stacked `limit-width` boxes:
+
+    bg layer     – carries the section background + padding + height.
+                   Width is `width_bg` (default fill ⇒ full-bleed).
+    content layer – caps the actual content area. Width is `width`
+                   (default fill ⇒ matches bg). Centered via mx-auto.
+
+  When `width_bg: fill` and `width: canvas` (the common ultra-wide
+  pattern), the bg paints the whole viewport but the content is
+  capped at canvas (1280px) and centered. When both are `fill` (the
+  default) the two collapse and behavior matches the pre-refactor
+  single wrapper.
+{% endcomment %}
+{% assign bg_layer_classes = 'section-layout limit-width'
+  | push: bg_class
+  | push: 'width-{{ s.width_bg }}'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: 'height-{{ s.height }}'
+%}
+{% assign bg_layer_class_str = bg_layer_classes | join: ' ' %}
+{% assign content_layer_class_str = 'section-content limit-width width-' | append: s.width %}
+
+{% comment %} --- 4. Style Pipeline (spacing + bg layer) --- {% endcomment %}
+{% assign styles = blank %}
+
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+
+
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
+{% comment %} --- 5. Inner Flex Pipeline --- {% endcomment %}
+{% assign inner_classes = 'flex flex-auto gap-6'
+  | push: 'flex-{{ s.flex_direction }}'
+  | push: 'section-align-content-{{ s.content_align }}'
+  | push: 'section-align-v-{{ s.vertical_align }}'
+  | push: 'section-align-text-{{ s.text_align }}'
+  | push_if: 'stagger-load', s.animate_stagger
+%}
+{% assign inner_class_str = inner_classes | join: ' ' %}
+
+{% comment %} --- Component Render --- {% endcomment %}
+<section
+  class="{{ surface_class }}"
+  {{ context.attached_attributes }}
+>
+  <div
+    class="{{ bg_layer_class_str }}"
+    style="{{ style_str }}"
+  >
+    <div class="{{ content_layer_class_str }}">
+      <div class="{{ inner_class_str }}">
+        {% content_for 'blocks' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Generic section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Content Width",
+      "info": "Caps the content area. Centered (mx-auto) when capped below the section's bg width.",
+      "default": "fill"
+    },
+    {
+      "type": "width",
+      "id": "width_bg",
+      "label": "Background Width",
+      "info": "Where the section background extends. `Fill` = full-bleed; narrower tiers cap the bg layer too.",
+      "default": "fill"
+    },
+    {
+      "type": "height",
+      "id": "height",
+      "label": "Section Height",
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "flex_direction",
+      "label": "Flex Direction",
+      "options": [
+        {
+          "value": "col",
+          "label": "Column"
+        },
+        {
+          "value": "row",
+          "label": "Row"
+        }
+      ],
+      "default": "col"
+    },
+    {
+      "type": "header",
+      "content": "Alignment"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Content Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "middle"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "space",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_stagger",
+      "label": "Stagger",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override surface",
+      "default": false,
+      "info": "When enabled, this section introduces its own surface scope. Otherwise descendants inherit the surface from the parent (page default unless a surrounding section overrode it)."
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Surface",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "scroll-indicator"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "spacer"
+    },
+    {
+      "type": "_marquee"
+    },
+    {
+      "type": "media"
+    },
+    {
+      "type": "group"
+    },
+    {
+      "type": "button"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich Text",
+      "settings": {
+        "text_align": "text-center items-center"
+      },
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "settings": {
+            "content": "Our Story",
+            "tag": "h2",
+            "type_style": "heading-1"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "content": "Founded in 2025, we believe in honest ingredients and good vibes.",
+            "type_style": "body"
+          }
+        },
+        "btn": {
+          "type": "button",
+          "settings": {
+            "label": "Learn More",
+            "style": "link"
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "body",
+        "btn"
+      ]
+    }
+  ]
+}
+{% endschema %}

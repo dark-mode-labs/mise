@@ -1,0 +1,416 @@
+{% assign s = section.settings %}
+
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
+{% comment %} --- 1. Header Logic & State --- {% endcomment %}
+{% assign is_overlay = false %}
+{% if s.header_overlay_mode == 'overlay' or s.header_overlay_mode == 'transparent' %}
+  {% assign is_overlay = true %}
+{% endif %}
+
+{% assign needs_spacer = false %}
+{% assign positions = blank %}
+
+{% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
+  {% assign positions = positions | push: 'fixed top-[var(--top-nav,0)]' %}
+  {% unless is_overlay %}
+    {% assign needs_spacer = true %}
+  {% endunless %}
+{% elsif is_overlay %}
+  {% assign positions = positions | push: 'absolute top-[var(--top-nav,0)]' %}
+{% else %}
+  {% assign positions = positions | push: 'relative' %}
+{% endif %}
+
+{% assign position_class_str = positions | join: ' ' %}
+
+{% comment %} --- 2. Header Classes (bg via unified primitive) --- {% endcomment %}
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign header_classes = 'header-section z-header transition-all duration-300 border-b border-default'
+  | push: position_class_str
+  | push: 'surface-{{ s.surface_id | default: "default" }}'
+  | push: bg_class
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push_if: 'backdrop-blur-md', s.enable_glass
+%}
+
+{% assign header_class_str = header_classes | join: ' ' %}
+
+{% comment %} --- 3. Header Inline Styles (spacing + bg layer, single var) --- {% endcomment %}
+{% assign styles = blank %}
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
+{% comment %} --- 4. Content Slots --- {% endcomment %}
+{% capture slot_logo %}{% content_for 'block', type: 'brand-logo', id: 'header-logo' %}{% endcapture %}
+{% capture slot_nav %}{% content_for 'block', type: '_header-menu', id: 'header-menu' %}{% endcapture %}
+{% capture slot_actions %}{% content_for 'block', type: '_header-actions', id: 'header-actions' %}{% endcapture %}
+
+{% comment %} --- Header Render --- {% endcomment %}
+<header
+  class="{{ header_class_str }}"
+  data-behavior="header"
+  data-sticky="{{ s.sticky_behavior }}"
+  data-transparent="{% if s.header_overlay_mode == 'transparent' %}true{% else %}false{% endif %}"
+  style="{{ style_str }}"
+  {{ context.attached_attributes }}
+>
+  <div class="width-{{ s.width }} grid grid-cols-3 items-center limit-width">
+    {% comment %} Left Col {% endcomment %}
+    <div class="flex items-center justify-start gap-4">
+      <button
+        type="button"
+        class="lg:hidden p-2 -ml-2 text-on-button hover:opacity-70"
+        data-action="toggle-drawer"
+        aria-label="Menu"
+      >
+        {% render 'icon', name: 'menu', class: 'w-6 h-6' %}
+      </button>
+
+      {% if s.desktop_layout == 'logo_left' %}
+        <div class="mr-8 flex-shrink-0 hidden lg:block">{{ slot_logo }}</div>
+        <div>
+          {% if s.nav_alignment == 'left' %}{{ slot_nav }}{% endif %}
+        </div>
+      {% else %}
+        <div>{{ slot_nav }}</div>
+      {% endif %}
+    </div>
+
+    {% comment %} Center Col {% endcomment %}
+    <div class="flex items-center justify-center flex-auto">
+      {% if s.nav_alignment == 'center' %}{{ slot_nav }}{% endif %}
+
+      {% assign logo_wrap_class = '' %}
+      {% if s.desktop_layout == 'logo_left' %}{% assign logo_wrap_class = 'lg:hidden' %}{% endif %}
+
+      <div class="{{ logo_wrap_class }}">{{ slot_logo }}</div>
+    </div>
+
+    {% comment %} Right Col {% endcomment %}
+    <div class="flex items-center justify-end gap-4">
+      {% if s.nav_alignment == 'right' %}{{ slot_nav }}{% endif %}
+      {{ slot_actions }}
+    </div>
+  </div>
+</header>
+
+{% if needs_spacer %}
+  <div class="w-full h-16"></div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Header",
+  "restriction": {
+    "groups": [
+      "header"
+    ]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Max Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Logo placement",
+      "options": [
+        {
+          "value": "logo_center",
+          "label": "Center"
+        },
+        {
+          "value": "logo_left",
+          "label": "Left"
+        }
+      ],
+      "default": "logo_center"
+    },
+    {
+      "type": "select",
+      "id": "nav_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "info": "Desktop only.",
+      "conditional": "setting.desktop_layout == 'logo_left'"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "space",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Behavior"
+    },
+    {
+      "type": "select",
+      "id": "sticky_behavior",
+      "label": "Sticky Mode",
+      "options": [
+        {
+          "value": "none",
+          "label": "Static"
+        },
+        {
+          "value": "always",
+          "label": "Always"
+        },
+        {
+          "value": "on_scroll_up",
+          "label": "Scroll"
+        }
+      ],
+      "default": "always"
+    },
+    {
+      "type": "select",
+      "id": "header_overlay_mode",
+      "label": "Header Overlay",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "overlay",
+          "label": "Top of Content"
+        },
+        {
+          "value": "transparent",
+          "label": "Transparent on Top"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "info": "Picks a named brand-palette token. Updates follow palette edits.",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "info": "Picks a named gradient token from the site's gradient set.",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass",
+      "label": "Glass Effect",
+      "info": "Frosted-glass backdrop-blur on the header. The bg color/alpha and any border come from the existing `bg_role` / border settings \u2014 `enable_glass` only adds the blur layer.",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "blocks": {
+        "header-logo": {
+          "type": "brand-logo",
+          "static": true
+        },
+        "header-menu": {
+          "type": "_header-menu",
+          "static": true,
+          "settings": {
+            "nav": {
+              "links": [
+                {
+                  "url": "/",
+                  "title": "Home"
+                }
+              ]
+            }
+          }
+        },
+        "header-actions": {
+          "type": "_header-actions",
+          "static": true,
+          "settings": {
+            "show_search": false,
+            "show_cart": false
+          }
+        }
+      },
+      "settings": {
+        "header_overlay_mode": "none"
+      }
+    }
+  ]
+}
+{% endschema %}

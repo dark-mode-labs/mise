@@ -1,0 +1,51 @@
+<div class="header-drawer" aria-hidden="true">
+  <div class="drawer-backdrop" data-action="close"></div>
+  <div class="drawer-panel">
+    <div class="flex items-center justify-end px-6 h-16 border-b border-current/10">
+      <button type="button" class="p-2 -mr-2 hover:opacity-70" data-action="close" aria-label="Close Menu">
+        {% render 'icon', name: 'close', class: 'w-6 h-6' %}
+      </button>
+    </div>
+    <nav class="flex-1 overflow-y-auto py-6 px-6">
+      <ul class="flex flex-col gap-4">
+        {% for link in menu.links %}
+          <li>
+            {% if link.links != blank %}
+              <details class="group">
+                <summary class="flex items-center justify-between py-2 cursor-pointer list-none select-none">
+                  {% render 'typography', text: link.title, type_style: type_style | default: 'nav', color_role: color_role | default: 'on-button' %}
+                  {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90' %}
+                </summary>
+                <ul class="pl-4 mt-2 flex flex-col gap-md border-l border-current/20">
+                  {% for child in link.links %}
+                    <li>
+                      <a href="{{ child.url }}" class="block opacity-80 hover:opacity-100 py-1">
+                        {% render 'typography', text: child.title, type_style: type_style | default: 'nav', color_role: color_role | default: 'on-button' %}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </details>
+            {% else %}
+              <a
+                href="{{ link.url }}"
+                class="block py-2"
+              >
+                {% render 'typography', text: link.title, type_style: type_style | default: 'nav', color_role: color_role | default: 'on-button' %}
+              </a>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    <div class="p-6 border-t border-current/10 bg-black/5">
+      {%
+        render 'typography',
+        text: shop.name | append: ' © ' | append: 'now' | date: '%Y',
+        type_style: 'caption',
+        color_role: 'on-button',
+        class: 'opacity-60 text-center'
+      %}
+    </div>
+  </div>
+</div>

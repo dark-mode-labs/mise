@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    {% if settings.favicon != blank %}
+      <link
+        rel="icon"
+        type="image/png"
+        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+      >
+    {% endif %}
+
+    {% render 'meta-tags' %}
+    {% render 'preconnects', preconnect_schemes: settings.preconnect_schemes %}
+    {% render 'stylesheets', font_schemes: settings.font_schemes %}
+    {% render 'scripts' %}
+    {% render 'theme_variables',
+      layout: settings.layout,
+      palette: settings.palette,
+      surfaces: settings.surfaces,
+      container_scale: settings.container_scale,
+      height_scale: settings.height_scale,
+      space_scale: settings.space_scale,
+      type_styles: settings.type_styles,
+      gradients: settings.gradients,
+      font_schemes: settings.font_schemes
+    %}
+
+    {{ content_for_header }}
+  </head>
+
+  <body>
+    {% sections 'header-group' %}
+
+    <main>
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+  </body>
+</html>
