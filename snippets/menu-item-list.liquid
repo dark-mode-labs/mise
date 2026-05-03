@@ -39,7 +39,6 @@
         <div class="flex-none w-auto text-right ts-heading-3">
           {% if use_body_layout %}
             <span class="whitespace-nowrap">
-              {% comment %} {% if item.modifier_groups.size > 0 %}From {% endif %} {% endcomment %}
               {{ item.amount | plus: 0 | money }}
             </span>
           {% else %}

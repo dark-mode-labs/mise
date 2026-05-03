@@ -15,7 +15,7 @@
     href="#"
     data-spy-trigger="{{ category.uuid }}"
     data-filter-nav="{{ category.uuid }}"
-    class="text-sm font-bold text-secondary hover:text-primary uppercase tracking-wider {{ link_base_class }} [&.is-active]:text-primary [&.is-active]:font-bold"
+    class="ts-nav text-secondary hover:text-primary {{ link_base_class }} [&.is-active]:text-primary"
   >
     {{ category.name }}
   </a>
@@ -24,7 +24,7 @@
     href="#"
     data-spy-trigger="{{ category.uuid }}"
     data-filter-nav="{{ category.uuid }}"
-    class="text-xs text-secondary hover:text-primary transition-all duration-300 uppercase {{ sublink_base_class }} [&.is-active]:text-primary [&.is-active]:font-bold"
+    class="ts-caption text-secondary hover:text-primary transition-all duration-300 {{ sublink_base_class }} [&.is-active]:text-primary"
   >
     {{ category.name }}
   </a>

@@ -21,7 +21,7 @@
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class="section-announcement surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} z-header-top text-xs md:text-sm font-bold tracking-wide uppercase group select-none border-b border-default"
+  class="section-announcement surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} z-header-top ts-caption group select-none border-b border-default"
   style="{{ style_str }}"
   data-behavior="slideshow"
   data-autoplay="{{ s.autoplay }}"
@@ -62,9 +62,7 @@
 {
   "name": "Announcement Bar",
   "restriction": {
-    "groups": [
-      "header"
-    ]
+    "groups": ["header"]
   },
   "settings": [
     {
@@ -213,10 +211,7 @@
           }
         }
       },
-      "block_order": [
-        "msg1",
-        "msg2"
-      ]
+      "block_order": ["msg1", "msg2"]
     }
   ]
 }

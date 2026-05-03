@@ -135,7 +135,7 @@
                 <input
                   type="text"
                   placeholder="Search menu..."
-                  class="w-full bg-transparent border border-default rounded-full px-4 py-2 text-sm focus:border-default focus:outline-none transition-colors placeholder:text-secondary"
+                  class="ts-body-sm w-full bg-transparent border border-default rounded-full px-4 py-2 focus:border-default focus:outline-none transition-colors placeholder:text-secondary"
                   data-filter-search
                 >
                 {% render 'icon',
@@ -155,7 +155,7 @@
                     type="button"
                     data-filter-tag="{{ tag_name }}"
                     title="Filter by {{ tag.name }}"
-                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-default rounded-full text-[0.625rem] font-bold uppercase text-secondary hover:text-primary hover:border-default{% else %}px-2 py-1 border border-default rounded text-[0.625rem] uppercase tracking-wider text-secondary hover:text-primary hover:border-default{% endif %} transition-all [&.is-active]:bg-[var(--text)] [&.is-active]:text-[var(--background)] [&.is-active]:opacity-100"
+                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-default rounded-full ts-caption text-secondary hover:text-primary hover:border-default{% else %}px-2 py-1 border border-default rounded ts-caption text-secondary hover:text-primary hover:border-default{% endif %} transition-all [&.is-active]:bg-[var(--text)] [&.is-active]:text-[var(--background)] [&.is-active]:opacity-100"
                   >
                     {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
                   </button>
@@ -211,7 +211,7 @@
     </div>
 
     {% if disclaimers.size > 0 %}
-      <div class="w-full text-center mt-20 flex flex-col gap-3 opacity-60 text-xs uppercase tracking-widest mx-auto border-t border-default/10 pt-8">
+      <div class="ts-caption w-full text-center mt-20 flex flex-col gap-3 opacity-60 mx-auto border-t border-default/10 pt-8">
         {% for disclaimer in disclaimers %}
           <p>{{ disclaimer.text }}</p>
         {% endfor %}

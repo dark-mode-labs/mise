@@ -3,7 +3,7 @@
 {% assign scheme_class = blank %}
 
 {% if s.surface_override %}
-  {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
+  {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 <div
@@ -11,11 +11,11 @@
   {{ context.attached_attributes }}
 >
   {% if s.heading != blank %}
-    <h4 class="font-bold uppercase tracking-wider text-sm opacity-60">{{ s.heading }}</h4>
+    <h4 class="ts-caption opacity-60">{{ s.heading }}</h4>
   {% endif %}
 
   {% if s.text != blank %}
-    <p class="text-sm opacity-80">{{ s.text }}</p>
+    <p class="ts-body-sm opacity-80">{{ s.text }}</p>
   {% endif %}
 
   <form action="/contact#footer-newsletter" method="POST" class="mt-2 relative">

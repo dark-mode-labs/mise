@@ -83,13 +83,13 @@
                       class="block mb-4 hover:underline underline-offset-4"
                     >
                       {% render 'typography',
-        type_style: s.type_style,
+                        type_style: s.type_style,
                         text: child.title,
-                                                color_role: color_role,
+                        color_role: color_role,
                         class: utility_classes
                       %}
                     </a>
-                    <ul class="space-y-2">
+                    <ul class="flex flex-col gap-xs">
                       {% for grandchild in child.links %}
                         <li>
                           <a
@@ -97,9 +97,9 @@
                             class="opacity-70 hover:opacity-100 block"
                           >
                             {% render 'typography',
-        type_style: s.type_style,
+                              type_style: s.type_style,
                               text: grandchild.title,
-                                                            color_role: color_role,
+                              color_role: color_role,
                               class: utility_classes
                             %}
                           </a>
@@ -114,7 +114,7 @@
               <ul class="py-4">
                 {% for child in link.links %}
                   <li>
-                    <a href="{{ child.url }}" class="block px-6 py-2 text-sm hover:bg-gray-50/5 whitespace-nowrap">
+                    <a href="{{ child.url }}" class="ts-body-sm block px-6 py-2 hover:bg-gray-50/5 whitespace-nowrap">
                       {{ child.title }}
                     </a>
                   </li>
@@ -129,11 +129,7 @@
 </nav>
 
 {% if s.nav %}
-  {% render 'header-drawer',
-    menu: s.nav,
-    type_style: s.type_style,
-    color_role: color_role
-  %}
+  {% render 'header-drawer', menu: s.nav, type_style: s.type_style, color_role: color_role %}
 {% endif %}
 
 {% schema %}
