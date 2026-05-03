@@ -258,12 +258,30 @@
           "label": "Weight",
           "default": "normal",
           "options": [
-            { "value": "normal", "label": "Normal" },
-            { "value": "medium", "label": "Medium" },
-            { "value": "semibold", "label": "Semibold" },
-            { "value": "bold", "label": "Bold" },
-            { "value": "extrabold", "label": "Extra Bold" },
-            { "value": "black", "label": "Black" }
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "semibold",
+              "label": "Semibold"
+            },
+            {
+              "value": "bold",
+              "label": "Bold"
+            },
+            {
+              "value": "extrabold",
+              "label": "Extra Bold"
+            },
+            {
+              "value": "black",
+              "label": "Black"
+            }
           ]
         },
         {
@@ -272,12 +290,30 @@
           "label": "Tracking",
           "default": "normal",
           "options": [
-            { "value": "tighter", "label": "Tighter" },
-            { "value": "tight", "label": "Tight" },
-            { "value": "normal", "label": "Normal" },
-            { "value": "wide", "label": "Wide" },
-            { "value": "wider", "label": "Wider" },
-            { "value": "widest", "label": "Widest" }
+            {
+              "value": "tighter",
+              "label": "Tighter"
+            },
+            {
+              "value": "tight",
+              "label": "Tight"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "wide",
+              "label": "Wide"
+            },
+            {
+              "value": "wider",
+              "label": "Wider"
+            },
+            {
+              "value": "widest",
+              "label": "Widest"
+            }
           ]
         },
         {
@@ -286,12 +322,30 @@
           "label": "Leading",
           "default": "normal",
           "options": [
-            { "value": "none", "label": "None (1)" },
-            { "value": "tight", "label": "Tight (1.25)" },
-            { "value": "snug", "label": "Snug (1.375)" },
-            { "value": "normal", "label": "Normal (1.5)" },
-            { "value": "relaxed", "label": "Relaxed (1.625)" },
-            { "value": "loose", "label": "Loose (2)" }
+            {
+              "value": "none",
+              "label": "None (1)"
+            },
+            {
+              "value": "tight",
+              "label": "Tight (1.25)"
+            },
+            {
+              "value": "snug",
+              "label": "Snug (1.375)"
+            },
+            {
+              "value": "normal",
+              "label": "Normal (1.5)"
+            },
+            {
+              "value": "relaxed",
+              "label": "Relaxed (1.625)"
+            },
+            {
+              "value": "loose",
+              "label": "Loose (2)"
+            }
           ]
         },
         {
@@ -300,10 +354,22 @@
           "label": "Transform",
           "default": "none",
           "options": [
-            { "value": "none", "label": "None" },
-            { "value": "uppercase", "label": "Uppercase" },
-            { "value": "lowercase", "label": "Lowercase" },
-            { "value": "capitalize", "label": "Capitalize" }
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "uppercase",
+              "label": "Uppercase"
+            },
+            {
+              "value": "lowercase",
+              "label": "Lowercase"
+            },
+            {
+              "value": "capitalize",
+              "label": "Capitalize"
+            }
           ]
         }
       ]
@@ -461,18 +527,150 @@
         }
       },
       "type_styles": {
-        "display-jumbo": { "settings": { "title": "Display Jumbo", "font_ref": "heading", "font_size": "6rem",     "weight": "black",    "tracking": "tighter", "leading": "none",   "transform": "none",      "structural": true } },
-        "display-1":     { "settings": { "title": "Display 1",     "font_ref": "heading", "font_size": "4.5rem",   "weight": "extrabold","tracking": "tight",   "leading": "none",   "transform": "none",      "structural": true } },
-        "display-2":     { "settings": { "title": "Display 2",     "font_ref": "heading", "font_size": "3rem",     "weight": "bold",     "tracking": "tight",   "leading": "tight",  "transform": "none",      "structural": true } },
-        "heading-1":     { "settings": { "title": "Heading 1",     "font_ref": "heading", "font_size": "2.25rem",  "weight": "bold",     "tracking": "tight",   "leading": "tight",  "transform": "none",      "structural": true } },
-        "heading-2":     { "settings": { "title": "Heading 2",     "font_ref": "heading", "font_size": "1.875rem", "weight": "bold",     "tracking": "normal",  "leading": "snug",   "transform": "none",      "structural": true } },
-        "heading-3":     { "settings": { "title": "Heading 3",     "font_ref": "heading", "font_size": "1.5rem",   "weight": "semibold", "tracking": "normal",  "leading": "snug",   "transform": "none",      "structural": true } },
-        "body-lg":       { "settings": { "title": "Body Large",    "font_ref": "body",    "font_size": "1.125rem", "weight": "normal",   "tracking": "normal",  "leading": "relaxed","transform": "none",      "structural": true } },
-        "body":          { "settings": { "title": "Body",          "font_ref": "body",    "font_size": "1rem",     "weight": "normal",   "tracking": "normal",  "leading": "normal", "transform": "none",      "structural": true } },
-        "body-sm":       { "settings": { "title": "Body Small",    "font_ref": "body",    "font_size": "0.875rem", "weight": "normal",   "tracking": "normal",  "leading": "normal", "transform": "none",      "structural": true } },
-        "caption":       { "settings": { "title": "Caption",       "font_ref": "body",    "font_size": "0.75rem",  "weight": "medium",   "tracking": "wide",    "leading": "tight",  "transform": "uppercase", "structural": true } },
-        "button":        { "settings": { "title": "Button",        "font_ref": "button",  "font_size": "1rem",     "weight": "semibold", "tracking": "wide",    "leading": "none",   "transform": "uppercase", "structural": true } },
-        "nav":           { "settings": { "title": "Nav",           "font_ref": "button",  "font_size": "1rem",     "weight": "medium",   "tracking": "normal",  "leading": "none",   "transform": "none",      "structural": true } }
+        "display-jumbo": {
+          "settings": {
+            "title": "Display Jumbo",
+            "font_ref": "heading",
+            "font_size": "6rem",
+            "weight": "black",
+            "tracking": "tighter",
+            "leading": "none",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "display-1": {
+          "settings": {
+            "title": "Display 1",
+            "font_ref": "heading",
+            "font_size": "4.5rem",
+            "weight": "extrabold",
+            "tracking": "tight",
+            "leading": "none",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "display-2": {
+          "settings": {
+            "title": "Display 2",
+            "font_ref": "heading",
+            "font_size": "3rem",
+            "weight": "bold",
+            "tracking": "tight",
+            "leading": "tight",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "heading-1": {
+          "settings": {
+            "title": "Heading 1",
+            "font_ref": "heading",
+            "font_size": "2.25rem",
+            "weight": "bold",
+            "tracking": "tight",
+            "leading": "tight",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "heading-2": {
+          "settings": {
+            "title": "Heading 2",
+            "font_ref": "heading",
+            "font_size": "1.875rem",
+            "weight": "bold",
+            "tracking": "normal",
+            "leading": "snug",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "heading-3": {
+          "settings": {
+            "title": "Heading 3",
+            "font_ref": "heading",
+            "font_size": "1.5rem",
+            "weight": "semibold",
+            "tracking": "normal",
+            "leading": "snug",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "body-lg": {
+          "settings": {
+            "title": "Body Large",
+            "font_ref": "body",
+            "font_size": "1.125rem",
+            "weight": "normal",
+            "tracking": "normal",
+            "leading": "relaxed",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "body": {
+          "settings": {
+            "title": "Body",
+            "font_ref": "body",
+            "font_size": "1rem",
+            "weight": "normal",
+            "tracking": "normal",
+            "leading": "normal",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "body-sm": {
+          "settings": {
+            "title": "Body Small",
+            "font_ref": "body",
+            "font_size": "0.875rem",
+            "weight": "normal",
+            "tracking": "normal",
+            "leading": "normal",
+            "transform": "none",
+            "structural": true
+          }
+        },
+        "caption": {
+          "settings": {
+            "title": "Caption",
+            "font_ref": "body",
+            "font_size": "0.75rem",
+            "weight": "medium",
+            "tracking": "wide",
+            "leading": "tight",
+            "transform": "uppercase",
+            "structural": true
+          }
+        },
+        "button": {
+          "settings": {
+            "title": "Button",
+            "font_ref": "button",
+            "font_size": "1rem",
+            "weight": "semibold",
+            "tracking": "wide",
+            "leading": "none",
+            "transform": "uppercase",
+            "structural": true
+          }
+        },
+        "nav": {
+          "settings": {
+            "title": "Nav",
+            "font_ref": "button",
+            "font_size": "1rem",
+            "weight": "medium",
+            "tracking": "normal",
+            "leading": "none",
+            "transform": "none",
+            "structural": true
+          }
+        }
       },
       "preconnect_schemes": {
         "fonts-google-apis": {
@@ -684,35 +882,173 @@
         }
       },
       "height_scale": {
-        "auto":            { "settings": { "title": "Auto",            "value": "auto", "structural": true } },
-        "full":            { "settings": { "title": "Full Height",     "value": "100%", "structural": true } },
-        "tiny":            { "settings": { "title": "Tiny",            "value": "3.5rem" } },
-        "small":           { "settings": { "title": "Small",           "value": "4rem" } },
-        "compact":         { "settings": { "title": "Compact",         "value": "8rem" } },
-        "card-short":      { "settings": { "title": "Card Short",      "value": "12rem" } },
-        "card-banner":     { "settings": { "title": "Card Banner",     "value": "14rem" } },
-        "card":            { "settings": { "title": "Card",            "value": "16rem" } },
-        "card-mid":        { "settings": { "title": "Card Mid",        "value": "18rem" } },
-        "card-tall":       { "settings": { "title": "Card Tall",       "value": "20rem" } },
-        "feature":         { "settings": { "title": "Feature",         "value": "24rem" } },
-        "gallery":         { "settings": { "title": "Gallery",         "value": "32rem" } },
-        "viewport-short":  { "settings": { "title": "Viewport Short",  "value": "38vh" } },
-        "viewport-mid":    { "settings": { "title": "Viewport Mid",    "value": "62vh" } },
-        "viewport-tall":   { "settings": { "title": "Viewport Tall",   "value": "78vh" } },
-        "screen":          { "settings": { "title": "Screen",          "value": "100vh" } },
-        "custom":          { "settings": { "title": "Custom",          "structural": true } }
+        "auto": {
+          "settings": {
+            "title": "Auto",
+            "value": "auto",
+            "structural": true
+          }
+        },
+        "full": {
+          "settings": {
+            "title": "Full Height",
+            "value": "100%",
+            "structural": true
+          }
+        },
+        "tiny": {
+          "settings": {
+            "title": "Tiny",
+            "value": "3.5rem"
+          }
+        },
+        "small": {
+          "settings": {
+            "title": "Small",
+            "value": "4rem"
+          }
+        },
+        "compact": {
+          "settings": {
+            "title": "Compact",
+            "value": "8rem"
+          }
+        },
+        "card-short": {
+          "settings": {
+            "title": "Card Short",
+            "value": "12rem"
+          }
+        },
+        "card-banner": {
+          "settings": {
+            "title": "Card Banner",
+            "value": "14rem"
+          }
+        },
+        "card": {
+          "settings": {
+            "title": "Card",
+            "value": "16rem"
+          }
+        },
+        "card-mid": {
+          "settings": {
+            "title": "Card Mid",
+            "value": "18rem"
+          }
+        },
+        "card-tall": {
+          "settings": {
+            "title": "Card Tall",
+            "value": "20rem"
+          }
+        },
+        "feature": {
+          "settings": {
+            "title": "Feature",
+            "value": "24rem"
+          }
+        },
+        "gallery": {
+          "settings": {
+            "title": "Gallery",
+            "value": "32rem"
+          }
+        },
+        "viewport-short": {
+          "settings": {
+            "title": "Viewport Short",
+            "value": "38vh"
+          }
+        },
+        "viewport-mid": {
+          "settings": {
+            "title": "Viewport Mid",
+            "value": "62vh"
+          }
+        },
+        "viewport-tall": {
+          "settings": {
+            "title": "Viewport Tall",
+            "value": "78vh"
+          }
+        },
+        "screen": {
+          "settings": {
+            "title": "Screen",
+            "value": "100vh"
+          }
+        },
+        "custom": {
+          "settings": {
+            "title": "Custom",
+            "structural": true
+          }
+        }
       },
       "space_scale": {
-        "none": { "settings": { "title": "None", "value": "0", "structural": true } },
-        "xxs": { "settings": { "title": "XXS", "value": "0.25rem" } },
-        "xs": { "settings": { "title": "XS", "value": "0.5rem" } },
-        "sm": { "settings": { "title": "Small", "value": "1rem" } },
-        "md": { "settings": { "title": "Medium", "value": "1.5rem" } },
-        "lg": { "settings": { "title": "Large", "value": "2.5rem" } },
-        "xl": { "settings": { "title": "XL", "value": "4rem" } },
-        "2xl": { "settings": { "title": "2XL", "value": "6rem" } },
-        "3xl": { "settings": { "title": "3XL", "value": "8rem" } },
-        "custom": { "settings": { "title": "Custom", "structural": true } }
+        "none": {
+          "settings": {
+            "title": "None",
+            "value": "0",
+            "structural": true
+          }
+        },
+        "xxs": {
+          "settings": {
+            "title": "XXS",
+            "value": "0.25rem"
+          }
+        },
+        "xs": {
+          "settings": {
+            "title": "XS",
+            "value": "0.5rem"
+          }
+        },
+        "sm": {
+          "settings": {
+            "title": "Small",
+            "value": "1rem"
+          }
+        },
+        "md": {
+          "settings": {
+            "title": "Medium",
+            "value": "1.5rem"
+          }
+        },
+        "lg": {
+          "settings": {
+            "title": "Large",
+            "value": "2.5rem"
+          }
+        },
+        "xl": {
+          "settings": {
+            "title": "XL",
+            "value": "4rem"
+          }
+        },
+        "2xl": {
+          "settings": {
+            "title": "2XL",
+            "value": "6rem"
+          }
+        },
+        "3xl": {
+          "settings": {
+            "title": "3XL",
+            "value": "8rem"
+          }
+        },
+        "custom": {
+          "settings": {
+            "title": "Custom",
+            "structural": true
+          }
+        }
       }
     }
   }
