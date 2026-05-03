@@ -222,7 +222,7 @@
     before.
   {% endcomment %}
   {% if s.bg_image != blank %}
-    <div class="absolute inset-0 -z-10 pointer-events-none rounded-global overflow-hidden">
+    <div class="absolute inset-0 -z-10 pointer-events-none rounded-inherit overflow-hidden">
       {% render 'media',
         src: s.bg_image,
         src_mobile: s.bg_image_mobile,

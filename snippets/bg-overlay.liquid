@@ -46,7 +46,7 @@
     {% assign overlay_alpha_value = alpha | divided_by: 100.0 %}
   {% endif %}
   <div
-    class="rounded-global absolute inset-0 pointer-events-none{{ overlay_z }} bg-{{ role }}"
+    class="rounded-inherit absolute inset-0 pointer-events-none{{ overlay_z }} bg-{{ role }}"
     style="opacity: {{ overlay_alpha_value }};"
   ></div>
 {% endif %}
