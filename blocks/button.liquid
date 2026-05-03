@@ -81,6 +81,11 @@
     {%- assign inner_classes = inner_classes | push: 'btn-link' %}
   {% else -%}
     {%- assign inner_classes = inner_classes | push: 'btn-primary' %}
+    {%- comment -%} Slot-role bg paints via `.bg-{role}` so the surface slot wins over --button-bg. {%- endcomment -%}
+    {% assign btn_slot_roles = 'body,body-alt,surface,surface-alt,accent,control' | split: ',' %}
+    {% if btn_slot_roles contains s.bg_role %}
+      {%- assign inner_classes = inner_classes | push: 'bg-{{ s.bg_role }}' %}
+    {% endif %}
 {% endcase %}
 
 {% case s.content_align %}
@@ -245,22 +250,16 @@
       "label": "Button Background",
       "default": "button",
       "options": [
-        {
-          "value": "button",
-          "label": "Button"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        },
-        {
-          "value": "gradient",
-          "label": "Gradient"
-        }
+        { "value": "button", "label": "Button" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
       ],
       "conditional": "setting.style == 'primary'"
     },

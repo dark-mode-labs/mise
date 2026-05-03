@@ -6,21 +6,13 @@
   {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
-{% comment %}
-  Layout is property-driven AND CSS-driven. The liquid emits the
-  setting values straight as classes (`direction-X`, `vertical-Y`,
-  `content-Z`); theme.css handles the axis-swap (in column,
-  `vertical-*` resolves to `justify-content`; in row, to
-  `align-items`). One source of truth for the axis math.
+{% assign text_color_class = 'text-' | append: s.text_role %}
 
-  Mobile note: child blocks render inline alongside cart/search
-  but are hidden on narrow viewports (TODO: route them through
-  the existing header-drawer — tracked separately).
-{% endcomment %}
 {% assign actions_classes = 'header-actions flex'
   | push: 'direction-{{ s.direction }}'
   | push: 'gap-{{ s.gap }}'
   | push: scheme_class
+  | push: text_color_class
 %}
 {% if s.vertical_align != blank %}
   {% assign actions_classes = actions_classes | push: 'vertical-{{ s.vertical_align }}' %}
@@ -35,24 +27,18 @@
   {{ context.attached_attributes }}
 >
   {% if s.show_search %}
-    <a href="/search" class="p-2 hover:opacity-70 text-on-control"
+    <a href="/search" class="p-2 hover:opacity-70"
       ><span class="sr-only">Search</span>{% render 'icon', name: 'search', class: 'w-5 h-5' %}
     </a>
   {% endif %}
 
-  {% comment %}
-    Wrapper is `display: contents` on md+ so children participate in
-    the parent flex (with the parent's `direction-X`/`gap-Y`/
-    `vertical-Z`/`content-W` classes governing layout — no
-    duplication). On mobile, `display: none` hides the children
-    entirely. TODO: route mobile children into header-drawer.
-  {% endcomment %}
+  {% comment %} display:contents on md+ so children participate in parent flex; hidden below md. {% endcomment %}
   <div class="header-actions-children hidden md:contents">
     {% content_for 'blocks' %}
   </div>
 
   {% if s.show_cart %}
-    <a data-action="open-cart" class="p-2 hover:opacity-70 relative group text-on-control">
+    <a data-action="open-cart" class="p-2 hover:opacity-70 relative group">
       <span class="sr-only">Cart</span>
       {% render 'icon', name: 'bag', class: 'w-5 h-5' %}
       <span
@@ -77,6 +63,26 @@
       "id": "show_cart",
       "label": "Show Cart",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Icon Color Role",
+      "info": "Cart and search icons inherit this role. Match it to header-menu's text role for visual consistency.",
+      "default": "on-button",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" }
+      ]
     },
     {
       "type": "header",
