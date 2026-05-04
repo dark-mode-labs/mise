@@ -1,6 +1,6 @@
 {% assign networks = 'instagram,facebook,tiktok,twitter,yelp,linkedin,youtube' | split: ',' %}
 
-<div class="flex gap-4 {{ class }}">
+<div class='flex gap-4 {{ class }}'>
   {% for network in networks %}
     {% assign setting_key = network | append: '_link' %}
     {% assign link_url = settings.social_media[setting_key] %}
@@ -25,11 +25,11 @@
         endcase
       %}
       <a
-        href="{{ link_url }}"
-        class="text-current hover:opacity-70 transition-opacity"
-        aria-label="{{ network | capitalize }}"
-        target="_blank"
-        rel="noopener"
+        href='{{ link_url }}'
+        class='text-current hover:opacity-70 transition-opacity'
+        aria-label='{{ network | capitalize }}'
+        target='_blank'
+        rel='noopener'
       >
         {% render 'icon', name: network, class: 'w-5 h-5' %}
       </a>

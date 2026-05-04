@@ -19,7 +19,7 @@
 
 {% if render_section %}
   <section
-    class="fixed inset-0 -z-50 pointer-events-none surface-{{ s.surface_id | default: 'default' }}"
+    class='fixed inset-0 -z-50 pointer-events-none surface-{{ s.surface_id | default: 'default' }}'
     {{ context.attached_attributes }}
   >
     {% render 'bg-overlay',

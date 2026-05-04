@@ -167,48 +167,48 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="{{ block_classes }}"
-  style="{{ block_styles }}"
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
   {{ context.attached_attributes }}
 >
   <div
-    class="slideshow-wrapper relative isolate w-full h-full flex flex-col {{ wrapper_classes }}"
-    data-behavior="slideshow"
-    data-autoplay="{{ s.autoplay }}"
-    data-speed="{{ s.autoplay_speed }}"
-    data-infinite="{{ s.infinite_scroll }}"
-    data-cols-mobile="{{ s.columns_mobile }}"
-    data-peek-mobile="{{ s.peek_mobile }}"
-    data-cols-desktop="{{ s.columns_desktop }}"
-    data-peek-desktop="{{ s.peek_desktop }}"
-    style="
+    class='slideshow-wrapper relative isolate w-full h-full flex flex-col {{ wrapper_classes }}'
+    data-behavior='slideshow'
+    data-autoplay='{{ s.autoplay }}'
+    data-speed='{{ s.autoplay_speed }}'
+    data-infinite='{{ s.infinite_scroll }}'
+    data-cols-mobile='{{ s.columns_mobile }}'
+    data-peek-mobile='{{ s.peek_mobile }}'
+    data-cols-desktop='{{ s.columns_desktop }}'
+    data-peek-desktop='{{ s.peek_desktop }}'
+    style='
       --cols-mobile: {{ s.columns_mobile }};
       --cols-desktop: {{ s.columns_desktop }};
-    "
+    '
   >
     {% if s.show_arrows %}
       <div
-        class="slideshow-controls absolute z-floating anchor-{{ s.nav_anchor }} flex items-center gap-1 hidden"
-        style="--nav-offset-x: {{ s.nav_offset_x | default: 0 }}rem; --nav-offset-y: {{ s.nav_offset_y | default: 0 }}rem;"
+        class='slideshow-controls absolute z-floating anchor-{{ s.nav_anchor }} flex items-center gap-1 hidden'
+        style='--nav-offset-x: {{ s.nav_offset_x | default: 0 }}rem; --nav-offset-y: {{ s.nav_offset_y | default: 0 }}rem;'
       >
         <button
-          type="button"
-          class="slideshow-prev pointer-events-auto btn-nav nav-size-{{ s.nav_size }} nav-shape-{{ s.nav_shape }}"
-          aria-label="Previous"
+          type='button'
+          class='slideshow-prev pointer-events-auto btn-nav nav-size-{{ s.nav_size }} nav-shape-{{ s.nav_shape }}'
+          aria-label='Previous'
         >
           {% render 'icon', name: s.arrow_icon %}
         </button>
 
         {% if s.show_counter %}
-          <div class="slideshow-counter-wrapper tabular-nums">
+          <div class='slideshow-counter-wrapper tabular-nums'>
             {% render 'typography', type_style: s.type_style, tag: 'span' %}
           </div>
         {% endif %}
 
         <button
-          type="button"
-          class="slideshow-next pointer-events-auto btn-nav nav-size-{{ s.nav_size }} nav-shape-{{ s.nav_shape }}"
-          aria-label="Next"
+          type='button'
+          class='slideshow-next pointer-events-auto btn-nav nav-size-{{ s.nav_size }} nav-shape-{{ s.nav_shape }}'
+          aria-label='Next'
         >
           {% assign icon_name = s.arrow_icon | replace: '-left', '-right' %}
           {% render 'icon', name: icon_name %}
@@ -224,7 +224,7 @@
       gradient_token: s.overlay_role_gradient,
       behind: true
     %}
-    <div class="slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-{{ s.gap }}">
+    <div class='slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-{{ s.gap }}'>
       {% content_for 'blocks' %}
     </div>
   </div>

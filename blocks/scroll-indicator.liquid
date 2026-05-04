@@ -27,8 +27,8 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="{{ block_classes }}"
-  style="{{ block_styles }}"
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
   onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });"
   {{ context.attached_attributes }}
 >
@@ -36,7 +36,7 @@
     {% render 'typography', type_style: s.type_style, text: s.label, tag: 'span' %}
   {% endif %}
 
-  <div class="animate-bounce">
+  <div class='animate-bounce'>
     {% render 'icon', name: 'chevron-down', class: 'w-5 h-5 text-primary' %}
   </div>
 </div>

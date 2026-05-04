@@ -36,21 +36,21 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <a
-  href="/"
-  class="{{ block_classes }}"
+  href='/'
+  class='{{ block_classes }}'
   {{ context.attached_attributes }}
 >
   {% if asset_src != blank %}
     <div
-      class="transition-opacity duration-300 block"
-      style="width: {{ s.logo_width }}rem;"
+      class='transition-opacity duration-300 block'
+      style='width: {{ s.logo_width }}rem;'
     >
       {% render 'media', src: asset_src, ratio: 'auto', fit: 'contain', class: 'bg-transparent', loading: 'eager' %}
     </div>
   {% else %}
     <span
-      class="ts-heading-3 whitespace-nowrap"
-      style="{{ text_styles }}"
+      class='ts-heading-3 whitespace-nowrap'
+      style='{{ text_styles }}'
     >
       {{ shop.name }}
     </span>

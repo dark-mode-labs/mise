@@ -1,67 +1,64 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    './layout/*.liquid',
-    './sections/*.liquid',
-    './snippets/*.liquid',
-    './blocks/*.liquid',
-    './templates/*.json',
-    './config/*.json',
-    './assets/css/theme.css'
+    "./layout/*.liquid",
+    "./sections/*.liquid",
+    "./snippets/*.liquid",
+    "./blocks/*.liquid",
+    "./templates/*.json",
+    "./config/*.json",
+    "./assets/css/theme.css",
   ],
   theme: {
     extend: {
       height: {
-        'screen-dvh': '100dvh',
+        "screen-dvh": "100dvh",
       },
       boxShadow: {
-        sm: '0 1px 2px 0 var(--shadow)',
-        default: '0 1px 3px 0 var(--shadow), 0 1px 2px -1px var(--shadow)',
-        md: '0 4px 6px -1px var(--shadow), 0 2px 4px -2px var(--shadow)',
-        lg: '0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow)',
-        xl: '0 20px 25px -5px var(--shadow), 0 8px 10px -6px var(--shadow)',
+        sm: "0 1px 2px 0 var(--shadow)",
+        default: "0 1px 3px 0 var(--shadow), 0 1px 2px -1px var(--shadow)",
+        md: "0 4px 6px -1px var(--shadow), 0 2px 4px -2px var(--shadow)",
+        lg: "0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow)",
+        xl: "0 20px 25px -5px var(--shadow), 0 8px 10px -6px var(--shadow)",
       },
       keyframes: {
         marquee: {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
         },
-        'marquee-reverse': {
-          '0%': { transform: 'translateX(-50%)' },
-          '100%': { transform: 'translateX(0)' },
+        "marquee-reverse": {
+          "0%": { transform: "translateX(-50%)" },
+          "100%": { transform: "translateX(0)" },
         },
-        'fade-up': {
-          '0%': { opacity: '0', transform: 'translateY(1.25rem)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(1.25rem)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        'ken-burns': {
-          '0%': { transform: 'scale(1)' },
-          '100%': { transform: 'scale(1.15)' },
-        }
+        "ken-burns": {
+          "0%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1.15)" },
+        },
       },
       animation: {
-        marquee: 'marquee linear infinite',
-        'marquee-reverse': 'marquee-reverse linear infinite',
-        'fade-up': 'fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'ken-burns': 'ken-burns 20s ease-out infinite alternate',
+        marquee: "marquee linear infinite",
+        "marquee-reverse": "marquee-reverse linear infinite",
+        "fade-up": "fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "ken-burns": "ken-burns 20s ease-out infinite alternate",
       },
       zIndex: {
         // The Mise Layer System
-        'negative': '-1',
-        'base': '0',
-        'media': '10',    // Background images/video
-        'content': '20',  // Text, buttons, standard blocks
-        'floating': '30', // Pinned elements inside a section (Marquees, badges)
-        'header': '40',   // Sticky site header
-        'header-top': '45', // Announcement bar above header
-        'overlay': '50',  // Slide-out drawers/cart
-        'modal': '60',    // Centered popups
-        'toast': '70',    // Notifications
-      }
-    }
+        negative: "-1",
+        base: "0",
+        media: "10", // Background images/video
+        content: "20", // Text, buttons, standard blocks
+        floating: "30", // Pinned elements inside a section (Marquees, badges)
+        header: "40", // Sticky site header
+        "header-top": "45", // Announcement bar above header
+        overlay: "50", // Slide-out drawers/cart
+        modal: "60", // Centered popups
+        toast: "70", // Notifications
+      },
+    },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/forms'),
-  ],
-}
+  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
+};

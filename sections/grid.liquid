@@ -75,19 +75,19 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <section
-  class="section-flex surface-{{ s.surface_id | default: 'default' }} {{ bg_class }}"
-  style="{{ style_str }}"
+  class='section-flex surface-{{ s.surface_id | default: 'default' }} {{ bg_class }}'
+  style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
   {% comment %} Background Media / Overlay Layer {% endcomment %}
   {% if s.bg_image != blank or has_overlay %}
     <div
-      class="grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden"
+      class='grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden'
       {% if s.bg_image != blank %}
-        style="clip: rect(0, auto, auto, 0);"
+        style='clip: rect(0, auto, auto, 0);'
       {% endif %}
     >
-      <div class="grid-media-inner">
+      <div class='grid-media-inner'>
         {% if s.bg_image != blank %}
           {% render 'media',
             src: s.bg_image,
@@ -111,13 +111,13 @@
 
   {% comment %} Content Layer {% endcomment %}
   <div
-    class="{{ container_class_str }}"
-    style="{{ spacing_style_str }}"
+    class='{{ container_class_str }}'
+    style='{{ spacing_style_str }}'
   >
-    <div class="grid-content-overlay">
+    <div class='grid-content-overlay'>
       <div
-        class="{{ flex_class_str }}"
-        style="{{ flex_style_str }}"
+        class='{{ flex_class_str }}'
+        style='{{ flex_style_str }}'
       >
         {% content_for 'blocks' %}
       </div>
@@ -514,9 +514,7 @@
                   }
                 }
               },
-              "block_order": [
-                "title"
-              ],
+              "block_order": ["title"],
               "settings": {}
             },
             "grp_2": {
@@ -529,9 +527,7 @@
                   }
                 }
               },
-              "block_order": [
-                "title"
-              ],
+              "block_order": ["title"],
               "settings": {}
             },
             "grp_3": {
@@ -544,26 +540,18 @@
                   }
                 }
               },
-              "block_order": [
-                "title"
-              ],
+              "block_order": ["title"],
               "settings": {}
             }
           },
-          "block_order": [
-            "grp_1",
-            "grp_2",
-            "grp_3"
-          ],
+          "block_order": ["grp_1", "grp_2", "grp_3"],
           "settings": {
             "content_align": "center",
             "direction": "row"
           }
         }
       },
-      "block_order": [
-        "group"
-      ]
+      "block_order": ["group"]
     }
   ]
 }

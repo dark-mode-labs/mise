@@ -77,15 +77,15 @@
 
 {% comment %} --- Hero Render --- {% endcomment %}
 <section
-  class="section-hero surface-{{ s.surface_id | default: 'default' }}"
+  class='section-hero surface-{{ s.surface_id | default: 'default' }}'
   {{ context.attached_attributes }}
 >
   <div
-    class="{{ layout_class_str }}"
-    style="{{ style_str }}"
+    class='{{ layout_class_str }}'
+    style='{{ style_str }}'
   >
     {% comment %} Media Layer {% endcomment %}
-    <div class="{{ media_classes }} width-{{ s.width_bg }} limit-width">
+    <div class='{{ media_classes }} width-{{ s.width_bg }} limit-width'>
       {% comment %} Primary Media Slot {% endcomment %}
       {% if has_media_2 %}
         {% assign media_1_classes = 'hero-media-inner relative w-1/2 border-r border-default' %}
@@ -93,7 +93,7 @@
         {% assign media_1_classes = 'hero-media-inner absolute inset-0' %}
       {% endif %}
 
-      <div class="{{ media_1_classes }}">
+      <div class='{{ media_1_classes }}'>
         {% render 'media',
           src: s.bg_image,
           src_mobile: s.mobile_image,
@@ -115,7 +115,7 @@
 
       {% comment %} Secondary Media Slot {% endcomment %}
       {% if has_media_2 %}
-        <div class="hero-media-inner w-1/2">
+        <div class='hero-media-inner w-1/2'>
           {% render 'media',
             src: s.bg_image_2,
             src_mobile: s.mobile_image_2,
@@ -137,7 +137,7 @@
     </div>
 
     {% comment %} Content Layer {% endcomment %}
-    <div class="{{ content_class_str }}">
+    <div class='{{ content_class_str }}'>
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -600,11 +600,7 @@
           }
         }
       },
-      "block_order": [
-        "hero_heading",
-        "hero_subtext",
-        "hero_cta"
-      ]
+      "block_order": ["hero_heading", "hero_subtext", "hero_cta"]
     }
   ]
 }

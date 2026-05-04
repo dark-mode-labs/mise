@@ -20,8 +20,8 @@
 {% endif %}
 
 <div
-  class="media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}"
-  style="--object-fit: {{ fit_mode }}"
+  class='media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}'
+  style='--object-fit: {{ fit_mode }}'
 >
   {% if video != blank %}
     <video
@@ -34,12 +34,12 @@
       {% if show_controls %}
         controls
       {% endif %}
-      class="{% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}"
+      class='{% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}'
       {% if src %}
-        poster="{{ src | image_url: width: 800 }}"
+        poster='{{ src | image_url: width: 800 }}'
       {% endif %}
     >
-      <source src="{{ video }}" type="video/mp4">
+      <source src='{{ video }}' type='video/mp4'>
     </video>
 
   {% elsif src != blank %}
@@ -51,8 +51,8 @@
     {% endcapture %}
     {% if src_mobile != blank %}
       <picture>
-        <source media="(max-width: 767px)" srcset="{{ src_mobile | image_url: width: 800 }}">
-        <source media="(min-width: 768px)" srcset="{{ src | image_url: width: 1600 }}">
+        <source media='(max-width: 767px)' srcset='{{ src_mobile | image_url: width: 800 }}'>
+        <source media='(min-width: 768px)' srcset='{{ src | image_url: width: 1600 }}'>
         {{ img }}
       </picture>
     {% else %}

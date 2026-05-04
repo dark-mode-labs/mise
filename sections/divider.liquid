@@ -21,22 +21,22 @@
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class="section-divider"
+  class='section-divider'
   {{ context.attached_attributes }}
 >
   <div
-    class="flex flex-auto items-center justify-center surface-{{ s.surface_id | default: 'default' }} width-{{ s.width }} {{ bg_class }} text-primary limit-width h-[var(--max-h)]"
-    style="{{ style_str }}"
+    class='flex flex-auto items-center justify-center surface-{{ s.surface_id | default: 'default' }} width-{{ s.width }} {{ bg_class }} text-primary limit-width h-[var(--max-h)]'
+    style='{{ style_str }}'
   >
-    <div class="relative flex items-center justify-center w-full">
+    <div class='relative flex items-center justify-center w-full'>
       {% if s.show_line %}
-        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-          <div class="w-full border-t border-default opacity-50"></div>
+        <div class='absolute inset-0 flex items-center' aria-hidden='true'>
+          <div class='w-full border-t border-default opacity-50'></div>
         </div>
       {% endif %}
 
       {% if s.show_icon %}
-        <div class="relative {{ bg_class }} px-4">
+        <div class='relative {{ bg_class }} px-4'>
           {% render 'icon', name: s.icon_select, class: 'w-6 h-6 text-secondary' %}
         </div>
       {% endif %}

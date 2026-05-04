@@ -1,16 +1,27 @@
+import {
+  computeExactSlideWidth,
+  getPageCount,
+  getCurrentPageFromIndex,
+  getNextSlideIndex,
+  getPrevSlideIndex,
+  clampPageIndex,
+} from "../lib/slideshow-math.js";
+
 export default class Slideshow {
   constructor(element) {
     this.el = element;
-    this.track = this.el.querySelector('.slideshow-track');
-    this.controls = this.el.querySelector('.slideshow-controls');
-    this.prevBtn = this.el.querySelector('.slideshow-prev');
-    this.nextBtn = this.el.querySelector('.slideshow-next');
-    this.dots = this.el.querySelectorAll('.slideshow-dot');
+    this.track = this.el.querySelector(".slideshow-track");
+    this.controls = this.el.querySelector(".slideshow-controls");
+    this.prevBtn = this.el.querySelector(".slideshow-prev");
+    this.nextBtn = this.el.querySelector(".slideshow-next");
+    this.dots = this.el.querySelectorAll(".slideshow-dot");
 
-    this.counter = this.el.querySelector('.slideshow-counter-wrapper span') || this.el.querySelector('.slideshow-counter-wrapper');
+    this.counter =
+      this.el.querySelector(".slideshow-counter-wrapper span") ||
+      this.el.querySelector(".slideshow-counter-wrapper");
 
-    this.infinite = this.el.dataset.infinite === 'true';
-    this.autoplayEnabled = this.el.dataset.autoplay === 'true';
+    this.infinite = this.el.dataset.infinite === "true";
+    this.autoplayEnabled = this.el.dataset.autoplay === "true";
     this.speed = (parseInt(this.el.dataset.speed) || 5) * 1000;
 
     this.interval = null;
@@ -27,7 +38,7 @@ export default class Slideshow {
   // Returns the RAW configured column count for consistent sizing and logic
   getCols() {
     const isMobile = this.el.clientWidth < 540;
-    return parseInt(this.el.dataset[isMobile ? 'colsMobile' : 'colsDesktop']) || 1;
+    return parseInt(this.el.dataset[isMobile ? "colsMobile" : "colsDesktop"]) || 1;
   }
 
   initExactFit() {
@@ -35,18 +46,13 @@ export default class Slideshow {
       for (let entry of entries) {
         const wrapperWidth = entry.contentRect.width;
         const isMobile = wrapperWidth < 540;
-
-        // We use the configured columns for width math so cards don't stretch
         const cols = this.getCols();
-        const peekPct = parseInt(this.el.dataset[isMobile ? 'peekMobile' : 'peekDesktop']) / 100 || 0;
-
+        const peekPct =
+          parseInt(this.el.dataset[isMobile ? "peekMobile" : "peekDesktop"]) / 100 || 0;
         const gapPx = parseFloat(window.getComputedStyle(this.track).columnGap) || 0;
-        const visibleGaps = peekPct > 0 ? cols : Math.max(0, cols - 1);
 
-        // Mathematically locks the card width to the column setting
-        const exactWidth = (wrapperWidth - (gapPx * visibleGaps)) / (cols + peekPct);
-
-        this.el.style.setProperty('--computed-slide-width', `${exactWidth}px`);
+        const exactWidth = computeExactSlideWidth(wrapperWidth, cols, peekPct, gapPx);
+        this.el.style.setProperty("--computed-slide-width", `${exactWidth}px`);
 
         this.updateUI(this.getCurrentIndex(), this.getSlides().length);
       }
@@ -57,7 +63,9 @@ export default class Slideshow {
 
   getSlides() {
     if (!this.track) return [];
-    return Array.from(this.track.querySelectorAll(':scope > *:not(.contents), :scope > .contents > *'));
+    return Array.from(
+      this.track.querySelectorAll(":scope > *:not(.contents), :scope > .contents > *")
+    );
   }
 
   getCurrentIndex() {
@@ -81,11 +89,11 @@ export default class Slideshow {
   init() {
     if (!this.track) return;
 
-    if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
-    if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
+    if (this.prevBtn) this.prevBtn.addEventListener("click", () => this.prev());
+    if (this.nextBtn) this.nextBtn.addEventListener("click", () => this.next());
 
-    this.dots.forEach(dot => {
-      dot.addEventListener('click', (e) => {
+    this.dots.forEach((dot) => {
+      dot.addEventListener("click", (e) => {
         const cols = this.getCols();
         const targetSlideIndex = parseInt(dot.dataset.index) * cols;
         this.scrollToIndex(targetSlideIndex);
@@ -93,7 +101,7 @@ export default class Slideshow {
       });
     });
 
-    this.track.addEventListener('scroll', () => {
+    this.track.addEventListener("scroll", () => {
       if (!this.scrollTicking) {
         window.requestAnimationFrame(() => {
           this.updateUI(this.getCurrentIndex(), this.getSlides().length);
@@ -107,8 +115,8 @@ export default class Slideshow {
 
     if (this.autoplayEnabled) {
       this.startAutoplay();
-      this.el.addEventListener('mouseenter', () => this.stopAutoplay());
-      this.el.addEventListener('mouseleave', () => this.startAutoplay());
+      this.el.addEventListener("mouseenter", () => this.stopAutoplay());
+      this.el.addEventListener("mouseleave", () => this.startAutoplay());
     }
 
     this.initExactFit();
@@ -120,20 +128,18 @@ export default class Slideshow {
     if (total === 0) return;
 
     const cols = this.getCols();
-    const totalPages = Math.ceil(total / cols);
+    const totalPages = getPageCount(total, cols);
 
-    // If total items fit on a single page, hide controls and kill display
     if (this.controls) {
-      this.controls.style.display = totalPages <= 1 ? 'none' : 'flex';
+      this.controls.style.display = totalPages <= 1 ? "none" : "flex";
     }
 
     if (totalPages <= 1) {
-      this.track.classList.add('justify-center');
+      this.track.classList.add("justify-center");
     } else {
-      this.track.classList.remove('justify-center');
+      this.track.classList.remove("justify-center");
     }
 
-    const maxVisibleLeftIndex = Math.max(0, total - cols);
     const maxScroll = this.track.scrollWidth - this.track.clientWidth;
 
     let currentPageIndex;
@@ -142,12 +148,12 @@ export default class Slideshow {
     } else if (this.track.scrollLeft >= maxScroll - 10) {
       currentPageIndex = totalPages - 1;
     } else {
-      currentPageIndex = Math.floor(index / cols);
+      currentPageIndex = getCurrentPageFromIndex(index, cols);
     }
 
-    currentPageIndex = Math.max(0, Math.min(currentPageIndex, totalPages - 1));
+    currentPageIndex = clampPageIndex(currentPageIndex, totalPages);
 
-    this.dots.forEach((dot, i) => dot.classList.toggle('is-active', i === currentPageIndex));
+    this.dots.forEach((dot, i) => dot.classList.toggle("is-active", i === currentPageIndex));
 
     if (!this.infinite) {
       if (this.prevBtn) this.prevBtn.disabled = this.track.scrollLeft <= 5;
@@ -161,43 +167,18 @@ export default class Slideshow {
   }
 
   next() {
-    const cols = this.getCols();
-    const currentIndex = this.getCurrentIndex();
-    let targetIndex = currentIndex + cols;
-
-    const maxLeftIndex = this.getSlides().length - cols;
-    if (currentIndex >= maxLeftIndex) {
-      if (this.infinite) {
-        targetIndex = 0;
-      } else {
-        return;
-      }
-    }
-
-    this.scrollToIndex(targetIndex);
+    const total = this.getSlides().length;
+    const target = getNextSlideIndex(this.getCurrentIndex(), this.getCols(), total, this.infinite);
+    if (target === null) return;
+    this.scrollToIndex(target);
     this.stopAutoplay();
   }
 
   prev() {
-    const cols = this.getCols();
-    const currentIndex = this.getCurrentIndex();
-    let targetIndex;
-
-    if (currentIndex % cols !== 0) {
-      targetIndex = Math.floor(currentIndex / cols) * cols;
-    } else {
-      targetIndex = currentIndex - cols;
-    }
-
-    if (currentIndex <= 0) {
-      if (this.infinite) {
-        targetIndex = this.getSlides().length - 1;
-      } else {
-        return;
-      }
-    }
-
-    this.scrollToIndex(Math.max(0, targetIndex));
+    const total = this.getSlides().length;
+    const target = getPrevSlideIndex(this.getCurrentIndex(), this.getCols(), total, this.infinite);
+    if (target === null) return;
+    this.scrollToIndex(target);
     this.stopAutoplay();
   }
 
@@ -207,7 +188,7 @@ export default class Slideshow {
     if (!slide) return;
 
     const targetLeft = slide.offsetLeft - this.track.offsetLeft;
-    this.track.scrollTo({ left: targetLeft, behavior: 'smooth' });
+    this.track.scrollTo({ left: targetLeft, behavior: "smooth" });
   }
 
   startAutoplay() {
@@ -224,31 +205,35 @@ export default class Slideshow {
   }
 
   initDragPhysics() {
-    this.track.addEventListener('click', (e) => {
-      if (this.isDragging) {
-        e.preventDefault();
-        e.stopPropagation();
-        this.isDragging = false;
-      }
-    }, true);
+    this.track.addEventListener(
+      "click",
+      (e) => {
+        if (this.isDragging) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.isDragging = false;
+        }
+      },
+      true
+    );
 
-    this.track.addEventListener('mousedown', (e) => {
+    this.track.addEventListener("mousedown", (e) => {
       this.isDown = true;
       this.isDragging = false;
-      this.track.classList.add('cursor-grabbing');
+      this.track.classList.add("cursor-grabbing");
 
-      this.track.style.scrollSnapType = 'none';
-      this.track.style.scrollBehavior = 'auto';
+      this.track.style.scrollSnapType = "none";
+      this.track.style.scrollBehavior = "auto";
 
       this.startX = e.pageX - this.track.offsetLeft;
       this.scrollLeft = this.track.scrollLeft;
       this.stopAutoplay();
     });
 
-    this.track.addEventListener('mouseleave', () => this.endDrag());
-    this.track.addEventListener('mouseup', () => this.endDrag());
+    this.track.addEventListener("mouseleave", () => this.endDrag());
+    this.track.addEventListener("mouseup", () => this.endDrag());
 
-    this.track.addEventListener('mousemove', (e) => {
+    this.track.addEventListener("mousemove", (e) => {
       if (!this.isDown) return;
       e.preventDefault();
       const x = e.pageX - this.track.offsetLeft;
@@ -265,10 +250,10 @@ export default class Slideshow {
   endDrag() {
     if (!this.isDown) return;
     this.isDown = false;
-    this.track.classList.remove('cursor-grabbing');
+    this.track.classList.remove("cursor-grabbing");
 
-    this.track.style.scrollBehavior = 'smooth';
-    this.track.style.scrollSnapType = 'x mandatory';
+    this.track.style.scrollBehavior = "smooth";
+    this.track.style.scrollSnapType = "x mandatory";
 
     if (this.isDragging) {
       const nearestIndex = this.getCurrentIndex();

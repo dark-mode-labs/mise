@@ -57,7 +57,12 @@
     | push: 'group-border-{{ s.border_mode }}'
     | push: 'group-border-size-{{ s.border_size }}'
   %}
-  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' and s.border_role != 'gradient' %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
     {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
   {% endif %}
   {% if s.border_mode == 'custom' %}
@@ -115,8 +120,8 @@
 {% assign block_styles = styles | join: ';' %}
 
 <div
-  class="isolate {{ block_classes }}"
-  style="{{ block_styles }}"
+  class='isolate {{ block_classes }}'
+  style='{{ block_styles }}'
   {{ context.attached_attributes }}
 >
   {% render 'bg-overlay',
@@ -759,9 +764,7 @@
           }
         }
       },
-      "block_order": [
-        "badge_text"
-      ]
+      "block_order": ["badge_text"]
     }
   ]
 }

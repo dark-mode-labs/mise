@@ -46,11 +46,11 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="{{ slide_classes }}"
-  style="{{ slide_style_str }}"
+  class='{{ slide_classes }}'
+  style='{{ slide_style_str }}'
   {{ context.attached_attributes }}
 >
-  <div class="absolute inset-0 z-media">
+  <div class='absolute inset-0 z-media'>
     {% render 'media',
       src: s.image,
       src_mobile: s.image_mobile,
@@ -69,7 +69,7 @@
     %}
   </div>
 
-  <div class="{{ content_class_str }}">
+  <div class='{{ content_class_str }}'>
     {% content_for 'blocks' %}
   </div>
 </div>
@@ -391,10 +391,7 @@
           }
         }
       },
-      "block_order": [
-        "heading",
-        "button"
-      ]
+      "block_order": ["heading", "button"]
     }
   ]
 }

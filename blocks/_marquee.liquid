@@ -42,8 +42,8 @@
 
 {% if s.pin_bottom %}
   <div
-    class="absolute bottom-0 left-0 z-floating w-full border-t border-default {{ scheme_class }} {{ bg_class }} text-primary no-stagger"
-    style="opacity: {{ s.opacity | divided_by: 100.0 }}; {{ extra_styles }}"
+    class='absolute bottom-0 left-0 z-floating w-full border-t border-default {{ scheme_class }} {{ bg_class }} text-primary no-stagger'
+    style='opacity: {{ s.opacity | divided_by: 100.0 }}; {{ extra_styles }}'
     {{ context.attached_attributes }}
   >
     {{ rendered_marquee }}
@@ -51,12 +51,12 @@
 
 {% else %}
   <div
-    class="wrapper relative left-[calc(-50vw+50%)] my-4 z-base no-stagger"
+    class='wrapper relative left-[calc(-50vw+50%)] my-4 z-base no-stagger'
     {{ context.attached_attributes }}
   >
     <div
-      class="border-y border-default {{ scheme_class }} {{ bg_class }} text-primary"
-      style="opacity: {{ s.opacity | divided_by: 100.0 }}; {{ extra_styles }}"
+      class='border-y border-default {{ scheme_class }} {{ bg_class }} text-primary'
+      style='opacity: {{ s.opacity | divided_by: 100.0 }}; {{ extra_styles }}'
     >
       {{ rendered_marquee }}
     </div>

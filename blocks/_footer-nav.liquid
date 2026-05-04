@@ -48,11 +48,11 @@
 {% assign color_role = s.text_role %}
 {% if s.text_role == 'custom' or s.text_role == 'palette' %}{% assign color_role = 'primary' %}{% endif %}
 <div
-  class="{{ block_classes }}"
-  style="{{ block_styles }}"
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
   {{ context.attached_attributes }}
 >
-  <details class="group" open>
+  <details class='group' open>
     {% comment %}
       Mobile: `flex items-center justify-between` puts the heading at
       the start and the collapse chevron at the end. Desktop (md+):
@@ -62,7 +62,7 @@
       on desktop so `.text-align-{X}` from the wrapper inherits down
       and the heading honors source intent.
     {% endcomment %}
-    <summary class="flex items-center justify-between md:block cursor-pointer md:cursor-default list-none mb-4">
+    <summary class='flex items-center justify-between md:block cursor-pointer md:cursor-default list-none mb-4'>
       {% render 'typography',
         text: s.heading,
         type_style: s.type_style,

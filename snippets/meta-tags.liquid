@@ -1,15 +1,15 @@
-<meta charset="utf-8">
+<meta charset='utf-8'>
 <meta
-  http-equiv="X-UA-Compatible"
-  content="IE=edge"
+  http-equiv='X-UA-Compatible'
+  content='IE=edge'
 >
 <meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,viewport-fit=cover"
+  name='viewport'
+  content='width=device-width,initial-scale=1,viewport-fit=cover'
 >
 <meta
-  name="view-transition"
-  content="same-origin"
+  name='view-transition'
+  content='same-origin'
 >
 
 {% liquid
@@ -20,58 +20,58 @@
 %}
 
 <meta
-  property="og:site_name"
-  content="{{ shop.name }}"
+  property='og:site_name'
+  content='{{ shop.name }}'
 >
 <meta
-  property="og:url"
-  content="{{ og_url }}"
+  property='og:url'
+  content='{{ og_url }}'
 >
 <meta
-  property="og:title"
-  content="{{ og_title | escape }}"
+  property='og:title'
+  content='{{ og_title | escape }}'
 >
 <meta
-  property="og:type"
-  content="{{ og_type }}"
+  property='og:type'
+  content='{{ og_type }}'
 >
 <meta
-  property="og:description"
-  content="{{ og_description | escape }}"
+  property='og:description'
+  content='{{ og_description | escape }}'
 >
 
 {% if page.image != blank %}
   <meta
-    property="og:image"
-    content="{{ page.image | image_url: width: 1200 | prepend: shop.origin }}"
+    property='og:image'
+    content='{{ page.image | image_url: width: 1200 | prepend: shop.origin }}'
   >
   <meta
-    property="og:image:width"
-    content="1200"
+    property='og:image:width'
+    content='1200'
   >
   <meta
-    property="og:image:height"
-    content="630"
+    property='og:image:height'
+    content='630'
   >
 {% endif %}
 
 {% if settings.social_twitter_link != blank %}
   <meta
-    name="twitter:site"
-    content="{{ settings.social_twitter_link | split: 'twitter.com/' | last | prepend: '@' }}"
+    name='twitter:site'
+    content='{{ settings.social_twitter_link | split: 'twitter.com/' | last | prepend: '@' }}'
   >
 {% endif %}
 <meta
-  name="twitter:card"
-  content="summary_large_image"
+  name='twitter:card'
+  content='summary_large_image'
 >
 <meta
-  name="twitter:title"
-  content="{{ og_title | escape }}"
+  name='twitter:title'
+  content='{{ og_title | escape }}'
 >
 <meta
-  name="twitter:description"
-  content="{{ og_description | escape }}"
+  name='twitter:description'
+  content='{{ og_description | escape }}'
 >
 
 <title>
@@ -80,23 +80,23 @@
 </title>
 
 <link
-  rel="canonical"
-  href="{{ og_url }}"
+  rel='canonical'
+  href='{{ og_url }}'
 >
 
 {% if page.description %}
   <meta
-    name="description"
-    content="{{ page.description | escape }}"
+    name='description'
+    content='{{ page.description | escape }}'
   >
 {% endif %}
 
 {% if page.keywords %}
-  <meta name="keywords" content="{{ page.keywords | escape }}">
+  <meta name='keywords' content='{{ page.keywords | escape }}'>
 {% endif %}
 
 {% if page.structured_data %}
-  <script type="application/ld+json">
+  <script type='application/ld+json'>
     {{ page.structured_data | structured_data }}
   </script>
 {% endif %}

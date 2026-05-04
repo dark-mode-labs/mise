@@ -39,19 +39,19 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <nav
-  class="{{ block_classes }}"
-  style="{{ block_styles }}"
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
   {{ context.attached_attributes }}
 >
-  <ul class="flex items-center gap-8">
+  <ul class='flex items-center gap-8'>
     {% for link in s.nav.links %}
       {% assign has_mega = false %}
       {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
 
-      <li class="group flex items-center relative">
+      <li class='group flex items-center relative'>
         <a
-          href="{{ link.url }}"
-          class="hover:opacity-70 flex items-center gap-1"
+          href='{{ link.url }}'
+          class='hover:opacity-70 flex items-center gap-1'
         >
           {% render 'typography',
             text: link.title,
@@ -69,18 +69,18 @@
 
         {% if link.links != blank %}
           <div
-            class="
+            class='
               absolute top-full left-0 border border-default shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating
               {% if has_mega %}!fixed left-0 right-0 w-full border-x-0{% else %}w-64{% endif %}
-            "
+            '
           >
             {% if has_mega %}
-              <div class="mx-auto px-8 py-12 grid grid-cols-4 gap-8">
+              <div class='mx-auto px-8 py-12 grid grid-cols-4 gap-8'>
                 {% for child in link.links %}
                   <div>
                     <a
-                      href="{{ child.url }}"
-                      class="block mb-4 hover:underline underline-offset-4"
+                      href='{{ child.url }}'
+                      class='block mb-4 hover:underline underline-offset-4'
                     >
                       {% render 'typography',
                         type_style: s.type_style,
@@ -89,12 +89,12 @@
                         class: utility_classes
                       %}
                     </a>
-                    <ul class="flex flex-col gap-xs">
+                    <ul class='flex flex-col gap-xs'>
                       {% for grandchild in child.links %}
                         <li>
                           <a
-                            href="{{ grandchild.url }}"
-                            class="opacity-70 hover:opacity-100 block"
+                            href='{{ grandchild.url }}'
+                            class='opacity-70 hover:opacity-100 block'
                           >
                             {% render 'typography',
                               type_style: s.type_style,
@@ -111,10 +111,10 @@
               </div>
 
             {% else %}
-              <ul class="py-4">
+              <ul class='py-4'>
                 {% for child in link.links %}
                   <li>
-                    <a href="{{ child.url }}" class="ts-body-sm block px-6 py-2 hover:bg-gray-50/5 whitespace-nowrap">
+                    <a href='{{ child.url }}' class='ts-body-sm block px-6 py-2 hover:bg-gray-50/5 whitespace-nowrap'>
                       {{ child.title }}
                     </a>
                   </li>

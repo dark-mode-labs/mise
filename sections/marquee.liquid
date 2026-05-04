@@ -45,12 +45,12 @@
 
 {% comment %} --- 3. Component Render --- {% endcomment %}
 <section
-  class="section-marquee surface-{{ s.surface_id | default: 'default' }}"
+  class='section-marquee surface-{{ s.surface_id | default: 'default' }}'
   {{ context.attached_attributes }}
 >
   <div
-    class="{{ container_class_str }}"
-    style="{{ style_str }}"
+    class='{{ container_class_str }}'
+    style='{{ style_str }}'
   >
     {% render 'marquee',
       items: s.text_list,
