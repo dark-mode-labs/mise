@@ -130,27 +130,27 @@
 
 <div
   {{ context.attached_attributes }}
-  class="tab-head cursor-pointer relative {{ classes | join: ' ' }}"
-  style="{{ styles | join: ';' }}"
-  data-behavior="tab-head"
-  data-tab-active-class="{{ active_state_classes | join: ' ' }}"
-  data-tab-active-styles="{{ active_state_styles | join: ';' }}"
-  data-tab-inactive-class="{{ inactive_state_classes | join: ' ' }}"
-  data-tab-inactive-styles="{{ inactive_state_styles | join: ';' }}"
-  data-tab-group="{{ section.id }}"
-  data-action="tab-switch"
-  data-action-args="{{ s.tab_id }}"
-  role="tab"
+  class='tab-head cursor-pointer relative {{ classes | join: ' ' }}'
+  style='{{ styles | join: ';' }}'
+  data-behavior='tab-head'
+  data-tab-active-class='{{ active_state_classes | join: ' ' }}'
+  data-tab-active-styles='{{ active_state_styles | join: ';' }}'
+  data-tab-inactive-class='{{ inactive_state_classes | join: ' ' }}'
+  data-tab-inactive-styles='{{ inactive_state_styles | join: ';' }}'
+  data-tab-group='{{ section.id }}'
+  data-action='tab-switch'
+  data-action-args='{{ s.tab_id }}'
+  role='tab'
 >
   {% comment %} Wrapping blocks in z-10 so they sit above the absolute overlay {% endcomment %}
-  <div class="relative z-10">
+  <div class='relative z-10'>
     {% content_for 'blocks' %}
   </div>
 
   {% if s.enable_overlay or s.enable_overlay_inactive %}
     <div
-      class="rounded-inherit absolute inset-0 pointer-events-none transition-all duration-200"
-      style="background: var(--overlay-bg, transparent); opacity: var(--overlay-opacity, 0);"
+      class='rounded-inherit absolute inset-0 pointer-events-none transition-all duration-200'
+      style='background: var(--overlay-bg, transparent); opacity: var(--overlay-opacity, 0);'
     ></div>
   {% endif %}
 </div>

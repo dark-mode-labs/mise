@@ -3,11 +3,11 @@
 {% assign scheme_class = blank %}
 
 {% if s.surface_override %}
-  {% assign scheme_class="surface-{{ s.surface_id | default: 'default' }}" %}
+  {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
 <div
-  class="footer-block flex flex-col gap-6 items-start {{ scheme_class }}"
+  class='footer-block flex flex-col gap-6 items-start {{ scheme_class }}'
   {{ context.attached_attributes }}
 >
   {% content_for 'blocks' %}

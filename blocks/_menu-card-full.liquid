@@ -128,10 +128,10 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="{{ block_classes }}"
-  style="{{ block_styles }}"
-  data-action-args="{{ context.item.uuid }}"
-  data-action="add-item"
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
+  data-action-args='{{ context.item.uuid }}'
+  data-action='add-item'
   {{ context.attached_attributes }}
 >
   {% render 'bg-overlay',

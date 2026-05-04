@@ -1,7 +1,10 @@
 {% assign s = block.settings %}
 
 {% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign wrapper_classes = '' | push: 'margin-my-{{ s.margin_vertical }}' | push: 'margin-mx-{{ s.margin_horizontal }}' %}
+{% assign wrapper_classes = ''
+  | push: 'margin-my-{{ s.margin_vertical }}'
+  | push: 'margin-mx-{{ s.margin_horizontal }}'
+%}
 {% if s.text_align != blank %}
   {% assign wrapper_classes = wrapper_classes | push: 'text-align-{{ s.text_align }}' %}
 {% endif %}
@@ -70,8 +73,8 @@
 {% endif %}
 {% comment %} --- Component Render --- {% endcomment %}
 <div
-  class="{{ wrapper_class_str }}"
-  style="{{ wrapper_style_str }}"
+  class='{{ wrapper_class_str }}'
+  style='{{ wrapper_style_str }}'
   {{ context.attached_attributes }}
 >
   {% render 'typography',

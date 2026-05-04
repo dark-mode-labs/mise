@@ -190,31 +190,31 @@
 
 {% comment %} --- 5. Component Render --- {% endcomment %}
 <div
-  class="{{ wrapper_class_str }}"
-  style="{{ wrapper_style_str }}"
+  class='{{ wrapper_class_str }}'
+  style='{{ wrapper_style_str }}'
   {{ context.attached_attributes }}
 >
   {% if s.trigger == 'action' %}
     <button
-      type="button"
-      class="{{ inner_class_str }}"
-      data-action="{{ s.action | escape }}"
+      type='button'
+      class='{{ inner_class_str }}'
+      data-action='{{ s.action | escape }}'
       {% if s.action_args != blank %}
-        data-action-args="{{ s.action_args | escape }}"
+        data-action-args='{{ s.action_args | escape }}'
       {% endif %}
     >
       {% render 'typography', text: s.label, type_style: s.type_style, color_role: color_role, class: utility_classes %}
     </button>
   {% elsif s.trigger == 'link' %}
     <a
-      href="{{ s.link }}"
+      href='{{ s.link }}'
       {% if s.link == blank %}
-        inert="true"
+        inert='true'
       {% endif %}
       {% if s.link_target == '_blank' %}
-        target="_blank" rel="noopener"
+        target='_blank' rel='noopener'
       {% endif %}
-      class="{{ inner_class_str }}"
+      class='{{ inner_class_str }}'
     >
       {% render 'typography', type_style: s.type_style, text: s.label, color_role: color_role, class: utility_classes %}
     </a>

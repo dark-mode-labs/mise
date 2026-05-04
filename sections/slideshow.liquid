@@ -21,23 +21,23 @@
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class="section-slideshow surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} height-{{ s.height }}"
-  style="{{ style_str }}"
+  class='section-slideshow surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} height-{{ s.height }}'
+  style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
   <div
-    class="relative width-{{ s.width }} limit-width  group select-none h-full"
-    data-behavior="slideshow"
-    data-autoplay="{{ s.autoplay }}"
-    data-speed="{{ s.autoplay_speed }}"
-    data-infinite="{{ s.infinite_scroll }}"
-    style="
+    class='relative width-{{ s.width }} limit-width  group select-none h-full'
+    data-behavior='slideshow'
+    data-autoplay='{{ s.autoplay }}'
+    data-speed='{{ s.autoplay_speed }}'
+    data-infinite='{{ s.infinite_scroll }}'
+    style='
       --slide-width: {{ s.slide_width_mobile }}%;
       --slide-width-md: {{ s.slide_width }}%;
       --slide-gap: {{ s.slide_gap }}rem;
-          "
+    '
   >
-    <div class="slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-[var(--slide-gap)]">
+    <div class='slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-[var(--slide-gap)]'>
       {% content_for 'blocks' %}
     </div>
 
@@ -48,16 +48,16 @@
           {% assign arrow_pos_class = 'absolute bottom-8 right-8 z-floating flex gap-2' %}
         {% endif %}
 
-        <div class="{{ arrow_pos_class }}">
+        <div class='{{ arrow_pos_class }}'>
           <button
-            type="button"
-            class="slideshow-prev pointer-events-auto p-3 rounded-full btn-nav"
-            aria-label="Previous"
+            type='button'
+            class='slideshow-prev pointer-events-auto p-3 rounded-full btn-nav'
+            aria-label='Previous'
           >
             {% render 'icon', name: s.arrow_icon, class: 'w-5 h-5' %}
           </button>
 
-          <button type="button" class="slideshow-next pointer-events-auto p-3 rounded-full btn-nav" aria-label="Next">
+          <button type='button' class='slideshow-next pointer-events-auto p-3 rounded-full btn-nav' aria-label='Next'>
             {% assign icon_name = s.arrow_icon | replace: '-left', '-right' %}
             {% render 'icon', name: icon_name, class: 'w-5 h-5' %}
           </button>
@@ -69,22 +69,22 @@
         {% if s.nav_position == 'bottom_left' %} {% assign nav_pos_class = 'absolute bottom-8 left-8' %} {% endif %}
         {% if s.nav_position == 'bottom_right' %} {% assign nav_pos_class = 'absolute bottom-8 right-8' %} {% endif %}
 
-        <div class="{{ nav_pos_class }} z-floating flex items-center gap-3">
+        <div class='{{ nav_pos_class }} z-floating flex items-center gap-3'>
           {% for block in section.blocks %}
             <button
-              type="button"
-              class="slideshow-dot transition-all duration-300"
-              data-index="{{ forloop.index0 }}"
-              aria-label="Go to slide {{ forloop.index }}"
+              type='button'
+              class='slideshow-dot transition-all duration-300'
+              data-index='{{ forloop.index0 }}'
+              aria-label='Go to slide {{ forloop.index }}'
             >
               {% if s.dot_style == 'dots' %}
                 <span
-                  class="slideshow-dot-pill block w-2.5 h-2.5 rounded-full opacity-50 hover:opacity-100 ring-1 ring-transparent"
+                  class='slideshow-dot-pill block w-2.5 h-2.5 rounded-full opacity-50 hover:opacity-100 ring-1 ring-transparent'
                 ></span>
               {% elsif s.dot_style == 'bars' %}
-                <span class="slideshow-dot-pill block w-8 h-1 rounded-sm opacity-50 hover:opacity-100"></span>
+                <span class='slideshow-dot-pill block w-8 h-1 rounded-sm opacity-50 hover:opacity-100'></span>
               {% elsif s.dot_style == 'numbers' %}
-                <span class="slideshow-dot-num text-sm font-bold opacity-50">{{ forloop.index }}</span>
+                <span class='slideshow-dot-num text-sm font-bold opacity-50'>{{ forloop.index }}</span>
               {% endif %}
             </button>
           {% endfor %}
@@ -368,15 +368,10 @@
               }
             }
           },
-          "block_order": [
-            "heading",
-            "btn"
-          ]
+          "block_order": ["heading", "btn"]
         }
       },
-      "block_order": [
-        "slide_1"
-      ]
+      "block_order": ["slide_1"]
     }
   ]
 }

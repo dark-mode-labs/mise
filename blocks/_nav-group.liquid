@@ -45,15 +45,15 @@
 {% assign color_role = s.text_role %}
 {% if s.text_role == 'custom' or s.text_role == 'palette' %}{% assign color_role = 'primary' %}{% endif %}
 <ul
-  class="{{ block_classes }}"
-  style="{{ block_styles }}"
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
   {{ context.attached_attributes }}
 >
   {% for link in s.nav.links %}
     <li>
       <a
-        href="{{ link.url }}"
-        class="hover:opacity-70 transition-opacity block"
+        href='{{ link.url }}'
+        class='hover:opacity-70 transition-opacity block'
       >
         {% render 'typography',
           text: link.title,

@@ -99,43 +99,43 @@
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class="menu-list surface-{{ s.surface_id | default: 'default' }}"
+  class='menu-list surface-{{ s.surface_id | default: 'default' }}'
   data-spy-scope
   data-filter-scope
   {{ context.attached_attributes }}
 >
   <div
-    class="{{ bg_class }} width-{{ s.width }} limit-width {{ section_spacing_class }}"
-    style="{{ style_str }}"
+    class='{{ bg_class }} width-{{ s.width }} limit-width {{ section_spacing_class }}'
+    style='{{ style_str }}'
   >
-    <div class="text-center mx-auto mb-16 fade-up">
+    <div class='text-center mx-auto mb-16 fade-up'>
       {% if s.heading != blank %}
         {% render 'typography', text: s.heading, tag: 'h2', type_style: 'display-1', color_role: 'primary' %}
       {% endif %}
 
       {% if s.subtext != blank %}
-        <div class="text-secondary mt-4">
+        <div class='text-secondary mt-4'>
           {% render 'typography', text: s.subtext, tag: 'div', type_style: 'body', color_role: 'secondary' %}
         </div>
       {% endif %}
     </div>
 
-    <div class="flex {{ main_flex_direction }} relative">
+    <div class='flex {{ main_flex_direction }} relative'>
       {% if s.show_nav and root_categories != blank %}
         <div
-          class="{{ nav_container_class }}"
-          style="{{ sticky_style }}"
+          class='{{ nav_container_class }}'
+          style='{{ sticky_style }}'
           {% if s.enable_filtering %}
-            data-behavior="menu-filter"
+            data-behavior='menu-filter'
           {% endif %}
         >
-          <div class="{% if s.nav_layout == 'horizontal' %}flex items-center justify-between gap-4 max-w-none px-4{% else %}flex flex-col gap-6{% endif %}">
+          <div class='{% if s.nav_layout == 'horizontal' %}flex items-center justify-between gap-4 max-w-none px-4{% else %}flex flex-col gap-6{% endif %}'>
             {% if s.enable_filtering %}
-              <div class="relative {% if s.nav_layout == 'horizontal' %}w-48 hidden md:block flex-shrink-0 order-2 ml-auto{% else %}w-[85%] order-1{% endif %}">
+              <div class='relative {% if s.nav_layout == 'horizontal' %}w-48 hidden md:block flex-shrink-0 order-2 ml-auto{% else %}w-[85%] order-1{% endif %}'>
                 <input
-                  type="text"
-                  placeholder="Search menu..."
-                  class="ts-body-sm w-full bg-transparent border border-default rounded-full px-4 py-2 focus:border-default focus:outline-none transition-colors placeholder:text-secondary"
+                  type='text'
+                  placeholder='Search menu...'
+                  class='ts-body-sm w-full bg-transparent border border-default rounded-full px-4 py-2 focus:border-default focus:outline-none transition-colors placeholder:text-secondary'
                   data-filter-search
                 >
                 {% render 'icon',
@@ -146,16 +146,16 @@
             {% endif %}
             {% if s.enable_filtering and dietary_flags.size > 0 %}
               <div
-                class="{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-default pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}"
+                class='{% if s.nav_layout == 'horizontal' %}flex gap-1 flex-shrink-0 order-3 border-l border-default pl-4 hidden md:flex{% else %}flex flex-wrap gap-2 order-2{% endif %}'
                 data-filter-tags
               >
                 {% for tag in dietary_flags %}
                   {% assign tag_name = tag.name | downcase %}
                   <button
-                    type="button"
-                    data-filter-tag="{{ tag_name }}"
-                    title="Filter by {{ tag.name }}"
-                    class="{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-default rounded-full ts-caption text-secondary hover:text-primary hover:border-default{% else %}px-2 py-1 border border-default rounded ts-caption text-secondary hover:text-primary hover:border-default{% endif %} transition-all [&.is-active]:bg-[var(--text)] [&.is-active]:text-[var(--background)] [&.is-active]:opacity-100"
+                    type='button'
+                    data-filter-tag='{{ tag_name }}'
+                    title='Filter by {{ tag.name }}'
+                    class='{% if s.nav_layout == 'horizontal' %}w-6 h-6 flex items-center justify-center border border-default rounded-full ts-caption text-secondary hover:text-primary hover:border-default{% else %}px-2 py-1 border border-default rounded ts-caption text-secondary hover:text-primary hover:border-default{% endif %} transition-all [&.is-active]:bg-[var(--text)] [&.is-active]:text-[var(--background)] [&.is-active]:opacity-100'
                   >
                     {% render 'icon', name: tag_name, class: 'w-4 h-4' %}
                   </button>
@@ -164,8 +164,8 @@
             {% endif %}
 
             <nav
-              data-behavior="menu-spy"
-              class="{{ nav_wrapper_class }} flex-grow min-w-0 {% if s.nav_layout == 'vertical' %}order-3{% else %}order-1{% endif %}"
+              data-behavior='menu-spy'
+              class='{{ nav_wrapper_class }} flex-grow min-w-0 {% if s.nav_layout == 'vertical' %}order-3{% else %}order-1{% endif %}'
             >
               {% for parent in root_categories %}
                 {% render 'menu-nav-recursive',
@@ -182,7 +182,7 @@
         </div>
       {% endif %}
 
-      <div class="flex-grow flex flex-col gap-20" data-filter-container>
+      <div class='flex-grow flex flex-col gap-20' data-filter-container>
         {% for parent in root_categories %}
           {% render 'menu-category-recursive',
             category: parent.category,
@@ -203,15 +203,15 @@
       </div>
     </div>
 
-    <div id="filter-empty-state" class="hidden w-full py-20 text-center opacity-50">
-      <p class="ts-heading-3">No items found matching your filters.</p>
-      <button type="button" data-action="clear-filters" class="ts-body-sm mt-4 underline hover:opacity-100">
+    <div id='filter-empty-state' class='hidden w-full py-20 text-center opacity-50'>
+      <p class='ts-heading-3'>No items found matching your filters.</p>
+      <button type='button' data-action='clear-filters' class='ts-body-sm mt-4 underline hover:opacity-100'>
         Clear Filters
       </button>
     </div>
 
     {% if disclaimers.size > 0 %}
-      <div class="ts-caption w-full text-center mt-20 flex flex-col gap-3 opacity-60 mx-auto border-t border-default/10 pt-8">
+      <div class='ts-caption w-full text-center mt-20 flex flex-col gap-3 opacity-60 mx-auto border-t border-default/10 pt-8'>
         {% for disclaimer in disclaimers %}
           <p>{{ disclaimer.text }}</p>
         {% endfor %}

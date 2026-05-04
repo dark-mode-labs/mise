@@ -245,11 +245,11 @@
 {% comment %} --- Component Render --- {% endcomment %}
 {% if s.trigger == 'link' and s.link %}
   <a
-    class="isolate {{ block_classes }}"
-    style="{{ block_styles }}"
-    href="{{ s.link }}"
+    class='isolate {{ block_classes }}'
+    style='{{ block_styles }}'
+    href='{{ s.link }}'
     {% if s.link_target == '_blank' %}
-      target="_blank" rel="noopener"
+      target='_blank' rel='noopener'
     {% endif %}
     {{ context.attached_attributes }}
   >
@@ -257,12 +257,12 @@
   </a>
 {% else %}
   <div
-    class="isolate {{ block_classes }}"
-    style="{{ block_styles }}"
+    class='isolate {{ block_classes }}'
+    style='{{ block_styles }}'
     {{ context.attached_attributes }}
     {% if s.trigger == 'action' %}
-      data-action="{{ s.action | escape }}"
-      {% if s.action_args != blank %}data-action-args="{{ s.action_args | escape }}"{% endif %}
+      data-action='{{ s.action | escape }}'
+      {% if s.action_args != blank %}data-action-args='{{ s.action_args | escape }}'{% endif %}
     {% endif %}
   >
     {{ content }}

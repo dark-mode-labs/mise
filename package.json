@@ -4,15 +4,20 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
-    "dev": "node build.js --watch"
+    "dev": "node build.js --watch",
+    "test": "node --test 'test/js/**/*.test.js'",
+    "format": "prettier --write \"**/*.{js,json,liquid}\"",
+    "format:check": "prettier --check \"**/*.{js,json,liquid}\""
   },
   "devDependencies": {
+    "@shopify/prettier-plugin-liquid": "^1.10.2",
     "@tailwindcss/forms": "^0.5.9",
     "@tailwindcss/typography": "^0.5.15",
     "chokidar": "^3.5.3",
     "esbuild": "^0.19.5",
     "esbuild-plugin-import-glob": "^0.1.1",
     "fs-extra": "^11.1.1",
+    "prettier": "^3.8.3",
     "tailwindcss": "^3.4.0"
   }
 }

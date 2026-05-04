@@ -48,8 +48,8 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <footer
-  class="section-footer surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} text-primary relative isolate"
-  style="{{ style_str }}"
+  class='section-footer surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} text-primary relative isolate'
+  style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
   {% render 'bg-overlay',
@@ -61,10 +61,10 @@
     behind: true
   %}
   <div
-    class="{{ container_class_str }} relative"
-    style="{{ spacing_style_str }}"
+    class='{{ container_class_str }} relative'
+    style='{{ spacing_style_str }}'
   >
-    <div class="flex flex-auto flex-col md:flex-row justify-content-{{ s.justify_content }}">
+    <div class='flex flex-auto flex-col md:flex-row justify-content-{{ s.justify_content }}'>
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -74,9 +74,7 @@
 {
   "name": "Footer",
   "restriction": {
-    "groups": [
-      "footer"
-    ]
+    "groups": ["footer"]
   },
   "settings": [
     {

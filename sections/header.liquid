@@ -73,27 +73,27 @@
 
 {% comment %} --- Header Render --- {% endcomment %}
 <header
-  class="{{ header_class_str }}"
-  data-behavior="header"
-  data-sticky="{{ s.sticky_behavior }}"
-  data-transparent="{% if s.header_overlay_mode == 'transparent' %}true{% else %}false{% endif %}"
-  style="{{ style_str }}"
+  class='{{ header_class_str }}'
+  data-behavior='header'
+  data-sticky='{{ s.sticky_behavior }}'
+  data-transparent='{% if s.header_overlay_mode == 'transparent' %}true{% else %}false{% endif %}'
+  style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
-  <div class="width-{{ s.width }} grid grid-cols-3 items-center limit-width">
+  <div class='width-{{ s.width }} grid grid-cols-3 items-center limit-width'>
     {% comment %} Left Col {% endcomment %}
-    <div class="flex items-center justify-start gap-4">
+    <div class='flex items-center justify-start gap-4'>
       <button
-        type="button"
-        class="lg:hidden p-2 -ml-2 text-on-button hover:opacity-70"
-        data-action="toggle-drawer"
-        aria-label="Menu"
+        type='button'
+        class='lg:hidden p-2 -ml-2 text-on-button hover:opacity-70'
+        data-action='toggle-drawer'
+        aria-label='Menu'
       >
         {% render 'icon', name: 'menu', class: 'w-6 h-6' %}
       </button>
 
       {% if s.desktop_layout == 'logo_left' %}
-        <div class="mr-8 flex-shrink-0 hidden lg:block">{{ slot_logo }}</div>
+        <div class='mr-8 flex-shrink-0 hidden lg:block'>{{ slot_logo }}</div>
         <div>
           {% if s.nav_alignment == 'left' %}{{ slot_nav }}{% endif %}
         </div>
@@ -103,17 +103,17 @@
     </div>
 
     {% comment %} Center Col {% endcomment %}
-    <div class="flex items-center justify-center flex-auto">
+    <div class='flex items-center justify-center flex-auto'>
       {% if s.nav_alignment == 'center' %}{{ slot_nav }}{% endif %}
 
       {% assign logo_wrap_class = '' %}
       {% if s.desktop_layout == 'logo_left' %}{% assign logo_wrap_class = 'lg:hidden' %}{% endif %}
 
-      <div class="{{ logo_wrap_class }}">{{ slot_logo }}</div>
+      <div class='{{ logo_wrap_class }}'>{{ slot_logo }}</div>
     </div>
 
     {% comment %} Right Col {% endcomment %}
-    <div class="flex items-center justify-end gap-4">
+    <div class='flex items-center justify-end gap-4'>
       {% if s.nav_alignment == 'right' %}{{ slot_nav }}{% endif %}
       {{ slot_actions }}
     </div>
@@ -121,16 +121,14 @@
 </header>
 
 {% if needs_spacer %}
-  <div class="w-full h-16"></div>
+  <div class='w-full h-16'></div>
 {% endif %}
 
 {% schema %}
 {
   "name": "Header",
   "restriction": {
-    "groups": [
-      "header"
-    ]
+    "groups": ["header"]
   },
   "settings": [
     {

@@ -67,7 +67,6 @@
   %}
 {% endif %}
 
-
 {% if bg_color_value != blank %}
   {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
@@ -85,15 +84,15 @@
 
 {% comment %} --- Component Render --- {% endcomment %}
 <section
-  class="{{ surface_class }}"
+  class='{{ surface_class }}'
   {{ context.attached_attributes }}
 >
   <div
-    class="{{ bg_layer_class_str }}"
-    style="{{ style_str }}"
+    class='{{ bg_layer_class_str }}'
+    style='{{ style_str }}'
   >
-    <div class="{{ content_layer_class_str }}">
-      <div class="{{ inner_class_str }}">
+    <div class='{{ content_layer_class_str }}'>
+      <div class='{{ inner_class_str }}'>
         {% content_for 'blocks' %}
       </div>
     </div>
@@ -426,11 +425,7 @@
           }
         }
       },
-      "block_order": [
-        "heading",
-        "body",
-        "btn"
-      ]
+      "block_order": ["heading", "body", "btn"]
     }
   ]
 }
