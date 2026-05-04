@@ -18,7 +18,7 @@
   `justify-center` was breaking the footer logo (always centered) and
   any non-default header layout.
 {% endcomment %}
-{% assign classes = 'flex items-center relative z-content group-hover:opacity-100 text-primary' %}
+{% assign classes = 'brand-logo flex items-center relative z-content group-hover:opacity-100 text-primary' %}
 
 {% if s.surface_override %}
   {% assign classes = classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
