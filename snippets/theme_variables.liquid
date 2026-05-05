@@ -78,15 +78,24 @@
         {%- for slot_id in slots -%}
           {%- assign slot_val = s[slot_id] | default: '' -%}
           {%- assign css_var = '--' | append: slot_id | replace: '_', '-' -%}
-          {% assign first_slot_char = slot_val | slice: 0, 1 %}
-          {%- if slot_val == blank -%}
-            {{ css_var }}: transparent;
-          {%- elsif first_slot_char == '@' -%}
-            {%- assign ref = slot_val | remove_first: '@' -%}
-            {{ css_var }}: var(--palette-{{ ref }});
-          {%- else -%}
-            {{ css_var }}: {{ slot_val }};
-          {%- endif -%}
+          {%- comment -%}
+            Skip emission for blank slots — let CSS variable inheritance
+            carry the value from the parent surface scope. A nested
+            `.surface-card` with no explicit `button_bg` should inherit
+            `--button-bg` from the outer `.surface-default`; emitting
+            `transparent` here would shadow that inheritance and paint
+            buttons transparent in card scopes. For an explicit "no fill"
+            intent, set the slot to the literal string `transparent`.
+          {%- endcomment -%}
+          {%- unless slot_val == blank -%}
+            {%- assign first_slot_char = slot_val | slice: 0, 1 -%}
+            {%- if first_slot_char == '@' -%}
+              {%- assign ref = slot_val | remove_first: '@' -%}
+              {{ css_var }}: var(--palette-{{ ref }});
+            {%- else -%}
+              {{ css_var }}: {{ slot_val }};
+            {%- endif -%}
+          {%- endunless -%}
         {%- endfor -%}
       }
     {% endfor %}

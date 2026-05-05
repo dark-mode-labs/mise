@@ -89,7 +89,6 @@
     @apply absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 pointer-events-auto;
   }
 
-
   .group-block,
   .carousel-block {
     @apply group-hover:pointer-events-none;
@@ -106,19 +105,24 @@
     visibility: hidden;
   }
 
-  .carousel-block .slideshow-track>*,
-  .carousel-block .slideshow-track>.contents>* {
+  .carousel-block .slideshow-track > *,
+  .carousel-block .slideshow-track > .contents > * {
     flex: 0 0 auto;
     scroll-snap-align: start;
     box-sizing: border-box;
-    width: var(--computed-slide-width, calc((100% - (1rem * (var(--cols-mobile) - 1))) / var(--cols-mobile)));
+    width: var(
+      --computed-slide-width,
+      calc((100% - (1rem * (var(--cols-mobile) - 1))) / var(--cols-mobile))
+    );
   }
 
   @media (min-width: 540px) {
-
-    .carousel-block .slideshow-track>*,
-    .carousel-block .slideshow-track>.contents>* {
-      width: var(--computed-slide-width, calc((100% - (1rem * (var(--cols-desktop) - 1))) / var(--cols-desktop)));
+    .carousel-block .slideshow-track > *,
+    .carousel-block .slideshow-track > .contents > * {
+      width: var(
+        --computed-slide-width,
+        calc((100% - (1rem * (var(--cols-desktop) - 1))) / var(--cols-desktop))
+      );
     }
   }
 
@@ -204,7 +208,7 @@
   .media-wrapper .placeholder-svg {
     width: 100%;
     height: 100%;
-    object-fit: var(--object-fit, 'cover');
+    object-fit: var(--object-fit, "cover");
     display: block;
   }
 
@@ -308,7 +312,11 @@
   }
 
   .header-section {
-    transition: transform 0.3s ease-in-out, background 0.3s ease-in-out, box-shadow 0.3s, border-color 0.3s;
+    transition:
+      transform 0.3s ease-in-out,
+      background 0.3s ease-in-out,
+      box-shadow 0.3s,
+      border-color 0.3s;
     will-change: transform, background;
   }
 
@@ -456,7 +464,6 @@
     flex: 1 1 auto;
   }
 
-
   /* Layout sections (hero/grid/section/media-with-content) want
      `min-height` on the named tier — content can grow taller, the
      tier sets a floor. Slideshow + media blocks want `height` (fixed
@@ -559,7 +566,7 @@
     flex-direction: column;
   }
 
-  .media-block>.media-wrapper {
+  .media-block > .media-wrapper {
     flex: 1 1 auto;
     min-height: 0;
   }
@@ -1062,7 +1069,7 @@
     animation-iteration-count: var(--animation-iteration, 1);
   }
 
-  .stagger-load>*:not(.no-stagger) {
+  .stagger-load > *:not(.no-stagger) {
     opacity: 0;
     will-change: opacity, transform;
 
@@ -1072,51 +1079,51 @@
     animation: none !important;
   }
 
-  .stagger-load>*:nth-child(1) {
+  .stagger-load > *:nth-child(1) {
     --stagger-delay: 0ms;
   }
 
-  .stagger-load>*:nth-child(2) {
+  .stagger-load > *:nth-child(2) {
     --stagger-delay: 150ms;
   }
 
-  .stagger-load>*:nth-child(3) {
+  .stagger-load > *:nth-child(3) {
     --stagger-delay: 300ms;
   }
 
-  .stagger-load>*:nth-child(4) {
+  .stagger-load > *:nth-child(4) {
     --stagger-delay: 450ms;
   }
 
-  .stagger-load>*:nth-child(5) {
+  .stagger-load > *:nth-child(5) {
     --stagger-delay: 600ms;
   }
 
-  .stagger-load>*:nth-child(6) {
+  .stagger-load > *:nth-child(6) {
     --stagger-delay: 750ms;
   }
 
-  .stagger-load>*:nth-child(7) {
+  .stagger-load > *:nth-child(7) {
     --stagger-delay: 900ms;
   }
 
-  .stagger-load>*:nth-child(8) {
+  .stagger-load > *:nth-child(8) {
     --stagger-delay: 1050ms;
   }
 
-  .stagger-load>*:nth-child(9) {
+  .stagger-load > *:nth-child(9) {
     --stagger-delay: 1200ms;
   }
 
-  .stagger-load>*:nth-child(10) {
+  .stagger-load > *:nth-child(10) {
     --stagger-delay: 1350ms;
   }
 
-  .stagger-load>*:nth-child(n+11) {
+  .stagger-load > *:nth-child(n + 11) {
     --stagger-delay: 1500ms;
   }
 
-  .stagger-load.animate>*:not(.no-stagger) {
+  .stagger-load.animate > *:not(.no-stagger) {
     animation-name: var(--animation-name) !important;
     animation-duration: var(--animation-duration) !important;
     animation-timing-function: var(--animation-ease, ease-out) !important;
@@ -1125,7 +1132,7 @@
   }
 
   .fade-up,
-  .stagger-load>.fade-up {
+  .stagger-load > .fade-up {
     --animation-name: fadeUp;
     --animation-duration: 0.6s;
     opacity: 0;
@@ -1134,7 +1141,7 @@
   }
 
   .fade-in,
-  .stagger-load>.fade-in {
+  .stagger-load > .fade-in {
     --animation-name: fadeIn;
     --animation-duration: 0.8s;
     opacity: 0;
@@ -1142,7 +1149,7 @@
   }
 
   .scale-in,
-  .stagger-load>.scale-in {
+  .stagger-load > .scale-in {
     --animation-name: scaleIn;
     --animation-duration: 0.5s;
     opacity: 0;
@@ -1234,7 +1241,6 @@
   }
 
   @keyframes float {
-
     0%,
     100% {
       transform: translateY(0px);
