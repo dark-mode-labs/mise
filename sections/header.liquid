@@ -241,15 +241,14 @@
         { "value": "logo_left", "label": "Left" },
         { "value": "logo_right", "label": "Right" }
       ],
-      "default": "logo_center",
-      "info": "Logo position in mobile drawer view. Hamburger flips to the opposite side."
+      "default": "logo_center"
     },
     {
       "type": "width",
       "id": "mobile_breakpoint",
       "label": "Desktop nav breakpoint",
       "default": "broad",
-      "info": "Width threshold above which the desktop nav shows and the hamburger is hidden. Reuses container scale tiers (column=768, broad=1024, canvas=1280, extra-wide=1536)."
+      "info": "Width threshold above which the desktop nav shows and the hamburger is hidden."
     },
     {
       "type": "header",
@@ -489,7 +488,6 @@
       "type": "palette",
       "id": "bg_role_palette",
       "label": "Background Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.bg_role == 'palette'"
     },
@@ -503,14 +501,13 @@
       "type": "gradient",
       "id": "bg_role_gradient",
       "label": "Background Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.bg_role == 'gradient'"
     },
     {
       "type": "select",
       "id": "backdrop_blur",
       "label": "Backdrop Blur",
-      "info": "Frosted-glass blur strength behind the header. Pair with a translucent `bg_role_*` for the classic glass effect.",
+      "info": "Frosted-glass blur strength behind the header.",
       "default": "none",
       "options": [
         { "value": "none", "label": "None" },

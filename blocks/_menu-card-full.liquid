@@ -157,7 +157,6 @@
       "type": "type_style",
       "id": "type_style",
       "label": "Type Style",
-      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
       "default": "body"
     },
     {
@@ -374,7 +373,6 @@
       "type": "palette",
       "id": "border_role_palette",
       "label": "Border Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
     },
@@ -388,7 +386,6 @@
       "type": "gradient",
       "id": "border_role_gradient",
       "label": "Border Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.border_role == 'gradient'"
     },
     {
@@ -537,7 +534,6 @@
       "type": "palette",
       "id": "bg_role_palette",
       "label": "Background Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.bg_role == 'palette'"
     },
@@ -551,7 +547,6 @@
       "type": "gradient",
       "id": "bg_role_gradient",
       "label": "Background Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.bg_role == 'gradient'"
     },
     {
@@ -610,7 +605,6 @@
       "type": "palette",
       "id": "overlay_role_palette",
       "label": "Overlay Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.overlay_role == 'palette'"
     },
@@ -624,7 +618,6 @@
       "type": "gradient",
       "id": "overlay_role_gradient",
       "label": "Overlay Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.overlay_role == 'gradient'"
     },
     {
@@ -648,7 +641,7 @@
       "type": "select",
       "id": "backdrop_blur",
       "label": "Backdrop Blur",
-      "info": "Frosted-glass blur strength behind the card. Pair with a translucent `bg_role_*` for the classic glass effect.",
+      "info": "Frosted-glass blur strength behind the card.",
       "default": "none",
       "options": [
         { "value": "none", "label": "None" },
