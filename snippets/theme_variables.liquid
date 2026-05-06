@@ -78,15 +78,24 @@
         {%- for slot_id in slots -%}
           {%- assign slot_val = s[slot_id] | default: '' -%}
           {%- assign css_var = '--' | append: slot_id | replace: '_', '-' -%}
-          {% assign first_slot_char = slot_val | slice: 0, 1 %}
-          {%- if slot_val == blank -%}
-            {{ css_var }}: transparent;
-          {%- elsif first_slot_char == '@' -%}
-            {%- assign ref = slot_val | remove_first: '@' -%}
-            {{ css_var }}: var(--palette-{{ ref }});
-          {%- else -%}
-            {{ css_var }}: {{ slot_val }};
-          {%- endif -%}
+          {%- comment -%}
+            Skip emission for blank slots — let CSS variable inheritance
+            carry the value from the parent surface scope. A nested
+            `.surface-card` with no explicit `button_bg` should inherit
+            `--button-bg` from the outer `.surface-default`; emitting
+            `transparent` here would shadow that inheritance and paint
+            buttons transparent in card scopes. For an explicit "no fill"
+            intent, set the slot to the literal string `transparent`.
+          {%- endcomment -%}
+          {%- unless slot_val == blank -%}
+            {%- assign first_slot_char = slot_val | slice: 0, 1 -%}
+            {%- if first_slot_char == '@' -%}
+              {%- assign ref = slot_val | remove_first: '@' -%}
+              {{ css_var }}: var(--palette-{{ ref }});
+            {%- else -%}
+              {{ css_var }}: {{ slot_val }};
+            {%- endif -%}
+          {%- endunless -%}
         {%- endfor -%}
       }
     {% endfor %}
@@ -116,6 +125,12 @@
     {% endcomment %}
     .direction-responsive.responsive-order-reverse { flex-direction: column-reverse; }
 
+    {% comment %}
+      Repeater blocks emit a `<div class='contents'>` wrapper between the
+      parent group and the card children (for data-binding context). The
+      direct-child selectors below also match through that wrapper so the
+      mobile width-collapse fires on cards inside repeaters too.
+    {% endcomment %}
     {% for c in container_scale %}
       {% unless c[1].settings.structural %}
         {% assign mw = c[1].settings.max_width %}
@@ -124,9 +139,13 @@
         @media (max-width: calc({{ mw }} - 0.0625rem)) {
           .direction-responsive.bp-{{ c[0] }} > .width-half,
           .direction-responsive.bp-{{ c[0] }} > .width-third,
-          .direction-responsive.bp-{{ c[0] }} > .width-quarter
+          .direction-responsive.bp-{{ c[0] }} > .width-quarter,
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-half,
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-third,
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-quarter
             { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
-          .direction-responsive.bp-{{ c[0] }} > .width-fit { --limit-width: 100%; }
+          .direction-responsive.bp-{{ c[0] }} > .width-fit,
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-fit { --limit-width: 100%; }
         }
         {% endif %}
       {% endunless %}
@@ -192,16 +211,26 @@
       {% endcomment %}
       .direction-row > .width-half,
       .direction-row > .width-third,
-      .direction-row > .width-quarter
+      .direction-row > .width-quarter,
+      .direction-row > .contents > .width-half,
+      .direction-row > .contents > .width-third,
+      .direction-row > .contents > .width-quarter
         { --limit-width: 100%; flex: 0 0 100%; }
       .direction-column > .width-half,
       .direction-column > .width-third,
       .direction-column > .width-quarter,
+      .direction-column > .contents > .width-half,
+      .direction-column > .contents > .width-third,
+      .direction-column > .contents > .width-quarter,
       .direction-responsive > .width-half,
       .direction-responsive > .width-third,
-      .direction-responsive > .width-quarter
+      .direction-responsive > .width-quarter,
+      .direction-responsive > .contents > .width-half,
+      .direction-responsive > .contents > .width-third,
+      .direction-responsive > .contents > .width-quarter
         { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
-      .direction-responsive > .width-fit { --limit-width: 100%; }
+      .direction-responsive > .width-fit,
+      .direction-responsive > .contents > .width-fit { --limit-width: 100%; }
     }
 
     {% comment %}
