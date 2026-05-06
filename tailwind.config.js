@@ -9,6 +9,17 @@ export default {
     "./config/*.json",
     "./assets/css/theme.css",
   ],
+  safelist: [
+    // Liquid-interpolated `backdrop-blur-{{ s.backdrop_blur }}` on
+    // group / header / badge — content scanner can't see the dynamic
+    // tier so emit all named tiers explicitly.
+    "backdrop-blur-sm",
+    "backdrop-blur-md",
+    "backdrop-blur-lg",
+    "backdrop-blur-xl",
+    "backdrop-blur-2xl",
+    "backdrop-blur-3xl",
+  ],
   theme: {
     extend: {
       height: {

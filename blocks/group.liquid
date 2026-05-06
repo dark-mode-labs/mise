@@ -49,8 +49,10 @@
   | push_if: 'hover-shadow', s.animate_shadow_hover
   | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
-  | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
 %}
+{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
+  {% assign classes = classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
+{% endif %}
 
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
@@ -920,10 +922,20 @@
       "default": false
     },
     {
-      "type": "checkbox",
-      "id": "enable_glass",
-      "label": "Glass Effect",
-      "default": false
+      "type": "select",
+      "id": "backdrop_blur",
+      "label": "Backdrop Blur",
+      "info": "Frosted-glass blur strength applied behind the block. Pair with a translucent `bg_role_*` for the classic glass effect.",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" },
+        { "value": "2xl", "label": "2X-Large" },
+        { "value": "3xl", "label": "3X-Large" }
+      ]
     },
     {
       "type": "checkbox",

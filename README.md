@@ -33,20 +33,25 @@ Mise is structured around three pillars: Global Utility, Transactional (Menu), a
 Essential navigation and communication layers.
 
 **`header` (Section)**: The command center.
+
 - **Settings**: Configurable Desktop Layout (Logo Left/Center), Navigation Alignment, and Sticky Behavior (Static, Always, or "Show on Scroll Up").
 - **Features**: Supports Transparent Mode over Hero sections, Mobile Drawer navigation, and integrated Search/Cart actions.
 
 **`announcement-bar` (Section)**: The daily special.
+
 - **Purpose**: Urgent notices (Holiday Hours, Sold Out items).
 - **Features**: Supports Marquee mode (scrolling text) or static centered text. Closable state is remembered via local storage.
 
 **`footer` (Section)**: The anchor.
+
 - **Content**: Configurable Brand area, Multi-column navigation, and Newsletter signup form.
 
 **`background` (Section)**: Global atmosphere.
+
 - **Purpose**: Sets a fixed background image or color that persists across the site (`z-index: -50`) with optional overlay opacity.
 
 **`divider` (Section)**: The palate cleanser.
+
 - **Features**: Configurable height and line style (Solid, Dashed, Icon: Star, Diamond, Utensils) that respects the global color scheme.
 
 ### 2. The Menu System (Transactional Core)
@@ -54,19 +59,23 @@ Essential navigation and communication layers.
 The engine of the theme. Designed to handle complex data with elegance.
 
 **`menu-list` (Section)**: The controller.
+
 - **Smart Grid Logic**: Safely toggles column counts (1:2:2 vs 1:2:3) to prevent text crushing on tablets.
 - **Navigation**: Supports "Sidebar" (Vertical) or "Topbar" (Horizontal) layouts with sticky "Spy" navigation.
 - **Data**: Populated via `repeater` blocks (inheriting from Collection/JSON) or manual `group` blocks.
 
 **`grid` (Section)**: Flexible Layouts (aka Multi-Column).
+
 - **Purpose**: A generic flex container for grouping content manually (e.g., "Sourcing", "Prep", "Plating").
 - **Settings**: Control alignment (Start, Center, End, Between), Width Schemes, and Card usage.
 
 **`snippets/menu-item-list`**: The high-density view.
+
 - **Top-Aligned Pricing**: Anchors prices to the first line of text, preventing the "sinking ship" effect.
 - **No Dots**: Replaces noisy leaders with calculated whitespace gutters for a premium aesthetic.
 
 **`snippets/menu-item-card`**: The visual view.
+
 - **Unified Headers**: Complex items display "From $X" in the header instead of hiding pricing in buttons.
 - **Layouts**: Supports Standard (Stack) and Compact (Row) modes.
 
@@ -75,18 +84,22 @@ The engine of the theme. Designed to handle complex data with elegance.
 Tools to communicate ethos, sourcing, and atmosphere.
 
 **`hero` (Section)**: The first impression.
+
 - **Technical**: Supports Full Height (`100svh`) to prevent mobile browser bar jumps.
 - **Media**: Handles HTML5 background video with seamless poster fallbacks and automatic dimming layers for text legibility.
 
 **`slideshow` (Section)**: The visual carousel.
+
 - **Performance**: Uses native scroll snapping (CSS Scroll Snap) instead of heavy JS libraries.
 - **Content**: Supports mixed media (Video/Image) slides with independent text overlay positioning.
 
 **`marquee` (Section)**: The vibe setter.
+
 - **Purpose**: Continuous scrolling text or images for brand values ("Organic • Local • Sustainable").
 - **Tech**: Pure CSS animation for 60fps performance without JS overhead.
 
 **`section` (Section)**: Generic Container.
+
 - **Purpose**: A blank canvas section that accepts standard blocks (`heading`, `text`, `image`, `video`, `button`) for custom layouts.
 
 ## Developer Guidelines

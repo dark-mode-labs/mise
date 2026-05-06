@@ -38,6 +38,9 @@
   | push: 'margin-mx-{{ s.margin_horizontal }}'
   | push_if: 'shadow-lg', s.shadow
 %}
+{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
+  {% assign classes = classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
+{% endif %}
 
 {% comment %}
   Background layer: scheme-driven via .bg-<role>. Escape-hatch
@@ -690,6 +693,22 @@
       "id": "shadow",
       "label": "Show Shadow",
       "default": false
+    },
+    {
+      "type": "select",
+      "id": "backdrop_blur",
+      "label": "Backdrop Blur",
+      "info": "Frosted-glass blur strength behind the badge. Pair with a translucent `bg_role_*` for the classic glass effect.",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" },
+        { "value": "2xl", "label": "2X-Large" },
+        { "value": "3xl", "label": "3X-Large" }
+      ]
     },
     {
       "type": "header",
