@@ -49,8 +49,10 @@
   | push_if: 'hover-shadow', s.animate_shadow_hover
   | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
-  | push_if: 'backdrop-blur-md bg-opacity-80 border border-white/10', s.enable_glass
 %}
+{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
+  {% assign classes = classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
+{% endif %}
 
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
@@ -620,10 +622,10 @@
       "default": "auto"
     },
     {
-      "type": "container_scale",
+      "type": "width",
       "id": "direction_breakpoint",
       "label": "Direction breakpoint",
-      "info": "When direction is `responsive`, this controls the viewport width at which the layout switches from column to row. Tier name references `theme.container_scale` \u2014 each container tier doubles as a breakpoint reference (column=768px=md, broad=1024px=lg, canvas=1280px=xl, extra-wide=1536px=2xl). Default `column` (768px) preserves mise's prior hardcoded md behavior.",
+      "info": "This controls the viewport width at which the layout switches from column to row.",
       "default": "column",
       "conditional": "setting.direction == 'responsive'"
     },
@@ -631,7 +633,6 @@
       "type": "select",
       "id": "responsive_order_override",
       "label": "Responsive Order Override",
-      "info": "Below the direction breakpoint (column mode), reverse the visual order of children. Above the breakpoint (row mode), children render in source order regardless. Mirrors Tailwind's `flex-col-reverse <bp>:flex-row` pattern.",
       "options": [
         {
           "value": "normal",
@@ -896,7 +897,6 @@
       "type": "palette",
       "id": "bg_role_palette",
       "label": "Background Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.bg_role == 'palette'"
     },
@@ -910,7 +910,6 @@
       "type": "gradient",
       "id": "bg_role_gradient",
       "label": "Background Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.bg_role == 'gradient'"
     },
     {
@@ -920,10 +919,20 @@
       "default": false
     },
     {
-      "type": "checkbox",
-      "id": "enable_glass",
-      "label": "Glass Effect",
-      "default": false
+      "type": "select",
+      "id": "backdrop_blur",
+      "label": "Backdrop Blur",
+      "info": "Frosted-glass blur strength applied behind the block.",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" },
+        { "value": "2xl", "label": "2X-Large" },
+        { "value": "3xl", "label": "3X-Large" }
+      ]
     },
     {
       "type": "checkbox",
@@ -1002,7 +1011,6 @@
       "type": "palette",
       "id": "border_role_palette",
       "label": "Border Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
     },
@@ -1016,7 +1024,6 @@
       "type": "gradient",
       "id": "border_role_gradient",
       "label": "Border Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.border_role == 'gradient'"
     },
     {
@@ -1165,7 +1172,6 @@
       "type": "palette",
       "id": "overlay_role_palette",
       "label": "Overlay Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.overlay_role == 'palette'"
     },
@@ -1179,7 +1185,6 @@
       "type": "gradient",
       "id": "overlay_role_gradient",
       "label": "Overlay Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.overlay_role == 'gradient'"
     },
     {

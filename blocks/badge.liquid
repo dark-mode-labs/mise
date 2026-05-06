@@ -38,6 +38,9 @@
   | push: 'margin-mx-{{ s.margin_horizontal }}'
   | push_if: 'shadow-lg', s.shadow
 %}
+{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
+  {% assign classes = classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
+{% endif %}
 
 {% comment %}
   Background layer: scheme-driven via .bg-<role>. Escape-hatch
@@ -142,7 +145,6 @@
       "type": "type_style",
       "id": "type_style",
       "label": "Type Style",
-      "info": "References a Tier-2 type-style entry \u2014 bundles font family, size, weight, tracking, leading, transform into one named treatment.",
       "default": "caption"
     },
     {
@@ -197,7 +199,6 @@
       "type": "palette",
       "id": "text_role_palette",
       "label": "Text Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.text_role == 'palette'"
     },
@@ -421,7 +422,6 @@
       "type": "palette",
       "id": "border_role_palette",
       "label": "Border Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
     },
@@ -435,7 +435,6 @@
       "type": "gradient",
       "id": "border_role_gradient",
       "label": "Border Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.border_role == 'gradient'"
     },
     {
@@ -584,7 +583,6 @@
       "type": "palette",
       "id": "bg_role_palette",
       "label": "Background Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.bg_role == 'palette'"
     },
@@ -598,7 +596,6 @@
       "type": "gradient",
       "id": "bg_role_gradient",
       "label": "Background Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.bg_role == 'gradient'"
     },
     {
@@ -657,7 +654,6 @@
       "type": "palette",
       "id": "overlay_role_palette",
       "label": "Overlay Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.overlay_role == 'palette'"
     },
@@ -671,7 +667,6 @@
       "type": "gradient",
       "id": "overlay_role_gradient",
       "label": "Overlay Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.overlay_role == 'gradient'"
     },
     {
@@ -690,6 +685,22 @@
       "id": "shadow",
       "label": "Show Shadow",
       "default": false
+    },
+    {
+      "type": "select",
+      "id": "backdrop_blur",
+      "label": "Backdrop Blur",
+      "info": "Frosted-glass blur strength behind the badge.",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" },
+        { "value": "2xl", "label": "2X-Large" },
+        { "value": "3xl", "label": "3X-Large" }
+      ]
     },
     {
       "type": "header",

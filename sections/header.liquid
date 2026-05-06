@@ -56,8 +56,10 @@
   | push: 'mobile-{{ s.mobile_layout }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
-  | push_if: 'backdrop-blur-md', s.enable_glass
 %}
+{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
+  {% assign header_classes = header_classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
+{% endif %}
 
 {% assign header_class_str = header_classes | join: ' ' %}
 
@@ -239,15 +241,14 @@
         { "value": "logo_left", "label": "Left" },
         { "value": "logo_right", "label": "Right" }
       ],
-      "default": "logo_center",
-      "info": "Logo position in mobile drawer view. Hamburger flips to the opposite side."
+      "default": "logo_center"
     },
     {
       "type": "width",
       "id": "mobile_breakpoint",
       "label": "Desktop nav breakpoint",
       "default": "broad",
-      "info": "Width threshold above which the desktop nav shows and the hamburger is hidden. Reuses container scale tiers (column=768, broad=1024, canvas=1280, extra-wide=1536)."
+      "info": "Width threshold above which the desktop nav shows and the hamburger is hidden."
     },
     {
       "type": "header",
@@ -487,7 +488,6 @@
       "type": "palette",
       "id": "bg_role_palette",
       "label": "Background Palette Token",
-      "info": "Picks a named brand-palette token. Updates follow palette edits.",
       "default": "brand",
       "conditional": "setting.bg_role == 'palette'"
     },
@@ -501,15 +501,23 @@
       "type": "gradient",
       "id": "bg_role_gradient",
       "label": "Background Gradient",
-      "info": "Picks a named gradient token from the site's gradient set.",
       "conditional": "setting.bg_role == 'gradient'"
     },
     {
-      "type": "checkbox",
-      "id": "enable_glass",
-      "label": "Glass Effect",
-      "info": "Frosted-glass backdrop-blur on the header. The bg color/alpha and any border come from the existing `bg_role` / border settings \u2014 `enable_glass` only adds the blur layer.",
-      "default": false
+      "type": "select",
+      "id": "backdrop_blur",
+      "label": "Backdrop Blur",
+      "info": "Frosted-glass blur strength behind the header.",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" },
+        { "value": "2xl", "label": "2X-Large" },
+        { "value": "3xl", "label": "3X-Large" }
+      ]
     },
     {
       "type": "header",
