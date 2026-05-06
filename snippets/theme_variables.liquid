@@ -163,6 +163,28 @@
       .direction-responsive:not([class*="bp-"]) { flex-direction: row; }
     }
 
+    {% comment %}
+      Header mobile-breakpoint per tier — `bp-<tier>` on
+      `.header-section` swaps nav visibility, hamburger, action
+      children, logo variant, and grid columns above the tier
+      width. Default fallback at lg=1024 lives in theme.css.
+    {% endcomment %}
+    {% for c in container_scale %}
+      {% unless c[1].settings.structural %}
+        {% assign mw = c[1].settings.max_width %}
+        {% if mw contains 'rem' or mw contains 'px' %}
+        @media (min-width: {{ mw }}) {
+          .header-section.bp-{{ c[0] }} .header-nav { display: flex; }
+          .header-section.bp-{{ c[0] }} .header-mobile-toggle { display: none; }
+          .header-section.bp-{{ c[0] }} .header-actions-children { display: contents; }
+          .header-section.bp-{{ c[0] }} .header-logo-desktop { display: block; }
+          .header-section.bp-{{ c[0] }} .header-logo-mobile { display: none; }
+          .header-section.bp-{{ c[0] }} .header-grid { grid-template-columns: 1fr auto 1fr; }
+        }
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
     .width-fit  { --limit-width: fit-content; width: fit-content; }
     .width-fill { --limit-width: 100%; width: 100%; }
     .width-half    { --limit-width: 50%;     flex: 0 0 calc(50%     - (var(--children-gap, 0px) * 1) / 2); }

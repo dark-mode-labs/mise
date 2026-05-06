@@ -82,11 +82,82 @@
   }
 
   .drawer-panel {
-    @apply bg-body relative w-[85%] max-w-md h-full flex flex-col shadow-2xl pointer-events-auto overflow-hidden;
+    @apply relative w-[85%] max-w-md h-full flex flex-col shadow-2xl pointer-events-auto overflow-hidden;
+    color: var(--text, currentColor);
   }
 
   .drawer-backdrop {
-    @apply absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 pointer-events-auto;
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-auto;
+    background-color: rgba(0, 0, 0, var(--drawer-backdrop-alpha, 0.5));
+  }
+
+  .header-section {
+    color: var(--text, currentColor);
+  }
+
+  /* Mobile default: `auto 1fr auto` keeps logo from being squeezed.
+     Desktop swaps to `1fr auto 1fr` so the middle column centers.
+     Per-tier swap emitted in theme_variables.liquid; lg=1024
+     fallback for brands stored without a bp class. */
+  .header-section .header-grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .header-section:not([class*="bp-"]) .header-grid {
+      grid-template-columns: 1fr auto 1fr;
+    }
+  }
+
+  /* Mobile-state visibility defaults; per-tier overrides emitted
+     in theme_variables.liquid. lg=1024 fallback for legacy brands. */
+  .header-section .header-nav {
+    display: none;
+  }
+  .header-section .header-mobile-toggle {
+    display: inline-flex;
+  }
+  .header-section .header-actions-children {
+    display: none;
+  }
+  .header-section .header-logo-desktop {
+    display: none;
+  }
+  .header-section .header-logo-mobile {
+    display: contents;
+  }
+
+  @media (min-width: 1024px) {
+    .header-section:not([class*="bp-"]) .header-nav {
+      display: flex;
+    }
+    .header-section:not([class*="bp-"]) .header-mobile-toggle {
+      display: none;
+    }
+    .header-section:not([class*="bp-"]) .header-actions-children {
+      display: contents;
+    }
+    .header-section:not([class*="bp-"]) .header-logo-desktop {
+      display: block;
+    }
+    .header-section:not([class*="bp-"]) .header-logo-mobile {
+      display: none;
+    }
+  }
+
+  /* Declared AFTER the mobile-default header-actions-children rule so
+     source-order tie-break flips it back to `contents` inside the drawer.
+     Hide the wrapper when empty so there's no stray padded band. */
+  .drawer-actions .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .drawer-actions .header-actions-children {
+    display: contents;
+  }
+  .drawer-actions:not(:has(.header-actions-children > *)) {
+    display: none;
   }
 
   .group-block,

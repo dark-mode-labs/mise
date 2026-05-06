@@ -6,7 +6,10 @@
   {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
-{% assign text_color_class = 'text-' | append: s.text_role %}
+{% assign text_color_class = blank %}
+{% if s.text_role != blank and s.text_role != 'inherit' %}
+  {% assign text_color_class = 'text-' | append: s.text_role %}
+{% endif %}
 
 {% assign actions_classes = 'header-actions flex'
   | push: 'direction-{{ s.direction }}'
@@ -26,26 +29,9 @@
   style='{% if s.gap == 'custom' %}--space-gap: {{ s.gap_custom }}rem;{% endif %}'
   {{ context.attached_attributes }}
 >
-  {% if s.show_search %}
-    <a href='/search' class='p-2 hover:opacity-70'
-      ><span class='sr-only'>Search</span>{% render 'icon', name: 'search', class: 'w-5 h-5' %}
-    </a>
-  {% endif %}
-
-  {% comment %} display:contents on md+ so children participate in parent flex; hidden below md. {% endcomment %}
-  <div class='header-actions-children hidden md:contents'>
+  <div class='header-actions-children'>
     {% content_for 'blocks' %}
   </div>
-
-  {% if s.show_cart %}
-    <a data-action='open-cart' class='p-2 hover:opacity-70 relative group'>
-      <span class='sr-only'>Cart</span>
-      {% render 'icon', name: 'bag', class: 'w-5 h-5' %}
-      <span
-        class='absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white group-empty:hidden'
-      ></span>
-    </a>
-  {% endif %}
 </div>
 
 {% schema %}
@@ -53,28 +39,17 @@
   "name": "Header Actions",
   "settings": [
     {
-      "type": "checkbox",
-      "id": "show_search",
-      "label": "Show Search",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_cart",
-      "label": "Show Cart",
-      "default": true
-    },
-    {
       "type": "header",
       "content": "Theme"
     },
     {
       "type": "select",
       "id": "text_role",
-      "label": "Icon Color Role",
-      "info": "Cart and search icons inherit this role. Match it to header-menu's text role for visual consistency.",
-      "default": "on-button",
+      "label": "Text Color Role",
+      "info": "Defaults to inheriting the header section's text role.",
+      "default": "inherit",
       "options": [
+        { "value": "inherit", "label": "Inherit from Header" },
         { "value": "primary", "label": "Primary" },
         { "value": "secondary", "label": "Secondary" },
         { "value": "subtle", "label": "Subtle" },
