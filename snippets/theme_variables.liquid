@@ -165,9 +165,9 @@
 
     {% comment %}
       Header mobile-breakpoint per tier — `bp-<tier>` on
-      `.header-section` swaps nav visibility, hamburger, action
-      children, logo variant, and grid columns above the tier
-      width. Default fallback at lg=1024 lives in theme.css.
+      `.header-section` swaps nav, hamburger, action children
+      and logo variant above the tier width. Default fallback at
+      lg=1024 lives in theme.css.
     {% endcomment %}
     {% for c in container_scale %}
       {% unless c[1].settings.structural %}
@@ -179,7 +179,6 @@
           .header-section.bp-{{ c[0] }} .header-actions-children { display: contents; }
           .header-section.bp-{{ c[0] }} .header-logo-desktop { display: block; }
           .header-section.bp-{{ c[0] }} .header-logo-mobile { display: none; }
-          .header-section.bp-{{ c[0] }} .header-grid { grid-template-columns: 1fr auto 1fr; }
         }
         {% endif %}
       {% endunless %}

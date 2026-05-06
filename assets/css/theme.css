@@ -95,19 +95,17 @@
     color: var(--text, currentColor);
   }
 
-  /* Mobile default: `auto 1fr auto` keeps logo from being squeezed.
-     Desktop swaps to `1fr auto 1fr` so the middle column centers.
-     Per-tier swap emitted in theme_variables.liquid; lg=1024
-     fallback for brands stored without a bp class. */
+  /* `minmax(0, 1fr)` overrides the implicit auto-min so side cols
+     split leftover space equally regardless of content asymmetry,
+     keeping the auto middle col centered. Children's `min-width: 0`
+     lets their flex shrink without pushing the grid. */
   .header-section .header-grid {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
   }
-  @media (min-width: 1024px) {
-    .header-section:not([class*="bp-"]) .header-grid {
-      grid-template-columns: 1fr auto 1fr;
-    }
+  .header-section .header-grid > * {
+    min-width: 0;
   }
 
   /* Mobile-state visibility defaults; per-tier overrides emitted
