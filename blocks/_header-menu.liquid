@@ -1,7 +1,6 @@
 {% assign s = block.settings %}
 
-{% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign nav_classes = 'header-nav hidden lg:flex items-center' %}
+{% assign nav_classes = 'header-nav items-center' %}
 
 {% if s.surface_override %}
   {% assign nav_classes = nav_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
@@ -9,12 +8,13 @@
 
 {% assign block_classes = nav_classes | join: ' ' %}
 
-{% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign text_color_value = blank %}
 {% if s.text_role == 'palette' and s.text_role_palette != blank %}
   {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
 {% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
   {% assign text_color_value = s.text_role_custom %}
+{% elsif s.text_role != blank and s.text_role != 'inherit' and s.text_role != 'primary' %}
+  {% assign text_color_value = 'var(--text-{{ s.text_role }})' %}
 {% endif %}
 {% assign styles = blank %}
 {% if text_color_value != blank %}
@@ -22,10 +22,11 @@
 {% endif %}
 {% assign block_styles = styles | join: ';' %}
 
-{% assign color_role = s.text_role %}
-{% if s.text_role == 'custom' or s.text_role == 'palette' %}{% assign color_role = 'primary' %}{% endif %}
+{% assign color_role = 'primary' %}
+{% if s.text_role != blank and s.text_role != 'inherit' and s.text_role != 'palette' and s.text_role != 'custom' %}
+  {% assign color_role = s.text_role %}
+{% endif %}
 
-{% comment %} --- Typography Utilities --- {% endcomment %}
 {% assign utilities = blank %}
 
 {% case s.text_wrap %}
@@ -37,7 +38,6 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% comment %} --- Component Render --- {% endcomment %}
 <nav
   class='{{ block_classes }}'
   style='{{ block_styles }}'
@@ -128,8 +128,50 @@
   </ul>
 </nav>
 
-{% if s.nav %}
-  {% render 'header-drawer', menu: s.nav, type_style: s.type_style, color_role: color_role %}
+{% comment %}
+  Resolve section drawer_* settings into concrete values, then
+  hand them to the atomic header-drawer snippet — the snippet
+  itself never reads section.settings.
+{% endcomment %}
+{% if s.nav and section.settings.show_mobile_menu != false and section.settings.show_nav != false %}
+  {% assign drawer = section.settings %}
+
+  {% assign drawer_surface = drawer.drawer_surface_id %}
+  {% if drawer_surface == blank %}
+    {% assign drawer_surface = drawer.surface_id | default: 'default' %}
+  {% endif %}
+
+  {% assign drawer_bg_value = '' %}
+  {% if drawer.drawer_bg_role == 'palette' and drawer.drawer_bg_role_palette != blank %}
+    {% assign drawer_bg_value = 'var(--palette-{{ drawer.drawer_bg_role_palette }})' %}
+  {% elsif drawer.drawer_bg_role == 'gradient' and drawer.drawer_bg_role_gradient != blank %}
+    {% assign drawer_bg_value = 'var(--gradient-{{ drawer.drawer_bg_role_gradient }})' %}
+  {% elsif drawer.drawer_bg_role == 'custom' and drawer.drawer_bg_role_custom != blank %}
+    {% assign drawer_bg_value = drawer.drawer_bg_role_custom %}
+  {% endif %}
+
+  {% assign drawer_text_value = '' %}
+  {% if drawer.drawer_text_role == 'palette' and drawer.drawer_text_role_palette != blank %}
+    {% assign drawer_text_value = 'var(--palette-{{ drawer.drawer_text_role_palette }})' %}
+  {% elsif drawer.drawer_text_role == 'custom' and drawer.drawer_text_role_custom != blank %}
+    {% assign drawer_text_value = drawer.drawer_text_role_custom %}
+  {% elsif drawer.drawer_text_role != 'inherit'
+    and drawer.drawer_text_role != 'primary'
+    and drawer.drawer_text_role != blank
+  %}
+    {% assign drawer_text_value = 'var(--text-{{ drawer.drawer_text_role }})' %}
+  {% endif %}
+
+  {% render 'header-drawer',
+    menu: s.nav,
+    drawer_surface_id: drawer_surface,
+    drawer_bg_role: drawer.drawer_bg_role,
+    drawer_bg_value: drawer_bg_value,
+    drawer_text_value: drawer_text_value,
+    drawer_type_style: drawer.drawer_type_style,
+    drawer_alpha_pct: drawer.drawer_backdrop_alpha,
+    actions_html: context.drawer_actions_html
+  %}
 {% endif %}
 
 {% schema %}
@@ -176,44 +218,19 @@
       "type": "select",
       "id": "text_role",
       "label": "Text Color Role",
-      "default": "button",
+      "info": "Defaults to inheriting the header section's text role.",
+      "default": "inherit",
       "options": [
-        {
-          "value": "primary",
-          "label": "Primary"
-        },
-        {
-          "value": "secondary",
-          "label": "Secondary"
-        },
-        {
-          "value": "subtle",
-          "label": "Subtle"
-        },
-        {
-          "value": "emphasis",
-          "label": "Emphasis"
-        },
-        {
-          "value": "on-accent",
-          "label": "On Accent"
-        },
-        {
-          "value": "on-button",
-          "label": "On Button"
-        },
-        {
-          "value": "on-control",
-          "label": "On Control"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        }
+        { "value": "inherit", "label": "Inherit from Header" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
       ]
     },
     {
