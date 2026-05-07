@@ -14,7 +14,7 @@
 
 {% liquid
   assign og_title = page.title | default: shop.name
-  assign og_url = shop.origin | append: '/' | append: page.slug
+  assign og_url = page.canonical_url | default: shop.origin
   assign og_type = 'website'
   assign og_description = page.description | default: shop.name
 %}
@@ -83,6 +83,13 @@
   rel='canonical'
   href='{{ og_url }}'
 >
+
+{% if page.robots %}
+  <meta
+    name='robots'
+    content='{{ page.robots }}'
+  >
+{% endif %}
 
 {% if page.description %}
   <meta
