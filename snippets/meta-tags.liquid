@@ -12,6 +12,31 @@
   content='same-origin'
 >
 
+{% if shop.verification.google %}
+  <meta
+    name='google-site-verification'
+    content='{{ shop.verification.google | escape }}'
+  >
+{% endif %}
+{% if shop.verification.bing %}
+  <meta
+    name='msvalidate.01'
+    content='{{ shop.verification.bing | escape }}'
+  >
+{% endif %}
+{% if shop.verification.pinterest %}
+  <meta
+    name='p:domain_verify'
+    content='{{ shop.verification.pinterest | escape }}'
+  >
+{% endif %}
+{% if shop.verification.facebook %}
+  <meta
+    name='facebook-domain-verification'
+    content='{{ shop.verification.facebook | escape }}'
+  >
+{% endif %}
+
 {% liquid
   assign og_title = page.title | default: shop.name
   assign og_url = page.canonical_url | default: shop.origin
