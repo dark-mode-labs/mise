@@ -9,7 +9,9 @@
   data-behavior='tab-content'
   data-action-args='{{ s.tab_id }}'
   data-tab-group='{{ section.id }}'
-  {% if s.mode == 'spy' %}data-spy-target='{{ s.tab_id }}'{% endif %}
+  {% if s.mode == 'spy' %}
+    data-spy-target='{{ s.tab_id }}'
+  {% endif %}
   aria-expanded='false'
 >
   {% content_for 'blocks' %}
@@ -126,7 +128,7 @@
                               "type": "text",
                               "settings": {
                                 "tag": "span",
-                                "content": "{{ context.item.amount | money }}",
+                                "content": "{{ context.item.formatted_price }}",
                                 "text_align": "right",
                                 "type_style": "body"
                               }

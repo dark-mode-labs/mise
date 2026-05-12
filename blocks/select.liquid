@@ -37,7 +37,12 @@
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
 
-{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' and s.bg_role != 'gradient' %}
+{% if s.bg_role
+  and s.bg_role != 'none'
+  and s.bg_role != 'custom'
+  and s.bg_role != 'palette'
+  and s.bg_role != 'gradient'
+%}
   {% assign wrapper_classes = wrapper_classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
@@ -50,11 +55,7 @@
     | push: 'group-border-{{ s.border_mode }}'
     | push: 'group-border-size-{{ s.border_size }}'
   %}
-  {% if s.border_role
-    and s.border_role != 'none'
-    and s.border_role != 'custom'
-    and s.border_role != 'palette'
-  %}
+  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' %}
     {% assign wrapper_classes = wrapper_classes | push: 'border-{{ s.border_role }}' %}
   {% endif %}
 {% endunless %}
@@ -112,7 +113,9 @@
 >
   <select
     class='ts-{{ s.type_style }} w-full bg-transparent border-0 focus:outline-none cursor-pointer appearance-none pr-6'
-    {% if s.aria_label != blank %}aria-label='{{ s.aria_label }}'{% endif %}
+    {% if s.aria_label != blank %}
+      aria-label='{{ s.aria_label }}'
+    {% endif %}
     {% if s.trigger == 'action' %}
       data-behavior='select-action'
       data-action='{{ s.action | escape }}'

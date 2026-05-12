@@ -2,8 +2,12 @@
 
 <option
   value='{{ s.value | escape }}'
-  {% if s.disabled %}disabled{% endif %}
-  {% if s.selected %}selected{% endif %}
+  {% if s.disabled %}
+    disabled
+  {% endif %}
+  {% if s.selected %}
+    selected
+  {% endif %}
 >
   {{ s.label }}
 </option>
