@@ -141,6 +141,7 @@
   data-tab-group='{{ section.id }}'
   data-action='tab-switch'
   data-action-args='{{ s.tab_id }}'
+  {% if s.mode == 'spy' %}data-spy-trigger='{{ s.tab_id }}'{% endif %}
   role='tab'
 >
   {% comment %} Wrapping blocks in z-10 so they sit above the absolute overlay {% endcomment %}
@@ -169,6 +170,23 @@
       "id": "tab_id",
       "label": "Tab Identifier",
       "default": "{{ context.item.uuid }}"
+    },
+    {
+      "type": "select",
+      "id": "mode",
+      "label": "Activation Mode",
+      "default": "tab",
+      "info": "Tab: click activates this head. Spy: also activates as the matching content scrolls into view, and clicking scrolls to it.",
+      "options": [
+        {
+          "value": "tab",
+          "label": "Tab (click to activate)"
+        },
+        {
+          "value": "spy",
+          "label": "Scroll Spy"
+        }
+      ]
     },
     {
       "type": "header",

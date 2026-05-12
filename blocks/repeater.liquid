@@ -30,6 +30,12 @@
       %}
       {% assign items = 'item_collection' | data_source: 'list', args %}
     {% endunless %}
+  {% when 'menu_collections' %}
+    {% assign menu_id = s.menu | default: closest.menu %}
+    {% unless menu_id == blank %}
+      {% assign args = 'source' | push: 'menu' | push: 'menu_identifier' | push: menu_id %}
+      {% assign items = 'item_collection' | data_source: 'list', args %}
+    {% endunless %}
 {% endcase %}
 
 <div class='contents' {{ context.attached_attributes }}>
@@ -74,6 +80,10 @@
         {
           "value": "collections_in",
           "label": "Collections"
+        },
+        {
+          "value": "menu_collections",
+          "label": "Collections in Menu"
         }
       ]
     },
@@ -101,6 +111,12 @@
       "id": "collections_in",
       "label": "Select Item Collections",
       "conditional": "setting.data_source_type == 'collections_in'"
+    },
+    {
+      "type": "collection",
+      "id": "menu",
+      "label": "Select Menu",
+      "conditional": "setting.data_source_type == 'menu_collections'"
     }
   ],
   "blocks": [
