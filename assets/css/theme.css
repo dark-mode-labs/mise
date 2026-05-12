@@ -1383,6 +1383,32 @@
   .border-emphasis {
     border-color: var(--border-emphasis, transparent);
   }
+
+  .cart-count-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: var(--space-sm);
+    height: var(--space-sm);
+    padding-inline: var(--space-xxs);
+    background: var(--accent-bg);
+    color: var(--text-on-accent);
+    border: 1px solid var(--surface);
+    border-radius: 9999px;
+    font-family: var(--font-body);
+    font-size: 0.625rem;
+    line-height: var(--space-sm);
+    font-weight: 500;
+    text-align: center;
+    transition:
+      transform 200ms ease-out,
+      opacity 200ms ease-out;
+  }
+
+  .cart-count-badge[data-empty] {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 }
 
 @layer base {
