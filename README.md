@@ -144,6 +144,18 @@ data-spy-trigger: The ID of the link that should light up.
 
 data-tags: Comma-separated list of tags (e.g., v,gf,spicy) for client-side filtering.
 
+data-cart-badge / data-cart-count / data-cart-aria: Cart count surface on the header icon. See "Cart Count Protocol" below.
+
+### Cart Count Protocol
+
+Mise renders the badge markup and styling only — no behavior. The consuming app owns cart state and DOM updates. The header emits these slots:
+
+- `[data-cart-badge]` — the badge envelope. Styled by `.cart-count-badge` using `--accent-bg`, `--text-on-accent`, `--surface`, `--space-sm`, `--space-xxs`. A `data-empty` attribute collapses it via CSS transition.
+- `[data-cart-count]` — text node for the digit(s).
+- `[data-cart-aria]` — sr-only `aria-live="polite"` label.
+
+For localization, the badge carries three pre-translated templates as data attributes (`data-aria-empty`, `data-aria-one`, `data-aria-other`) sourced from the `cart.aria_label_*` locale keys. The "other" form uses `{count}` as a placeholder the consumer substitutes at runtime. This keeps mise free of JS while letting any consumer drive the badge text from server-translated strings.
+
 ## Roadmap
 
 Modifier Modal: A stateful form for handling complex item customization (Radio/Checkbox validation).

@@ -159,12 +159,18 @@
       {% endif %}
 
       {% if s.show_cart %}
-        <a data-action='open-cart' class='p-2 hover:opacity-70 relative group'>
-          <span class='sr-only'>Cart</span>
-          {% render 'icon', name: 'bag', class: 'w-5 h-5' %}
+        <a data-action='open-cart' class='p-2 hover:opacity-70 relative'>
+          <span class='sr-only' data-cart-aria aria-live='polite'>{{ 'cart.aria_label_empty' | t }}</span>
+          {% render 'icon', name: 'bag', class: 'w-6 h-6' %}
           <span
-            class='absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white group-empty:hidden'
-          ></span>
+            class='cart-count-badge'
+            data-cart-badge
+            data-empty
+            data-aria-empty='{{ 'cart.aria_label_empty' | t }}'
+            data-aria-one='{{ 'cart.aria_label_one' | t }}'
+            data-aria-other='{{ 'cart.aria_label_other' | t }}'
+            ><span data-cart-count>0</span></span
+          >
         </a>
       {% endif %}
 
