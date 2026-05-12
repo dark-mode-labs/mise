@@ -132,8 +132,13 @@
 <div
   class='{{ block_classes }}'
   style='{{ block_styles }}'
-  data-action-args='{{ context.item.uuid }}'
-  data-action='add-item'
+  data-action='{{ s.action | escape }}'
+  {% if s.action_args != blank %}
+    data-action-args='{{ s.action_args | escape }}'
+  {% endif %}
+  {% if s.action_hint != blank %}
+    data-action-hint='{{ s.action_hint | escape }}'
+  {% endif %}
   {{ context.attached_attributes }}
 >
   {% render 'bg-overlay',
@@ -158,6 +163,28 @@
       "id": "type_style",
       "label": "Type Style",
       "default": "body"
+    },
+    {
+      "type": "header",
+      "content": "Action Trigger"
+    },
+    {
+      "type": "text",
+      "id": "action",
+      "label": "Action Type",
+      "default": "{{ context.item.action | default: 'add-item' }}"
+    },
+    {
+      "type": "text",
+      "id": "action_args",
+      "label": "Action Arguments",
+      "default": "{{ context.item.action_args | default: context.item.uuid }}"
+    },
+    {
+      "type": "text",
+      "id": "action_hint",
+      "label": "Action Hint",
+      "default": "{{ context.item.action_hint }}"
     },
     {
       "type": "header",
