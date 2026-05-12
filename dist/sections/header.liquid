@@ -1,0 +1,715 @@
+{% assign s = section.settings %}
+
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
+{% comment %}
+  Paint --text on the header so descendants (hamburger, icons,
+  text_role:inherit blocks) cascade. `primary` leaves --text alone
+  so the surface paints it.
+{% endcomment %}
+{% assign text_override_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_override_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_override_value = s.text_role_custom %}
+{% elsif s.text_role != blank and s.text_role != 'primary' %}
+  {% assign text_override_value = 'var(--text-{{ s.text_role }})' %}
+{% endif %}
+
+{% assign is_overlay = false %}
+{% if s.header_overlay_mode == 'overlay' or s.header_overlay_mode == 'transparent' %}
+  {% assign is_overlay = true %}
+{% endif %}
+
+{% assign needs_spacer = false %}
+{% assign positions = blank %}
+
+{% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
+  {% assign positions = positions | push: 'fixed top-[var(--top-nav,0)] inset-x-0' %}
+  {% unless is_overlay %}
+    {% assign needs_spacer = true %}
+  {% endunless %}
+{% elsif is_overlay %}
+  {% assign positions = positions | push: 'absolute top-[var(--top-nav,0)] inset-x-0' %}
+{% else %}
+  {% assign positions = positions | push: 'relative' %}
+{% endif %}
+
+{% assign position_class_str = positions | join: ' ' %}
+
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign header_classes = 'header-section z-header transition-all duration-300 border-b border-default'
+  | push: position_class_str
+  | push: 'surface-{{ s.surface_id | default: "default" }}'
+  | push: bg_class
+  | push: 'bp-{{ s.mobile_breakpoint }}'
+  | push: 'mobile-{{ s.mobile_layout }}'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+%}
+{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
+  {% assign header_classes = header_classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
+{% endif %}
+
+{% assign header_class_str = header_classes | join: ' ' %}
+
+{% assign styles = blank %}
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+{% if bg_color_value != blank %}
+  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% if text_override_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_override_value }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
+{% comment %}
+  `slot_actions` must be captured BEFORE `slot_nav` — slot_nav
+  forwards the rendered actions HTML to the drawer via
+  `context.drawer_actions_html`.
+{% endcomment %}
+{% capture slot_logo %}{% content_for 'block', type: 'group', id: 'header-logo' %}{% endcapture %}
+{% capture slot_actions %}{% content_for 'block', type: '_header-actions', id: 'header-actions' %}{% endcapture %}
+{% capture slot_nav %}{% content_for 'block', type: '_header-menu', id: 'header-menu', context.drawer_actions_html: slot_actions %}{% endcapture %}
+
+{% capture hamburger_btn %}
+  {% if s.show_mobile_menu %}
+    <button
+      type='button'
+      class='header-mobile-toggle p-2 hover:opacity-70'
+      data-action='toggle-drawer'
+      aria-label='Menu'
+    >
+      {% render 'icon', name: 'menu', class: 'w-6 h-6' %}
+    </button>
+  {% endif %}
+{% endcapture %}
+
+<header
+  class='{{ header_class_str }}'
+  data-behavior='header'
+  data-sticky='{{ s.sticky_behavior }}'
+  data-transparent='{% if s.header_overlay_mode == 'transparent' %}true{% else %}false{% endif %}'
+  style='{{ style_str }}'
+  {{ context.attached_attributes }}
+>
+  <div class='width-{{ s.width }} header-grid limit-width'>
+    <div class='flex items-center justify-start gap-4'>
+      {% if s.mobile_layout != 'logo_left' %}{{ hamburger_btn }}{% endif %}
+
+      {% if s.desktop_layout == 'logo_left' %}
+        <div class='mr-8 flex-shrink-0 hidden header-logo-desktop'>{{ slot_logo }}</div>
+        {% if s.show_nav and s.nav_alignment == 'left' %}{{ slot_nav }}{% endif %}
+      {% else %}
+        {% if s.show_nav %}{{ slot_nav }}{% endif %}
+      {% endif %}
+
+      {% if s.mobile_layout == 'logo_left' %}
+        <div class='header-logo-mobile'>{{ slot_logo }}</div>
+      {% endif %}
+    </div>
+
+    <div class='flex items-center justify-center'>
+      {% if s.show_nav and s.desktop_layout == 'logo_left' and s.nav_alignment == 'center' %}{{ slot_nav }}{% endif %}
+
+      {% if s.desktop_layout != 'logo_left' or s.mobile_layout == 'logo_center' %}
+        {% assign logo_wrap_class = '' %}
+        {% if s.desktop_layout == 'logo_left' and s.mobile_layout == 'logo_center' %}
+          {% assign logo_wrap_class = 'header-logo-mobile' %}
+        {% endif %}
+        <div class='{{ logo_wrap_class }}'>{{ slot_logo }}</div>
+      {% endif %}
+    </div>
+
+    <div class='flex items-center justify-end gap-4'>
+      {% if s.show_nav and s.desktop_layout == 'logo_left' and s.nav_alignment == 'right' %}{{ slot_nav }}{% endif %}
+
+      {% if s.mobile_layout == 'logo_right' %}
+        <div class='header-logo-mobile'>{{ slot_logo }}</div>
+      {% endif %}
+
+      {% if s.show_actions %}{{ slot_actions }}{% endif %}
+
+      {% if s.show_search %}
+        <a href='/search' class='p-2 hover:opacity-70'>
+          <span class='sr-only'>Search</span>
+          {% render 'icon', name: 'search', class: 'w-5 h-5' %}
+        </a>
+      {% endif %}
+
+      {% if s.show_cart %}
+        <a data-action='open-cart' class='p-2 hover:opacity-70 relative'>
+          <span class='sr-only' data-cart-aria aria-live='polite'>{{ 'cart.aria_label_empty' | t }}</span>
+          {% render 'icon', name: 'bag', class: 'w-6 h-6' %}
+          <span
+            class='cart-count-badge'
+            data-cart-badge
+            data-empty
+            data-aria-empty='{{ 'cart.aria_label_empty' | t }}'
+            data-aria-one='{{ 'cart.aria_label_one' | t }}'
+            data-aria-other='{{ 'cart.aria_label_other' | t }}'
+            ><span data-cart-count>0</span></span
+          >
+        </a>
+      {% endif %}
+
+      {% if s.mobile_layout == 'logo_left' %}{{ hamburger_btn }}{% endif %}
+    </div>
+  </div>
+</header>
+
+{% if needs_spacer %}
+  <div class='w-full h-16'></div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Header",
+  "restriction": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Max Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Logo placement",
+      "options": [
+        {
+          "value": "logo_center",
+          "label": "Center"
+        },
+        {
+          "value": "logo_left",
+          "label": "Left"
+        }
+      ],
+      "default": "logo_center"
+    },
+    {
+      "type": "select",
+      "id": "nav_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "info": "Desktop only.",
+      "conditional": "setting.desktop_layout == 'logo_left'"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile logo placement",
+      "options": [
+        { "value": "logo_center", "label": "Center" },
+        { "value": "logo_left", "label": "Left" },
+        { "value": "logo_right", "label": "Right" }
+      ],
+      "default": "logo_center"
+    },
+    {
+      "type": "width",
+      "id": "mobile_breakpoint",
+      "label": "Desktop nav breakpoint",
+      "default": "broad",
+      "info": "Width threshold above which the desktop nav shows and the hamburger is hidden."
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "space",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "default": "xs"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Behavior"
+    },
+    {
+      "type": "select",
+      "id": "sticky_behavior",
+      "label": "Sticky Mode",
+      "options": [
+        {
+          "value": "none",
+          "label": "Static"
+        },
+        {
+          "value": "always",
+          "label": "Always"
+        },
+        {
+          "value": "on_scroll_up",
+          "label": "Scroll"
+        }
+      ],
+      "default": "always"
+    },
+    {
+      "type": "select",
+      "id": "header_overlay_mode",
+      "label": "Header Overlay",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "overlay",
+          "label": "Top of Content"
+        },
+        {
+          "value": "transparent",
+          "label": "Transparent on Top"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav",
+      "label": "Show Navigation",
+      "info": "Renders the desktop nav (and the drawer's nav links). Disable for minimal headers — e.g. checkout, order confirmation.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_actions",
+      "label": "Show Action Blocks",
+      "info": "Renders the user-arranged action blocks (buttons, groups). Cart and search icons have their own toggles.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_menu",
+      "label": "Show Mobile Drawer",
+      "info": "Renders the hamburger button and drawer below the desktop breakpoint. Disable for headers that don't need a mobile menu (e.g. checkout).",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "info": "Header text color. Child blocks inherit this unless overridden.",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "backdrop_blur",
+      "label": "Backdrop Blur",
+      "info": "Frosted-glass blur strength behind the header.",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" },
+        { "value": "2xl", "label": "2X-Large" },
+        { "value": "3xl", "label": "3X-Large" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Mobile Drawer",
+      "info": "Tokens for the slide-out menu shown below the desktop breakpoint."
+    },
+    {
+      "type": "surface",
+      "id": "drawer_surface_id",
+      "label": "Drawer Color Scheme",
+      "info": "Defaults to the same surface as the header section. Set explicitly to use a different scheme for the slide-out menu."
+    },
+    {
+      "type": "select",
+      "subtype": "bg_role",
+      "id": "drawer_bg_role",
+      "label": "Drawer Background",
+      "default": "body",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "drawer_bg_role_palette",
+      "label": "Drawer Background Palette Token",
+      "default": "brand",
+      "conditional": "setting.drawer_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "drawer_bg_role_custom",
+      "label": "Raw Drawer Background",
+      "conditional": "setting.drawer_bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "drawer_bg_role_gradient",
+      "label": "Drawer Background Gradient",
+      "conditional": "setting.drawer_bg_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "subtype": "text_role",
+      "id": "drawer_text_role",
+      "label": "Drawer Text Role",
+      "default": "inherit",
+      "options": [
+        { "value": "inherit", "label": "Inherit from Header" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "drawer_text_role_palette",
+      "label": "Drawer Text Palette Token",
+      "default": "brand",
+      "conditional": "setting.drawer_text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "drawer_text_role_custom",
+      "label": "Raw Drawer Text Color",
+      "conditional": "setting.drawer_text_role == 'custom'"
+    },
+    {
+      "type": "type_style",
+      "id": "drawer_type_style",
+      "label": "Drawer Type Style",
+      "default": "nav"
+    },
+    {
+      "type": "range",
+      "id": "drawer_backdrop_alpha",
+      "label": "Drawer Backdrop Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "blocks": {
+        "header-logo": {
+          "type": "group",
+          "name": "Header Logo",
+          "static": true,
+          "settings": {
+            "direction": "row",
+            "vertical_align": "middle",
+            "gap": "sm",
+            "trigger": "link",
+            "link": "/",
+            "width": "fit"
+          },
+          "blocks": {
+            "logo-mark": {
+              "type": "group",
+              "name": "Logo Mark",
+              "settings": {
+                "direction": "row",
+                "vertical_align": "middle",
+                "content_align": "center",
+                "width": "fit"
+              }
+            },
+            "logo-image": {
+              "type": "media",
+              "name": "Brand Logo",
+              "settings": {
+                "width": "fit",
+                "height": "auto"
+              }
+            },
+            "logo-text-stack": {
+              "type": "group",
+              "name": "Brand Text",
+              "settings": {
+                "direction": "column",
+                "gap": "none",
+                "vertical_align": "middle"
+              },
+              "blocks": {
+                "wordmark": {
+                  "type": "text",
+                  "name": "Brand Word",
+                  "settings": { "type_style": "heading-3" }
+                },
+                "tagline": {
+                  "type": "text",
+                  "name": "Brand Tagline",
+                  "settings": { "type_style": "caption" }
+                }
+              }
+            }
+          }
+        },
+        "header-menu": {
+          "type": "_header-menu",
+          "name": "Header Nav",
+          "static": true,
+          "settings": {
+            "nav": {
+              "links": [
+                {
+                  "url": "/",
+                  "title": "Home"
+                }
+              ]
+            }
+          }
+        },
+        "header-actions": {
+          "type": "_header-actions",
+          "name": "Header Actions",
+          "static": true
+        }
+      },
+      "settings": {
+        "header_overlay_mode": "none",
+        "show_mobile_menu": true,
+        "show_search": false,
+        "show_cart": false
+      }
+    }
+  ]
+}
+{% endschema %}
