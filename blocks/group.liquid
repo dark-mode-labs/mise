@@ -2,7 +2,7 @@
 
 {% comment %} --- Layout (property + CSS-driven, no axis-swap in liquid) --- {% endcomment %}
 {% if s.layout_mode == 'grid' %}
-  {% assign layout_class = 'grid grid-cols-[repeat(auto-fit,minmax(min(var(--width-grid-col),100%),1fr))]' %}
+  {% assign layout_class = 'grid grid-cols-[repeat(auto-fill,minmax(min(var(--width-grid-col),100%),1fr))]' %}
 {% else %}
   {% assign layout_class = 'flex direction-{{ s.direction }}' %}
 {% endif %}
