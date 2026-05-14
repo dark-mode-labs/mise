@@ -159,6 +159,11 @@
   "name": "Menu Card",
   "settings": [
     {
+      "type": "data_source",
+      "id": "bind_to",
+      "label": "Repeat for each"
+    },
+    {
       "type": "type_style",
       "id": "type_style",
       "label": "Type Style",
@@ -671,13 +676,34 @@
       "info": "Frosted-glass blur strength behind the card.",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "X-Large" },
-        { "value": "2xl", "label": "2X-Large" },
-        { "value": "3xl", "label": "3X-Large" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "X-Large"
+        },
+        {
+          "value": "2xl",
+          "label": "2X-Large"
+        },
+        {
+          "value": "3xl",
+          "label": "3X-Large"
+        }
       ]
     },
     {
@@ -768,7 +794,9 @@
               }
             }
           },
-          "block_order": ["img"]
+          "block_order": [
+            "img"
+          ]
         },
         "menu-card-content": {
           "type": "group",
@@ -821,10 +849,16 @@
                 "padding_vertical": "xs",
                 "padding_horizontal": "none"
               },
-              "block_order": ["title", "price"]
+              "block_order": [
+                "title",
+                "price"
+              ]
             }
           },
-          "block_order": ["info", "desc"]
+          "block_order": [
+            "info",
+            "desc"
+          ]
         },
         "menu-card-footer": {
           "type": "group",
@@ -847,7 +881,9 @@
               }
             }
           },
-          "block_order": ["btn"]
+          "block_order": [
+            "btn"
+          ]
         }
       },
       "settings": {

@@ -71,127 +71,123 @@
             "gap": "md"
           },
           "blocks": {
-            "items": {
-              "type": "repeater",
+            "menu-card-full": {
+              "type": "menu-card-full",
               "settings": {
-                "data_source_type": "item_collection",
-                "item_collection": "{{ context.item.uuid }}"
+                "bind_to": "parent.items",
+                "gap": "none",
+                "shadow": true
               },
               "blocks": {
-                "menu-card-full": {
-                  "type": "_menu-card-full",
-                  "blocks": {
-                    "menu-card-header": {
-                      "type": "group",
-                      "name": "Heading",
-                      "static": true,
-                      "settings": {
-                        "gap": "none",
-                        "padding_vertical": "none",
-                        "padding_horizontal": "none"
-                      },
-                      "blocks": {
-                        "img": {
-                          "type": "media",
-                          "settings": {
-                            "image": "{{ context.item.asset.url }}",
-                            "object_fit": "cover",
-                            "aspect_ratio": "landscape"
-                          }
-                        }
-                      },
-                      "block_order": ["img"]
-                    },
-                    "menu-card-content": {
-                      "type": "group",
-                      "name": "Content",
-                      "static": true,
-                      "settings": {
-                        "gap": "sm",
-                        "padding_vertical": "xs",
-                        "padding_horizontal": "md",
-                        "grow_content": true
-                      },
-                      "blocks": {
-                        "desc": {
-                          "type": "text",
-                          "settings": {
-                            "content": "{{ context.item.description }}",
-                            "text_align": "left",
-                            "type_style": "caption"
-                          }
-                        },
-                        "info": {
-                          "type": "group",
-                          "blocks": {
-                            "price": {
-                              "type": "text",
-                              "settings": {
-                                "tag": "span",
-                                "content": "{{ context.item.formatted_price }}",
-                                "text_align": "right",
-                                "type_style": "body"
-                              }
-                            },
-                            "title": {
-                              "type": "text",
-                              "settings": {
-                                "tag": "h3",
-                                "content": "{{ context.item.name }}",
-                                "text_wrap": "balance",
-                                "text_align": "left",
-                                "type_style": "body"
-                              }
-                            }
-                          },
-                          "settings": {
-                            "gap": "xs",
-                            "width": "full",
-                            "direction": "row",
-                            "content_align": "between",
-                            "vertical_align": "top",
-                            "padding_vertical": "xs",
-                            "padding_horizontal": "none"
-                          },
-                          "block_order": ["title", "price"]
-                        }
-                      },
-                      "block_order": ["info", "desc"]
-                    },
-                    "menu-card-footer": {
-                      "type": "group",
-                      "name": "Footer",
-                      "static": true,
-                      "settings": {
-                        "gap": "xs",
-                        "padding_vertical": "xs",
-                        "padding_horizontal": "md"
-                      },
-                      "blocks": {
-                        "btn": {
-                          "type": "button",
-                          "settings": {
-                            "label": "Order Now",
-                            "width": "full",
-                            "content_align": "center",
-                            "trigger": "action",
-                            "action": "add-item"
-                          }
-                        }
-                      },
-                      "block_order": ["btn"]
-                    }
-                  },
+                "menu-card-header": {
+                  "type": "group",
+                  "name": "Heading",
+                  "static": true,
                   "settings": {
                     "gap": "none",
-                    "shadow": true
-                  }
+                    "padding_vertical": "none",
+                    "padding_horizontal": "none"
+                  },
+                  "blocks": {
+                    "img": {
+                      "type": "media",
+                      "settings": {
+                        "image": "{{ context.item.asset.url }}",
+                        "object_fit": "cover",
+                        "aspect_ratio": "landscape"
+                      }
+                    }
+                  },
+                  "block_order": ["img"]
+                },
+                "menu-card-content": {
+                  "type": "group",
+                  "name": "Content",
+                  "static": true,
+                  "settings": {
+                    "gap": "sm",
+                    "padding_vertical": "xs",
+                    "padding_horizontal": "md",
+                    "grow_content": true
+                  },
+                  "blocks": {
+                    "desc": {
+                      "type": "text",
+                      "settings": {
+                        "content": "{{ context.item.description }}",
+                        "text_align": "left",
+                        "type_style": "caption"
+                      }
+                    },
+                    "info": {
+                      "type": "group",
+                      "blocks": {
+                        "price": {
+                          "type": "text",
+                          "settings": {
+                            "tag": "span",
+                            "content": "{{ context.item.formatted_price }}",
+                            "text_align": "right",
+                            "type_style": "body"
+                          }
+                        },
+                        "title": {
+                          "type": "text",
+                          "settings": {
+                            "tag": "h3",
+                            "content": "{{ context.item.name }}",
+                            "text_wrap": "balance",
+                            "text_align": "left",
+                            "type_style": "body"
+                          }
+                        }
+                      },
+                      "settings": {
+                        "gap": "xs",
+                        "width": "full",
+                        "direction": "row",
+                        "content_align": "between",
+                        "vertical_align": "top",
+                        "padding_vertical": "xs",
+                        "padding_horizontal": "none"
+                      },
+                      "block_order": ["title", "price"]
+                    }
+                  },
+                  "block_order": ["info", "desc"]
+                },
+                "menu-card-footer": {
+                  "type": "group",
+                  "name": "Footer",
+                  "static": true,
+                  "settings": {
+                    "gap": "xs",
+                    "padding_vertical": "xs",
+                    "padding_horizontal": "md"
+                  },
+                  "blocks": {
+                    "btn": {
+                      "type": "button",
+                      "settings": {
+                        "label": "Order Now",
+                        "width": "full",
+                        "content_align": "center",
+                        "trigger": "action",
+                        "action": "add-item"
+                      }
+                    }
+                  },
+                  "block_order": ["btn"]
                 }
               },
-              "block_order": ["menu-card-full"]
+              "block_order": [
+                "menu-card-header",
+                "menu-card-content",
+                "menu-card-footer"
+              ]
             }
           },
-          "block_order": ["items"]
+          "block_order": ["menu-card-full"]
         }
       },
       "block_order": ["items-in-collection"]

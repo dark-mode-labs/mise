@@ -4,8 +4,7 @@
 {% assign map_src = 'https://www.google.com/maps/embed/v1/place?key=' | append: api_key | append: '&q=' %}
 
 {% if s.location != blank %}
-  {% assign args = 'location_identifier' | push: s.location %}
-  {% assign location = 'location' | data_source: 'fetch', args %}
+  {% assign location = shop.locations | where: 'uuid', s.location | first %}
   {% assign address = shop.name | append: ', ' | append: location.formatted_address | url_encode %}
   {% assign map_src = map_src | append: address %}
 {% else %}
