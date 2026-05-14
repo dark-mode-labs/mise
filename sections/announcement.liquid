@@ -34,8 +34,11 @@
       {% content_for 'blocks' %}
     </div>
 
-    {% if section.blocks.size > 1 and s.show_arrows %}
-      <div class='absolute inset-0 pointer-events-none flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity'>
+    {% if s.show_arrows %}
+      <div
+        class='slideshow-nav absolute inset-0 pointer-events-none flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity'
+        style='display: none'
+      >
         <button type='button' class='slideshow-prev pointer-events-auto p-1 btn-nav' aria-label='Previous'>
           {% render 'icon', name: 'chevron-left', class: 'w-3 h-3' %}
         </button>
