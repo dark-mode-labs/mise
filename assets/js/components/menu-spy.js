@@ -19,6 +19,8 @@ export default class MenuSpy {
       rootMargin: "-30% 0px -50% 0px", // Active zone logic
       threshold: 0,
     };
+    this._suspended = false;
+    this._resumeTimer = null;
 
     this.init();
   }
@@ -41,19 +43,22 @@ export default class MenuSpy {
     const uuid = e.currentTarget.dataset.spyTrigger;
 
     const target = this.scope.querySelector(`[data-spy-target="${uuid}"]`);
+    if (!target) return;
 
-    if (target) {
-      const elementPosition = target.getBoundingClientRect().top;
-      const offsetPosition = computeScrollTarget(elementPosition, window.pageYOffset);
+    // Click intent wins: suspend the observer for the duration of the smooth
+    // scroll so transient pane intersections don't flicker the active chip.
+    this._suspend();
+    this.activateTrigger(uuid);
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
+    const elementPosition = target.getBoundingClientRect().top;
+    const offsetPosition = computeScrollTarget(elementPosition, window.pageYOffset);
+
+    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    this._scheduleResume();
   }
 
   onIntersect(entries) {
+    if (this._suspended) return;
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         const uuid = entry.target.dataset.spyTarget;
@@ -62,13 +67,30 @@ export default class MenuSpy {
     });
   }
 
+  _suspend() {
+    this._suspended = true;
+    clearTimeout(this._resumeTimer);
+  }
+
+  _scheduleResume() {
+    const resume = () => {
+      this._suspended = false;
+    };
+    if ("onscrollend" in window) {
+      window.addEventListener("scrollend", resume, { once: true });
+    } else {
+      this._resumeTimer = setTimeout(resume, 700);
+    }
+  }
+
   activateTrigger(uuid) {
     const activeTrigger = this.nav.querySelector(`[data-spy-trigger="${uuid}"]`);
     if (!activeTrigger) return;
 
-    // Keep the active chip visible when the nav is itself scrollable
-    // (e.g. horizontal chip carousel). block:'nearest' avoids page-Y scroll.
-    activeTrigger.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    // Center the active chip inside the strip when it overflows. Scrolling
+    // the strip directly (instead of scrollIntoView) keeps this purely on
+    // the chip-strip's own scroll axes — never moves page Y.
+    this._centerChipInStrip(activeTrigger);
 
     // If the trigger is wired into the tab system (data-tab-group present),
     // dispatch tab:activated so tab-head.js owns the active styling. Otherwise
@@ -83,6 +105,22 @@ export default class MenuSpy {
     } else {
       this.triggers.forEach((t) => t.classList.remove("is-active"));
       activeTrigger.classList.add("is-active");
+    }
+  }
+
+  _centerChipInStrip(chip) {
+    const chipRect = chip.getBoundingClientRect();
+    const stripRect = this.nav.getBoundingClientRect();
+
+    if (this.nav.scrollWidth > this.nav.clientWidth) {
+      const chipCenterX = (chipRect.left + chipRect.right) / 2;
+      const stripCenterX = (stripRect.left + stripRect.right) / 2;
+      this.nav.scrollBy({ left: chipCenterX - stripCenterX, behavior: "smooth" });
+    }
+    if (this.nav.scrollHeight > this.nav.clientHeight) {
+      const chipCenterY = (chipRect.top + chipRect.bottom) / 2;
+      const stripCenterY = (stripRect.top + stripRect.bottom) / 2;
+      this.nav.scrollBy({ top: chipCenterY - stripCenterY, behavior: "smooth" });
     }
   }
 

@@ -12,7 +12,12 @@ export default class Header {
     this.headerHeight = this.el.offsetHeight;
     this.ticking = false;
 
+    this._publishHeaderHeight();
     this.init();
+  }
+
+  _publishHeaderHeight() {
+    document.documentElement.style.setProperty("--header-h", `${this.headerHeight}px`);
   }
 
   init() {
@@ -40,6 +45,7 @@ export default class Header {
 
     window.addEventListener("resize", () => {
       this.headerHeight = this.el.offsetHeight;
+      this._publishHeaderHeight();
     });
 
     this.handleScroll();

@@ -1322,6 +1322,107 @@
   [data-action="disabled"] {
     opacity: 0.55;
   }
+
+  /* tabs section. `overflow: visible` overrides base
+     `section { overflow: hidden }` so sticky has the document as scroll context. */
+  .tabs-position-top {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    gap: 1.5rem;
+  }
+  .tabs-position-left {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    gap: 1.5rem;
+  }
+  @media (min-width: 769px) {
+    .tabs-position-left {
+      flex-direction: row;
+    }
+    .tabs-position-left > .chip-strip-left {
+      flex: 0 0 14rem;
+    }
+    .tabs-position-left > .tab-panes {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
+  .chip-strip {
+    display: flex;
+    gap: var(--chip-strip-gap, 0.5rem);
+    transition: background-color 200ms ease;
+  }
+  /* Slot groups are display:contents so chips/panes are direct flex children. */
+  .chip-strip > .group-block,
+  .tab-panes > .group-block {
+    display: contents;
+  }
+  .chip-strip[class*="bg-"]:not(.bg-none) {
+    align-items: center;
+  }
+  .tab-mode-spy .tab-content + .tab-content {
+    margin-top: var(--pane-gap-spy, 0);
+  }
+  .chip-strip-top.chip-strip-wrap {
+    flex-wrap: wrap;
+  }
+  .chip-strip-top.chip-strip-scroll-snap {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .chip-strip-top.chip-strip-scroll-snap > * {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+  .chip-strip-top.chip-strip-scroll-snap::-webkit-scrollbar {
+    display: none;
+  }
+  @media (max-width: 768px) {
+    .chip-strip-top.chip-strip-responsive {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .chip-strip-top.chip-strip-responsive > * {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+    .chip-strip-top.chip-strip-responsive::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  @media (min-width: 769px) {
+    .chip-strip-top.chip-strip-responsive {
+      flex-wrap: wrap;
+    }
+  }
+
+  .chip-strip-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chip-strip-sticky {
+    position: sticky;
+    z-index: 10;
+    top: var(--header-h, 0);
+  }
+  .chip-strip-left.chip-strip-sticky {
+    align-self: start;
+  }
+
+  .tab-mode-tab .tab-content[aria-expanded="false"] {
+    display: none;
+  }
+  .tab-mode-spy .tab-content {
+    display: block;
+  }
 }
 
 @layer base {

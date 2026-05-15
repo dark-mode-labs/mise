@@ -1,17 +1,12 @@
 {% assign s = block.settings %}
 
-{% assign hide_class = 'aria-[expanded=false]:hidden' %}
-{% if s.mode == 'spy' %}{% assign hide_class = '' %}{% endif %}
-
 <div
   {{ context.attached_attributes }}
-  class='tab-content scroll-mt-40 {{ hide_class }}'
+  class='tab-content scroll-mt-40'
   data-behavior='tab-content'
   data-action-args='{{ s.tab_id }}'
   data-tab-group='{{ section.id }}'
-  {% if s.mode == 'spy' %}
-    data-spy-target='{{ s.tab_id }}'
-  {% endif %}
+  data-spy-target='{{ s.tab_id }}'
   aria-expanded='false'
 >
   {% content_for 'blocks' %}
@@ -35,23 +30,6 @@
       "id": "tab_id",
       "label": "Tab Identifier",
       "default": "{{ context.item.uuid }}"
-    },
-    {
-      "type": "select",
-      "id": "mode",
-      "label": "Visibility Mode",
-      "default": "tab",
-      "info": "Tab: only the active tab's content is visible. Spy: all content stays visible; the matching head highlights as this content scrolls into view.",
-      "options": [
-        {
-          "value": "tab",
-          "label": "Tab (hide when inactive)"
-        },
-        {
-          "value": "spy",
-          "label": "Scroll Spy (always visible)"
-        }
-      ]
     }
   ],
   "blocks": [
