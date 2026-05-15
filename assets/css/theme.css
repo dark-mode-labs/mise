@@ -1401,6 +1401,9 @@
        tier emit. Per-tier mobile responsive scale lives at the
        `.ts-<id>` level via media queries in theme_variables. */
     box-sizing: border-box;
+    scroll-padding-top: calc(
+      var(--header-h, 0px) + var(--chip-strip-h, 0px) + var(--pane-gap-spy, 0px)
+    );
   }
 
   *,

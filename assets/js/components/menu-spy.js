@@ -1,5 +1,3 @@
-import { computeScrollTarget } from "../lib/menu-spy-math.js";
-
 export default class MenuSpy {
   constructor(element) {
     this.nav = element;
@@ -22,6 +20,7 @@ export default class MenuSpy {
     this._suspended = false;
     this._resumeTimer = null;
 
+    this._publishStripHeight();
     this.init();
   }
 
@@ -36,6 +35,19 @@ export default class MenuSpy {
     this.targets.forEach((target) => {
       this.observer.observe(target);
     });
+
+    window.addEventListener("resize", () => this._publishStripHeight());
+  }
+
+  _publishStripHeight() {
+    const root = document.documentElement.style;
+    root.setProperty("--chip-strip-h", `${this.nav.offsetHeight}px`);
+
+    const panes = this.scope.querySelector(".tab-panes");
+    if (panes) {
+      const gap = getComputedStyle(panes).rowGap;
+      if (gap && gap !== "normal") root.setProperty("--pane-gap-spy", gap);
+    }
   }
 
   handleScroll(e) {
@@ -50,10 +62,9 @@ export default class MenuSpy {
     this._suspend();
     this.activateTrigger(uuid);
 
-    const elementPosition = target.getBoundingClientRect().top;
-    const offsetPosition = computeScrollTarget(elementPosition, window.pageYOffset);
-
-    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    // scrollIntoView respects html { scroll-padding-top }, so the target lands
+    // below the sticky header + chip strip automatically.
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
     this._scheduleResume();
   }
 
