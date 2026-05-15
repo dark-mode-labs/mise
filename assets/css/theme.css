@@ -1386,7 +1386,7 @@
     align-self: start;
   }
 
-  .tab-mode-tab .tab-content[aria-expanded="false"] {
+  .tab-content[aria-expanded="false"] {
     display: none;
   }
   .tab-mode-spy .tab-content {
