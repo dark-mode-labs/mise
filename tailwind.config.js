@@ -8,6 +8,7 @@ export default {
     "./templates/*.json",
     "./config/*.json",
     "./assets/css/theme.css",
+    "./assets/js/**/*.js",
   ],
   safelist: [
     // Liquid-interpolated `backdrop-blur-{{ s.backdrop_blur }}` on
