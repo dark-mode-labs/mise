@@ -26,10 +26,7 @@
 {% endif %}
 
 {% assign chip_strip_bg_class = '' %}
-{% if chip_strip_bg_value == blank
-  and s.chip_strip_bg_role != blank
-  and s.chip_strip_bg_role != 'none'
-%}
+{% if chip_strip_bg_value == blank and s.chip_strip_bg_role != blank and s.chip_strip_bg_role != 'none' %}
   {% assign chip_strip_bg_class = 'bg-' | append: s.chip_strip_bg_role %}
 {% endif %}
 
@@ -38,18 +35,20 @@
   {% assign chip_strip_surface_class = 'surface-' | append: s.chip_strip_surface_id %}
 {% endif %}
 
-{% assign section_classes = 'tab-mode-{{ s.mode }} tabs-position-{{ s.chip_position }} surface-{{ surface_safe }} limit-width width-{{ s.width }}'
+{% assign section_classes = 'tab-mode-{{ s.mode }} tabs-section surface-{{ surface_safe }}' %}
+
+{% assign bg_layer_classes = 'limit-width width-{{ s.width_bg }}'
   | push: bg_class
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
 
-{% assign section_styles = blank
-  | push: '--pane-gap-spy: var(--space-{{ s.pane_gap_spy }})'
-%}
+{% assign bg_layer_styles = blank %}
 {% if bg_color_value != blank %}
-  {% assign section_styles = section_styles | push: 'background: {{ bg_color_value }}' %}
+  {% assign bg_layer_styles = bg_layer_styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
+
+{% assign content_layer_classes = 'tabs-position-{{ s.chip_position }} limit-width width-{{ s.width }}' %}
 
 {% assign chip_strip_classes = 'chip-strip chip-strip-{{ s.chip_position }} chip-strip-{{ s.chip_layout }}'
   | push: 'padding-py-{{ s.chip_strip_padding_vertical }}'
@@ -70,20 +69,28 @@
 
 <section
   class='{{ section_classes | join: ' ' }}'
-  style='{{ section_styles | join: ';' }}'
   data-spy-scope='{{ section.id }}'
   data-tab-group='{{ section.id }}'
   {{ context.attached_attributes }}
 >
   <div
-    class='{{ chip_strip_classes | join: ' ' }}'
-    style='{{ chip_strip_styles | join: ';' }}'
-    {% if s.mode == 'spy' %}data-behavior='menu-spy'{% endif %}
+    class='{{ bg_layer_classes | join: ' ' }}'
+    style='{{ bg_layer_styles | join: ';' }}'
   >
-    {% content_for 'block', type: 'group', id: 'chips' %}
-  </div>
-  <div class='tab-panes'>
-    {% content_for 'block', type: 'group', id: 'panes' %}
+    <div class='{{ content_layer_classes | join: ' ' }}'>
+      <div
+        class='{{ chip_strip_classes | join: ' ' }}'
+        style='{{ chip_strip_styles | join: ';' }}'
+        {% if s.mode == 'spy' %}
+          data-behavior='menu-spy'
+        {% endif %}
+      >
+        {% content_for 'block', type: 'group', id: 'chips' %}
+      </div>
+      <div class='tab-panes gap-{{ s.pane_gap_spy }}'>
+        {% content_for 'block', type: 'group', id: 'panes' %}
+      </div>
+    </div>
   </div>
 </section>
 
@@ -221,6 +228,12 @@
       "type": "width",
       "id": "width",
       "label": "Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "width",
+      "id": "width_bg",
+      "label": "Background Width",
       "default": "fill"
     },
     {

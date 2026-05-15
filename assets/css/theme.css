@@ -14,10 +14,6 @@
     @apply rotate-[var(--rotation)];
   }
 
-  /* Height — every `.height-<tier>` rule (including structural
-     `auto` / `full`) is emitted by `theme_variables.liquid` from the
-     site's `height_scale`. Settings/theme are the source of truth. */
-
   /* Absolute Positioning Anchors */
   .anchor-top-left {
     top: 0;
@@ -525,7 +521,6 @@
     @apply text-right;
   }
 
-  /* Split layout media - content-driven, height fills 100%, flex respects bounds */
   .hero-media-split .media-wrapper {
     aspect-ratio: auto;
     height: 100%;
@@ -533,21 +528,6 @@
     flex: 1 1 auto;
   }
 
-  /* Layout sections (hero/grid/section/media-with-content) want
-     `min-height` on the named tier — content can grow taller, the
-     tier sets a floor. Slideshow + media blocks want `height` (fixed
-     viewport height for image-driven sections). The actual tier value
-     comes from `theme.height_scale` (emitted as `.height-<tier>`
-     directly on `:root` by `theme_variables.liquid`). These selectors
-     just translate that to `min-height` for the layout-section
-     family while leaving the base `.height-<tier>` `height` rule
-     intact for media/slideshow/group. */
-  /* Layout sections (hero, section-layout, grid/media wrappers) ALWAYS
-     treat the height tier as a floor regardless of which tier is
-     selected — they're meant to grow when content overflows. Group
-     blocks defer to the tier's own `floor` flag (emitted by
-     `theme_variables.liquid`), so this override doesn't apply to
-     `.group-block`. */
   .hero-layout-overlay[class*="height-"]:not(.height-auto):not(.height-full),
   .hero-layout-split-left[class*="height-"]:not(.height-auto):not(.height-full),
   .hero-layout-split-right[class*="height-"]:not(.height-auto):not(.height-full),
@@ -1148,13 +1128,6 @@
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
-  /* fs-* type tiers are emitted dynamically from `theme.text_scale` by
-     theme_variables.liquid (parallel to space_scale / height_scale).
-     Each tier may be flat (`value`) or responsive clamp (`min`/`max`/`vw`)
-     so source HTML's `text-5xl sm:text-6xl md:text-7xl lg:text-8xl`
-     pattern can be preserved as a single fluid tier instead of
-     collapsing to a single fixed size. */
-
   .cursor-auto {
     cursor: auto;
   }
@@ -1323,18 +1296,13 @@
     opacity: 0.55;
   }
 
-  /* tabs section. `overflow: visible` overrides base
-     `section { overflow: hidden }` so sticky has the document as scroll context. */
-  .tabs-position-top {
-    display: flex;
-    flex-direction: column;
+  .tabs-section {
     overflow: visible;
-    gap: 1.5rem;
   }
+  .tabs-position-top,
   .tabs-position-left {
     display: flex;
     flex-direction: column;
-    overflow: visible;
     gap: 1.5rem;
   }
   @media (min-width: 769px) {
@@ -1363,8 +1331,9 @@
   .chip-strip[class*="bg-"]:not(.bg-none) {
     align-items: center;
   }
-  .tab-mode-spy .tab-content + .tab-content {
-    margin-top: var(--pane-gap-spy, 0);
+  .tab-panes {
+    display: flex;
+    flex-direction: column;
   }
   .chip-strip-top.chip-strip-wrap {
     flex-wrap: wrap;
