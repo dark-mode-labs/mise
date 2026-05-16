@@ -14,7 +14,8 @@ export default class Slideshow {
     this.controls = this.el.querySelector(".slideshow-controls");
     this.prevBtn = this.el.querySelector(".slideshow-prev");
     this.nextBtn = this.el.querySelector(".slideshow-next");
-    this.dots = this.el.querySelectorAll(".slideshow-dot");
+    this.dotsContainer = this.el.querySelector(".slideshow-dots");
+    this.dots = [];
 
     this.counter =
       this.el.querySelector(".slideshow-counter-wrapper span") ||
@@ -86,8 +87,32 @@ export default class Slideshow {
     return closestIndex;
   }
 
+  renderDots() {
+    if (!this.dotsContainer) return;
+    const slideCount = this.getSlides().length;
+    if (slideCount === 0) return;
+    const pageCount = getPageCount(slideCount, this.getCols());
+    const style = this.dotsContainer.dataset.dotStyle || "dots";
+    const html = [];
+    for (let i = 0; i < pageCount; i++) {
+      const inner =
+        style === "bars"
+          ? `<span class='slideshow-dot-pill block w-8 h-1 rounded-sm opacity-50 hover:opacity-100'></span>`
+          : style === "numbers"
+            ? `<span class='slideshow-dot-num text-sm font-bold opacity-50'>${i + 1}</span>`
+            : `<span class='slideshow-dot-pill block w-2.5 h-2.5 rounded-full opacity-50 hover:opacity-100 ring-1 ring-transparent'></span>`;
+      html.push(
+        `<button type='button' class='slideshow-dot transition-all duration-300' data-index='${i}' aria-label='Go to page ${i + 1}'>${inner}</button>`
+      );
+    }
+    this.dotsContainer.innerHTML = html.join("");
+    this.dots = this.dotsContainer.querySelectorAll(".slideshow-dot");
+  }
+
   init() {
     if (!this.track) return;
+
+    this.renderDots();
 
     if (this.prevBtn) this.prevBtn.addEventListener("click", () => this.prev());
     if (this.nextBtn) this.nextBtn.addEventListener("click", () => this.next());
@@ -133,6 +158,9 @@ export default class Slideshow {
     if (this.controls) {
       this.controls.style.display = totalPages <= 1 ? "none" : "flex";
     }
+    this.el
+      .querySelectorAll(".slideshow-nav, .slideshow-dots")
+      .forEach((el) => (el.style.display = totalPages <= 1 ? "none" : ""));
 
     if (totalPages <= 1) {
       this.track.classList.add("justify-center");

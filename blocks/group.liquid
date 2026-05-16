@@ -2,7 +2,7 @@
 
 {% comment %} --- Layout (property + CSS-driven, no axis-swap in liquid) --- {% endcomment %}
 {% if s.layout_mode == 'grid' %}
-  {% assign layout_class = 'grid grid-cols-[repeat(auto-fit,minmax(min(var(--width-grid-col),100%),1fr))]' %}
+  {% assign layout_class = 'grid grid-cols-[repeat(auto-fill,minmax(min(var(--width-grid-col),100%),1fr))]' %}
 {% else %}
   {% assign layout_class = 'flex direction-{{ s.direction }}' %}
 {% endif %}
@@ -275,6 +275,11 @@
 {
   "name": "Group",
   "settings": [
+    {
+      "type": "data_source",
+      "id": "bind_to",
+      "label": "Repeat for each"
+    },
     {
       "type": "header",
       "content": "Layout Mode"
@@ -925,13 +930,34 @@
       "info": "Frosted-glass blur strength applied behind the block.",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "X-Large" },
-        { "value": "2xl", "label": "2X-Large" },
-        { "value": "3xl", "label": "3X-Large" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "X-Large"
+        },
+        {
+          "value": "2xl",
+          "label": "2X-Large"
+        },
+        {
+          "value": "3xl",
+          "label": "3X-Large"
+        }
       ]
     },
     {

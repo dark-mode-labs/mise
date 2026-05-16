@@ -14,10 +14,6 @@
     @apply rotate-[var(--rotation)];
   }
 
-  /* Height — every `.height-<tier>` rule (including structural
-     `auto` / `full`) is emitted by `theme_variables.liquid` from the
-     site's `height_scale`. Settings/theme are the source of truth. */
-
   /* Absolute Positioning Anchors */
   .anchor-top-left {
     top: 0;
@@ -525,7 +521,6 @@
     @apply text-right;
   }
 
-  /* Split layout media - content-driven, height fills 100%, flex respects bounds */
   .hero-media-split .media-wrapper {
     aspect-ratio: auto;
     height: 100%;
@@ -533,21 +528,6 @@
     flex: 1 1 auto;
   }
 
-  /* Layout sections (hero/grid/section/media-with-content) want
-     `min-height` on the named tier — content can grow taller, the
-     tier sets a floor. Slideshow + media blocks want `height` (fixed
-     viewport height for image-driven sections). The actual tier value
-     comes from `theme.height_scale` (emitted as `.height-<tier>`
-     directly on `:root` by `theme_variables.liquid`). These selectors
-     just translate that to `min-height` for the layout-section
-     family while leaving the base `.height-<tier>` `height` rule
-     intact for media/slideshow/group. */
-  /* Layout sections (hero, section-layout, grid/media wrappers) ALWAYS
-     treat the height tier as a floor regardless of which tier is
-     selected — they're meant to grow when content overflows. Group
-     blocks defer to the tier's own `floor` flag (emitted by
-     `theme_variables.liquid`), so this override doesn't apply to
-     `.group-block`. */
   .hero-layout-overlay[class*="height-"]:not(.height-auto):not(.height-full),
   .hero-layout-split-left[class*="height-"]:not(.height-auto):not(.height-full),
   .hero-layout-split-right[class*="height-"]:not(.height-auto):not(.height-full),
@@ -638,102 +618,6 @@
   .media-block > .media-wrapper {
     flex: 1 1 auto;
     min-height: 0;
-  }
-
-  .menu-gap-x-tight {
-    column-gap: var(--space-sm);
-  }
-
-  .menu-gap-x-normal {
-    column-gap: var(--space-lg);
-  }
-
-  .menu-gap-x-relaxed {
-    column-gap: var(--space-xl);
-  }
-
-  .menu-gap-x-loose {
-    column-gap: var(--space-2xl);
-  }
-
-  .menu-gap-y-tight {
-    row-gap: var(--space-sm);
-  }
-
-  .menu-gap-y-normal {
-    row-gap: var(--space-lg);
-  }
-
-  .menu-gap-y-relaxed {
-    row-gap: var(--space-xl);
-  }
-
-  .menu-gap-y-loose {
-    row-gap: var(--space-2xl);
-  }
-
-  .menu-card-p-tight {
-    padding: var(--space-xs);
-  }
-
-  .menu-card-p-compact {
-    padding: var(--space-sm);
-  }
-
-  .menu-card-p-normal {
-    padding: var(--space-md);
-  }
-
-  .menu-card-p-relaxed {
-    padding: var(--space-lg);
-  }
-
-  .menu-card-p-loose {
-    padding: var(--space-xl);
-  }
-
-  .menu-list-row-tight {
-    padding-top: var(--space-xs);
-    padding-bottom: var(--space-xs);
-  }
-
-  .menu-list-row-normal {
-    padding-top: var(--space-sm);
-    padding-bottom: var(--space-sm);
-  }
-
-  .menu-list-row-relaxed {
-    padding-top: var(--space-md);
-    padding-bottom: var(--space-md);
-  }
-
-  .menu-list-row-loose {
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-  }
-
-  .menu-list-img-small {
-    @apply w-12 h-12 md:w-16 md:h-16;
-  }
-
-  .menu-list-img-medium {
-    @apply w-16 h-16 md:w-20 md:h-20;
-  }
-
-  .menu-list-img-large {
-    @apply w-20 h-20 md:w-24 md:h-24;
-  }
-
-  .menu-cols-1-2-2 {
-    @apply grid-cols-1 md:grid-cols-2;
-  }
-
-  .menu-cols-1-2-3 {
-    @apply grid-cols-1 md:grid-cols-2 xl:grid-cols-3;
-  }
-
-  .menu-cols-1-1-1 {
-    @apply grid-cols-1;
   }
 
   .hero-layout-split-right {
@@ -1244,13 +1128,6 @@
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
-  /* fs-* type tiers are emitted dynamically from `theme.text_scale` by
-     theme_variables.liquid (parallel to space_scale / height_scale).
-     Each tier may be flat (`value`) or responsive clamp (`min`/`max`/`vw`)
-     so source HTML's `text-5xl sm:text-6xl md:text-7xl lg:text-8xl`
-     pattern can be preserved as a single fluid tier instead of
-     collapsing to a single fixed size. */
-
   .cursor-auto {
     cursor: auto;
   }
@@ -1409,6 +1286,115 @@
     opacity: 0;
     transform: scale(0.5);
   }
+
+  [data-action="disabled"],
+  [data-action="disabled"] * {
+    cursor: not-allowed !important;
+  }
+
+  [data-action="disabled"] {
+    opacity: 0.55;
+  }
+
+  .tabs-section {
+    overflow: visible;
+  }
+  .tabs-position-top,
+  .tabs-position-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  @media (min-width: 769px) {
+    .tabs-position-left {
+      flex-direction: row;
+    }
+    .tabs-position-left > .chip-strip-left {
+      flex: 0 0 14rem;
+    }
+    .tabs-position-left > .tab-panes {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
+  .chip-strip {
+    display: flex;
+    gap: var(--chip-strip-gap, 0.5rem);
+    transition: background-color 200ms ease;
+  }
+  /* Slot groups are display:contents so chips/panes are direct flex children. */
+  .chip-strip > .group-block,
+  .tab-panes > .group-block {
+    display: contents;
+  }
+  .chip-strip[class*="bg-"]:not(.bg-none) {
+    align-items: center;
+  }
+  .tab-panes {
+    display: flex;
+    flex-direction: column;
+  }
+  .tab-content {
+    scroll-margin-top: var(--pane-scroll-mt, 0);
+  }
+  .chip-strip-top.chip-strip-wrap {
+    flex-wrap: wrap;
+  }
+  .chip-strip-top.chip-strip-scroll-snap {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .chip-strip-top.chip-strip-scroll-snap > * {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+  .chip-strip-top.chip-strip-scroll-snap::-webkit-scrollbar {
+    display: none;
+  }
+  @media (max-width: 768px) {
+    .chip-strip-top.chip-strip-responsive {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .chip-strip-top.chip-strip-responsive > * {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+    .chip-strip-top.chip-strip-responsive::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  @media (min-width: 769px) {
+    .chip-strip-top.chip-strip-responsive {
+      flex-wrap: wrap;
+    }
+  }
+
+  .chip-strip-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chip-strip-sticky {
+    position: sticky;
+    z-index: 10;
+    top: var(--header-h, 0);
+  }
+  .chip-strip-left.chip-strip-sticky {
+    align-self: start;
+  }
+
+  .tab-content[aria-expanded="false"] {
+    display: none;
+  }
+  .tab-mode-spy .tab-content {
+    display: block;
+  }
 }
 
 @layer base {
@@ -1418,6 +1404,7 @@
        tier emit. Per-tier mobile responsive scale lives at the
        `.ts-<id>` level via media queries in theme_variables. */
     box-sizing: border-box;
+    scroll-padding-top: calc(var(--header-h, 0px) + var(--chip-strip-h, 0px));
   }
 
   *,

@@ -1,9 +1,7 @@
-import { shouldBeActiveTab } from "../lib/tab-state.js";
-
 export default class TabContent {
   constructor(el) {
     this.el = el;
-    this.tabId = this.el.getAttribute("data-action-args");
+    this.tabId = this.el.getAttribute("data-tab-id");
     this.groupId = this.el.getAttribute("data-tab-group");
 
     this.handleGlobalSwitch = this.handleGlobalSwitch.bind(this);
@@ -13,7 +11,7 @@ export default class TabContent {
 
   init() {
     const myHead = document.querySelector(
-      `[data-behavior="tab-head"][data-action-args="${this.tabId}"][data-tab-group="${this.groupId}"]`
+      `[data-behavior="tab-head"][data-tab-id="${this.tabId}"][data-tab-group="${this.groupId}"]`
     );
 
     let shouldBeActive;
@@ -26,13 +24,12 @@ export default class TabContent {
       const familyMembers = document.querySelectorAll(
         `.tab-content[data-tab-group="${this.groupId}"]`
       );
-      shouldBeActive = shouldBeActiveTab({
-        explicitActive: this.el.getAttribute("aria-expanded") === "true",
-        anySiblingActive: Array.from(familyMembers).some(
-          (content) => content.getAttribute("aria-expanded") === "true"
-        ),
-        isFirst: familyMembers[0] === this.el,
-      });
+      const explicitActive = this.el.getAttribute("aria-expanded") === "true";
+      const anySiblingActive = Array.from(familyMembers).some(
+        (content) => content.getAttribute("aria-expanded") === "true"
+      );
+      const isFirst = familyMembers[0] === this.el;
+      shouldBeActive = explicitActive || (!anySiblingActive && isFirst);
     }
 
     this.setState(shouldBeActive);

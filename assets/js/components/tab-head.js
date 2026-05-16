@@ -1,9 +1,7 @@
-import { shouldBeActiveTab } from "../lib/tab-state.js";
-
 export default class TabHead {
   constructor(el) {
     this.el = el;
-    this.tabId = this.el.getAttribute("data-action-args");
+    this.tabId = this.el.getAttribute("data-tab-id");
     this.groupId = this.el.getAttribute("data-tab-group");
 
     this._baseClass = this.el.className || "";
@@ -17,13 +15,12 @@ export default class TabHead {
     const familyMembers = document.querySelectorAll(
       `[data-action="tab-switch"][data-tab-group="${this.groupId}"]`
     );
-    const shouldBeActive = shouldBeActiveTab({
-      explicitActive: this.el.getAttribute("aria-selected") === "true",
-      anySiblingActive: Array.from(familyMembers).some(
-        (tab) => tab.getAttribute("aria-selected") === "true"
-      ),
-      isFirst: familyMembers[0] === this.el,
-    });
+    const explicitActive = this.el.getAttribute("aria-selected") === "true";
+    const anySiblingActive = Array.from(familyMembers).some(
+      (tab) => tab.getAttribute("aria-selected") === "true"
+    );
+    const isFirst = familyMembers[0] === this.el;
+    const shouldBeActive = explicitActive || (!anySiblingActive && isFirst);
 
     this.setState(shouldBeActive);
 

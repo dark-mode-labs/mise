@@ -1,6 +1,5 @@
 {% assign s = block.settings %}
 
-{% comment %} --- Class Array Building --- {% endcomment %}
 {% assign radius_class = 'rounded-global' %}
 {% if s.border_radius_override %}
   {% assign radius_class = 'rounded-custom' %}
@@ -20,16 +19,11 @@
   {% assign classes = classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
 {% endif %}
 
-{% comment %}
-  Background layer: scheme-driven via .bg-<role>. Escape-hatch
-  (bg_color_override) is rendered as inline style further down.
-{% endcomment %}
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
-{% comment %} Borders {% endcomment %}
 {% unless s.border_mode == 'none' %}
   {% assign classes = classes
     | push: 'group-border-{{ s.border_mode }}'
@@ -55,7 +49,6 @@
 
 {% assign block_classes = classes | join: ' ' %}
 
-{% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign bg_color_value = blank %}
 {% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
   {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
@@ -118,7 +111,6 @@
   {%- endif %}
 {% endunless %}
 
-{% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
 {% if bg_color_value != blank %}
   {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
@@ -128,12 +120,16 @@
 
 {% assign block_styles = styles | join: ';' %}
 
-{% comment %} --- Component Render --- {% endcomment %}
 <div
   class='{{ block_classes }}'
   style='{{ block_styles }}'
-  data-action-args='{{ context.item.uuid }}'
-  data-action='add-item'
+  data-action='{{ s.action | escape }}'
+  {% if s.action_args != blank %}
+    data-action-args='{{ s.action_args | escape }}'
+  {% endif %}
+  {% if s.action_hint != blank %}
+    data-action-hint='{{ s.action_hint | escape }}'
+  {% endif %}
   {{ context.attached_attributes }}
 >
   {% render 'bg-overlay',
@@ -151,13 +147,40 @@
 
 {% schema %}
 {
-  "name": "Menu Card",
+  "name": "Menu Card Compact",
   "settings": [
+    {
+      "type": "data_source",
+      "id": "bind_to",
+      "label": "Repeat for each"
+    },
     {
       "type": "type_style",
       "id": "type_style",
       "label": "Type Style",
       "default": "body"
+    },
+    {
+      "type": "header",
+      "content": "Action Trigger"
+    },
+    {
+      "type": "text",
+      "id": "action",
+      "label": "Action Type",
+      "default": "{{ context.item.action | default: 'add-item' }}"
+    },
+    {
+      "type": "text",
+      "id": "action_args",
+      "label": "Action Arguments",
+      "default": "{{ context.item.action_args | default: context.item.uuid }}"
+    },
+    {
+      "type": "text",
+      "id": "action_hint",
+      "label": "Action Hint",
+      "default": "{{ context.item.action_hint }}"
     },
     {
       "type": "header",
@@ -168,18 +191,9 @@
       "id": "text_align",
       "label": "Text Alignment",
       "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ],
       "default": "left"
     },
@@ -187,7 +201,7 @@
       "type": "space",
       "id": "padding_vertical",
       "label": "Vertical Padding",
-      "default": "none"
+      "default": "sm"
     },
     {
       "type": "range",
@@ -215,7 +229,7 @@
       "type": "space",
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
-      "default": "none"
+      "default": "md"
     },
     {
       "type": "range",
@@ -299,7 +313,7 @@
       "type": "space",
       "id": "gap",
       "label": "Gap",
-      "default": "none"
+      "default": "xs"
     },
     {
       "type": "range",
@@ -322,18 +336,9 @@
       "label": "Border",
       "default": "none",
       "options": [
-        {
-          "value": "custom",
-          "label": "Custom"
-        },
-        {
-          "value": "full",
-          "label": "Full"
-        },
-        {
-          "value": "none",
-          "label": "None"
-        }
+        { "value": "custom", "label": "Custom" },
+        { "value": "full", "label": "Full" },
+        { "value": "none", "label": "None" }
       ]
     },
     {
@@ -342,30 +347,12 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "default",
-          "label": "Default"
-        },
-        {
-          "value": "emphasis",
-          "label": "Emphasis"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        },
-        {
-          "value": "gradient",
-          "label": "Gradient"
-        }
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
@@ -394,22 +381,10 @@
       "label": "Border Style",
       "default": "solid",
       "options": [
-        {
-          "value": "solid",
-          "label": "Solid"
-        },
-        {
-          "value": "dashed",
-          "label": "Dashed"
-        },
-        {
-          "value": "dotted",
-          "label": "Dotted"
-        },
-        {
-          "value": "double",
-          "label": "Double"
-        }
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" },
+        { "value": "double", "label": "Double" }
       ]
     },
     {
@@ -445,33 +420,13 @@
       "id": "border_size",
       "label": "Border Size",
       "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "Small",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "Medium",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "Large",
-          "info": "8px"
-        }
+        { "value": "xxs", "label": "XXS", "info": "1px" },
+        { "value": "xs", "label": "XS", "info": "2px" },
+        { "value": "sm", "label": "Small", "info": "4px" },
+        { "value": "md", "label": "Medium", "info": "6px" },
+        { "value": "lg", "label": "Large", "info": "8px" }
       ],
-      "default": "md",
+      "default": "xs",
       "conditional": "setting.border_mode != 'none'"
     },
     {
@@ -484,50 +439,17 @@
       "label": "Background",
       "default": "none",
       "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "body",
-          "label": "Body"
-        },
-        {
-          "value": "body-alt",
-          "label": "Body (alt)"
-        },
-        {
-          "value": "surface",
-          "label": "Surface"
-        },
-        {
-          "value": "surface-alt",
-          "label": "Surface (alt)"
-        },
-        {
-          "value": "accent",
-          "label": "Accent"
-        },
-        {
-          "value": "button",
-          "label": "Button"
-        },
-        {
-          "value": "control",
-          "label": "Control"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        },
-        {
-          "value": "gradient",
-          "label": "Gradient"
-        }
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
       ]
     },
     {
@@ -555,50 +477,17 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "body",
-          "label": "Body"
-        },
-        {
-          "value": "body-alt",
-          "label": "Body (alt)"
-        },
-        {
-          "value": "surface",
-          "label": "Surface"
-        },
-        {
-          "value": "surface-alt",
-          "label": "Surface (alt)"
-        },
-        {
-          "value": "accent",
-          "label": "Accent"
-        },
-        {
-          "value": "button",
-          "label": "Button"
-        },
-        {
-          "value": "control",
-          "label": "Control"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        },
-        {
-          "value": "gradient",
-          "label": "Gradient"
-        }
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
       ]
     },
     {
@@ -720,37 +609,52 @@
   ],
   "presets": [
     {
-      "name": "full-menu-card",
+      "name": "compact-menu-card",
       "blocks": {
         "menu-card-header": {
           "type": "group",
           "name": "Heading",
           "static": true,
           "settings": {
-            "gap": "none",
+            "gap": "xs",
+            "direction": "row",
+            "content_align": "between",
+            "vertical_align": "top",
             "padding_vertical": "none",
-            "padding_horizontal": "none"
+            "padding_horizontal": "none",
+            "width": "fill"
           },
           "blocks": {
-            "img": {
-              "type": "media",
+            "title": {
+              "type": "text",
               "settings": {
-                "image": "{{ context.item.asset.url }}",
-                "object_fit": "cover",
-                "aspect_ratio": "landscape"
+                "tag": "h3",
+                "content": "{{ context.item.name }}",
+                "text_wrap": "balance",
+                "text_align": "left",
+                "type_style": "body"
+              }
+            },
+            "price": {
+              "type": "text",
+              "settings": {
+                "tag": "span",
+                "content": "{{ context.item.formatted_price }}",
+                "text_align": "right",
+                "type_style": "body"
               }
             }
           },
-          "block_order": ["img"]
+          "block_order": ["title", "price"]
         },
         "menu-card-content": {
           "type": "group",
           "name": "Content",
           "static": true,
           "settings": {
-            "gap": "sm",
-            "padding_vertical": "xs",
-            "padding_horizontal": "md",
+            "gap": "xs",
+            "padding_vertical": "none",
+            "padding_horizontal": "none",
             "grow_content": true
           },
           "blocks": {
@@ -761,43 +665,9 @@
                 "text_align": "left",
                 "type_style": "caption"
               }
-            },
-            "info": {
-              "type": "group",
-              "blocks": {
-                "price": {
-                  "type": "text",
-                  "settings": {
-                    "tag": "span",
-                    "content": "{{ context.item.amount | money }}",
-                    "text_align": "right",
-                    "type_style": "body"
-                  }
-                },
-                "title": {
-                  "type": "text",
-                  "settings": {
-                    "tag": "h3",
-                    "content": "{{ context.item.name }}",
-                    "text_wrap": "balance",
-                    "text_align": "left",
-                    "type_style": "body"
-                  }
-                }
-              },
-              "settings": {
-                "gap": "xs",
-                "width": "full",
-                "direction": "row",
-                "content_align": "between",
-                "vertical_align": "top",
-                "padding_vertical": "xs",
-                "padding_horizontal": "none"
-              },
-              "block_order": ["title", "price"]
             }
           },
-          "block_order": ["info", "desc"]
+          "block_order": ["desc"]
         },
         "menu-card-footer": {
           "type": "group",
@@ -806,15 +676,15 @@
           "settings": {
             "gap": "xs",
             "padding_vertical": "xs",
-            "padding_horizontal": "md"
+            "padding_horizontal": "none",
+            "direction": "row",
+            "content_align": "right"
           },
           "blocks": {
             "btn": {
               "type": "button",
               "settings": {
-                "label": "Order Now",
-                "width": "full",
-                "content_align": "center",
+                "label": "Add",
                 "trigger": "action",
                 "action": "add-item"
               }
@@ -824,8 +694,12 @@
         }
       },
       "settings": {
-        "gap": "none",
-        "shadow": true
+        "gap": "xs",
+        "padding_vertical": "sm",
+        "padding_horizontal": "md",
+        "border_mode": "custom",
+        "border_custom_bottom": true,
+        "border_size": "xxs"
       }
     }
   ]
