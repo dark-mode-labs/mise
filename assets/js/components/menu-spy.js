@@ -8,8 +8,8 @@ export default class MenuSpy {
       return;
     }
 
-    this.triggers = this.nav.querySelectorAll("[data-spy-trigger]");
-    this.targets = this.scope.querySelectorAll("[data-spy-target]");
+    this.triggers = this.nav.querySelectorAll('[data-behavior="tab-head"]');
+    this.targets = this.scope.querySelectorAll('[data-behavior="tab-content"]');
 
     this.observer = null;
     this.options = {
@@ -40,30 +40,26 @@ export default class MenuSpy {
   }
 
   _publishStripHeight() {
-    const root = document.documentElement.style;
-    root.setProperty("--chip-strip-h", `${this.nav.offsetHeight}px`);
-
-    const panes = this.scope.querySelector(".tab-panes");
-    if (panes) {
-      const gap = getComputedStyle(panes).rowGap;
-      if (gap && gap !== "normal") root.setProperty("--pane-gap-spy", gap);
-    }
+    document.documentElement.style.setProperty("--chip-strip-h", `${this.nav.offsetHeight}px`);
   }
 
   handleScroll(e) {
     e.preventDefault();
-    const uuid = e.currentTarget.dataset.spyTrigger;
+    const tabId = e.currentTarget.dataset.tabId;
 
-    const target = this.scope.querySelector(`[data-spy-target="${uuid}"]`);
+    const target = this.scope.querySelector(
+      `[data-behavior="tab-content"][data-tab-id="${tabId}"]`
+    );
     if (!target) return;
 
     // Click intent wins: suspend the observer for the duration of the smooth
     // scroll so transient pane intersections don't flicker the active chip.
     this._suspend();
-    this.activateTrigger(uuid);
+    this.activateTrigger(tabId);
 
-    // scrollIntoView respects html { scroll-padding-top }, so the target lands
-    // below the sticky header + chip strip automatically.
+    // scrollIntoView respects html { scroll-padding-top } + the target's
+    // scroll-margin-top (per-section), so the target lands below the sticky
+    // header + chip strip with the section's configured breathing room.
     target.scrollIntoView({ behavior: "smooth", block: "start" });
     this._scheduleResume();
   }
@@ -72,8 +68,7 @@ export default class MenuSpy {
     if (this._suspended) return;
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        const uuid = entry.target.dataset.spyTarget;
-        this.activateTrigger(uuid);
+        this.activateTrigger(entry.target.dataset.tabId);
       }
     });
   }
@@ -94,8 +89,10 @@ export default class MenuSpy {
     }
   }
 
-  activateTrigger(uuid) {
-    const activeTrigger = this.nav.querySelector(`[data-spy-trigger="${uuid}"]`);
+  activateTrigger(tabId) {
+    const activeTrigger = this.nav.querySelector(
+      `[data-behavior="tab-head"][data-tab-id="${tabId}"]`
+    );
     if (!activeTrigger) return;
 
     // Center the active chip inside the strip when it overflows. Scrolling
@@ -103,14 +100,11 @@ export default class MenuSpy {
     // the chip-strip's own scroll axes — never moves page Y.
     this._centerChipInStrip(activeTrigger);
 
-    // If the trigger is wired into the tab system (data-tab-group present),
-    // dispatch tab:activated so tab-head.js owns the active styling. Otherwise
-    // fall back to the raw .is-active toggle for non-tab consumers.
     const groupId = activeTrigger.getAttribute("data-tab-group");
     if (groupId) {
       document.dispatchEvent(
         new CustomEvent("tab:activated", {
-          detail: { tabId: uuid, groupId },
+          detail: { tabId, groupId },
         })
       );
     } else {
@@ -132,12 +126,6 @@ export default class MenuSpy {
       const chipCenterY = (chipRect.top + chipRect.bottom) / 2;
       const stripCenterY = (stripRect.top + stripRect.bottom) / 2;
       this.nav.scrollBy({ top: chipCenterY - stripCenterY, behavior: "smooth" });
-    }
-  }
-
-  disconnect() {
-    if (this.observer) {
-      this.observer.disconnect();
     }
   }
 }

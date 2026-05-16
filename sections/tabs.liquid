@@ -77,7 +77,10 @@
     class='{{ bg_layer_classes | join: ' ' }}'
     style='{{ bg_layer_styles | join: ';' }}'
   >
-    <div class='{{ content_layer_classes | join: ' ' }}'>
+    <div
+      class='{{ content_layer_classes | join: ' ' }}'
+      style='--pane-scroll-mt: var(--space-{{ s.pane_gap_spy }})'
+    >
       <div
         class='{{ chip_strip_classes | join: ' ' }}'
         style='{{ chip_strip_styles | join: ';' }}'

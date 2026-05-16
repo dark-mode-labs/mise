@@ -140,11 +140,9 @@
   data-tab-inactive-styles='{{ inactive_state_styles | join: ';' }}'
   data-tab-group='{{ section.id }}'
   data-action='tab-switch'
-  data-action-args='{{ s.tab_id }}'
-  data-spy-trigger='{{ s.tab_id }}'
+  data-tab-id='{{ s.tab_id }}'
   role='tab'
 >
-  {% comment %} Wrapping blocks in z-10 so they sit above the absolute overlay {% endcomment %}
   <div class='relative z-10'>
     {% content_for 'blocks' %}
   </div>
@@ -338,15 +336,6 @@
       "id": "enable_overlay",
       "label": "Use Overlay",
       "default": false
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "label": "Opacity",
-      "min": 0,
-      "max": 100,
-      "default": 100,
-      "conditional": "setting.enable_overlay == true"
     },
     {
       "type": "select",
@@ -549,15 +538,6 @@
       "id": "enable_overlay_inactive",
       "label": "Use Overlay",
       "default": false
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity_inactive",
-      "label": "Opacity",
-      "min": 0,
-      "max": 100,
-      "default": 100,
-      "conditional": "setting.enable_overlay_inactive == true"
     },
     {
       "type": "select",
