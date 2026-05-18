@@ -27,9 +27,8 @@ export default class MenuSpy {
   init() {
     if (!this.targets.length) return;
 
-    this.triggers.forEach((trigger) => {
-      trigger.addEventListener("click", (e) => this.handleScroll(e));
-    });
+    // Capture-phase: tab-head's bubble listener calls stopImmediatePropagation.
+    this.nav.addEventListener("click", (e) => this.handleScroll(e), true);
 
     this.observer = new IntersectionObserver(this.onIntersect.bind(this), this.options);
     this.targets.forEach((target) => {
@@ -44,8 +43,11 @@ export default class MenuSpy {
   }
 
   handleScroll(e) {
+    const trigger = e.target.closest('[data-behavior="tab-head"]');
+    if (!trigger || !this.nav.contains(trigger)) return;
+
     e.preventDefault();
-    const tabId = e.currentTarget.dataset.tabId;
+    const tabId = trigger.dataset.tabId;
 
     const target = this.scope.querySelector(
       `[data-behavior="tab-content"][data-tab-id="${tabId}"]`
