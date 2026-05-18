@@ -29,7 +29,7 @@
 {% endif %}
 
 {% comment %} --- 1. Wrapper Classes (Outer DIV) --- {% endcomment %}
-{% assign wrapper_classes = 'whitespace-nowrap'
+{% assign wrapper_classes = 'whitespace-nowrap relative'
   | push: radius_class
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
@@ -43,6 +43,11 @@
     doesn't expand the button past its content.
   {%- endcomment -%}
   {% assign wrapper_classes = wrapper_classes | push: 'inline-block width-fit limit-width' %}
+{% endif %}
+
+{% if s.height and s.height != 'auto' %}
+  {% assign wrapper_classes = wrapper_classes | push: 'height-{{ s.height }}' %}
+  {% assign inner_classes_height = 'height-full' %}
 {% endif %}
 
 {% if s.surface_override %}
@@ -79,6 +84,7 @@
   | push: radius_class
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: inner_classes_height
 %}
 
 {% case s.style %}
@@ -575,6 +581,12 @@
           "label": "Fill Parent"
         }
       ]
+    },
+    {
+      "type": "height",
+      "id": "height",
+      "label": "Height",
+      "default": "auto"
     },
     {
       "type": "select",

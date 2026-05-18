@@ -317,8 +317,19 @@
             {
               "value": "ultra-wide",
               "label": "Ultra Wide"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
             }
           ]
+        },
+        {
+          "type": "text",
+          "id": "tracking_custom",
+          "label": "Tracking (custom)",
+          "info": "Arbitrary letter-spacing value (e.g. `-0.015em`, `0.04em`).",
+          "conditional": "setting.tracking == 'custom'"
         },
         {
           "type": "select",
@@ -349,8 +360,19 @@
             {
               "value": "loose",
               "label": "Loose (2)"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
             }
           ]
+        },
+        {
+          "type": "text",
+          "id": "leading_custom",
+          "label": "Leading (custom)",
+          "info": "Arbitrary line-height value (unitless ratio like `1.1` or `1.55`, or `<N>rem` / `<N>em`).",
+          "conditional": "setting.leading == 'custom'"
         },
         {
           "type": "select",
@@ -430,7 +452,6 @@
       "name": "Space Scale",
       "type": "group",
       "id": "space_scale",
-      "info": "Spacing tiers — single `value` (any CSS length: rem, em, etc.). Each tier renders to --space-<id> for padding/margin/gap classes. Built-ins (none/xs/sm/md/lg/xl/2xl/3xl/custom) live in defaults; transpiler synthesizes additional tiers from source HTML spacing values. Structural tiers (`none` zero-out, `custom` per-instance values via --space-pl/pr/pt/pb/mt/mb/ml/mr/gap) have specialized CSS rules in theme.css; the dynamic loop in theme_variables.liquid skips them.",
       "settings": [
         {
           "type": "text",
@@ -443,6 +464,26 @@
           "id": "value",
           "label": "Value",
           "info": "Any CSS length: rem (e.g. `1rem`, `1.5rem`), em, or px.",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "Min Column Width Scale",
+      "type": "group",
+      "id": "min_col_scale",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Min Column"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "info": "Any CSS length, typically rem.",
           "default": ""
         }
       ]
@@ -799,10 +840,24 @@
             "structural": true
           }
         },
+        "two-thirds": {
+          "settings": {
+            "title": "Two Thirds (2/3)",
+            "max_width": "66.667%",
+            "structural": true
+          }
+        },
         "quarter": {
           "settings": {
             "title": "Quarter (1/4)",
             "max_width": "25%",
+            "structural": true
+          }
+        },
+        "three-quarters": {
+          "settings": {
+            "title": "Three Quarters (3/4)",
+            "max_width": "75%",
             "structural": true
           }
         },
@@ -991,6 +1046,14 @@
           }
         }
       },
+      "min_col_scale": {
+        "default": {
+          "settings": {
+            "title": "Default",
+            "value": "16rem"
+          }
+        }
+      },
       "space_scale": {
         "none": {
           "settings": {
@@ -1050,6 +1113,24 @@
         "custom": {
           "settings": {
             "title": "Custom",
+            "structural": true
+          }
+        },
+        "auto": {
+          "settings": {
+            "title": "Auto",
+            "structural": true
+          }
+        },
+        "auto-top": {
+          "settings": {
+            "title": "Auto Top",
+            "structural": true
+          }
+        },
+        "auto-bottom": {
+          "settings": {
+            "title": "Auto Bottom",
             "structural": true
           }
         }

@@ -48,7 +48,7 @@
 {% assign bg_class = 'bg-' | append: bg_role_safe %}
 {% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
 
-{% assign header_classes = 'header-section z-header transition-all duration-300 border-b border-default'
+{% assign header_classes = 'header-section z-header transition-all duration-300'
   | push: position_class_str
   | push: 'surface-{{ s.surface_id | default: "default" }}'
   | push: bg_class
@@ -57,6 +57,31 @@
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
+
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
+
+{% unless s.border_mode == 'none' or s.border_mode == blank %}
+  {% assign header_classes = header_classes
+    | push: 'group-border-{{ s.border_mode }}'
+    | push: 'group-border-size-{{ s.border_size | default: "xxs" }}'
+  %}
+  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' %}
+    {% assign header_classes = header_classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
+  {% if s.border_mode == 'custom' %}
+    {% assign header_classes = header_classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
+  {% endif %}
+{% endunless %}
 {% if s.backdrop_blur and s.backdrop_blur != 'none' %}
   {% assign header_classes = header_classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
 {% endif %}
@@ -82,6 +107,12 @@
 {% if text_override_value != blank %}
   {% assign styles = styles | push: '--text: {{ text_override_value }}' %}
 {% endif %}
+{% unless s.border_mode == 'none' or s.border_mode == blank %}
+  {% assign styles = styles | push: '--border-style: {{ s.border_style | default: "solid" }}' %}
+  {% if border_color_value != blank -%}
+    {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
+  {%- endif %}
+{% endunless %}
 {% assign style_str = styles | join: ';' %}
 
 {% comment %}
@@ -159,13 +190,78 @@
       {% endif %}
 
       {% if s.show_cart %}
-        <a data-action='open-cart' class='p-2 hover:opacity-70 relative'>
+        {% assign cart_bg_color = blank %}
+        {% if s.cart_bg_role == 'palette' and s.cart_bg_role_palette != blank %}
+          {% assign cart_bg_color = 'var(--palette-{{ s.cart_bg_role_palette }})' %}
+        {% elsif s.cart_bg_role == 'custom' and s.cart_bg_role_custom != blank %}
+          {% assign cart_bg_color = s.cart_bg_role_custom %}
+        {% endif %}
+        {% assign cart_text_color = blank %}
+        {% if s.cart_text_role == 'palette' and s.cart_text_role_palette != blank %}
+          {% assign cart_text_color = 'var(--palette-{{ s.cart_text_role_palette }})' %}
+        {% elsif s.cart_text_role == 'custom' and s.cart_text_role_custom != blank %}
+          {% assign cart_text_color = s.cart_text_role_custom %}
+        {% endif %}
+        {% assign badge_bg_color = blank %}
+        {% if s.cart_badge_bg_role == 'palette' and s.cart_badge_bg_role_palette != blank %}
+          {% assign badge_bg_color = 'var(--palette-{{ s.cart_badge_bg_role_palette }})' %}
+        {% elsif s.cart_badge_bg_role == 'custom' and s.cart_badge_bg_role_custom != blank %}
+          {% assign badge_bg_color = s.cart_badge_bg_role_custom %}
+        {% endif %}
+        {% assign badge_text_color = blank %}
+        {% if s.cart_badge_text_role == 'palette' and s.cart_badge_text_role_palette != blank %}
+          {% assign badge_text_color = 'var(--palette-{{ s.cart_badge_text_role_palette }})' %}
+        {% elsif s.cart_badge_text_role == 'custom' and s.cart_badge_text_role_custom != blank %}
+          {% assign badge_text_color = s.cart_badge_text_role_custom %}
+        {% endif %}
+        {% assign cart_button_styles = blank %}
+        {% if s.cart_size %}
+          {% assign cart_button_styles = cart_button_styles
+            | push: 'width: {{ s.cart_size }}rem'
+            | push: 'height: {{ s.cart_size }}rem'
+          %}
+        {% endif %}
+        {% if cart_bg_color != blank %}
+          {% assign cart_button_styles = cart_button_styles | push: 'background: {{ cart_bg_color }}' %}
+        {% endif %}
+        {% if cart_text_color != blank %}
+          {% assign cart_button_styles = cart_button_styles | push: 'color: {{ cart_text_color }}' %}
+        {% endif %}
+        {% if s.cart_shadow_color_override and s.cart_shadow_color != blank %}
+          {% assign cart_button_styles = cart_button_styles | push: '--shadow: {{ s.cart_shadow_color }}' %}
+        {% endif %}
+        {% assign cart_btn_class = 'header-cart-btn relative hover:opacity-90 inline-flex items-center justify-center shrink-0' %}
+        {% if s.cart_shadow %}
+          {% assign cart_btn_class = cart_btn_class | append: ' shadow-lg' %}
+        {% endif %}
+        {% if s.cart_shape == 'circle' or cart_bg_color != blank %}
+          {% assign cart_btn_class = cart_btn_class | append: ' rounded-full' %}
+        {% else %}
+          {% assign cart_btn_class = cart_btn_class | append: ' p-2 hover:opacity-70' %}
+        {% endif %}
+        <a
+          data-action='open-cart'
+          class='{{ cart_btn_class }}'
+          style='{{ cart_button_styles | join: ";" }}'
+        >
           <span class='sr-only' data-cart-aria aria-live='polite'>{{ 'cart.aria_label_empty' | t }}</span>
-          {% render 'icon', name: 'bag', class: 'w-6 h-6' %}
+          {% if s.cart_icon_svg != blank %}
+            {{ s.cart_icon_svg }}
+          {% else %}
+            {% render 'icon', name: 'bag', class: 'w-6 h-6' %}
+          {% endif %}
+          {% assign badge_styles = blank %}
+          {% if badge_bg_color != blank %}
+            {% assign badge_styles = badge_styles | push: 'background: {{ badge_bg_color }}' %}
+          {% endif %}
+          {% if badge_text_color != blank %}
+            {% assign badge_styles = badge_styles | push: 'color: {{ badge_text_color }}' %}
+          {% endif %}
           <span
             class='cart-count-badge'
             data-cart-badge
             data-empty
+            style='{{ badge_styles | join: ";" }}'
             data-aria-empty='{{ 'cart.aria_label_empty' | t }}'
             data-aria-one='{{ 'cart.aria_label_one' | t }}'
             data-aria-other='{{ 'cart.aria_label_other' | t }}'
@@ -318,6 +414,103 @@
     },
     {
       "type": "header",
+      "content": "Borders"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        { "value": "custom", "label": "Custom" },
+        { "value": "full", "label": "Full" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" },
+        { "value": "double", "label": "Double" }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "border_size",
+      "label": "Border Size",
+      "default": "xxs",
+      "options": [
+        { "value": "xxs", "label": "XXS", "info": "1px" },
+        { "value": "xs", "label": "XS", "info": "2px" },
+        { "value": "sm", "label": "SM", "info": "4px" },
+        { "value": "md", "label": "MD", "info": "6px" },
+        { "value": "lg", "label": "LG", "info": "8px" }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "header",
       "content": "Behavior"
     },
     {
@@ -396,6 +589,158 @@
       "id": "show_cart",
       "label": "Show Cart",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Cart Style",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "textarea",
+      "id": "cart_icon_svg",
+      "label": "Cart Icon (custom SVG)",
+      "info": "Paste raw SVG. Falls back to default bag icon if empty.",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "range",
+      "id": "cart_size",
+      "label": "Cart Button Size",
+      "min": 0,
+      "max": 5,
+      "step": 0.125,
+      "unit": "rem",
+      "default": 0,
+      "info": "0 = default icon-only sizing.",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "select",
+      "id": "cart_shape",
+      "label": "Cart Button Shape",
+      "default": "icon",
+      "options": [
+        { "value": "icon", "label": "Icon Only" },
+        { "value": "circle", "label": "Circle" }
+      ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "select",
+      "id": "cart_bg_role",
+      "label": "Cart Button BG",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "palette", "label": "Palette" },
+        { "value": "custom", "label": "Raw" }
+      ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "palette",
+      "id": "cart_bg_role_palette",
+      "label": "Cart BG Palette",
+      "conditional": "setting.show_cart == true and setting.cart_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_bg_role_custom",
+      "label": "Cart BG Color",
+      "conditional": "setting.show_cart == true and setting.cart_bg_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "cart_text_role",
+      "label": "Cart Icon Color",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "Inherit" },
+        { "value": "palette", "label": "Palette" },
+        { "value": "custom", "label": "Raw" }
+      ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "palette",
+      "id": "cart_text_role_palette",
+      "label": "Cart Icon Palette",
+      "conditional": "setting.show_cart == true and setting.cart_text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_text_role_custom",
+      "label": "Cart Icon Color",
+      "conditional": "setting.show_cart == true and setting.cart_text_role == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart_shadow",
+      "label": "Cart Button Shadow",
+      "default": false,
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart_shadow_color_override",
+      "label": "Override Cart Shadow Color",
+      "default": false,
+      "conditional": "setting.show_cart == true and setting.cart_shadow == true"
+    },
+    {
+      "type": "color",
+      "id": "cart_shadow_color",
+      "label": "Cart Shadow Color",
+      "default": "rgba(0,0,0,0.45)",
+      "conditional": "setting.show_cart == true and setting.cart_shadow == true and setting.cart_shadow_color_override == true"
+    },
+    {
+      "type": "select",
+      "id": "cart_badge_bg_role",
+      "label": "Badge BG",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "Default" },
+        { "value": "palette", "label": "Palette" },
+        { "value": "custom", "label": "Raw" }
+      ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "palette",
+      "id": "cart_badge_bg_role_palette",
+      "label": "Badge BG Palette",
+      "conditional": "setting.show_cart == true and setting.cart_badge_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_badge_bg_role_custom",
+      "label": "Badge BG Color",
+      "conditional": "setting.show_cart == true and setting.cart_badge_bg_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "cart_badge_text_role",
+      "label": "Badge Text",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "Default" },
+        { "value": "palette", "label": "Palette" },
+        { "value": "custom", "label": "Raw" }
+      ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "palette",
+      "id": "cart_badge_text_role_palette",
+      "label": "Badge Text Palette",
+      "conditional": "setting.show_cart == true and setting.cart_badge_text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_badge_text_role_custom",
+      "label": "Badge Text Color",
+      "conditional": "setting.show_cart == true and setting.cart_badge_text_role == 'custom'"
     },
     {
       "type": "header",

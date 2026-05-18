@@ -14,20 +14,8 @@
 {% assign tag_el = tag | default: 'p' %}
 {% assign style_class = 'ts-' | append: type_style | default: 'ts-body' %}
 {% if type_style == blank %}{% assign style_class = 'ts-body' %}{% endif %}
-{% case color_role %}
-  {% when 'secondary' -%}
-    {%- assign color_class = 'text-secondary' %}
-  {% when 'subtle' -%}
-    {%- assign color_class = 'text-subtle' %}
-  {% when 'emphasis' -%}
-    {%- assign color_class = 'text-emphasis' %}
-  {% when 'on-accent' -%}
-    {%- assign color_class = 'text-on-accent' %}
-  {% when 'on-button' -%}
-    {%- assign color_class = 'text-on-button' %}
-  {% when 'on-control' -%}
-    {%- assign color_class = 'text-on-control' %}
-  {% else -%}
-    {%- assign color_class = 'text-primary' %}
-{% endcase %}
+{% assign color_class = 'text-' | append: color_role | default: 'text-primary' %}
+{% if color_role == blank or color_role == 'custom' or color_role == 'palette' -%}
+  {%- assign color_class = 'text-primary' -%}
+{%- endif %}
 <{{ tag_el }} class='{{ style_class }} {{ color_class }} {{ class }}'>{{ text }}</{{ tag_el }}>

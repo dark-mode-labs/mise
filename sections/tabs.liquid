@@ -18,6 +18,15 @@
   {% assign chip_strip_bg_value = s.chip_strip_bg_role_custom %}
 {% endif %}
 
+{% assign chip_strip_border_color_value = blank %}
+{% if s.chip_strip_border_role == 'palette' and s.chip_strip_border_role_palette != blank %}
+  {% assign chip_strip_border_color_value = 'var(--palette-{{ s.chip_strip_border_role_palette }})' %}
+{% elsif s.chip_strip_border_role == 'gradient' and s.chip_strip_border_role_gradient != blank %}
+  {% assign chip_strip_border_color_value = 'var(--gradient-{{ s.chip_strip_border_role_gradient }})' %}
+{% elsif s.chip_strip_border_role == 'custom' and s.chip_strip_border_role_custom != blank %}
+  {% assign chip_strip_border_color_value = s.chip_strip_border_role_custom %}
+{% endif %}
+
 {% assign surface_safe = s.surface_id | default: 'default' %}
 {% assign bg_role_safe = s.bg_role | default: 'none' %}
 {% assign bg_class = '' %}
@@ -66,6 +75,27 @@
 {% if chip_strip_bg_value != blank %}
   {% assign chip_strip_styles = chip_strip_styles | push: 'background: {{ chip_strip_bg_value }}' %}
 {% endif %}
+
+{% unless s.chip_strip_border_mode == blank or s.chip_strip_border_mode == 'none' %}
+  {% assign chip_strip_classes = chip_strip_classes
+    | push: 'group-border-{{ s.chip_strip_border_mode }}'
+    | push: 'group-border-size-{{ s.chip_strip_border_size }}'
+  %}
+  {% if chip_strip_border_color_value != blank %}
+    {% assign chip_strip_styles = chip_strip_styles | push: '--border: {{ chip_strip_border_color_value }}' %}
+  {% elsif s.chip_strip_border_role != blank and s.chip_strip_border_role != 'none' %}
+    {% assign chip_strip_classes = chip_strip_classes | push: 'border-{{ s.chip_strip_border_role }}' %}
+  {% endif %}
+  {% if s.chip_strip_border_mode == 'custom' %}
+    {% assign chip_strip_classes = chip_strip_classes
+      | push_if: 'group-border-custom-left', s.chip_strip_border_custom_left
+      | push_if: 'group-border-custom-right', s.chip_strip_border_custom_right
+      | push_if: 'group-border-custom-top', s.chip_strip_border_custom_top
+      | push_if: 'group-border-custom-bottom', s.chip_strip_border_custom_bottom
+    %}
+  {% endif %}
+  {% assign chip_strip_styles = chip_strip_styles | push: '--border-style:solid' %}
+{% endunless %}
 
 <section
   class='{{ section_classes | join: ' ' }}'
@@ -222,6 +252,93 @@
       "id": "chip_strip_bg_role_gradient",
       "label": "Chip Strip Gradient",
       "conditional": "setting.chip_strip_bg_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_border_mode",
+      "label": "Chip Strip Border",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "custom", "label": "Custom" },
+        { "value": "full", "label": "Full" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_border_size",
+      "label": "Chip Strip Border Size",
+      "default": "xxs",
+      "options": [
+        { "value": "xxs", "label": "XXS", "info": "1px" },
+        { "value": "xs", "label": "XS", "info": "2px" },
+        { "value": "sm", "label": "Small", "info": "4px" },
+        { "value": "md", "label": "Medium", "info": "6px" },
+        { "value": "lg", "label": "Large", "info": "8px" }
+      ],
+      "conditional": "setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_border_role",
+      "label": "Chip Strip Border Color",
+      "default": "default",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "conditional": "setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "chip_strip_border_role_palette",
+      "label": "Chip Strip Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.chip_strip_border_role == 'palette' and setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "chip_strip_border_role_custom",
+      "label": "Raw Chip Strip Border",
+      "conditional": "setting.chip_strip_border_role == 'custom' and setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "chip_strip_border_role_gradient",
+      "label": "Chip Strip Border Gradient",
+      "conditional": "setting.chip_strip_border_role == 'gradient' and setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "checkbox",
+      "id": "chip_strip_border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.chip_strip_border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "chip_strip_border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.chip_strip_border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "chip_strip_border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.chip_strip_border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "chip_strip_border_custom_bottom",
+      "label": "Border Bottom",
+      "default": true,
+      "conditional": "setting.chip_strip_border_mode == 'custom'"
     },
     {
       "type": "header",

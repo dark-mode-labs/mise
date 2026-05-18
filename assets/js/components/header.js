@@ -17,7 +17,10 @@ export default class Header {
   }
 
   _publishHeaderHeight() {
-    document.documentElement.style.setProperty("--header-h", `${this.headerHeight}px`);
+    // Static headers scroll away; sticky descendants must pin at top:0, not under a non-existent header.
+    const isSticky = this.config.sticky && this.config.sticky !== "none";
+    const offset = isSticky ? this.headerHeight : 0;
+    document.documentElement.style.setProperty("--header-h", `${offset}px`);
   }
 
   init() {

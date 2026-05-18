@@ -69,7 +69,10 @@
         class: utility_classes,
         color_role: color_role
       %}
-      {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden' %}
+      {% render 'icon',
+        name: 'chevron-right',
+        class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden text-{{ color_role }}'
+      %}
     </summary>
 
     {% content_for 'blocks' %}

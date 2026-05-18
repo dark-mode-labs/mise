@@ -1,16 +1,33 @@
 <style>
+    {% comment %}
+      `sorted_bp_ids`: container_scale tier ids in ASCENDING max_width
+      order. Used by every per-bp emission loop below so larger-bp rules
+      emit AFTER smaller-bp rules — CSS cascade picks the last matching
+      `@media (min-width: …)` rule when several match, so smaller bps
+      must come first.
+    {% endcomment %}
+    {% assign sorted_entries = blank %}
+    {% for c in container_scale %}
+      {% unless c[1].settings.structural %}
+        {% assign mw_str = c[1].settings.max_width %}
+        {% if mw_str contains 'rem' %}
+          {% assign mw_padded = mw_str | remove: 'rem' | prepend: '000000' | slice: -6, 6 %}
+          {% capture entry %}{{ mw_padded }}|{{ c[0] }}{% endcapture %}
+          {% assign sorted_entries = sorted_entries | push: entry %}
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+    {% assign sorted_entries = sorted_entries | sort %}
+    {% assign sorted_bp_ids = blank %}
+    {% for entry in sorted_entries %}
+      {% assign tid = entry | split: '|' | last %}
+      {% assign sorted_bp_ids = sorted_bp_ids | push: tid %}
+    {% endfor %}
+
     {% capture stylesheet %}
     :root {
       --space-base: 1rem;
 
-      {% comment %}
-        ALL tiers — built-ins (xs/sm/md/lg/xl/2xl/3xl) AND per-site
-        synth tiers — live in `theme.space_scale` carrying a single
-        flat `value`. Built-in defaults ship via settings_schema.json
-        presets; transpiler synthesizes additional tiers when source
-        has responsive spacing pairs (`px-6 xl:px-16` → `synth-1_5rem`
-        picking the desktop value).
-      {% endcomment %}
       {% for s in space_scale %}
         {% unless s[1].settings.structural %}
           {% if s[1].settings.value != blank %}
@@ -18,7 +35,47 @@
           {% endif %}
         {% endunless %}
       {% endfor %}
+
+      {% comment %}
+        Grid-mincol scale. Group blocks reference tiers via
+        `--width-grid-col: var(--mc-<tier>)` inline. Per-bp overrides
+        on a tier cascade through `:root`, so consumers update
+        automatically without per-block bp inline data.
+      {% endcomment %}
+      {% for m in min_col_scale %}
+        {% if m[1].settings.value != blank %}
+      --mc-{{ m[0] }}: {{ m[1].settings.value }};
+        {% endif %}
+      {% endfor %}
     }
+
+    {% for m in min_col_scale %}
+      {% if m[1].settings.value_by_bp != blank %}
+        {% for bp_id in sorted_bp_ids %}
+          {% assign bp_val = m[1].settings.value_by_bp[bp_id] %}
+          {% if bp_val != blank %}
+    @media (min-width: {{ container_scale[bp_id].settings.max_width }}) { :root { --mc-{{ m[0] }}: {{ bp_val }}; } }
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
+    {% comment %}
+      Per-bp overrides for space_scale synth tiers carrying `value_by_bp`.
+      Cascading through `:root` lets every consumer rule (.padding-*,
+      .margin-*, .gap-*) inherit the breakpoint value without per-class
+      duplication.
+    {% endcomment %}
+    {% for s in space_scale %}
+      {% if s[1].settings.value_by_bp != blank %}
+        {% for bp_id in sorted_bp_ids %}
+          {% assign bp_val = s[1].settings.value_by_bp[bp_id] %}
+          {% if bp_val != blank %}
+    @media (min-width: {{ container_scale[bp_id].settings.max_width }}) { :root { --space-{{ s[0] }}: {{ bp_val }}; } }
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
 
     {% comment %}
       Single source of truth for spacing class rules — emitted from
@@ -134,15 +191,29 @@
     {% for c in container_scale %}
       {% unless c[1].settings.structural %}
         {% assign mw = c[1].settings.max_width %}
-        {% if mw contains 'rem' or mw contains 'px' %}
-        @media (min-width: {{ mw }}) { .direction-responsive.bp-{{ c[0] }} { flex-direction: row; } }
+        {% if mw contains 'rem' %}
+        @media (min-width: {{ mw }}) {
+          .direction-responsive.bp-{{ c[0] }} { flex-direction: row; justify-content: normal; align-items: stretch; }
+          .direction-responsive.bp-{{ c[0] }}.vertical-top { align-items: flex-start; }
+          .direction-responsive.bp-{{ c[0] }}.vertical-middle { align-items: center; }
+          .direction-responsive.bp-{{ c[0] }}.vertical-bottom { align-items: flex-end; }
+          .direction-responsive.bp-{{ c[0] }}.vertical-stretch { align-items: stretch; }
+          .direction-responsive.bp-{{ c[0] }}.content-left { justify-content: flex-start; }
+          .direction-responsive.bp-{{ c[0] }}.content-center { justify-content: center; }
+          .direction-responsive.bp-{{ c[0] }}.content-right { justify-content: flex-end; }
+          .direction-responsive.bp-{{ c[0] }}.content-between { justify-content: space-between; }
+        }
         @media (max-width: calc({{ mw }} - 0.0625rem)) {
           .direction-responsive.bp-{{ c[0] }} > .width-half,
           .direction-responsive.bp-{{ c[0] }} > .width-third,
           .direction-responsive.bp-{{ c[0] }} > .width-quarter,
+          .direction-responsive.bp-{{ c[0] }} > .width-two-thirds,
+          .direction-responsive.bp-{{ c[0] }} > .width-three-quarters,
           .direction-responsive.bp-{{ c[0] }} > .contents > .width-half,
           .direction-responsive.bp-{{ c[0] }} > .contents > .width-third,
-          .direction-responsive.bp-{{ c[0] }} > .contents > .width-quarter
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-quarter,
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-two-thirds,
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-three-quarters
             { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
           .direction-responsive.bp-{{ c[0] }} > .width-fit,
           .direction-responsive.bp-{{ c[0] }} > .contents > .width-fit { --limit-width: 100%; }
@@ -160,8 +231,17 @@
       still win.
     {% endcomment %}
     @media (min-width: 768px) {
-      .direction-responsive:not([class*="bp-"]) { flex-direction: row; }
+      .direction-responsive:not([class*="bp-"]) { flex-direction: row; justify-content: normal; align-items: stretch; }
+      .direction-responsive:not([class*="bp-"]).vertical-top { align-items: flex-start; }
+      .direction-responsive:not([class*="bp-"]).vertical-middle { align-items: center; }
+      .direction-responsive:not([class*="bp-"]).vertical-bottom { align-items: flex-end; }
+      .direction-responsive:not([class*="bp-"]).vertical-stretch { align-items: stretch; }
+      .direction-responsive:not([class*="bp-"]).content-left { justify-content: flex-start; }
+      .direction-responsive:not([class*="bp-"]).content-center { justify-content: center; }
+      .direction-responsive:not([class*="bp-"]).content-right { justify-content: flex-end; }
+      .direction-responsive:not([class*="bp-"]).content-between { justify-content: space-between; }
     }
+
 
     {% comment %}
       Header mobile-breakpoint per tier — `bp-<tier>` on
@@ -172,7 +252,7 @@
     {% for c in container_scale %}
       {% unless c[1].settings.structural %}
         {% assign mw = c[1].settings.max_width %}
-        {% if mw contains 'rem' or mw contains 'px' %}
+        {% if mw contains 'rem' %}
         @media (min-width: {{ mw }}) {
           .header-section.bp-{{ c[0] }} .header-nav { display: flex; }
           .header-section.bp-{{ c[0] }} .header-mobile-toggle { display: none; }
@@ -189,6 +269,8 @@
     .width-half    { --limit-width: 50%;     flex: 0 0 calc(50%     - (var(--children-gap, 0px) * 1) / 2); }
     .width-third   { --limit-width: 33.333%; flex: 0 0 calc(33.333% - (var(--children-gap, 0px) * 2) / 3); }
     .width-quarter { --limit-width: 25%;     flex: 0 0 calc(25%     - (var(--children-gap, 0px) * 3) / 4); }
+    .width-two-thirds     { --limit-width: 66.667%; flex: 0 0 calc(66.667% - (var(--children-gap, 0px) * 2) / 3); }
+    .width-three-quarters { --limit-width: 75%;     flex: 0 0 calc(75%     - (var(--children-gap, 0px) * 3) / 4); }
 
     {% comment %}
       Half/third/quarter assume the row holds an equal-width set
@@ -233,22 +315,34 @@
       .direction-row > .width-half,
       .direction-row > .width-third,
       .direction-row > .width-quarter,
+      .direction-row > .width-two-thirds,
+      .direction-row > .width-three-quarters,
       .direction-row > .contents > .width-half,
       .direction-row > .contents > .width-third,
-      .direction-row > .contents > .width-quarter
+      .direction-row > .contents > .width-quarter,
+      .direction-row > .contents > .width-two-thirds,
+      .direction-row > .contents > .width-three-quarters
         { --limit-width: 100%; flex: 0 0 100%; }
       .direction-column > .width-half,
       .direction-column > .width-third,
       .direction-column > .width-quarter,
+      .direction-column > .width-two-thirds,
+      .direction-column > .width-three-quarters,
       .direction-column > .contents > .width-half,
       .direction-column > .contents > .width-third,
       .direction-column > .contents > .width-quarter,
+      .direction-column > .contents > .width-two-thirds,
+      .direction-column > .contents > .width-three-quarters,
       .direction-responsive > .width-half,
       .direction-responsive > .width-third,
       .direction-responsive > .width-quarter,
+      .direction-responsive > .width-two-thirds,
+      .direction-responsive > .width-three-quarters,
       .direction-responsive > .contents > .width-half,
       .direction-responsive > .contents > .width-third,
-      .direction-responsive > .contents > .width-quarter
+      .direction-responsive > .contents > .width-quarter,
+      .direction-responsive > .contents > .width-two-thirds,
+      .direction-responsive > .contents > .width-three-quarters
         { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
       .direction-responsive > .width-fit,
       .direction-responsive > .contents > .width-fit { --limit-width: 100%; }
@@ -273,12 +367,6 @@
       `--tier-height` always carries the value so layout-section overrides
       (hero, section) can read it as `min-height` for their own always-floor
       behavior, regardless of the tier's flag.
-
-      This puts the fixed-vs-floor decision on the SCALE itself — any
-      block consuming the tier inherits the right semantic. No block-level
-      override needed. Maps cleanly to source: `h-N` picks a fixed tier
-      (default), `min-h-N` picks a floor tier (transpiler mints `synth-min-Xrem`
-      / `synth-min-100vh` etc.).
     {% endcomment %}
     {% for h in height_scale %}
       {% unless h[1].settings.structural %}
@@ -289,6 +377,21 @@
         .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; min-height: {{ h[1].settings.value }}; height: auto; }
           {% else %}
         .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; height: {{ h[1].settings.value }}; }
+          {% endif %}
+          {% if h[1].settings.value_by_bp != blank %}
+                    {% for bp_id in sorted_bp_ids %}
+              {% assign bp_val = h[1].settings.value_by_bp[bp_id] %}
+              {% if bp_val != blank %}
+                {% assign bp_mw = container_scale[bp_id].settings.max_width %}
+                {% if h[1].settings.floor_fill %}
+    @media (min-width: {{ bp_mw }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height: {{ bp_val }}; flex-basis: {{ bp_val }}; } }
+                {% elsif h[1].settings.floor %}
+    @media (min-width: {{ bp_mw }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height: {{ bp_val }}; } }
+                {% else %}
+    @media (min-width: {{ bp_mw }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; height: {{ bp_val }}; } }
+                {% endif %}
+              {% endif %}
+            {% endfor %}
           {% endif %}
         {% endif %}
       {% endunless %}
@@ -330,32 +433,31 @@
       {% assign ts = style[1].settings %}
       {% if ts.font_size != blank %}
         {% capture ts_weight %}{% case ts.weight %}{% when 'thin' %}100{% when 'extralight' %}200{% when 'light' %}300{% when 'normal' %}400{% when 'medium' %}500{% when 'semibold' %}600{% when 'bold' %}700{% when 'extrabold' %}800{% when 'black' %}900{% else %}400{% endcase %}{% endcapture %}
-        {% capture ts_tracking %}{% case ts.tracking %}{% when 'tighter' %}-0.05em{% when 'tight' %}-0.025em{% when 'wide' %}0.025em{% when 'wider' %}0.05em{% when 'widest' %}0.1em{% when 'ultra-wide' %}0.25em{% else %}0{% endcase %}{% endcapture %}
-        {% capture ts_leading %}{% case ts.leading %}{% when 'none' %}1{% when 'tight' %}1.25{% when 'snug' %}1.375{% when 'relaxed' %}1.625{% when 'loose' %}2{% else %}1.5{% endcase %}{% endcapture %}
+        {% capture ts_tracking %}{% case ts.tracking %}{% when 'tighter' %}-0.05em{% when 'tight' %}-0.025em{% when 'wide' %}0.025em{% when 'wider' %}0.05em{% when 'widest' %}0.1em{% when 'ultra-wide' %}0.25em{% when 'custom' %}{{ ts.tracking_custom | default: '0' }}{% else %}0{% endcase %}{% endcapture %}
+        {% capture ts_leading %}{% case ts.leading %}{% when 'none' %}1{% when 'tight' %}1.25{% when 'snug' %}1.375{% when 'relaxed' %}1.625{% when 'loose' %}2{% when 'custom' %}{{ ts.leading_custom | default: '1.5' }}{% else %}1.5{% endcase %}{% endcapture %}
     .ts-{{ ts_id }} { font-family: var(--font-{{ ts.font_ref | default: 'body' }}); font-size: {{ ts.font_size }}; font-weight: {{ ts_weight }}; letter-spacing: {{ ts_tracking }}; line-height: {{ ts_leading }}; text-transform: {{ ts.transform | default: 'none' }}; }
-        {% comment %}
-          Mobile shrink: bucketed by id-prefix. The transpiler emits
-          synth ids as `synth-ts-<size>-...` so they don't share the
-          canonical id pattern; the canonical 12 cover the standard
-          bands. Synth tiers stay at their desktop size on mobile —
-          they're already brand-specific outliers, not part of the
-          default scale that needs the band scaling.
-        {% endcomment %}
-        {% case ts_id %}
-          {% when 'display-jumbo', 'display-1' %}
+        {% if ts.font_size_by_bp != blank %}
+          {% comment %}
+            Iterate bp tiers in ASCENDING max_width order so larger bp
+            rules emit later in CSS and win the cascade at viewports
+            that match multiple bps. Hash iteration order from `container_scale`
+            isn't reliably ascending.
+          {% endcomment %}
+                {% for bp_id in sorted_bp_ids %}
+            {% assign bp_size = ts.font_size_by_bp[bp_id] %}
+            {% if bp_size != blank %}
+    @media (min-width: {{ container_scale[bp_id].settings.max_width }}) { .ts-{{ ts_id }} { font-size: {{ bp_size }}; } }
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% case ts_id %}
+            {% when 'display-jumbo', 'display-1' %}
     @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.55); } }
-          {% when 'display-2', 'heading-1' %}
+            {% when 'display-2', 'heading-1' %}
     @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.65); } }
-          {% when 'heading-2', 'heading-3' %}
+            {% when 'heading-2', 'heading-3' %}
     @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.75); } }
-        {% endcase %}
-        {% comment %}
-          Synth tiers carry an explicit `font_size_mobile` when source
-          has responsive `text-X1 sm:text-X2 ...` patterns. Emit the
-          mobile shrink to match source's smallest variant.
-        {% endcomment %}
-        {% if ts.font_size_mobile != blank %}
-    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: {{ ts.font_size_mobile }}; } }
+          {% endcase %}
         {% endif %}
       {% endif %}
     {% endfor %}

@@ -21,15 +21,15 @@
 
 {% if s.padding_vertical == 'custom' %}
   {% assign spacing_styles = spacing_styles
-    | push: '--space-pt: {{ s.padding_vertical_custom_top }}px'
-    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}px'
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
   %}
 {% endif %}
 
 {% if s.padding_horizontal == 'custom' %}
   {% assign spacing_styles = spacing_styles
-    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}px'
-    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}px'
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
   %}
 {% endif %}
 
