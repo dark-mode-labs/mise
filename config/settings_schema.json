@@ -452,7 +452,6 @@
       "name": "Space Scale",
       "type": "group",
       "id": "space_scale",
-      "info": "Spacing tiers — single `value` (any CSS length: rem, em, etc.). Each tier renders to --space-<id> for padding/margin/gap classes. Built-ins (none/xs/sm/md/lg/xl/2xl/3xl/custom/auto/auto-top/auto-bottom) live in defaults; transpiler synthesizes additional tiers from source HTML spacing values. Structural tiers (`none` zero-out, `custom` per-instance via --space-*, `auto`/`auto-top`/`auto-bottom` for margin centering / flex-col push) have specialized CSS rules in theme.css; the dynamic loop in theme_variables.liquid skips them. Note: `auto`/`auto-top`/`auto-bottom` only have CSS rules on margin fields — selecting them for padding/gap is a no-op.",
       "settings": [
         {
           "type": "text",

@@ -28,14 +28,6 @@
     :root {
       --space-base: 1rem;
 
-      {% comment %}
-        ALL tiers — built-ins (xs/sm/md/lg/xl/2xl/3xl) AND per-site
-        synth tiers — live in `theme.space_scale` carrying a single
-        flat `value`. Built-in defaults ship via settings_schema.json
-        presets; transpiler synthesizes additional tiers when source
-        has responsive spacing pairs (`px-6 xl:px-16` → `synth-1_5rem`
-        picking the desktop value).
-      {% endcomment %}
       {% for s in space_scale %}
         {% unless s[1].settings.structural %}
           {% if s[1].settings.value != blank %}
@@ -375,12 +367,6 @@
       `--tier-height` always carries the value so layout-section overrides
       (hero, section) can read it as `min-height` for their own always-floor
       behavior, regardless of the tier's flag.
-
-      This puts the fixed-vs-floor decision on the SCALE itself — any
-      block consuming the tier inherits the right semantic. No block-level
-      override needed. Maps cleanly to source: `h-N` picks a fixed tier
-      (default), `min-h-N` picks a floor tier (transpiler mints `synth-min-Xrem`
-      / `synth-min-100vh` etc.).
     {% endcomment %}
     {% for h in height_scale %}
       {% unless h[1].settings.structural %}
