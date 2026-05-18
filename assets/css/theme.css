@@ -890,24 +890,23 @@
     justify-items: stretch;
   }
 
-  /* Responsive: column on mobile, row on md+. Below md the column
-     mapping applies; above md, the row mapping wins via media query.
-
-     `vertical-middle` on responsive ALSO sets align-items: center on
-     mobile so children don't stretch full-width when there's no
-     explicit `content_align`. This matches source's `items-center`
-     semantics (cross-axis center, regardless of direction). */
-  .direction-responsive.vertical-top {
+  /* Responsive: column on mobile, row on bp+. Scoped to `:not([class*="bp-"])`
+     so per-tier rules in theme_variables.liquid drive alignment when an
+     explicit bp-* modifier is present. Without this scope, the base rule
+     fires at mobile too and right-aligns flex-col children of source
+     `items-end` (the lg:flex-row items-end pattern), which contradicts
+     the source intent of "alignment at row mode only". */
+  .direction-responsive:not([class*="bp-"]).vertical-top {
     justify-content: flex-start;
     align-items: flex-start;
   }
 
-  .direction-responsive.vertical-middle {
+  .direction-responsive:not([class*="bp-"]).vertical-middle {
     justify-content: center;
     align-items: center;
   }
 
-  .direction-responsive.vertical-bottom {
+  .direction-responsive:not([class*="bp-"]).vertical-bottom {
     justify-content: flex-end;
     align-items: flex-end;
   }

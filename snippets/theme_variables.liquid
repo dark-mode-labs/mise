@@ -215,9 +215,13 @@
           .direction-responsive.bp-{{ c[0] }} > .width-half,
           .direction-responsive.bp-{{ c[0] }} > .width-third,
           .direction-responsive.bp-{{ c[0] }} > .width-quarter,
+          .direction-responsive.bp-{{ c[0] }} > .width-two-thirds,
+          .direction-responsive.bp-{{ c[0] }} > .width-three-quarters,
           .direction-responsive.bp-{{ c[0] }} > .contents > .width-half,
           .direction-responsive.bp-{{ c[0] }} > .contents > .width-third,
-          .direction-responsive.bp-{{ c[0] }} > .contents > .width-quarter
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-quarter,
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-two-thirds,
+          .direction-responsive.bp-{{ c[0] }} > .contents > .width-three-quarters
             { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
           .direction-responsive.bp-{{ c[0] }} > .width-fit,
           .direction-responsive.bp-{{ c[0] }} > .contents > .width-fit { --limit-width: 100%; }
@@ -273,6 +277,8 @@
     .width-half    { --limit-width: 50%;     flex: 0 0 calc(50%     - (var(--children-gap, 0px) * 1) / 2); }
     .width-third   { --limit-width: 33.333%; flex: 0 0 calc(33.333% - (var(--children-gap, 0px) * 2) / 3); }
     .width-quarter { --limit-width: 25%;     flex: 0 0 calc(25%     - (var(--children-gap, 0px) * 3) / 4); }
+    .width-two-thirds     { --limit-width: 66.667%; flex: 0 0 calc(66.667% - (var(--children-gap, 0px) * 2) / 3); }
+    .width-three-quarters { --limit-width: 75%;     flex: 0 0 calc(75%     - (var(--children-gap, 0px) * 3) / 4); }
 
     {% comment %}
       Half/third/quarter assume the row holds an equal-width set
@@ -317,22 +323,34 @@
       .direction-row > .width-half,
       .direction-row > .width-third,
       .direction-row > .width-quarter,
+      .direction-row > .width-two-thirds,
+      .direction-row > .width-three-quarters,
       .direction-row > .contents > .width-half,
       .direction-row > .contents > .width-third,
-      .direction-row > .contents > .width-quarter
+      .direction-row > .contents > .width-quarter,
+      .direction-row > .contents > .width-two-thirds,
+      .direction-row > .contents > .width-three-quarters
         { --limit-width: 100%; flex: 0 0 100%; }
       .direction-column > .width-half,
       .direction-column > .width-third,
       .direction-column > .width-quarter,
+      .direction-column > .width-two-thirds,
+      .direction-column > .width-three-quarters,
       .direction-column > .contents > .width-half,
       .direction-column > .contents > .width-third,
       .direction-column > .contents > .width-quarter,
+      .direction-column > .contents > .width-two-thirds,
+      .direction-column > .contents > .width-three-quarters,
       .direction-responsive > .width-half,
       .direction-responsive > .width-third,
       .direction-responsive > .width-quarter,
+      .direction-responsive > .width-two-thirds,
+      .direction-responsive > .width-three-quarters,
       .direction-responsive > .contents > .width-half,
       .direction-responsive > .contents > .width-third,
-      .direction-responsive > .contents > .width-quarter
+      .direction-responsive > .contents > .width-quarter,
+      .direction-responsive > .contents > .width-two-thirds,
+      .direction-responsive > .contents > .width-three-quarters
         { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
       .direction-responsive > .width-fit,
       .direction-responsive > .contents > .width-fit { --limit-width: 100%; }

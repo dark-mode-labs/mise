@@ -29,7 +29,7 @@
 {% endif %}
 
 {% comment %} --- 1. Wrapper Classes (Outer DIV) --- {% endcomment %}
-{% assign wrapper_classes = 'whitespace-nowrap'
+{% assign wrapper_classes = 'whitespace-nowrap relative'
   | push: radius_class
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'

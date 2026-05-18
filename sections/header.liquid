@@ -230,7 +230,7 @@
         {% if s.cart_shadow_color_override and s.cart_shadow_color != blank %}
           {% assign cart_button_styles = cart_button_styles | push: '--shadow: {{ s.cart_shadow_color }}' %}
         {% endif %}
-        {% assign cart_btn_class = 'header-cart-btn relative hover:opacity-90 inline-flex items-center justify-center' %}
+        {% assign cart_btn_class = 'header-cart-btn relative hover:opacity-90 inline-flex items-center justify-center shrink-0' %}
         {% if s.cart_shadow %}
           {% assign cart_btn_class = cart_btn_class | append: ' shadow-lg' %}
         {% endif %}
