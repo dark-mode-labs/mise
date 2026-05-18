@@ -15,5 +15,7 @@
 {% assign style_class = 'ts-' | append: type_style | default: 'ts-body' %}
 {% if type_style == blank %}{% assign style_class = 'ts-body' %}{% endif %}
 {% assign color_class = 'text-' | append: color_role | default: 'text-primary' %}
-{% if color_role == blank or color_role == 'custom' or color_role == 'palette' %}{% assign color_class = 'text-primary' %}{% endif %}
+{% if color_role == blank or color_role == 'custom' or color_role == 'palette' -%}
+  {%- assign color_class = 'text-primary' -%}
+{%- endif %}
 <{{ tag_el }} class='{{ style_class }} {{ color_class }} {{ class }}'>{{ text }}</{{ tag_el }}>

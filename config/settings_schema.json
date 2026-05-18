@@ -317,8 +317,19 @@
             {
               "value": "ultra-wide",
               "label": "Ultra Wide"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
             }
           ]
+        },
+        {
+          "type": "text",
+          "id": "tracking_custom",
+          "label": "Tracking (custom)",
+          "info": "Arbitrary letter-spacing value (e.g. `-0.015em`, `0.04em`).",
+          "conditional": "setting.tracking == 'custom'"
         },
         {
           "type": "select",
@@ -349,8 +360,19 @@
             {
               "value": "loose",
               "label": "Loose (2)"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
             }
           ]
+        },
+        {
+          "type": "text",
+          "id": "leading_custom",
+          "label": "Leading (custom)",
+          "info": "Arbitrary line-height value (unitless ratio like `1.1` or `1.55`, or `<N>rem` / `<N>em`).",
+          "conditional": "setting.leading == 'custom'"
         },
         {
           "type": "select",
