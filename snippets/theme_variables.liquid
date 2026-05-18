@@ -1,4 +1,29 @@
 <style>
+    {% comment %}
+      `sorted_bp_ids`: container_scale tier ids in ASCENDING max_width
+      order. Used by every per-bp emission loop below so larger-bp rules
+      emit AFTER smaller-bp rules — CSS cascade picks the last matching
+      `@media (min-width: …)` rule when several match, so smaller bps
+      must come first.
+    {% endcomment %}
+    {% assign sorted_entries = blank %}
+    {% for c in container_scale %}
+      {% unless c[1].settings.structural %}
+        {% assign mw_str = c[1].settings.max_width %}
+        {% if mw_str contains 'rem' %}
+          {% assign mw_padded = mw_str | remove: 'rem' | prepend: '000000' | slice: -6, 6 %}
+          {% capture entry %}{{ mw_padded }}|{{ c[0] }}{% endcapture %}
+          {% assign sorted_entries = sorted_entries | push: entry %}
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+    {% assign sorted_entries = sorted_entries | sort %}
+    {% assign sorted_bp_ids = blank %}
+    {% for entry in sorted_entries %}
+      {% assign tid = entry | split: '|' | last %}
+      {% assign sorted_bp_ids = sorted_bp_ids | push: tid %}
+    {% endfor %}
+
     {% capture stylesheet %}
     :root {
       --space-base: 1rem;
@@ -34,13 +59,11 @@
 
     {% for m in min_col_scale %}
       {% if m[1].settings.value_by_bp != blank %}
-        {% for c in container_scale %}
-          {% unless c[1].settings.structural %}
-            {% assign bp_val = m[1].settings.value_by_bp[c[0]] %}
-            {% if bp_val != blank %}
-    @media (min-width: {{ c[1].settings.max_width }}) { :root { --mc-{{ m[0] }}: {{ bp_val }}; } }
-            {% endif %}
-          {% endunless %}
+        {% for bp_id in sorted_bp_ids %}
+          {% assign bp_val = m[1].settings.value_by_bp[bp_id] %}
+          {% if bp_val != blank %}
+    @media (min-width: {{ container_scale[bp_id].settings.max_width }}) { :root { --mc-{{ m[0] }}: {{ bp_val }}; } }
+          {% endif %}
         {% endfor %}
       {% endif %}
     {% endfor %}
@@ -53,13 +76,11 @@
     {% endcomment %}
     {% for s in space_scale %}
       {% if s[1].settings.value_by_bp != blank %}
-        {% for c in container_scale %}
-          {% unless c[1].settings.structural %}
-            {% assign bp_val = s[1].settings.value_by_bp[c[0]] %}
-            {% if bp_val != blank %}
-    @media (min-width: {{ c[1].settings.max_width }}) { :root { --space-{{ s[0] }}: {{ bp_val }}; } }
-            {% endif %}
-          {% endunless %}
+        {% for bp_id in sorted_bp_ids %}
+          {% assign bp_val = s[1].settings.value_by_bp[bp_id] %}
+          {% if bp_val != blank %}
+    @media (min-width: {{ container_scale[bp_id].settings.max_width }}) { :root { --space-{{ s[0] }}: {{ bp_val }}; } }
+          {% endif %}
         {% endfor %}
       {% endif %}
     {% endfor %}
@@ -336,19 +357,18 @@
         .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; height: {{ h[1].settings.value }}; }
           {% endif %}
           {% if h[1].settings.value_by_bp != blank %}
-            {% for c in container_scale %}
-              {% unless c[1].settings.structural %}
-                {% assign bp_val = h[1].settings.value_by_bp[c[0]] %}
-                {% if bp_val != blank %}
-                  {% if h[1].settings.floor_fill %}
-    @media (min-width: {{ c[1].settings.max_width }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height: {{ bp_val }}; flex-basis: {{ bp_val }}; } }
-                  {% elsif h[1].settings.floor %}
-    @media (min-width: {{ c[1].settings.max_width }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height: {{ bp_val }}; } }
-                  {% else %}
-    @media (min-width: {{ c[1].settings.max_width }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; height: {{ bp_val }}; } }
-                  {% endif %}
+                    {% for bp_id in sorted_bp_ids %}
+              {% assign bp_val = h[1].settings.value_by_bp[bp_id] %}
+              {% if bp_val != blank %}
+                {% assign bp_mw = container_scale[bp_id].settings.max_width %}
+                {% if h[1].settings.floor_fill %}
+    @media (min-width: {{ bp_mw }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height: {{ bp_val }}; flex-basis: {{ bp_val }}; } }
+                {% elsif h[1].settings.floor %}
+    @media (min-width: {{ bp_mw }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height: {{ bp_val }}; } }
+                {% else %}
+    @media (min-width: {{ bp_mw }}) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; height: {{ bp_val }}; } }
                 {% endif %}
-              {% endunless %}
+              {% endif %}
             {% endfor %}
           {% endif %}
         {% endif %}
@@ -395,13 +415,17 @@
         {% capture ts_leading %}{% case ts.leading %}{% when 'none' %}1{% when 'tight' %}1.25{% when 'snug' %}1.375{% when 'relaxed' %}1.625{% when 'loose' %}2{% else %}1.5{% endcase %}{% endcapture %}
     .ts-{{ ts_id }} { font-family: var(--font-{{ ts.font_ref | default: 'body' }}); font-size: {{ ts.font_size }}; font-weight: {{ ts_weight }}; letter-spacing: {{ ts_tracking }}; line-height: {{ ts_leading }}; text-transform: {{ ts.transform | default: 'none' }}; }
         {% if ts.font_size_by_bp != blank %}
-          {% for c in container_scale %}
-            {% unless c[1].settings.structural %}
-              {% assign bp_size = ts.font_size_by_bp[c[0]] %}
-              {% if bp_size != blank %}
-    @media (min-width: {{ c[1].settings.max_width }}) { .ts-{{ ts_id }} { font-size: {{ bp_size }}; } }
-              {% endif %}
-            {% endunless %}
+          {% comment %}
+            Iterate bp tiers in ASCENDING max_width order so larger bp
+            rules emit later in CSS and win the cascade at viewports
+            that match multiple bps. Hash iteration order from `container_scale`
+            isn't reliably ascending.
+          {% endcomment %}
+                {% for bp_id in sorted_bp_ids %}
+            {% assign bp_size = ts.font_size_by_bp[bp_id] %}
+            {% if bp_size != blank %}
+    @media (min-width: {{ container_scale[bp_id].settings.max_width }}) { .ts-{{ ts_id }} { font-size: {{ bp_size }}; } }
+            {% endif %}
           {% endfor %}
         {% else %}
           {% case ts_id %}

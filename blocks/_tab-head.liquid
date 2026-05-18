@@ -48,6 +48,12 @@
 {% assign inactive_state_styles = '' %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
+{% if s.padding_vertical != blank and s.padding_vertical != 'none' %}
+  {% assign classes = classes | push: 'padding-py-{{ s.padding_vertical }}' %}
+{% endif %}
+{% if s.padding_horizontal != blank and s.padding_horizontal != 'none' %}
+  {% assign classes = classes | push: 'padding-px-{{ s.padding_horizontal }}' %}
+{% endif %}
 {% if s.border_radius_override %}
   {% assign classes = classes | push: 'rounded-custom' %}
   {% assign styles = styles | push: '--radius-custom: {{ s.border_radius }}px' %}
@@ -76,15 +82,13 @@
 {% endunless %}
 
 {% if s.enable_overlay_inactive %}
-  {% comment %}
-    Custom color/gradient encodes its own alpha — don't
-    multiply with --overlay-opacity. Opacity stays 1.
-  {% endcomment %}
   {% assign inactive_state_styles = inactive_state_styles | push: '--overlay-opacity:1' %}
   {% if overlay_color_inactive_value != blank -%}
     {%- assign inactive_state_styles = inactive_state_styles
       | push: '--overlay-bg:{{ overlay_color_inactive_value }}'
     -%}
+  {%- elsif s.overlay_role_inactive and s.overlay_role_inactive != 'none' -%}
+    {%- assign inactive_state_classes = inactive_state_classes | push: 'bg-{{ s.overlay_role_inactive }}' -%}
   {%- endif %}
 {% endif %}
 
@@ -112,13 +116,11 @@
 {% endunless %}
 
 {% if s.enable_overlay %}
-  {% comment %}
-    Custom color/gradient encodes its own alpha — don't
-    multiply with --overlay-opacity. Opacity stays 1.
-  {% endcomment %}
   {% assign active_state_styles = active_state_styles | push: '--overlay-opacity:1' %}
   {% if overlay_color_value != blank -%}
     {%- assign active_state_styles = active_state_styles | push: '--overlay-bg:{{ overlay_color_value }}' -%}
+  {%- elsif s.overlay_role and s.overlay_role != 'none' -%}
+    {%- assign active_state_classes = active_state_classes | push: 'bg-{{ s.overlay_role }}' -%}
   {%- endif %}
 {% endif %}
 
@@ -656,6 +658,62 @@
       "default": 0,
       "unit": "px",
       "conditional": "setting.border_radius_override"
+    },
+    {
+      "type": "space",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
     }
   ],
   "blocks": [
