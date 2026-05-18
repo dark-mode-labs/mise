@@ -190,7 +190,7 @@
 
 {% if s.gap == 'custom' %}{% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}{% endif %}
 {% if s.layout_mode == 'grid' %}
-  {% assign styles = styles | push: '--width-grid-col: {{ s.min_column_width }}rem' %}
+  {% assign styles = styles | push: '--width-grid-col: var(--mc-{{ s.min_column_width }})' %}
 {% endif %}
 
 {% unless s.border_mode == 'none' %}
@@ -301,14 +301,10 @@
       "default": "flex"
     },
     {
-      "type": "range",
+      "type": "min_col",
       "id": "min_column_width",
       "label": "Min Item Width (Grid Only)",
-      "min": 6,
-      "max": 32,
-      "step": 0.5,
-      "default": 16,
-      "unit": "rem",
+      "default": "default",
       "conditional": "setting.layout_mode == 'grid'"
     },
     {

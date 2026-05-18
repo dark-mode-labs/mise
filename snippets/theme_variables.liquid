@@ -18,7 +18,32 @@
           {% endif %}
         {% endunless %}
       {% endfor %}
+
+      {% comment %}
+        Grid-mincol scale. Group blocks reference tiers via
+        `--width-grid-col: var(--mc-<tier>)` inline. Per-bp overrides
+        on a tier cascade through `:root`, so consumers update
+        automatically without per-block bp inline data.
+      {% endcomment %}
+      {% for m in min_col_scale %}
+        {% if m[1].settings.value != blank %}
+      --mc-{{ m[0] }}: {{ m[1].settings.value }};
+        {% endif %}
+      {% endfor %}
     }
+
+    {% for m in min_col_scale %}
+      {% if m[1].settings.value_by_bp != blank %}
+        {% for c in container_scale %}
+          {% unless c[1].settings.structural %}
+            {% assign bp_val = m[1].settings.value_by_bp[c[0]] %}
+            {% if bp_val != blank %}
+    @media (min-width: {{ c[1].settings.max_width }}) { :root { --mc-{{ m[0] }}: {{ bp_val }}; } }
+            {% endif %}
+          {% endunless %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
 
     {% comment %}
       Per-bp overrides for space_scale synth tiers carrying `value_by_bp`.
@@ -181,6 +206,7 @@
     @media (min-width: 768px) {
       .direction-responsive:not([class*="bp-"]) { flex-direction: row; }
     }
+
 
     {% comment %}
       Header mobile-breakpoint per tier — `bp-<tier>` on

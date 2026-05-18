@@ -448,6 +448,26 @@
       ]
     },
     {
+      "name": "Min Column Width Scale",
+      "type": "group",
+      "id": "min_col_scale",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Min Column"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "info": "Any CSS length, typically rem.",
+          "default": ""
+        }
+      ]
+    },
+    {
       "name": "Brand Gradients",
       "type": "group",
       "id": "gradients",
@@ -988,6 +1008,14 @@
           "settings": {
             "title": "Custom",
             "structural": true
+          }
+        }
+      },
+      "min_col_scale": {
+        "default": {
+          "settings": {
+            "title": "Default",
+            "value": "16rem"
           }
         }
       },
