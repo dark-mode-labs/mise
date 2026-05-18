@@ -1,0 +1,21 @@
+{% comment %}
+  Typography snippet — emits a single text element with `.ts-<id>` for
+  the bundled type style + `.text-<role>` for color. Tag is independent
+  of style; same `.ts-heading-1` can apply to <h2>, <p>, or <span>.
+
+  Args:
+    text       — content to render
+    tag        — semantic HTML tag (h1..h6/p/span/div). Defaults to 'p'.
+    type_style — Tier-2 style id (display-jumbo / heading-1 / body / etc.)
+    color_role — primary | secondary | subtle | emphasis | on-accent |
+                 on-button | on-control. Defaults to primary.
+    class      — extra utility classes (italic, hyphens-auto, etc.).
+{% endcomment %}
+{% assign tag_el = tag | default: 'p' %}
+{% assign style_class = 'ts-' | append: type_style | default: 'ts-body' %}
+{% if type_style == blank %}{% assign style_class = 'ts-body' %}{% endif %}
+{% assign color_class = 'text-' | append: color_role | default: 'text-primary' %}
+{% if color_role == blank or color_role == 'custom' or color_role == 'palette' -%}
+  {%- assign color_class = 'text-primary' -%}
+{%- endif %}
+<{{ tag_el }} class='{{ style_class }} {{ color_class }} {{ class }}'>{{ text }}</{{ tag_el }}>
