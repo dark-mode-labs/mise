@@ -923,47 +923,6 @@
     align-items: stretch;
   }
 
-  @media (min-width: 768px) {
-    .direction-responsive.vertical-top {
-      align-items: flex-start;
-      justify-content: initial;
-    }
-
-    .direction-responsive.vertical-middle {
-      align-items: center;
-      justify-content: initial;
-    }
-
-    .direction-responsive.vertical-bottom {
-      align-items: flex-end;
-      justify-content: initial;
-    }
-
-    .direction-responsive.vertical-stretch {
-      align-items: stretch;
-    }
-
-    .direction-responsive.content-left {
-      justify-content: flex-start;
-      align-items: initial;
-    }
-
-    .direction-responsive.content-center {
-      justify-content: center;
-      align-items: initial;
-    }
-
-    .direction-responsive.content-right {
-      justify-content: flex-end;
-      align-items: initial;
-    }
-
-    .direction-responsive.content-between {
-      justify-content: space-between;
-      align-items: initial;
-    }
-  }
-
   .group-border-size-xxs {
     --border-width: 1px;
   }

@@ -45,6 +45,11 @@
   {% assign wrapper_classes = wrapper_classes | push: 'inline-block width-fit limit-width' %}
 {% endif %}
 
+{% if s.height and s.height != 'auto' %}
+  {% assign wrapper_classes = wrapper_classes | push: 'height-{{ s.height }}' %}
+  {% assign inner_classes_height = 'height-full' %}
+{% endif %}
+
 {% if s.surface_override %}
   {% assign wrapper_classes = wrapper_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
@@ -79,6 +84,7 @@
   | push: radius_class
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: inner_classes_height
 %}
 
 {% case s.style %}
@@ -575,6 +581,12 @@
           "label": "Fill Parent"
         }
       ]
+    },
+    {
+      "type": "height",
+      "id": "height",
+      "label": "Height",
+      "default": "auto"
     },
     {
       "type": "select",

@@ -199,8 +199,18 @@
     {% for c in container_scale %}
       {% unless c[1].settings.structural %}
         {% assign mw = c[1].settings.max_width %}
-        {% if mw contains 'rem' or mw contains 'px' %}
-        @media (min-width: {{ mw }}) { .direction-responsive.bp-{{ c[0] }} { flex-direction: row; } }
+        {% if mw contains 'rem' %}
+        @media (min-width: {{ mw }}) {
+          .direction-responsive.bp-{{ c[0] }} { flex-direction: row; justify-content: normal; align-items: stretch; }
+          .direction-responsive.bp-{{ c[0] }}.vertical-top { align-items: flex-start; }
+          .direction-responsive.bp-{{ c[0] }}.vertical-middle { align-items: center; }
+          .direction-responsive.bp-{{ c[0] }}.vertical-bottom { align-items: flex-end; }
+          .direction-responsive.bp-{{ c[0] }}.vertical-stretch { align-items: stretch; }
+          .direction-responsive.bp-{{ c[0] }}.content-left { justify-content: flex-start; }
+          .direction-responsive.bp-{{ c[0] }}.content-center { justify-content: center; }
+          .direction-responsive.bp-{{ c[0] }}.content-right { justify-content: flex-end; }
+          .direction-responsive.bp-{{ c[0] }}.content-between { justify-content: space-between; }
+        }
         @media (max-width: calc({{ mw }} - 0.0625rem)) {
           .direction-responsive.bp-{{ c[0] }} > .width-half,
           .direction-responsive.bp-{{ c[0] }} > .width-third,
@@ -225,7 +235,15 @@
       still win.
     {% endcomment %}
     @media (min-width: 768px) {
-      .direction-responsive:not([class*="bp-"]) { flex-direction: row; }
+      .direction-responsive:not([class*="bp-"]) { flex-direction: row; justify-content: normal; align-items: stretch; }
+      .direction-responsive:not([class*="bp-"]).vertical-top { align-items: flex-start; }
+      .direction-responsive:not([class*="bp-"]).vertical-middle { align-items: center; }
+      .direction-responsive:not([class*="bp-"]).vertical-bottom { align-items: flex-end; }
+      .direction-responsive:not([class*="bp-"]).vertical-stretch { align-items: stretch; }
+      .direction-responsive:not([class*="bp-"]).content-left { justify-content: flex-start; }
+      .direction-responsive:not([class*="bp-"]).content-center { justify-content: center; }
+      .direction-responsive:not([class*="bp-"]).content-right { justify-content: flex-end; }
+      .direction-responsive:not([class*="bp-"]).content-between { justify-content: space-between; }
     }
 
 
@@ -238,7 +256,7 @@
     {% for c in container_scale %}
       {% unless c[1].settings.structural %}
         {% assign mw = c[1].settings.max_width %}
-        {% if mw contains 'rem' or mw contains 'px' %}
+        {% if mw contains 'rem' %}
         @media (min-width: {{ mw }}) {
           .header-section.bp-{{ c[0] }} .header-nav { display: flex; }
           .header-section.bp-{{ c[0] }} .header-mobile-toggle { display: none; }
