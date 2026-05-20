@@ -3,14 +3,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. EAGER INITIALIZATION FOR JS BEHAVIORS
   // Bypasses the observer so display:none elements still construct immediately.
   // =========================================================================
-  const behaviorElements = document.querySelectorAll("[data-behavior]");
+  bootstrapBehaviorsIn(document);
 
-  behaviorElements.forEach((el) => {
-    const behavior = el.dataset.behavior;
-    if (behavior && !el.dataset.loaded) {
-      loadComponent(behavior, el);
+  // Dynamic content (lists rendered from JSON, cloned templates, etc.) can
+  // introduce [data-behavior] nodes after this initial pass. Observe the
+  // document tree and bootstrap them as they appear so consumers never need
+  // to import and instantiate behavior classes by hand.
+  new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      for (const node of m.addedNodes) {
+        if (node.nodeType !== 1) continue;
+        bootstrapBehaviorsIn(node);
+      }
     }
-  });
+  }).observe(document.body, { childList: true, subtree: true });
 
   // =========================================================================
   // 2. INTERSECTION OBSERVER FOR VISUAL ANIMATIONS ONLY
@@ -45,6 +51,17 @@ document.addEventListener("DOMContentLoaded", () => {
 // 3. MODULE LOADER
 // =========================================================================
 const moduleCache = {};
+
+function bootstrapBehaviorsIn(root) {
+  if (root.nodeType === 1 && root.matches?.("[data-behavior]") && !root.dataset.loaded) {
+    loadComponent(root.dataset.behavior, root);
+  }
+  const descendants = root.querySelectorAll?.("[data-behavior]");
+  if (!descendants) return;
+  descendants.forEach((el) => {
+    if (!el.dataset.loaded) loadComponent(el.dataset.behavior, el);
+  });
+}
 
 async function loadComponent(name, element) {
   try {
