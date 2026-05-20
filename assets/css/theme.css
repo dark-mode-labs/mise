@@ -820,6 +820,13 @@
     justify-content: space-around;
   }
 
+  /* `min-width: 0` overrides flex's `min-width: auto` default so long-content
+     children don't block equal distribution. */
+  .direction-row.content-stretch > * {
+    flex: 1;
+    min-width: 0;
+  }
+
   .direction-column.vertical-top {
     justify-content: flex-start;
   }

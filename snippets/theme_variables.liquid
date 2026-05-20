@@ -202,6 +202,7 @@
           .direction-responsive.bp-{{ c[0] }}.content-center { justify-content: center; }
           .direction-responsive.bp-{{ c[0] }}.content-right { justify-content: flex-end; }
           .direction-responsive.bp-{{ c[0] }}.content-between { justify-content: space-between; }
+          .direction-responsive.bp-{{ c[0] }}.content-stretch > * { flex: 1; min-width: 0; }
         }
         @media (max-width: calc({{ mw }} - 0.0625rem)) {
           .direction-responsive.bp-{{ c[0] }} > .width-half,
@@ -240,6 +241,7 @@
       .direction-responsive:not([class*="bp-"]).content-center { justify-content: center; }
       .direction-responsive:not([class*="bp-"]).content-right { justify-content: flex-end; }
       .direction-responsive:not([class*="bp-"]).content-between { justify-content: space-between; }
+      .direction-responsive:not([class*="bp-"]).content-stretch > * { flex: 1; min-width: 0; }
     }
 
 
