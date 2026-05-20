@@ -69,9 +69,10 @@
         class: utility_classes,
         color_role: color_role
       %}
+      {%- capture icon_color_class -%}{%- render 'text-color-class', color_role: color_role -%}{%- endcapture -%}
       {% render 'icon',
         name: 'chevron-right',
-        class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden text-{{ color_role }}'
+        class: 'w-4 h-4 transition-transform group-open:rotate-90 md:hidden {{ icon_color_class }}'
       %}
     </summary>
 

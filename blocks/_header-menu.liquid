@@ -22,9 +22,9 @@
 {% endif %}
 {% assign block_styles = styles | join: ';' %}
 
-{% assign color_role = 'primary' %}
-{% if s.text_role != blank and s.text_role != 'inherit' and s.text_role != 'palette' and s.text_role != 'custom' %}
-  {% assign color_role = s.text_role %}
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}
+  {% assign color_role = 'primary' %}
 {% endif %}
 
 {% assign utilities = blank %}
