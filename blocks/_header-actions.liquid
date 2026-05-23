@@ -6,10 +6,7 @@
   {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
-{% assign text_color_class = blank %}
-{% if s.text_role != blank and s.text_role != 'inherit' %}
-  {% assign text_color_class = 'text-' | append: s.text_role %}
-{% endif %}
+{%- capture text_color_class -%}{%- render 'text-color-class', color_role: s.text_role -%}{%- endcapture -%}
 
 {% assign actions_classes = 'header-actions flex'
   | push: 'direction-{{ s.direction }}'

@@ -136,6 +136,23 @@ export default class Slideshow {
       }
     });
 
+    // Capture phase — tab-head descendants call stopImmediatePropagation in bubble.
+    this.track.addEventListener(
+      "click",
+      (e) => {
+        if (this.isDragging) return;
+        const slides = this.getSlides();
+        const slide = slides.find((s) => s.contains(e.target));
+        if (!slide) return;
+        const slideRect = slide.getBoundingClientRect();
+        const trackRect = this.track.getBoundingClientRect();
+        const fullyVisible =
+          slideRect.left >= trackRect.left - 1 && slideRect.right <= trackRect.right + 1;
+        if (!fullyVisible) this.scrollToIndex(slides.indexOf(slide));
+      },
+      true
+    );
+
     this.initDragPhysics();
 
     if (this.autoplayEnabled) {

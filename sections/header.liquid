@@ -19,7 +19,7 @@
   {% assign text_override_value = 'var(--palette-{{ s.text_role_palette }})' %}
 {% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
   {% assign text_override_value = s.text_role_custom %}
-{% elsif s.text_role != blank and s.text_role != 'primary' %}
+{% elsif s.text_role != blank and s.text_role != 'primary' and s.text_role != 'inherit' %}
   {% assign text_override_value = 'var(--text-{{ s.text_role }})' %}
 {% endif %}
 

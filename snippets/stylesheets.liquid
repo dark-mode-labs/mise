@@ -1,6 +1,17 @@
 {{ 'theme.css' | asset_url | preload_tag: as: 'style' }}
 {{ 'theme.css' | asset_url | stylesheet_tag }}
+
 {% assign fonts = font_schemes | values | map: 'settings.url' | uniq | compact %}
+{% assign google_families = blank %}
 {% for font in fonts %}
-  <link rel='stylesheet' href='{{ font }}'>
+  {% if font contains 'fonts.googleapis.com/css2' %}
+    {% assign family = font | split: '?' | last | split: '&display' | first %}
+    {% assign google_families = google_families | push: family %}
+  {% else %}
+    <link rel='stylesheet' href='{{ font }}'>
+  {% endif %}
 {% endfor %}
+
+{% if google_families != blank %}
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css2?{{ google_families | join: '&' }}&display=swap'>
+{% endif %}
