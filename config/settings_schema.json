@@ -215,7 +215,7 @@
           "type": "text",
           "id": "name",
           "label": "Font Family",
-          "info": "CSS font-family value used for --font-heading, --font-body, --font-button, --font-accent. E.g. 'Inter', 'Playfair Display', sans-serif.",
+          "info": "The CSS font-family for this scheme. E.g. 'Inter', 'Playfair Display', sans-serif.",
           "default": "sans-serif"
         },
         {
@@ -230,7 +230,7 @@
       "name": "Type Styles",
       "type": "group",
       "id": "type_styles",
-      "info": "Type styles bundle font family, size, weight, tracking, leading, and transform into one named treatment. Text-rendering blocks reference a single `type_style: <id>` instead of setting all dimensions individually. Single-dimension `font_size` (flat rem) \u2014 mobile responsiveness handled by CSS-side media queries on the rendered .ts-<id> class.",
+      "info": "Named text treatment bundling font family, size, weight, tracking, leading, and transform. Text blocks reference one `type_style` id instead of setting each dimension separately.",
       "settings": [
         {
           "type": "text",
@@ -242,15 +242,22 @@
           "type": "font_scheme",
           "id": "font_ref",
           "label": "Font",
-          "info": "Picks one of the named font schemes (heading / body / button / brand-extended).",
+          "info": "Picks a named font scheme (e.g. heading, body, button, accent).",
           "default": "body"
         },
         {
           "type": "text",
           "id": "font_size",
           "label": "Font Size",
-          "info": "Flat font-size value (e.g. `3rem`). Single-dimension only \u2014 mobile shrink applied via CSS media queries on .ts-<id>, not per-style data.",
+          "info": "Font size (e.g. `3rem`). Applies at every viewport unless `font_size_by_bp` sets per-breakpoint overrides.",
           "default": "1rem"
+        },
+        {
+          "type": "text",
+          "id": "font_size_by_bp",
+          "label": "Per-Breakpoint Font Size",
+          "info": "JSON map of breakpoint_scale tier id to font size. e.g. `{\"broad\": \"3rem\"}` applies at viewports at or above the broad breakpoint.",
+          "default": ""
         },
         {
           "type": "select",
@@ -404,6 +411,7 @@
       "name": "Container Scale",
       "type": "group",
       "id": "container_scale",
+      "info": "Width tiers. `max_width` caps the element's width. `value` (optional) sets the width directly (`%`, `rem`, `auto`, ...); percentage values also act as flex-grow ratios, so siblings in a flex row share the available space in that ratio regardless of gap. `value_by_bp` (optional) overrides `value` per breakpoint.",
       "settings": [
         {
           "type": "text",
@@ -417,6 +425,41 @@
           "label": "Max Width",
           "info": "Any CSS max-width value: rem (e.g. 56rem), %, or \"none\" for unbounded.",
           "default": "56rem"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Width Value",
+          "info": "Width value (e.g. `50%`, `100%`, `auto`, `10rem`). Percentage values also act as flex-grow ratios in flex-row parents.",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "value_by_bp",
+          "label": "Per-Breakpoint Width Overrides",
+          "info": "JSON map of breakpoint_scale tier id to width value. e.g. `{\"read\": \"auto\"}` applies at viewports at or above the read breakpoint.",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "Breakpoint Scale",
+      "type": "group",
+      "id": "breakpoint_scale",
+      "info": "Viewport breakpoints. Each tier's `max_width` (numeric rem) is the viewport width at which it activates. Other scales' `value_by_bp` and `font_size_by_bp` maps key off these tier ids.",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Breakpoint"
+        },
+        {
+          "type": "number",
+          "id": "max_width",
+          "label": "Viewport Threshold (rem)",
+          "info": "Viewport width in rem at which this breakpoint activates.",
+          "default": 48
         }
       ]
     },
@@ -424,7 +467,7 @@
       "name": "Height Scale",
       "type": "group",
       "id": "height_scale",
-      "info": "Height tiers — single `value` (any CSS length: rem, %, vh, etc.). Each tier renders to .height-<id>. The `floor` flag controls whether the tier sets `height` (fixed) or `min-height` (block can grow past it). Structural tiers (`auto`, `full`, `custom`) have specialized CSS in theme.css and skip the dynamic loop.",
+      "info": "Height tiers. `value` is any CSS length (rem, %, vh, ...). `floor` makes it a minimum height (the block can grow taller) instead of a fixed height. `floor_fill` additionally stretches the block to fill available height without shrinking below `value`. `value_by_bp` (optional) overrides `value` per breakpoint.",
       "settings": [
         {
           "type": "text",
@@ -440,10 +483,24 @@
           "default": ""
         },
         {
+          "type": "text",
+          "id": "value_by_bp",
+          "label": "Per-Breakpoint Overrides",
+          "info": "JSON map of breakpoint_scale tier id to length. e.g. `{\"broad\": \"32rem\"}` applies at viewports at or above the broad breakpoint.",
+          "default": ""
+        },
+        {
           "type": "checkbox",
           "id": "floor",
           "label": "Behaves as a floor (min-height)",
-          "info": "When on, blocks using this tier render with `min-height` — block can grow past the tier value if its content is taller. When off (default), the tier sets a fixed `height`. Source HTML's `min-h-N` maps to floor tiers; `h-N` maps to fixed tiers.",
+          "info": "When on, the tier sets a minimum height and the block can grow taller. When off (default), it sets a fixed height.",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "floor_fill",
+          "label": "Floor + flex stretch",
+          "info": "Like `floor`, but also stretches the block to fill available height while never shrinking below `value`. Useful for hero or section blocks.",
           "default": false
         }
       ]
@@ -452,6 +509,7 @@
       "name": "Space Scale",
       "type": "group",
       "id": "space_scale",
+      "info": "Spacing tiers used for gap, padding, and margin. `value` is any CSS length. `value_by_bp` (optional) overrides `value` per breakpoint.",
       "settings": [
         {
           "type": "text",
@@ -465,25 +523,12 @@
           "label": "Value",
           "info": "Any CSS length: rem (e.g. `1rem`, `1.5rem`), em, or px.",
           "default": ""
-        }
-      ]
-    },
-    {
-      "name": "Min Column Width Scale",
-      "type": "group",
-      "id": "min_col_scale",
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Name",
-          "default": "Min Column"
         },
         {
           "type": "text",
-          "id": "value",
-          "label": "Value",
-          "info": "Any CSS length, typically rem.",
+          "id": "value_by_bp",
+          "label": "Per-Breakpoint Overrides",
+          "info": "JSON map of breakpoint_scale tier id to length. e.g. `{\"column\": \"3.5rem\"}` applies at viewports at or above the column breakpoint.",
           "default": ""
         }
       ]
@@ -940,6 +985,23 @@
           }
         }
       },
+      "breakpoint_scale": {
+        "read": {
+          "settings": { "title": "Read", "max_width": 42 }
+        },
+        "column": {
+          "settings": { "title": "Column", "max_width": 48 }
+        },
+        "broad": {
+          "settings": { "title": "Broad", "max_width": 64 }
+        },
+        "canvas": {
+          "settings": { "title": "Canvas", "max_width": 80 }
+        },
+        "extra-wide": {
+          "settings": { "title": "Extra Wide", "max_width": 96 }
+        }
+      },
       "height_scale": {
         "auto": {
           "settings": {
@@ -1043,14 +1105,6 @@
           "settings": {
             "title": "Custom",
             "structural": true
-          }
-        }
-      },
-      "min_col_scale": {
-        "default": {
-          "settings": {
-            "title": "Default",
-            "value": "16rem"
           }
         }
       },

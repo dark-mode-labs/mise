@@ -35,15 +35,7 @@
   | push: 'margin-mx-{{ s.margin_horizontal }}'
 %}
 
-{% if s.width == 'fill' %}
-  {% assign wrapper_classes = wrapper_classes | push: 'w-full block' %}
-{% else %}
-  {%- comment -%}
-    Explicit fit-content so flex-column parent's `align-items: stretch`
-    doesn't expand the button past its content.
-  {%- endcomment -%}
-  {% assign wrapper_classes = wrapper_classes | push: 'inline-block width-fit limit-width' %}
-{% endif %}
+{% assign wrapper_classes = wrapper_classes | push: 'block width-{{ s.width }} limit-width' %}
 
 {% if s.height and s.height != 'auto' %}
   {% assign wrapper_classes = wrapper_classes | push: 'height-{{ s.height }}' %}
