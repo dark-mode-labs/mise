@@ -1,0 +1,298 @@
+{% assign bp_keys = breakpoint_scale | keys %}
+{% assign bp_vals = breakpoint_scale | values %}
+{% assign bp_vals_sorted = bp_vals | sort: 'settings.max_width' %}
+{% assign sorted_bp_ids = blank %}
+{% for v in bp_vals_sorted %}
+  {% for i in (0..bp_vals.size) %}
+    {% if bp_vals[i].settings.max_width == v.settings.max_width %}
+      {% assign sorted_bp_ids = sorted_bp_ids | push: bp_keys[i] %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% capture stylesheet %}
+    :root {
+      --space-base: 1rem;
+
+      {% for s in space_scale %}
+        {% unless s[1].settings.structural %}
+          {% if s[1].settings.value != blank %}
+      --space-{{ s[0] }}: {{ s[1].settings.value }};
+          {% endif %}
+        {% endunless %}
+      {% endfor %}
+    }
+
+    {% for s in space_scale %}
+      {% if s[1].settings.value_by_bp != blank %}
+        {% for bp_id in sorted_bp_ids %}
+          {% assign bp_val = s[1].settings.value_by_bp[bp_id] %}
+          {% if bp_val != blank %}
+    @media (min-width: {{ breakpoint_scale[bp_id].settings.max_width }}rem) { :root { --space-{{ s[0] }}: {{ bp_val }}; } }
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
+    {% for s in space_scale %}
+      {% unless s[1].settings.structural %}
+      .padding-py-{{ s[0] }} { padding-top: var(--space-{{ s[0] }}); padding-bottom: var(--space-{{ s[0] }}); }
+      .padding-px-{{ s[0] }} { padding-left: var(--space-{{ s[0] }}); padding-right: var(--space-{{ s[0] }}); }
+      .margin-my-{{ s[0] }} { margin-top: var(--space-{{ s[0] }}); margin-bottom: var(--space-{{ s[0] }}); }
+      .margin-mx-{{ s[0] }} { margin-left: var(--space-{{ s[0] }}); margin-right: var(--space-{{ s[0] }}); }
+      .gap-{{ s[0] }} { gap: var(--space-{{ s[0] }}); }
+      .direction-row.gap-{{ s[0] }}, .direction-responsive.gap-{{ s[0] }} { --children-gap: var(--space-{{ s[0] }}); }
+      {% endunless %}
+    {% endfor %}
+
+    :root {
+
+      --radius-global: {{ layout.corner_radius }}px;
+
+      {% for scheme in font_schemes %} --font-{{ scheme[0] }}: "{{ scheme[1].settings.name }}", sans-serif; {% endfor %}
+
+      {% for token in palette %} --palette-{{ token[0] }}: {{ token[1].settings.value }}; {% endfor %}
+
+      {% for token in gradients %} --gradient-{{ token[0] }}: {{ token[1].settings.value }}; {% endfor %}
+    }
+
+    {% for surface in surfaces %}
+      {%- assign s = surface[1].settings -%}
+      .surface-{{ surface[0] }} {
+         {% assign slots = 'background|background_alt|surface|surface_alt|accent_bg|button_bg|control_bg|text|text_secondary|text_subtle|text_emphasis|text_on_accent|text_on_button|text_on_control|border|border_emphasis|shadow' | split: '|' %}
+        {%- for slot_id in slots -%}
+          {%- assign slot_val = s[slot_id] | default: '' -%}
+          {%- assign css_var = '--' | append: slot_id | replace: '_', '-' -%}
+          {%- unless slot_val == blank -%}
+            {%- assign first_slot_char = slot_val | slice: 0, 1 -%}
+            {%- if first_slot_char == '@' -%}
+              {%- assign ref = slot_val | remove_first: '@' -%}
+              {{ css_var }}: var(--palette-{{ ref }});
+            {%- else -%}
+              {{ css_var }}: {{ slot_val }};
+            {%- endif -%}
+          {%- endunless -%}
+        {%- endfor -%}
+      }
+    {% endfor %}
+
+    {% for c in container_scale %}
+      {% unless c[1].settings.structural %}
+        {% assign tier_id = c[0] %}
+        {% if tier_id contains 'synth-' or tier_id contains 'c-' %}
+          .width-{{ tier_id }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; width: {{ c[1].settings.max_width | default: '100%' }}; max-width: 100%; flex-shrink: 0; }
+        {% else %}
+          .width-{{ tier_id }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; }
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
+    .direction-responsive.responsive-order-reverse { flex-direction: column-reverse; }
+
+    {% for bp_id in sorted_bp_ids %}
+      {% assign mw = breakpoint_scale[bp_id].settings.max_width %}
+        @media (min-width: {{ mw }}rem) {
+          .direction-responsive.bp-{{ bp_id }} { flex-direction: row; justify-content: normal; align-items: stretch; }
+          .direction-responsive.bp-{{ bp_id }}.vertical-top { align-items: flex-start; }
+          .direction-responsive.bp-{{ bp_id }}.vertical-middle { align-items: center; }
+          .direction-responsive.bp-{{ bp_id }}.vertical-bottom { align-items: flex-end; }
+          .direction-responsive.bp-{{ bp_id }}.vertical-stretch { align-items: stretch; }
+          .direction-responsive.bp-{{ bp_id }}.content-left { justify-content: flex-start; }
+          .direction-responsive.bp-{{ bp_id }}.content-center { justify-content: center; }
+          .direction-responsive.bp-{{ bp_id }}.content-right { justify-content: flex-end; }
+          .direction-responsive.bp-{{ bp_id }}.content-between { justify-content: space-between; }
+          .direction-responsive.bp-{{ bp_id }}.content-stretch > * { flex: 1; min-width: 0; }
+        }
+        @media (max-width: calc({{ mw }}rem - 0.0625rem)) {
+          .direction-responsive.bp-{{ bp_id }} > .width-half,
+          .direction-responsive.bp-{{ bp_id }} > .width-third,
+          .direction-responsive.bp-{{ bp_id }} > .width-quarter,
+          .direction-responsive.bp-{{ bp_id }} > .width-two-thirds,
+          .direction-responsive.bp-{{ bp_id }} > .width-three-quarters,
+          .direction-responsive.bp-{{ bp_id }} > .contents > .width-half,
+          .direction-responsive.bp-{{ bp_id }} > .contents > .width-third,
+          .direction-responsive.bp-{{ bp_id }} > .contents > .width-quarter,
+          .direction-responsive.bp-{{ bp_id }} > .contents > .width-two-thirds,
+          .direction-responsive.bp-{{ bp_id }} > .contents > .width-three-quarters
+            { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
+          .direction-responsive.bp-{{ bp_id }} > .width-fit,
+          .direction-responsive.bp-{{ bp_id }} > .contents > .width-fit { --limit-width: 100%; }
+        }
+    {% endfor %}
+
+    @media (min-width: 768px) {
+      .direction-responsive:not([class*="bp-"]) { flex-direction: row; justify-content: normal; align-items: stretch; }
+      .direction-responsive:not([class*="bp-"]).vertical-top { align-items: flex-start; }
+      .direction-responsive:not([class*="bp-"]).vertical-middle { align-items: center; }
+      .direction-responsive:not([class*="bp-"]).vertical-bottom { align-items: flex-end; }
+      .direction-responsive:not([class*="bp-"]).vertical-stretch { align-items: stretch; }
+      .direction-responsive:not([class*="bp-"]).content-left { justify-content: flex-start; }
+      .direction-responsive:not([class*="bp-"]).content-center { justify-content: center; }
+      .direction-responsive:not([class*="bp-"]).content-right { justify-content: flex-end; }
+      .direction-responsive:not([class*="bp-"]).content-between { justify-content: space-between; }
+      .direction-responsive:not([class*="bp-"]).content-stretch > * { flex: 1; min-width: 0; }
+    }
+
+    {% for bp_id in sorted_bp_ids %}
+      {% assign mw = breakpoint_scale[bp_id].settings.max_width %}
+        @media (min-width: {{ mw }}rem) {
+          .header-section.bp-{{ bp_id }} .header-nav { display: flex; }
+          .header-section.bp-{{ bp_id }} .header-mobile-toggle { display: none; }
+          .header-section.bp-{{ bp_id }} .header-actions-children { display: contents; }
+          .header-section.bp-{{ bp_id }} .header-logo-desktop { display: block; }
+          .header-section.bp-{{ bp_id }} .header-logo-mobile { display: none; }
+        }
+    {% endfor %}
+
+    .width-fit  { --limit-width: fit-content; width: fit-content; }
+    .width-fill { --limit-width: 100%; width: 100%; }
+    .width-half    { --limit-width: 50%;     flex: 0 0 calc(50%     - (var(--children-gap, 0px) * 1) / 2); }
+    .width-third   { --limit-width: 33.333%; flex: 0 0 calc(33.333% - (var(--children-gap, 0px) * 2) / 3); }
+    .width-quarter { --limit-width: 25%;     flex: 0 0 calc(25%     - (var(--children-gap, 0px) * 3) / 4); }
+    .width-two-thirds     { --limit-width: 66.667%; flex: 0 0 calc(66.667% - (var(--children-gap, 0px) * 2) / 3); }
+    .width-three-quarters { --limit-width: 75%;     flex: 0 0 calc(75%     - (var(--children-gap, 0px) * 3) / 4); }
+
+    {% for c in container_scale %}
+      {% assign cv = c[1].settings.value %}
+      {% if cv != blank %}
+        {% if cv == "0" %}
+    .width-{{ c[0] }} { display: none; }
+        {% else %}
+    .width-{{ c[0] }} { --limit-width: {{ cv }}; width: {{ cv }}; max-width: 100%; flex-shrink: 0; }
+        {% endif %}
+        {% if c[1].settings.value_by_bp != blank %}
+          {% for bp_id in sorted_bp_ids %}
+            {% assign bp_val = c[1].settings.value_by_bp[bp_id] %}
+            {% if bp_val != blank %}
+              {% assign bp_mw = breakpoint_scale[bp_id].settings.max_width %}
+              {% if bp_val == "0" %}
+    @media (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: none; } }
+              {% else %}
+    @media (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: revert; --limit-width: {{ bp_val }}; width: {{ bp_val }}; } }
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    .layout-grid-explicit { grid-template-columns: var(--gtc, 1fr);{% for bp_id in sorted_bp_ids %} --gtc-{{ bp_id }}: initial;{% endfor %} }
+    @media (max-width: calc({{ breakpoint_scale.canvas.settings.max_width }}rem - 0.0625rem)) {
+      .layout-grid-explicit > * { min-width: 0; }
+    }
+    {% assign gtc_fallback = 'var(--gtc, 1fr)' %}
+    {% for bp_id in sorted_bp_ids %}
+      {% assign bp_mw = breakpoint_scale[bp_id].settings.max_width %}
+      {% capture gtc_chain %}var(--gtc-{{ bp_id }}, {{ gtc_fallback }}){% endcapture %}
+    @media (min-width: {{ bp_mw }}rem) { .layout-grid-explicit { grid-template-columns: {{ gtc_chain }}; } }
+      {% assign gtc_fallback = gtc_chain %}
+    {% endfor %}
+
+    .direction-row, .direction-responsive { --children-gap: 0px; }
+    .direction-row.gap-custom, .direction-responsive.gap-custom { --children-gap: var(--space-gap); }
+
+    @media (max-width: 767px) {
+      .direction-row > .width-half,
+      .direction-row > .width-third,
+      .direction-row > .width-quarter,
+      .direction-row > .width-two-thirds,
+      .direction-row > .width-three-quarters,
+      .direction-row > .contents > .width-half,
+      .direction-row > .contents > .width-third,
+      .direction-row > .contents > .width-quarter,
+      .direction-row > .contents > .width-two-thirds,
+      .direction-row > .contents > .width-three-quarters
+        { --limit-width: 100%; flex: 0 0 100%; }
+      .direction-column > .width-half,
+      .direction-column > .width-third,
+      .direction-column > .width-quarter,
+      .direction-column > .width-two-thirds,
+      .direction-column > .width-three-quarters,
+      .direction-column > .contents > .width-half,
+      .direction-column > .contents > .width-third,
+      .direction-column > .contents > .width-quarter,
+      .direction-column > .contents > .width-two-thirds,
+      .direction-column > .contents > .width-three-quarters,
+      .direction-responsive > .width-half,
+      .direction-responsive > .width-third,
+      .direction-responsive > .width-quarter,
+      .direction-responsive > .width-two-thirds,
+      .direction-responsive > .width-three-quarters,
+      .direction-responsive > .contents > .width-half,
+      .direction-responsive > .contents > .width-third,
+      .direction-responsive > .contents > .width-quarter,
+      .direction-responsive > .contents > .width-two-thirds,
+      .direction-responsive > .contents > .width-three-quarters
+        { --limit-width: 100%; width: 100%; max-width: 100%; flex-basis: auto; }
+      .direction-responsive > .width-fit,
+      .direction-responsive > .contents > .width-fit { --limit-width: 100%; }
+    }
+
+    {% for h in height_scale %}
+      {% unless h[1].settings.structural %}
+        {% if h[1].settings.value != blank %}
+          {% if h[1].settings.floor_fill %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; min-height: {{ h[1].settings.value }}; height: 100%; flex: 1 1 {{ h[1].settings.value }}; }
+          {% elsif h[1].settings.floor %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; min-height: {{ h[1].settings.value }}; height: auto; }
+          {% else %}
+        .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; height: {{ h[1].settings.value }}; }
+          {% endif %}
+          {% if h[1].settings.value_by_bp != blank %}
+                    {% for bp_id in sorted_bp_ids %}
+              {% assign bp_val = h[1].settings.value_by_bp[bp_id] %}
+              {% if bp_val != blank %}
+                {% assign bp_mw = breakpoint_scale[bp_id].settings.max_width %}
+                {% if h[1].settings.floor_fill %}
+    @media (min-width: {{ bp_mw }}rem) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height: {{ bp_val }}; flex-basis: {{ bp_val }}; } }
+                {% elsif h[1].settings.floor %}
+    @media (min-width: {{ bp_mw }}rem) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height: {{ bp_val }}; } }
+                {% else %}
+    @media (min-width: {{ bp_mw }}rem) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; height: {{ bp_val }}; } }
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
+    .height-auto { height: auto; }
+    .height-full { height: 100%; flex: 1 1 0%; min-height: 0; }
+    .height-custom { height: var(--block-height, auto); }
+
+    {% for scheme in font_schemes %}
+    .font-{{ scheme[0] }} { font-family: var(--font-{{ scheme[0] }}); }
+    {% endfor %}
+
+    {% for style in type_styles %}
+      {% assign ts_id = style[0] %}
+      {% assign ts = style[1].settings %}
+      {% if ts.font_size != blank %}
+        {% capture ts_weight %}{% case ts.weight %}{% when 'thin' %}100{% when 'extralight' %}200{% when 'light' %}300{% when 'normal' %}400{% when 'medium' %}500{% when 'semibold' %}600{% when 'bold' %}700{% when 'extrabold' %}800{% when 'black' %}900{% else %}400{% endcase %}{% endcapture %}
+        {% capture ts_tracking %}{% case ts.tracking %}{% when 'tighter' %}-0.05em{% when 'tight' %}-0.025em{% when 'wide' %}0.025em{% when 'wider' %}0.05em{% when 'widest' %}0.1em{% when 'ultra-wide' %}0.25em{% when 'custom' %}{{ ts.tracking_custom | default: '0' }}{% else %}0{% endcase %}{% endcapture %}
+        {% capture ts_leading %}{% case ts.leading %}{% when 'none' %}1{% when 'tight' %}1.25{% when 'snug' %}1.375{% when 'relaxed' %}1.625{% when 'loose' %}2{% when 'custom' %}{{ ts.leading_custom | default: '1.5' }}{% else %}1.5{% endcase %}{% endcapture %}
+    .ts-{{ ts_id }} { font-family: var(--font-{{ ts.font_ref | default: 'body' }}); font-size: {{ ts.font_size }}; font-weight: {{ ts_weight }}; letter-spacing: {{ ts_tracking }}; line-height: {{ ts_leading }}; text-transform: {{ ts.transform | default: 'none' }}; }
+        {% if ts.font_size_by_bp != blank %}
+                {% for bp_id in sorted_bp_ids %}
+            {% assign bp_size = ts.font_size_by_bp[bp_id] %}
+            {% if bp_size != blank %}
+    @media (min-width: {{ breakpoint_scale[bp_id].settings.max_width }}rem) { .ts-{{ ts_id }} { font-size: {{ bp_size }}; } }
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% case ts_id %}
+            {% when 'display-jumbo', 'display-1' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.55); } }
+            {% when 'display-2', 'heading-1' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.65); } }
+            {% when 'heading-2', 'heading-3' %}
+    @media (max-width: 767px) { .ts-{{ ts_id }} { font-size: calc({{ ts.font_size }} * 0.75); } }
+          {% endcase %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% endcapture %}
+<style>
+  {{- stylesheet | strip_newlines | replace: '  ', '' | replace: '  ', '' | replace: ' : ', ':' | replace: ': ', ':' | replace: ' {', '{' | replace: ' {', '{' | replace: ' {', '{' | replace: ' }', '}' | replace: '} ', '}' | replace: '; ', ';' -}}
+</style>
