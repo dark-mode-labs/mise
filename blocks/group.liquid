@@ -307,24 +307,30 @@
       "default": "flex"
     },
     {
-      "type": "text",
-      "id": "grid_template_columns",
-      "label": "Grid Template Columns",
-      "info": "CSS grid-template-columns (e.g. `1.5fr 1fr`, `120px 1fr 380px`, `repeat(3, 1fr)`).",
-      "default": "1fr",
+      "type": "header",
+      "content": "Grid Layout",
       "conditional": "setting.layout_mode == 'grid'"
     },
     {
       "type": "text",
+      "subtype": "grid_template_column",
+      "id": "grid_template_columns",
+      "label": "Grid Column Template",
+      "info": "e.g. `1.5fr 1fr`, `120px 1fr 380px`, `repeat(3, 1fr)`",
+      "default": "1fr",
+      "conditional": "setting.layout_mode == 'grid'"
+    },
+    {
+      "type": "grid_template_column_bp",
       "id": "grid_template_columns_by_bp",
       "label": "Grid Columns by Breakpoint",
-      "info": "JSON map of breakpoint_scale tier id to grid-template-columns. e.g. `{\"broad\": \"1.5fr 1fr\"}` applies at viewports at or above the broad breakpoint.",
+      "info": "Viewport tied column template.",
       "default": "",
       "conditional": "setting.layout_mode == 'grid'"
     },
     {
       "type": "header",
-      "content": "Flex Settings",
+      "content": "Flex Layout",
       "conditional": "setting.layout_mode == 'flex'"
     },
     {
@@ -347,6 +353,24 @@
       ],
       "default": "column",
       "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "checkbox",
+      "id": "wrap_content",
+      "label": "Wrap Content",
+      "default": false,
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "checkbox",
+      "id": "grow_content",
+      "label": "Grow Content",
+      "default": false,
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "header",
+      "content": "Alignment/Position"
     },
     {
       "type": "select",
@@ -401,20 +425,6 @@
           "label": "Stretch"
         }
       ]
-    },
-    {
-      "type": "checkbox",
-      "id": "wrap_content",
-      "label": "Wrap Content",
-      "default": false,
-      "conditional": "setting.layout_mode == 'flex'"
-    },
-    {
-      "type": "checkbox",
-      "id": "grow_content",
-      "label": "Grow Content",
-      "default": false,
-      "conditional": "setting.layout_mode == 'flex'"
     },
     {
       "type": "select",

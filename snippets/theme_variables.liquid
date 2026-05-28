@@ -176,8 +176,7 @@
       {% endif %}
     {% endfor %}
 
-    .layout-grid-explicit { grid-template-columns: var(--gtc, 1fr); }
-    {% comment %} min-width: 0 below canvas stops intrinsic-content expansion (e.g. h1 with wide italic) from forcing track wider than container. Above canvas, allow expansion for fr-ratio columns to honor designer intent. {% endcomment %}
+    .layout-grid-explicit { grid-template-columns: var(--gtc, 1fr);{% for bp_id in sorted_bp_ids %} --gtc-{{ bp_id }}: initial;{% endfor %} }
     @media (max-width: calc({{ breakpoint_scale.canvas.settings.max_width }}rem - 0.0625rem)) {
       .layout-grid-explicit > * { min-width: 0; }
     }
