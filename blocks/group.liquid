@@ -1,8 +1,7 @@
 {% assign s = block.settings %}
 
-{% comment %} --- Layout (property + CSS-driven, no axis-swap in liquid) --- {% endcomment %}
 {% if s.layout_mode == 'grid' %}
-  {% assign layout_class = 'grid grid-cols-[repeat(auto-fill,minmax(min(var(--width-grid-col),100%),1fr))]' %}
+  {% assign layout_class = 'grid layout-grid-explicit' %}
 {% else %}
   {% assign layout_class = 'flex direction-{{ s.direction }}' %}
 {% endif %}
@@ -190,7 +189,14 @@
 
 {% if s.gap == 'custom' %}{% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}{% endif %}
 {% if s.layout_mode == 'grid' %}
-  {% assign styles = styles | push: '--width-grid-col: var(--mc-{{ s.min_column_width }})' %}
+  {% if s.grid_template_columns != blank %}
+    {% assign styles = styles | push: '--gtc: {{ s.grid_template_columns }}' %}
+  {% endif %}
+  {% if s.grid_template_columns_by_bp != blank %}
+    {% for bp in s.grid_template_columns_by_bp %}
+      {% assign styles = styles | push: '--gtc-{{ bp[0] }}: {{ bp[1] }}' %}
+    {% endfor %}
+  {% endif %}
 {% endif %}
 
 {% unless s.border_mode == 'none' %}
@@ -301,15 +307,30 @@
       "default": "flex"
     },
     {
-      "type": "min_col",
-      "id": "min_column_width",
-      "label": "Min Item Width (Grid Only)",
-      "default": "default",
+      "type": "header",
+      "content": "Grid Layout",
+      "conditional": "setting.layout_mode == 'grid'"
+    },
+    {
+      "type": "text",
+      "subtype": "grid_template_column",
+      "id": "grid_template_columns",
+      "label": "Grid Column Template",
+      "info": "e.g. `1.5fr 1fr`, `120px 1fr 380px`, `repeat(3, 1fr)`",
+      "default": "1fr",
+      "conditional": "setting.layout_mode == 'grid'"
+    },
+    {
+      "type": "grid_template_column_bp",
+      "id": "grid_template_columns_by_bp",
+      "label": "Grid Columns by Breakpoint",
+      "info": "Viewport tied column template.",
+      "default": "",
       "conditional": "setting.layout_mode == 'grid'"
     },
     {
       "type": "header",
-      "content": "Flex Settings",
+      "content": "Flex Layout",
       "conditional": "setting.layout_mode == 'flex'"
     },
     {
@@ -332,6 +353,24 @@
       ],
       "default": "column",
       "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "checkbox",
+      "id": "wrap_content",
+      "label": "Wrap Content",
+      "default": false,
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "checkbox",
+      "id": "grow_content",
+      "label": "Grow Content",
+      "default": false,
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "header",
+      "content": "Alignment/Position"
     },
     {
       "type": "select",
@@ -386,20 +425,6 @@
           "label": "Stretch"
         }
       ]
-    },
-    {
-      "type": "checkbox",
-      "id": "wrap_content",
-      "label": "Wrap Content",
-      "default": false,
-      "conditional": "setting.layout_mode == 'flex'"
-    },
-    {
-      "type": "checkbox",
-      "id": "grow_content",
-      "label": "Grow Content",
-      "default": false,
-      "conditional": "setting.layout_mode == 'flex'"
     },
     {
       "type": "select",
