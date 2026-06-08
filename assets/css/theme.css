@@ -1252,6 +1252,12 @@
     transform: scale(0.5);
   }
 
+  .cart-count-badge[data-empty]:has([data-cart-count]:not(:empty)) {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
   [data-action="disabled"],
   [data-action="disabled"] * {
     cursor: not-allowed !important;
