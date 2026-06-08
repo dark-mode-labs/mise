@@ -265,7 +265,9 @@
             data-aria-empty='{{ 'cart.aria_label_empty' | t }}'
             data-aria-one='{{ 'cart.aria_label_one' | t }}'
             data-aria-other='{{ 'cart.aria_label_other' | t }}'
-            ><span data-cart-count>0</span></span
+            ><span data-cart-count>
+              {%- if request.cart_count > 99 %}99+{% elsif request.cart_count > 0 %}{{ request.cart_count }}{% endif -%}
+            </span></span
           >
         </a>
       {% endif %}
