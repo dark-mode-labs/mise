@@ -1366,6 +1366,10 @@
   .tab-mode-spy .tab-content {
     display: block;
   }
+
+  .tab-panes:not(:has(.tab-content[aria-expanded="true"])) .tab-content:first-of-type {
+    display: block;
+  }
 }
 
 @layer base {
