@@ -871,6 +871,13 @@
             "structural": true
           }
         },
+        "square": {
+          "settings": {
+            "title": "Square (icon)",
+            "max_width": "2.5rem",
+            "structural": true
+          }
+        },
         "half": {
           "settings": {
             "title": "Half (1/2)",
