@@ -160,6 +160,9 @@
 {% if text_color_value != blank -%}
   {%- assign styles = styles | push: '--text-on-button: {{ text_color_value }}' -%}
 {%- endif %}
+{% if s.underline and s.underline_offset > 0 %}
+  {%- assign styles = styles | push: 'text-underline-offset: {{ s.underline_offset }}rem' -%}
+{% endif %}
 {% assign wrapper_style_str = styles | join: ';' %}
 
 {% comment %} --- 4. Typography Utilities & Config --- {% endcomment %}
@@ -178,6 +181,8 @@
   {% when 'ellipsis' -%}
     {%- assign utilities = utilities | push: 'truncate' %}
 {% endcase %}
+
+{% if s.underline %}{%- assign utilities = utilities | push: 'underline' %}{% endif %}
 
 {% assign utility_classes = utilities | join: ' ' %}
 
@@ -371,6 +376,23 @@
           "label": "Balance"
         }
       ]
+    },
+    {
+      "type": "checkbox",
+      "id": "underline",
+      "label": "Underline",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "underline_offset",
+      "label": "Underline offset",
+      "min": 0,
+      "max": 0.5,
+      "step": 0.0625,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.underline == true"
     },
     {
       "type": "select",
