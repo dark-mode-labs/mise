@@ -39,8 +39,6 @@ export default class MenuSpy {
   }
 
   _publishStripHeight() {
-    // Only a stacked (top) strip sits above scrolled content; a left sidebar's
-    // full height must not feed scroll-padding-top or every target overshoots.
     const layer = this.nav.parentElement;
     const stacked = layer && getComputedStyle(layer).flexDirection === "column";
     const h = stacked ? this.nav.offsetHeight : 0;
