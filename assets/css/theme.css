@@ -1271,7 +1271,8 @@
     overflow: visible;
   }
   .tabs-position-top,
-  .tabs-position-left {
+  .tabs-position-left,
+  .tabs-position-none {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -1349,6 +1350,10 @@
   .chip-strip-left {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .chip-strip-none {
+    display: none;
   }
 
   .chip-strip-sticky {

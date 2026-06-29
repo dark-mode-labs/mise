@@ -189,6 +189,17 @@
       {% assign gtc_fallback = gtc_chain %}
     {% endfor %}
 
+    {% for bp_id in sorted_bp_ids %}
+      {% assign bp_mw = breakpoint_scale[bp_id].settings.max_width %}
+    @media (min-width: {{ bp_mw }}rem) {
+      .tabpos-{{ bp_id }}-none .chip-strip { display: none; }
+      .tabpos-{{ bp_id }}-left .chip-strip { display: flex; flex-direction: column; flex: 0 0 auto; align-self: start; }
+      .tabpos-{{ bp_id }}-left .tabs-content-layer { flex-direction: row; }
+      .tabpos-{{ bp_id }}-top .chip-strip { display: flex; flex-direction: row; flex: 0 1 auto; }
+      .tabpos-{{ bp_id }}-top .tabs-content-layer { flex-direction: column; }
+    }
+    {% endfor %}
+
     .direction-row, .direction-responsive { --children-gap: 0px; }
     .direction-row.gap-custom, .direction-responsive.gap-custom { --children-gap: var(--space-gap); }
 
