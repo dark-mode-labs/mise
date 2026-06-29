@@ -44,10 +44,14 @@
   {% assign chip_strip_surface_class = 'surface-' | append: s.chip_strip_surface_id %}
 {% endif %}
 
-{% assign section_classes = 'tab-mode-{{ s.mode }} tabs-section surface-{{ surface_safe }}' %}
+{% assign section_classes = 'tab-mode-{{ s.mode }} tabs-section surface-{{ surface_safe }}' | push: bg_class %}
+{% if s.chip_position_by_bp != blank %}
+  {% for bp in s.chip_position_by_bp %}
+    {% assign section_classes = section_classes | push: 'tabpos-{{ bp[0] }}-{{ bp[1] }}' %}
+  {% endfor %}
+{% endif %}
 
 {% assign bg_layer_classes = 'limit-width width-{{ s.width_bg }}'
-  | push: bg_class
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
@@ -56,8 +60,17 @@
 {% if bg_color_value != blank %}
   {% assign bg_layer_styles = bg_layer_styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
+{% if s.padding_vertical == 'custom' %}
+  {% assign bg_layer_styles = bg_layer_styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
 
-{% assign content_layer_classes = 'tabs-position-{{ s.chip_position }} limit-width width-{{ s.width }}' %}
+{% assign content_layer_classes = 'tabs-content-layer tabs-position-{{ s.chip_position }} limit-width width-{{ s.width }}' %}
+{% if s.column_gap != blank and s.column_gap != 'none' %}
+  {% assign content_layer_classes = content_layer_classes | push: 'gap-{{ s.column_gap }}' %}
+{% endif %}
 
 {% assign chip_strip_classes = 'chip-strip chip-strip-{{ s.chip_position }} chip-strip-{{ s.chip_layout }}'
   | push: 'padding-py-{{ s.chip_strip_padding_vertical }}'
@@ -67,6 +80,9 @@
   | push_if: 'rounded-custom', s.chip_strip_border_radius
   | push_if: 'chip-strip-sticky', s.sticky_chips
 %}
+{% if s.chip_strip_width != blank %}
+  {% assign chip_strip_classes = chip_strip_classes | push: 'width-{{ s.chip_strip_width }}' %}
+{% endif %}
 
 {% assign chip_strip_styles = blank %}
 {% if s.chip_strip_border_radius > 0 %}
@@ -157,7 +173,18 @@
       "default": "top",
       "options": [
         { "value": "top", "label": "Top" },
-        { "value": "left", "label": "Left sidebar" }
+        { "value": "left", "label": "Left sidebar" },
+        { "value": "none", "label": "Hidden" }
+      ]
+    },
+    {
+      "type": "chip_position_bp",
+      "id": "chip_position_by_bp",
+      "label": "Chip Position by Breakpoint",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "left", "label": "Left sidebar" },
+        { "value": "none", "label": "Hidden" }
       ]
     },
     {
@@ -199,6 +226,11 @@
       "id": "chip_strip_padding_horizontal",
       "label": "Chip Strip Horizontal Padding",
       "default": "md"
+    },
+    {
+      "type": "width",
+      "id": "chip_strip_width",
+      "label": "Chip Strip Width"
     },
     {
       "type": "range",
@@ -351,6 +383,11 @@
       "default": "fill"
     },
     {
+      "type": "space",
+      "id": "column_gap",
+      "label": "Column Gap"
+    },
+    {
       "type": "width",
       "id": "width_bg",
       "label": "Background Width",
@@ -361,6 +398,28 @@
       "id": "padding_vertical",
       "label": "Vertical Padding",
       "default": "sm"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
     },
     {
       "type": "space",
