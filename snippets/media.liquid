@@ -19,6 +19,20 @@
   {% assign anim_class = anim_class | append: ' ' | append: 'fixed inset-0' %}
 {% endif %}
 
+{% assign bp_keys = settings.breakpoint_scale | keys %}
+{% assign bp_vals = settings.breakpoint_scale | values %}
+{% assign bp_vals_sorted = bp_vals | sort: 'settings.max_width' %}
+{% assign sorted_bp_ids = blank %}
+{% for v in bp_vals_sorted %}
+  {% for i in (0..bp_vals.size) %}
+    {% if bp_vals[i].settings.max_width == v.settings.max_width %}
+      {% assign sorted_bp_ids = sorted_bp_ids | push: bp_keys[i] %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% assign desc_bp_ids = sorted_bp_ids | reverse %}
+
 <div
   class='media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}'
   style='--object-fit: {{ fit_mode }}{% if ratio == 'custom' and ratio_custom != blank %}; --aspect-ratio-custom: {{ ratio_custom }}{% endif %}'
@@ -43,21 +57,33 @@
     </video>
 
   {% elsif src != blank %}
-    {% capture img %}
-      <img src="{{ src | image_url: width: 1600 }}" alt="{{ src.alt | escape }}"
-          loading="{{ load_mode }}" width="{{ src.width }}" height="{{ src.height }}"
-          class="transition-opacity duration-500 {{ anim_class }}"
-        >
-    {% endcapture %}
-    {% if src_mobile != blank %}
-      <picture>
-        <source media='(max-width: 767px)' srcset='{{ src_mobile | image_url: width: 800 }}'>
-        <source media='(min-width: 768px)' srcset='{{ src | image_url: width: 1600 }}'>
-        {{ img }}
-      </picture>
-    {% else %}
-      {{ img }}
-    {% endif %}
+    <picture>
+      {% for bp_id in desc_bp_ids %}
+        {% assign bp_px = settings.breakpoint_scale[bp_id].settings.max_width | times: 16 %}
+        {% comment %} Below the 768px tier use the mobile art-direction image when provided. {% endcomment %}
+        {% if bp_px < 768 and src_mobile != blank %}
+          {% assign bp_src = src_mobile %}
+        {% else %}
+          {% assign bp_src = src %}
+        {% endif %}
+        {% assign img_w = bp_px | times: 2 %}
+        {% if img_w > 3200 %}{% assign img_w = 3200 %}{% endif %}
+        <source media='(min-width: {{ bp_px }}px)' srcset='{{ bp_src | image_url: width: img_w }}'>
+      {% endfor %}
+      {% if src_mobile != blank %}
+        {% assign fallback_src = src_mobile %}
+      {% else %}
+        {% assign fallback_src = src %}
+      {% endif %}
+      <img
+        src='{{ fallback_src | image_url: width: 800 }}'
+        alt='{{ src.alt | escape }}'
+        loading='{{ load_mode }}'
+        width='{{ src.width }}'
+        height='{{ src.height }}'
+        class='transition-opacity duration-500 {{ anim_class }}'
+      >
+    </picture>
 
   {% else %}
     {% if placeholder != blank %}
