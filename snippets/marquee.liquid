@@ -5,24 +5,36 @@
 {% unless uppercase %}
   {% assign case_class = '' %}
 {% endunless %}
+{% assign sep = separator | default: '•' %}
 
 {% if dir == 'right' %}
   {% assign anim_class = 'animate-marquee-reverse' %}
 {% endif %}
 
-<div class='overflow-hidden py-3'>
+{% assign list = items | split: ',' %}
+
+{%- capture sep_vars -%}
+  --marquee-sep: "{{ sep }}";
+  {%- if separator_color != blank %} --marquee-sep-color: {{ separator_color }}; --marquee-sep-opacity: 1;{% endif -%}
+{%- endcapture -%}
+
+{% assign copies = 4 %}
+{% assign dur = speed | default: 15 | times: copies | divided_by: 2 %}
+
+<div class='overflow-hidden'>
   <div
-    class='flex w-max gap-12 {{ anim_class }}'
-    style='animation-duration: {{ speed | default: 15 }}s;'
+    class='marquee-track flex w-max {{ anim_class }}'
+    style='animation-duration: {{ dur }}s; {{ sep_vars }}'
   >
-    {% for i in (1..4) %}
-      <div class='flex gap-12 shrink-0'>
-        {% assign list = items | split: ',' %}
+    {% for i in (1..copies) %}
+      <div
+        class='flex gap-12 shrink-0 pr-12'
+        {% if i > 1 %}
+          aria-hidden='true'
+        {% endif %}
+      >
         {% for item in list %}
-          <div class='flex items-center gap-4'>
-            <span class='{{ size_class }} font-bold {{ case_class }} whitespace-nowrap'>{{ item }}</span>
-            <span class='opacity-25'>•</span>
-          </div>
+          <span class='marquee-item {{ size_class }} font-bold {{ case_class }} whitespace-nowrap'>{{ item }}</span>
         {% endfor %}
       </div>
     {% endfor %}

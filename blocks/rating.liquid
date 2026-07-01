@@ -10,6 +10,8 @@
 {% assign star_fill = blank %}
 {% if s.fill_role == 'palette' and s.fill_role_palette != blank %}
   {% assign star_fill = 'var(--palette-{{ s.fill_role_palette }})' %}
+{% elsif s.fill_role == 'gradient' and s.fill_role_gradient != blank %}
+  {% assign star_fill = 'var(--gradient-{{ s.fill_role_gradient }})' %}
 {% elsif s.fill_role == 'custom' and s.fill_role_custom != blank %}
   {% assign star_fill = s.fill_role_custom %}
 {% endif %}
@@ -17,6 +19,8 @@
 {% assign star_track = blank %}
 {% if s.track_role == 'palette' and s.track_role_palette != blank %}
   {% assign star_track = 'var(--palette-{{ s.track_role_palette }})' %}
+{% elsif s.track_role == 'gradient' and s.track_role_gradient != blank %}
+  {% assign star_track = 'var(--gradient-{{ s.track_role_gradient }})' %}
 {% elsif s.track_role == 'custom' and s.track_role_custom != blank %}
   {% assign star_track = s.track_role_custom %}
 {% endif %}
@@ -54,7 +58,8 @@
     | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
   %}
 {% endif %}
-{% assign styles = styles | push: '--icon-size: {{ s.icon_size }}rem' | push: '--star-gap: {{ s.gap }}rem' %}
+{% if s.gap == 'custom' %}{% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}{% endif %}
+{% assign styles = styles | push: '--icon-size: {{ s.icon_size }}rem' %}
 {% if star_fill != blank %}{% assign styles = styles | push: '--star-fill: {{ star_fill }}' %}{% endif %}
 {% if star_track != blank %}{% assign styles = styles | push: '--star-track: {{ star_track }}' %}{% endif %}
 {% assign block_styles = styles | join: ';' %}
@@ -67,14 +72,14 @@
   {{ context.attached_attributes }}
 >
   <div class='rating-stars' style='--rating-pct: {{ pct }}%'>
-    <div class='rating-row rating-track' aria-hidden='true'>
+    <div class='rating-row rating-track gap-{{ s.gap }}' aria-hidden='true'>
       {% for i in (1..max_stars) %}
         <svg class='rating-star' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
           <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/>
         </svg>
       {% endfor %}
     </div>
-    <div class='rating-row rating-fill' aria-hidden='true'>
+    <div class='rating-row rating-fill gap-{{ s.gap }}' aria-hidden='true'>
       {% for i in (1..max_stars) %}
         <svg class='rating-star' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
           <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/>
@@ -118,14 +123,21 @@
       "unit": "rem"
     },
     {
-      "type": "range",
+      "type": "space",
       "id": "gap",
       "label": "Star Spacing",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
       "min": 0,
-      "max": 1,
-      "step": 0.0625,
-      "default": 0.125,
-      "unit": "rem"
+      "max": 6,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
+      "conditional": "setting.gap == 'custom'"
     },
     {
       "type": "header",
@@ -144,6 +156,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ]
     },
@@ -162,6 +178,12 @@
       "conditional": "setting.fill_role == 'custom'"
     },
     {
+      "type": "gradient",
+      "id": "fill_role_gradient",
+      "label": "Filled Gradient",
+      "conditional": "setting.fill_role == 'gradient'"
+    },
+    {
       "type": "select",
       "id": "track_role",
       "label": "Empty Color",
@@ -174,6 +196,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ]
     },
@@ -190,6 +216,12 @@
       "label": "Empty Raw Color",
       "default": "rgba(0,0,0,0.12)",
       "conditional": "setting.track_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "track_role_gradient",
+      "label": "Empty Gradient",
+      "conditional": "setting.track_role == 'gradient'"
     },
     {
       "type": "header",

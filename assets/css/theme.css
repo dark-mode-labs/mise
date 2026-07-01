@@ -309,6 +309,18 @@
     animation-play-state: paused;
   }
 
+  .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .marquee-item::after {
+    content: var(--marquee-sep, "•");
+    color: var(--marquee-sep-color, currentColor);
+    opacity: var(--marquee-sep-opacity, 0.25);
+  }
+
   .limit-width {
     @apply w-full max-w-[var(--limit-width)] mx-auto;
   }
@@ -474,12 +486,12 @@
   }
 
   .rating-stars {
-    @apply relative inline-flex;
+    position: relative;
+    display: inline-flex;
   }
 
   .rating-row {
     display: inline-flex;
-    gap: var(--star-gap);
   }
 
   .rating-fill {
