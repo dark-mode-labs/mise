@@ -159,7 +159,8 @@
         {% if cv == "0" %}
     .width-{{ c[0] }} { display: none; }
         {% else %}
-    .width-{{ c[0] }} { --limit-width: {{ cv }}; width: {{ cv }}; max-width: 100%; flex-shrink: 0; }
+          {% assign cv_shrink = '1' %}{% if cv contains 'rem' or cv contains 'px' %}{% assign cv_shrink = '0' %}{% endif %}
+    .width-{{ c[0] }} { --limit-width: {{ cv }}; width: {{ cv }}; max-width: 100%; flex-shrink: {{ cv_shrink }}; }
         {% endif %}
         {% if c[1].settings.value_by_bp != blank %}
           {% for bp_id in sorted_bp_ids %}
@@ -169,7 +170,8 @@
               {% if bp_val == "0" %}
     @media (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: none; } }
               {% else %}
-    @media (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: revert; --limit-width: {{ bp_val }}; width: {{ bp_val }}; } }
+                {% assign bp_shrink = '1' %}{% if bp_val contains 'rem' or bp_val contains 'px' %}{% assign bp_shrink = '0' %}{% endif %}
+    @media (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: revert; --limit-width: {{ bp_val }}; width: {{ bp_val }}; flex-shrink: {{ bp_shrink }}; } }
               {% endif %}
             {% endif %}
           {% endfor %}

@@ -21,7 +21,7 @@
 
 <div
   class='media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}'
-  style='--object-fit: {{ fit_mode }}'
+  style='--object-fit: {{ fit_mode }}{% if ratio == 'custom' and ratio_custom != blank %}; --aspect-ratio-custom: {{ ratio_custom }}{% endif %}'
 >
   {% if video != blank %}
     <video

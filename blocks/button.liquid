@@ -28,7 +28,6 @@
   {% assign radius_class = 'rounded-custom' %}
 {% endif %}
 
-{% comment %} --- 1. Wrapper Classes (Outer DIV) --- {% endcomment %}
 {% assign wrapper_classes = 'whitespace-nowrap relative'
   | push: radius_class
   | push: 'margin-my-{{ s.margin_vertical }}'
@@ -71,7 +70,6 @@
 
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
 
-{% comment %} --- 2. Inner Classes (Button / Link) --- {% endcomment %}
 {% assign inner_classes = 'w-full flex'
   | push: radius_class
   | push: 'padding-py-{{ s.padding_vertical }}'
@@ -86,7 +84,6 @@
     {%- assign inner_classes = inner_classes | push: 'btn-link' %}
   {% else -%}
     {%- assign inner_classes = inner_classes | push: 'btn-primary' %}
-    {%- comment -%} Slot-role bg paints via `.bg-{role}` so the surface slot wins over --button-bg. {%- endcomment -%}
     {% assign btn_slot_roles = 'body,body-alt,surface,surface-alt,accent,control' | split: ',' %}
     {% if btn_slot_roles contains s.bg_role %}
       {%- assign inner_classes = inner_classes | push: 'bg-{{ s.bg_role }}' %}
@@ -117,7 +114,6 @@
 
 {% assign inner_class_str = inner_classes | join: ' ' %}
 
-{% comment %} --- 3. Wrapper Styles --- {% endcomment %}
 {% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -169,6 +165,8 @@
 {% assign utilities = blank %}
 
 {% case s.text_wrap %}
+  {% when 'wrap' -%}
+    {%- assign utilities = utilities | push: 'whitespace-normal' %}
   {% when 'nowrap' -%}
     {%- assign utilities = utilities | push: 'whitespace-nowrap' %}
   {% when 'balance' -%}
@@ -191,7 +189,6 @@
   {% assign color_role = 'on-button' %}
 {% endif %}
 
-{% comment %} --- 5. Component Render --- {% endcomment %}
 <div
   class='{{ wrapper_class_str }}'
   style='{{ wrapper_style_str }}'

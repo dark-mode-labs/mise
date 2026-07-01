@@ -1,6 +1,5 @@
 {% assign s = block.settings %}
 
-{% comment %} --- Class Array Building --- {% endcomment %}
 {% assign radius_class = 'rounded-global' %}
 {% if s.border_radius_override %}
   {% assign radius_class = 'rounded-custom' %}
@@ -20,10 +19,6 @@
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
 
-{% comment %}
-  Background layer: scheme-driven via .bg-<role>. Escape-hatch
-  (bg_color_override) is rendered as inline style further down.
-{% endcomment %}
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
@@ -43,7 +38,6 @@
   {% assign classes = classes | push: 'relative' %}
 {% endif %}
 
-{% comment %} Borders {% endcomment %}
 {% unless s.border_mode == 'none' %}
   {% assign classes = classes
     | push: 'group-border-{{ s.border_mode }}'
@@ -69,7 +63,6 @@
 
 {% assign block_classes = classes | join: ' ' %}
 
-{% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign text_color_value = blank %}
 {% if s.text_role == 'palette' and s.text_role_palette != blank %}
   {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
@@ -137,14 +130,15 @@
   | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
   | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
 %}
+{% if s.aspect_ratio == 'custom' and s.aspect_ratio_custom != blank %}
+  {% assign styles = styles | push: '--aspect-ratio-custom: {{ s.aspect_ratio_custom }}' %}
+{% endif %}
 {% if text_color_value != blank %}{% assign styles = styles | push: '--text: {{ text_color_value }}' %}{% endif %}
-{% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
 {% if bg_color_value != blank %}
   {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
 {% assign block_styles = styles | join: ';' %}
 
-{% comment %} --- Nav Direction Logic --- {% endcomment %}
 {% assign wrapper_classes = blank %}
 {% if s.show_arrows %}
   {% if s.nav_anchor contains 'top-' %}{% assign wrapper_classes = wrapper_classes | push: 'has-nav-top' %}{% endif %}
@@ -165,7 +159,6 @@
 
 {% assign wrapper_classes = wrapper_classes | join: ' ' %}
 
-{% comment %} --- Component Render --- {% endcomment %}
 <div
   class='{{ block_classes }}'
   style='{{ block_styles }}'
@@ -177,14 +170,6 @@
     data-autoplay='{{ s.autoplay }}'
     data-speed='{{ s.autoplay_speed }}'
     data-infinite='{{ s.infinite_scroll }}'
-    data-cols-mobile='{{ s.columns_mobile }}'
-    data-peek-mobile='{{ s.peek_mobile }}'
-    data-cols-desktop='{{ s.columns_desktop }}'
-    data-peek-desktop='{{ s.peek_desktop }}'
-    style='
-      --cols-mobile: {{ s.columns_mobile }};
-      --cols-desktop: {{ s.columns_desktop }};
-    '
   >
     {% if s.show_arrows %}
       <div
@@ -244,48 +229,6 @@
       "id": "type_style",
       "label": "Type Style",
       "default": "body"
-    },
-    {
-      "type": "header",
-      "content": "Layout"
-    },
-    {
-      "type": "range",
-      "id": "columns_mobile",
-      "label": "Mobile Columns",
-      "min": 1,
-      "max": 3,
-      "step": 1,
-      "default": 1
-    },
-    {
-      "type": "range",
-      "id": "peek_mobile",
-      "label": "Mobile Peek (%)",
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "default": 0,
-      "info": "Percentage of the next card to reveal. Set to 0 for exact fit."
-    },
-    {
-      "type": "range",
-      "id": "columns_desktop",
-      "label": "Desktop Columns",
-      "min": 1,
-      "max": 6,
-      "step": 1,
-      "default": 3
-    },
-    {
-      "type": "range",
-      "id": "peek_desktop",
-      "label": "Desktop Peek (%)",
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "default": 0,
-      "info": "Percentage of the next card to reveal. Set to 0 for exact fit."
     },
     {
       "type": "header",
@@ -520,8 +463,20 @@
         {
           "value": "landscape",
           "label": "Landscape (4:3)"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
         }
       ]
+    },
+    {
+      "type": "text",
+      "id": "aspect_ratio_custom",
+      "label": "Custom Aspect Ratio",
+      "default": "",
+      "info": "CSS aspect-ratio value, e.g. 4/5.",
+      "conditional": "setting.aspect_ratio == 'custom'"
     },
     {
       "type": "select",

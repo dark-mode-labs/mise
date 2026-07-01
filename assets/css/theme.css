@@ -164,31 +164,15 @@
     user-select: none;
   }
 
-  /* Hide the track until JS has computed and applied the correct slide width.
-     `data-loaded` is set on the wrapper immediately after the Slideshow constructor runs. */
   [data-behavior="slideshow"]:not([data-loaded]) .slideshow-track {
     visibility: hidden;
   }
 
-  .carousel-block .slideshow-track > *,
-  .carousel-block .slideshow-track > .contents > * {
-    flex: 0 0 auto;
+  [data-behavior="slideshow"] .slideshow-track > *,
+  [data-behavior="slideshow"] .slideshow-track > .contents > * {
+    flex-shrink: 0;
     scroll-snap-align: start;
     box-sizing: border-box;
-    width: var(
-      --computed-slide-width,
-      calc((100% - (1rem * (var(--cols-mobile) - 1))) / var(--cols-mobile))
-    );
-  }
-
-  @media (min-width: 540px) {
-    .carousel-block .slideshow-track > *,
-    .carousel-block .slideshow-track > .contents > * {
-      width: var(
-        --computed-slide-width,
-        calc((100% - (1rem * (var(--cols-desktop) - 1))) / var(--cols-desktop))
-      );
-    }
   }
 
   .slideshow-controls {
@@ -257,12 +241,6 @@
   }
 
   .media-wrapper picture {
-    /* `<picture>` defaults to `display: inline`, which collapses to
-       intrinsic image height. The descendant `<img>`'s `height: 100%`
-       then references the picture's natural (ratio-scaled) height
-       instead of the wrapper's explicit height — visible at viewports
-       where the wrapper uses a min-height floor (e.g. MWC's
-       `synth-min-Nrem` tier). Make picture fill the wrapper. */
     display: block;
     width: 100%;
     height: 100%;
@@ -277,7 +255,6 @@
     display: block;
   }
 
-  /* Golden ratio aspect ratios for consistent proportions */
   .aspect-landscape {
     aspect-ratio: 4/3;
   }
@@ -298,6 +275,10 @@
     aspect-ratio: auto;
   }
 
+  .aspect-custom {
+    aspect-ratio: var(--aspect-ratio-custom);
+  }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -305,6 +286,22 @@
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .group-scroll-x {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .group-scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+
+  .group-scroll-x > * {
+    flex-shrink: 0;
   }
 
   .animate-marquee:hover,
@@ -399,10 +396,6 @@
     transform: translateY(-100%);
   }
 
-  /* Per-tier rules (gap-X, padding-py-X, padding-px-X, margin-my-X,
-     margin-mx-X) are dynamically emitted from `theme.space_scale` in
-     theme_variables.liquid — single source of truth. Only `*-none`
-     and `*-custom` (special-case CSS variables) live here. */
   .gap-none {
     gap: 0;
   }
@@ -441,11 +434,6 @@
     margin-bottom: auto;
   }
 
-  /* `auto-top` / `auto-bottom` mirror source's `mt-auto` / `mb-auto`
-     semantics — top-only or bottom-only auto margin. In a flex-col
-     parent, `auto-top` pushes the child to the bottom (the badge-on-
-     bottom-of-frame pattern); `auto-bottom` pushes to top. The
-     symmetric `auto` (both auto) centers vertically. Don't conflate. */
   .margin-my-auto-top {
     margin-top: auto;
     margin-bottom: 0;
@@ -483,6 +471,37 @@
   .icon-size {
     height: var(--icon-size);
     width: var(--icon-size);
+  }
+
+  .rating-stars {
+    @apply relative inline-flex;
+  }
+
+  .rating-row {
+    display: inline-flex;
+    gap: var(--star-gap);
+  }
+
+  .rating-fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--rating-pct);
+    overflow: hidden;
+  }
+
+  .rating-star {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    flex: none;
+  }
+
+  .rating-track .rating-star {
+    fill: var(--star-track);
+  }
+
+  .rating-fill .rating-star {
+    fill: var(--star-fill);
   }
 
   .section-align-v-top {
