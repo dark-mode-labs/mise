@@ -3,8 +3,7 @@
 {% assign rating = s.rating | default: 0 %}
 {% assign max_stars = s.max_stars | default: 5 %}
 
-{% comment %} Fractional fill: clip the filled layer to rating/max of the track width. {% endcomment %}
-{% assign pct = rating | times: 100.0 | divided_by: max_stars %}
+{% assign pct = rating | times: 100 | divided_by: max_stars %}
 {% if pct > 100 %}{% assign pct = 100 %}{% endif %}
 {% if pct < 0 %}{% assign pct = 0 %}{% endif %}
 
