@@ -38,6 +38,7 @@
     src_mobile: s.image_mobile,
     video: s.video_url,
     ratio: s.aspect_ratio,
+    ratio_custom: s.aspect_ratio_custom,
     fit: s.object_fit,
     animate_hover: s.enable_hover,
     controls: s.show_controls,
@@ -123,9 +124,21 @@
         {
           "value": "landscape",
           "label": "Landscape (4:3)"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
         }
       ],
       "default": "auto"
+    },
+    {
+      "type": "text",
+      "id": "aspect_ratio_custom",
+      "label": "Custom Aspect Ratio",
+      "default": "",
+      "info": "CSS aspect-ratio value, e.g. 4/5.",
+      "conditional": "setting.aspect_ratio == 'custom'"
     },
     {
       "type": "select",

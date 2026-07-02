@@ -6,14 +6,6 @@
   {% assign layout_class = 'flex direction-{{ s.direction }}' %}
 {% endif %}
 
-{% comment %}
-  Alignment is emitted as semantic `vertical-X content-Y` classes;
-  the `direction-X.vertical-Y` / `direction-X.content-Y` rules in
-  theme.css handle the axis-swap so the same setting renders
-  intuitively whether the block is row, column, or responsive.
-  Skip emission when the setting is blank — an empty `content-`
-  / `vertical-` class would dirty the markup and match nothing.
-{% endcomment %}
 {% assign align_class = blank %}
 {% assign justify_class = blank %}
 {% if s.vertical_align != blank %}
@@ -23,7 +15,6 @@
   {% assign justify_class = 'content-{{ s.content_align }}' %}
 {% endif %}
 
-{% comment %} --- Class Array Building --- {% endcomment %}
 {% assign radius_class = 'rounded-global' %}
 {% if s.border_radius_override %}
   {% assign radius_class = 'rounded-custom' %}
@@ -59,11 +50,9 @@
 
 {% if s.layout_mode != 'grid' %}
   {% assign classes = classes | push_if: 'flex-wrap', s.wrap_content %}
+  {% assign classes = classes | push_if: 'group-scroll-x', s.scroll_x %}
 
   {% if s.grow_content %}
-    {%- comment -%}
-      flex-1 (basis: 0) so width-fit siblings keep their max-content basis.
-    {%- endcomment -%}
     {% assign classes = classes | push: 'flex-1' %}
   {% else %}
     {% assign classes = classes | push: 'flex-initial' %}
@@ -74,7 +63,6 @@
   {% assign classes = classes | push: 'fade-{{ s.animate_fade }}' %}
 {% endif %}
 
-{% comment %} Borders {% endcomment %}
 {% unless s.border_mode == 'none' %}
   {% assign classes = classes
     | push: 'group-border-{{ s.border_mode }}'
@@ -98,28 +86,12 @@
   {% endif %}
 {% endunless %}
 
-{% comment %} Layout & Styling Flags {% endcomment %}
 {% assign classes = classes | push: 'width-{{ s.width }}' %}
 
-{% comment %}
-  Direction breakpoint modifier — pairs with `direction: responsive`
-  to control the viewport width at which column→row switches. Always
-  emit a `bp-<tier>` class so the per-tier media query (emitted by
-  theme_variables.liquid from container_scale) is the single source
-  of breakpoint truth. Default `column` tier ≈ 768px = mise's prior
-  hardcoded md breakpoint (preserves existing renders).
-{% endcomment %}
 {% if s.direction == 'responsive' %}
   {% assign bp_tier = s.direction_breakpoint | default: 'column' %}
   {% if bp_tier == blank %}{% assign bp_tier = 'column' %}{% endif %}
   {% assign classes = classes | push: 'bp-{{ bp_tier }}' %}
-  {% comment %}
-    Reverse-order modifier: below breakpoint (column mode), flip child
-    order. Above breakpoint (row mode), per-tier `bp-<tier>` rules in
-    theme_variables.liquid emit `flex-direction: row` which overrides
-    column-reverse — children render in source order at desktop.
-    Mirrors Tailwind's `flex-col-reverse <bp>:flex-row` pattern.
-  {% endcomment %}
   {% if s.responsive_order_override == 'reverse' %}
     {% assign classes = classes | push: 'responsive-order-reverse' %}
   {% endif %}
@@ -129,18 +101,11 @@
 {% if s.position == 'absolute' %}
   {% assign classes = classes | push: 'absolute' | push: 'anchor-{{ s.inset }}' %}
 {% else %}
-  {% comment %}
-    Always 'relative' (unless absolute) so the bg-overlay layer
-    and any nested absolute children anchor to this group instead of
-    escaping to a distant positioned ancestor.
-  {% endcomment %}
   {% assign classes = classes | push: 'relative' %}
 {% endif %}
 
-{% comment %} Finalize Class Output {% endcomment %}
 {% assign block_classes = classes | join: ' ' %}
 
-{% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign bg_color_value = blank %}
 {% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
   {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
@@ -212,23 +177,16 @@
   | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
   | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
 %}
-{% comment %} Background layer alpha + escape-hatch hex/gradient {% endcomment %}
+{% if s.aspect_ratio == 'custom' and s.aspect_ratio_custom != blank %}
+  {% assign styles = styles | push: '--aspect-ratio-custom: {{ s.aspect_ratio_custom }}' %}
+{% endif %}
 {% if bg_color_value != blank %}
   {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
 {% comment %} Finalize Style Output {% endcomment %}
 {% assign block_styles = styles | join: ';' %}
 
-{% comment %} --- Content Generation --- {% endcomment %}
 {% capture content %}
-  {% comment %}
-    Optional bg image layer. Painted as an absolute-positioned `media`
-    behind both the bg-overlay tint and the group's own children. This
-    lets a group block serve as an image frame holding child editorial
-    content (badges, stats cards) ON TOP of the image. When `bg_image`
-    is unset the layer isn't rendered and group behaves identically to
-    before.
-  {% endcomment %}
   {% if s.bg_image != blank %}
     <div class="absolute inset-0 -z-10 pointer-events-none rounded-inherit overflow-hidden">
       {% render 'media',
@@ -250,7 +208,6 @@
   {% content_for 'blocks' %}
 {% endcapture %}
 
-{% comment %} --- Component Render --- {% endcomment %}
 {% if s.trigger == 'link' and s.link %}
   <a
     class='isolate {{ block_classes }}'
@@ -363,6 +320,14 @@
     },
     {
       "type": "checkbox",
+      "id": "scroll_x",
+      "label": "Horizontal Scroll",
+      "default": false,
+      "info": "Single non-wrapping row that scrolls horizontally (ticker / chip rail).",
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "checkbox",
       "id": "grow_content",
       "label": "Grow Content",
       "default": false,
@@ -450,9 +415,21 @@
         {
           "value": "landscape",
           "label": "Landscape (4:3)"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
         }
       ],
       "default": "auto"
+    },
+    {
+      "type": "text",
+      "id": "aspect_ratio_custom",
+      "label": "Custom Aspect Ratio",
+      "default": "",
+      "info": "CSS aspect-ratio value, e.g. 4/5.",
+      "conditional": "setting.aspect_ratio == 'custom'"
     },
     {
       "type": "select",

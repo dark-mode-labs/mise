@@ -1,0 +1,353 @@
+{% assign s = block.settings %}
+
+{% assign rating = s.rating | default: 0 %}
+{% assign max_stars = s.max_stars | default: 5 %}
+
+{% assign pct = rating | times: 100 | divided_by: max_stars %}
+{% if pct > 100 %}{% assign pct = 100 %}{% endif %}
+{% if pct < 0 %}{% assign pct = 0 %}{% endif %}
+
+{% assign star_fill = blank %}
+{% if s.fill_role == 'palette' and s.fill_role_palette != blank %}
+  {% assign star_fill = 'var(--palette-{{ s.fill_role_palette }})' %}
+{% elsif s.fill_role == 'gradient' and s.fill_role_gradient != blank %}
+  {% assign star_fill = 'var(--gradient-{{ s.fill_role_gradient }})' %}
+{% elsif s.fill_role == 'custom' and s.fill_role_custom != blank %}
+  {% assign star_fill = s.fill_role_custom %}
+{% endif %}
+
+{% assign star_track = blank %}
+{% if s.track_role == 'palette' and s.track_role_palette != blank %}
+  {% assign star_track = 'var(--palette-{{ s.track_role_palette }})' %}
+{% elsif s.track_role == 'gradient' and s.track_role_gradient != blank %}
+  {% assign star_track = 'var(--gradient-{{ s.track_role_gradient }})' %}
+{% elsif s.track_role == 'custom' and s.track_role_custom != blank %}
+  {% assign star_track = s.track_role_custom %}
+{% endif %}
+
+{% assign classes = 'rating-block inline-flex items-center'
+  | push: 'margin-my-{{ s.margin_vertical }}'
+  | push: 'margin-mx-{{ s.margin_horizontal }}'
+  | push: 'padding-py-{{ s.padding_vertical }}'
+  | push: 'padding-px-{{ s.padding_horizontal }}'
+%}
+{% assign block_classes = classes | join: ' ' %}
+
+{% assign styles = blank %}
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+{% if s.margin_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
+    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.margin_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+{% if s.gap == 'custom' %}{% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}{% endif %}
+{% assign styles = styles | push: '--icon-size: {{ s.icon_size }}rem' %}
+{% if star_fill != blank %}{% assign styles = styles | push: '--star-fill: {{ star_fill }}' %}{% endif %}
+{% if star_track != blank %}{% assign styles = styles | push: '--star-track: {{ star_track }}' %}{% endif %}
+{% assign block_styles = styles | join: ';' %}
+
+<div
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
+  role='img'
+  aria-label='{{ rating }} out of {{ max_stars }} stars'
+  {{ context.attached_attributes }}
+>
+  <div class='rating-stars' style='--rating-pct: {{ pct }}%'>
+    <div class='rating-row rating-track gap-{{ s.gap }}' aria-hidden='true'>
+      {% for i in (1..max_stars) %}
+        <svg class='rating-star' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+          <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/>
+        </svg>
+      {% endfor %}
+    </div>
+    <div class='rating-row rating-fill gap-{{ s.gap }}' aria-hidden='true'>
+      {% for i in (1..max_stars) %}
+        <svg class='rating-star' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+          <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/>
+        </svg>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Rating",
+  "settings": [
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "Rating",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 5,
+      "info": "Bind to a data source field (e.g. the review's rating) for dynamic values."
+    },
+    {
+      "type": "range",
+      "id": "max_stars",
+      "label": "Out Of",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Star Size",
+      "min": 0.5,
+      "max": 4,
+      "step": 0.125,
+      "default": 1.25,
+      "unit": "rem"
+    },
+    {
+      "type": "space",
+      "id": "gap",
+      "label": "Star Spacing",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "gap_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 6,
+      "step": 0.25,
+      "default": 1,
+      "unit": "rem",
+      "conditional": "setting.gap == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Star Color"
+    },
+    {
+      "type": "select",
+      "id": "fill_role",
+      "label": "Filled Color",
+      "default": "custom",
+      "options": [
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "fill_role_palette",
+      "label": "Filled Palette Token",
+      "default": "brand",
+      "conditional": "setting.fill_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "fill_role_custom",
+      "label": "Filled Raw Color",
+      "default": "#F7B801",
+      "conditional": "setting.fill_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "fill_role_gradient",
+      "label": "Filled Gradient",
+      "conditional": "setting.fill_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "track_role",
+      "label": "Empty Color",
+      "default": "custom",
+      "options": [
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "track_role_palette",
+      "label": "Empty Palette Token",
+      "default": "brand",
+      "conditional": "setting.track_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "track_role_custom",
+      "label": "Empty Raw Color",
+      "default": "rgba(0,0,0,0.12)",
+      "conditional": "setting.track_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "track_role_gradient",
+      "label": "Empty Gradient",
+      "conditional": "setting.track_role == 'gradient'"
+    },
+    {
+      "type": "header",
+      "content": "Padding/Margins"
+    },
+    {
+      "type": "space",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_top",
+      "label": "Custom Top Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_custom_bottom",
+      "label": "Custom Bottom Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_left",
+      "label": "Custom Left Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_custom_right",
+      "label": "Custom Right Padding",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_vertical",
+      "label": "Vertical Margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top Margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom Margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_horizontal",
+      "label": "Horizontal Margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left Margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right Margin",
+      "min": 0,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rating",
+      "settings": {
+        "rating": 5,
+        "max_stars": 5
+      }
+    }
+  ]
+}
+{% endschema %}

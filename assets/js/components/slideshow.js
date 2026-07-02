@@ -1,5 +1,4 @@
 import {
-  computeExactSlideWidth,
   getPageCount,
   getCurrentPageFromIndex,
   getNextSlideIndex,
@@ -36,29 +35,19 @@ export default class Slideshow {
     this.init();
   }
 
-  // Returns the RAW configured column count for consistent sizing and logic
   getCols() {
-    const isMobile = this.el.clientWidth < 540;
-    return parseInt(this.el.dataset[isMobile ? "colsMobile" : "colsDesktop"]) || 1;
+    const slides = this.getSlides();
+    if (!slides.length) return 1;
+    const slideW = slides[0].getBoundingClientRect().width;
+    if (slideW <= 0) return 1;
+    const gapPx = parseFloat(window.getComputedStyle(this.track).columnGap) || 0;
+    return Math.max(1, Math.round((this.el.clientWidth + gapPx) / (slideW + gapPx)));
   }
 
-  initExactFit() {
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const wrapperWidth = entry.contentRect.width;
-        const isMobile = wrapperWidth < 540;
-        const cols = this.getCols();
-        const peekPct =
-          parseInt(this.el.dataset[isMobile ? "peekMobile" : "peekDesktop"]) / 100 || 0;
-        const gapPx = parseFloat(window.getComputedStyle(this.track).columnGap) || 0;
-
-        const exactWidth = computeExactSlideWidth(wrapperWidth, cols, peekPct, gapPx);
-        this.el.style.setProperty("--computed-slide-width", `${exactWidth}px`);
-
-        this.updateUI(this.getCurrentIndex(), this.getSlides().length);
-      }
+  initResizeObserver() {
+    const observer = new ResizeObserver(() => {
+      this.updateUI(this.getCurrentIndex(), this.getSlides().length);
     });
-
     observer.observe(this.el);
   }
 
@@ -113,6 +102,7 @@ export default class Slideshow {
     if (!this.track) return;
 
     this.renderDots();
+    this.bindExternalControls();
 
     if (this.prevBtn) this.prevBtn.addEventListener("click", () => this.prev());
     if (this.nextBtn) this.nextBtn.addEventListener("click", () => this.next());
@@ -136,7 +126,6 @@ export default class Slideshow {
       }
     });
 
-    // Capture phase — tab-head descendants call stopImmediatePropagation in bubble.
     this.track.addEventListener(
       "click",
       (e) => {
@@ -161,9 +150,33 @@ export default class Slideshow {
       this.el.addEventListener("mouseleave", () => this.startAutoplay());
     }
 
-    this.initExactFit();
+    this.initResizeObserver();
 
     setTimeout(() => this.updateUI(this.getCurrentIndex(), this.getSlides().length), 50);
+  }
+
+  bindExternalControls() {
+    const section = this.el.closest("section");
+    this.extPrev = [];
+    this.extNext = [];
+    if (!section) return;
+    section.querySelectorAll('[data-action="carousel-scroll"]').forEach((btn) => {
+      const dir = (btn.dataset.actionArgs || "").trim();
+      const bucket = dir === "prev" ? this.extPrev : this.extNext;
+      bucket.push(btn);
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (dir === "prev") this.prev();
+        else this.next();
+      });
+    });
+  }
+
+  setControlDisabled(el, disabled) {
+    if ("disabled" in el) el.disabled = disabled;
+    el.setAttribute("aria-disabled", disabled ? "true" : "false");
+    el.style.opacity = disabled ? "0.4" : "";
+    el.style.pointerEvents = disabled ? "none" : "";
   }
 
   updateUI(index, total) {
@@ -201,8 +214,12 @@ export default class Slideshow {
     this.dots.forEach((dot, i) => dot.classList.toggle("is-active", i === currentPageIndex));
 
     if (!this.infinite) {
-      if (this.prevBtn) this.prevBtn.disabled = this.track.scrollLeft <= 5;
-      if (this.nextBtn) this.nextBtn.disabled = this.track.scrollLeft >= maxScroll - 5;
+      const atStart = this.track.scrollLeft <= 5;
+      const atEnd = this.track.scrollLeft >= maxScroll - 5;
+      if (this.prevBtn) this.prevBtn.disabled = atStart;
+      if (this.nextBtn) this.nextBtn.disabled = atEnd;
+      (this.extPrev || []).forEach((b) => this.setControlDisabled(b, atStart));
+      (this.extNext || []).forEach((b) => this.setControlDisabled(b, atEnd));
     }
 
     if (this.counter) {
