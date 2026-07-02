@@ -54,6 +54,18 @@
 {% if s.padding_horizontal != blank and s.padding_horizontal != 'none' %}
   {% assign classes = classes | push: 'padding-px-{{ s.padding_horizontal }}' %}
 {% endif %}
+{% if s.padding_vertical == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
+    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.padding_horizontal == 'custom' %}
+  {% assign styles = styles
+    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
+    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
+  %}
+{% endif %}
 {% if s.border_radius_override %}
   {% assign classes = classes | push: 'rounded-custom' %}
   {% assign styles = styles | push: '--radius-custom: {{ s.border_radius }}px' %}

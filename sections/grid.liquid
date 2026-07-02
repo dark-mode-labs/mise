@@ -58,10 +58,10 @@
 {% if overlay_color_value != blank %}{% assign has_overlay = true %}{% endif %}
 
 {% comment %} --- 3. Flex Grid Logic --- {% endcomment %}
-{% assign flex_classes = 'flex flex-wrap'
-  | push: 'justify-content-{{ s.justify_content }}'
-  | push_if: 'stagger-load', s.animate_stagger
-%}
+{% assign flex_classes = 'flex flex-wrap' | push_if: 'stagger-load', s.animate_stagger %}
+{% if s.content_align != blank %}
+  {% assign flex_classes = flex_classes | push: 'justify-content-{{ s.content_align }}' %}
+{% endif %}
 
 {% assign flex_styles = blank %}
 {% if s.card_padding == 'custom' %}
@@ -312,11 +312,11 @@
     },
     {
       "type": "select",
-      "id": "justify_content",
-      "label": "Alignment",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
       "options": [
         {
-          "value": "start",
+          "value": "left",
           "label": "Left"
         },
         {
@@ -324,15 +324,14 @@
           "label": "Center"
         },
         {
-          "value": "end",
+          "value": "right",
           "label": "Right"
         },
         {
           "value": "between",
           "label": "Space Between"
         }
-      ],
-      "default": "center"
+      ]
     },
     {
       "type": "width",
