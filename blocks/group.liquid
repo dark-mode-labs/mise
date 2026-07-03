@@ -166,6 +166,9 @@
 
 {% unless s.border_mode == 'none' %}
   {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if s.border_size == 'custom' %}
+    {% assign styles = styles | push: '--border-width: {{ s.border_size_custom }}px' %}
+  {% endif %}
   {% if border_color_value != blank -%}
     {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
   {%- endif %}
@@ -1131,10 +1134,26 @@
           "value": "lg",
           "label": "Large",
           "info": "8px"
+        },
+        {
+          "value": "custom",
+          "label": "Custom",
+          "info": "Exact px width"
         }
       ],
       "default": "md",
       "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "range",
+      "id": "border_size_custom",
+      "label": "Custom Border Width",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 1,
+      "unit": "px",
+      "conditional": "setting.border_size == 'custom'"
     },
     {
       "type": "header",

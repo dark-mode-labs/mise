@@ -44,12 +44,31 @@
   {% assign chip_strip_surface_class = 'surface-' | append: s.chip_strip_surface_id %}
 {% endif %}
 
-{% assign section_classes = 'tab-mode-{{ s.mode }} tabs-section surface-{{ surface_safe }}' | push: bg_class %}
+{% assign section_classes = 'tab-mode-{{ s.mode }} tabs-section surface-{{ surface_safe }}'
+  | push: bg_class
+  | push: 'margin-my-{{ s.margin_vertical }}'
+  | push: 'margin-mx-{{ s.margin_horizontal }}'
+%}
 {% if s.chip_position_by_bp != blank %}
   {% for bp in s.chip_position_by_bp %}
     {% assign section_classes = section_classes | push: 'tabpos-{{ bp[0] }}-{{ bp[1] }}' %}
   {% endfor %}
 {% endif %}
+
+{% assign margin_styles = blank %}
+{% if s.margin_vertical == 'custom' %}
+  {% assign margin_styles = margin_styles
+    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
+    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.margin_horizontal == 'custom' %}
+  {% assign margin_styles = margin_styles
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+{% assign margin_style_str = margin_styles | join: ';' %}
 
 {% assign bg_layer_classes = 'limit-width width-{{ s.width_bg }}'
   | push: 'padding-py-{{ s.padding_vertical }}'
@@ -115,6 +134,7 @@
 
 <section
   class='{{ section_classes | join: ' ' }}'
+  style='{{ margin_style_str }}'
   data-spy-scope='{{ section.id }}'
   data-tab-group='{{ section.id }}'
   {{ context.attached_attributes }}
@@ -426,6 +446,62 @@
       "id": "padding_horizontal",
       "label": "Horizontal Padding",
       "default": "sm"
+    },
+    {
+      "type": "space",
+      "id": "margin_vertical",
+      "label": "Vertical Margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top Margin",
+      "min": -8,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom Margin",
+      "min": -8,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_horizontal",
+      "label": "Horizontal Margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left Margin",
+      "min": -8,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right Margin",
+      "min": -8,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
       "type": "header",

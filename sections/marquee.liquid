@@ -79,11 +79,29 @@
 {% endif %}
 {% unless s.border_mode == 'none' %}
   {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if s.border_size == 'custom' %}
+    {% assign styles = styles | push: '--border-width: {{ s.border_size_custom }}px' %}
+  {% endif %}
   {% if border_color_value != blank %}
     {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
   {% endif %}
 {% endunless %}
 {% assign style_str = styles | join: ';' %}
+
+{% assign margin_styles = blank %}
+{% if s.margin_vertical == 'custom' %}
+  {% assign margin_styles = margin_styles
+    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
+    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
+  %}
+{% endif %}
+{% if s.margin_horizontal == 'custom' %}
+  {% assign margin_styles = margin_styles
+    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
+    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
+  %}
+{% endif %}
+{% assign margin_style_str = margin_styles | join: ';' %}
 
 {% assign mq_size_class = 'text-size-{{ s.text_size }}' %}
 {% assign mq_uppercase = s.uppercase %}
@@ -93,7 +111,8 @@
 {% endif %}
 
 <section
-  class='section-marquee surface-{{ s.surface_id | default: 'default' }}'
+  class='section-marquee surface-{{ s.surface_id | default: 'default' }} margin-my-{{ s.margin_vertical }} margin-mx-{{ s.margin_horizontal }}'
+  style='{{ margin_style_str }}'
   {{ context.attached_attributes }}
 >
   <div
@@ -284,9 +303,21 @@
         { "value": "xs", "label": "Thin" },
         { "value": "sm", "label": "Medium" },
         { "value": "md", "label": "Thick" },
-        { "value": "lg", "label": "Heavy" }
+        { "value": "lg", "label": "Heavy" },
+        { "value": "custom", "label": "Custom", "info": "Exact px width" }
       ],
       "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "range",
+      "id": "border_size_custom",
+      "label": "Custom Border Width",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 1,
+      "unit": "px",
+      "conditional": "setting.border_size == 'custom'"
     },
     {
       "type": "select",
@@ -398,6 +429,62 @@
       "default": 0,
       "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_vertical",
+      "label": "Vertical Margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_top",
+      "label": "Custom Top Margin",
+      "min": -8,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_vertical_custom_bottom",
+      "label": "Custom Bottom Margin",
+      "min": -8,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_vertical == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "margin_horizontal",
+      "label": "Horizontal Margin",
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_left",
+      "label": "Custom Left Margin",
+      "min": -8,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "range",
+      "id": "margin_horizontal_custom_right",
+      "label": "Custom Right Margin",
+      "min": -8,
+      "max": 8,
+      "step": 0.25,
+      "default": 0,
+      "unit": "rem",
+      "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
       "type": "surface",
