@@ -1350,9 +1350,11 @@
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
   }
-  .chip-strip-top.chip-strip-scroll-snap > * {
+  .chip-strip-top.chip-strip-scroll-snap > *,
+  .chip-strip-top.chip-strip-scroll-snap > * > * {
     scroll-snap-align: start;
     flex-shrink: 0;
+    white-space: nowrap;
   }
   .chip-strip-top.chip-strip-scroll-snap::-webkit-scrollbar {
     display: none;
@@ -1364,9 +1366,11 @@
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
     }
-    .chip-strip-top.chip-strip-responsive > * {
+    .chip-strip-top.chip-strip-responsive > *,
+    .chip-strip-top.chip-strip-responsive > * > * {
       scroll-snap-align: start;
       flex-shrink: 0;
+      white-space: nowrap;
     }
     .chip-strip-top.chip-strip-responsive::-webkit-scrollbar {
       display: none;
@@ -1410,10 +1414,6 @@
 
 @layer base {
   html {
-    /* Inherit browser default root font-size — rem anchors to this.
-       All design-system text values are rem; no px in type/spacing
-       tier emit. Per-tier mobile responsive scale lives at the
-       `.ts-<id>` level via media queries in theme_variables. */
     box-sizing: border-box;
     scroll-padding-top: calc(var(--header-h, 0px) + var(--chip-strip-h, 0px));
   }
@@ -1449,7 +1449,6 @@
   h6,
   p {
     overflow-wrap: break-word;
-    word-break: break-word;
   }
 
   .menu-list {

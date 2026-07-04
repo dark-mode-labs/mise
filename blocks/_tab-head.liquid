@@ -83,6 +83,11 @@
     | push: 'group-border-size-{{ s.border_size_inactive }}'
   %}
   {% assign inactive_state_styles = inactive_state_styles | push: '--border-style:{{ s.border_style_inactive }}' %}
+  {% if s.border_size_inactive == 'custom' %}
+    {% assign inactive_state_styles = inactive_state_styles
+      | push: '--border-width:{{ s.border_size_custom_inactive }}px'
+    %}
+  {% endif %}
   {% if s.border_mode_inactive == 'custom' %}
     {% assign inactive_state_classes = inactive_state_classes
       | push_if: 'group-border-custom-left', s.border_custom_left_inactive
@@ -120,6 +125,9 @@
     | push: 'group-border-size-{{ s.border_size }}'
   %}
   {% assign active_state_styles = active_state_styles | push: '--border-style:{{ s.border_style }}' %}
+  {% if s.border_size == 'custom' %}
+    {% assign active_state_styles = active_state_styles | push: '--border-width:{{ s.border_size_custom }}px' %}
+  {% endif %}
   {% if s.border_mode == 'custom' %}
     {% assign active_state_classes = active_state_classes
       | push_if: 'group-border-custom-left', s.border_custom_left
@@ -346,10 +354,26 @@
           "value": "lg",
           "label": "Large",
           "info": "8px"
+        },
+        {
+          "value": "custom",
+          "label": "Custom",
+          "info": "Exact px width"
         }
       ],
       "default": "md",
       "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "range",
+      "id": "border_size_custom",
+      "label": "Custom Border Width",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 1,
+      "unit": "px",
+      "conditional": "setting.border_size == 'custom'"
     },
     {
       "type": "checkbox",
@@ -548,10 +572,27 @@
           "value": "lg",
           "label": "Large",
           "info": "8px"
+        },
+        {
+          "value": "custom",
+          "label": "Custom",
+          "info": "Exact px width"
         }
       ],
       "default": "md",
       "conditional": "setting.border_mode_inactive != 'none'"
+    },
+    {
+      "type": "range",
+      "subtype": "border_size_custom",
+      "id": "border_size_custom_inactive",
+      "label": "Custom Border Width",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 1,
+      "unit": "px",
+      "conditional": "setting.border_size_inactive == 'custom'"
     },
     {
       "type": "checkbox",
