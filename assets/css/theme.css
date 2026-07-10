@@ -255,6 +255,20 @@
     display: block;
   }
 
+  .media-block.width-fit .media-wrapper,
+  .media-block.width-fit .media-wrapper picture,
+  .media-block.width-fit .media-wrapper img,
+  .media-block.width-fit .media-wrapper video,
+  .media-block.width-fit .media-wrapper .placeholder-svg {
+    width: auto;
+    max-width: 100%;
+  }
+
+  .media-block.width-fit {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   .aspect-landscape {
     aspect-ratio: 4/3;
   }
@@ -394,11 +408,20 @@
     will-change: transform, background;
   }
 
-  .header-section.is-transparent {
-    /* !important needed to override inline `style="background: …"` set by
-       header.liquid when the header has bg_role set (palette/custom/gradient).
-       Without it, a header configured with header_overlay_mode:transparent
-       AND a scrolled-state bg_role would never appear transparent at top. */
+  /* The bar carries the header's bg/border/shadow (capped to width_bg); the
+     transparent-on-scroll toggle sits on the root, so bridge it to the bar. */
+  .header-bar {
+    transition:
+      background 0.3s ease-in-out,
+      box-shadow 0.3s,
+      border-color 0.3s;
+  }
+
+  .header-section.is-transparent .header-bar {
+    /* !important needed to override the inline `style="background: …"` on the bar
+       when the header has bg_role set (palette/custom/gradient); without it a
+       header_overlay_mode:transparent header with a scrolled-state bg would never
+       appear transparent at top. */
     background: transparent !important;
     box-shadow: none;
     border-color: transparent;
