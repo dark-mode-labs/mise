@@ -1340,7 +1340,6 @@
   .tabs-position-none {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
   }
   @media (min-width: 769px) {
     .tabs-position-left {

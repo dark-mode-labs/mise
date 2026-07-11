@@ -157,6 +157,9 @@
   {% endif %}
 {% endif %}
 
+{% assign tab_group = s.tab_group %}
+{% if tab_group == blank %}{% assign tab_group = section.id %}{% endif %}
+
 <div
   {{ context.attached_attributes }}
   class='tab-head cursor-pointer relative {{ classes | join: ' ' }}'
@@ -166,7 +169,7 @@
   data-tab-active-styles='{{ active_state_styles | join: ';' }}'
   data-tab-inactive-class='{{ inactive_state_classes | join: ' ' }}'
   data-tab-inactive-styles='{{ inactive_state_styles | join: ';' }}'
-  data-tab-group='{{ section.id }}'
+  data-tab-group='{{ tab_group }}'
   data-action='tab-switch'
   data-tab-id='{{ s.tab_id }}'
   role='tab'
@@ -196,6 +199,11 @@
       "id": "tab_id",
       "label": "Tab Identifier",
       "default": "{{ context.item.uuid }}"
+    },
+    {
+      "type": "text",
+      "id": "tab_group",
+      "label": "Tab Group"
     },
     {
       "type": "header",
