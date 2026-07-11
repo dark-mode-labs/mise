@@ -1350,7 +1350,6 @@
     }
     .tabs-position-left > .tab-panes {
       flex: 1 1 auto;
-      min-width: 0;
     }
   }
 
@@ -1359,7 +1358,6 @@
     gap: var(--chip-strip-gap, 0.5rem);
     transition: background-color 200ms ease;
   }
-  /* Slot groups are display:contents so chips/panes are direct flex children. */
   .chip-strip > .group-block,
   .tab-panes > .group-block {
     display: contents;
@@ -1370,6 +1368,7 @@
   .tab-panes {
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
   .tab-content {
     scroll-margin-top: var(--pane-scroll-mt, 0);

@@ -28,6 +28,8 @@ export default class TabHead {
       e.preventDefault();
       e.stopImmediatePropagation();
 
+      this._centerInStrip();
+
       document.dispatchEvent(
         new CustomEvent("tab:activated", {
           detail: { tabId: this.tabId, groupId: this.groupId },
@@ -36,6 +38,14 @@ export default class TabHead {
     });
 
     document.addEventListener("tab:activated", this.handleGlobalSwitch);
+  }
+
+  _centerInStrip() {
+    const strip = this.el.closest(".chip-strip");
+    if (!strip || strip.scrollWidth <= strip.clientWidth) return;
+    const chip = this.el.getBoundingClientRect();
+    const box = strip.getBoundingClientRect();
+    strip.scrollBy({ left: (chip.left + chip.right) / 2 - (box.left + box.right) / 2, behavior: "smooth" });
   }
 
   handleGlobalSwitch(event) {

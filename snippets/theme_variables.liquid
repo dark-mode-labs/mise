@@ -196,9 +196,9 @@
     @media (min-width: {{ bp_mw }}rem) {
       .tabpos-{{ bp_id }}-none .chip-strip { display: none; }
       .tabpos-{{ bp_id }}-left .chip-strip { display: flex; flex-direction: column; flex: 0 0 auto; align-self: start; }
-      .tabpos-{{ bp_id }}-left .tabs-content-layer { flex-direction: row; }
+      .tabpos-{{ bp_id }}-left.tabs-content-layer { flex-direction: row; }
       .tabpos-{{ bp_id }}-top .chip-strip { display: flex; flex-direction: row; flex: 0 1 auto; }
-      .tabpos-{{ bp_id }}-top .tabs-content-layer { flex-direction: column; }
+      .tabpos-{{ bp_id }}-top.tabs-content-layer { flex-direction: column; }
     }
     {% endfor %}
 

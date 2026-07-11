@@ -111,17 +111,17 @@
     {% endif %}
   >
     {% content_for 'block', type: '_tab-head', id: 'chip' %}
-    {% content_for 'blocks' %}
+    {% content_for 'block', type: 'group', id: 'chips' %}
   </div>
   <div class='tab-panes gap-{{ s.pane_gap_spy }}'>
     {% content_for 'block', type: '_tab-content', id: 'pane' %}
-    {% content_for 'blocks' %}
+    {% content_for 'block', type: 'group', id: 'panes' %}
   </div>
 </div>
 
 {% schema %}
 {
-  "name": "Tabs",
+  "name": "Tab Group",
   "settings": [
     { "type": "header", "content": "Behavior" },
     {
@@ -351,7 +351,7 @@
       "conditional": "setting.chip_strip_border_mode == 'custom'"
     }
   ],
-  "blocks": [{ "type": "group" }],
+  "blocks": [],
   "presets": [
     {
       "name": "Tabs",
