@@ -110,12 +110,10 @@
       data-behavior='menu-spy'
     {% endif %}
   >
-    {% content_for 'block', type: '_tab-head', id: 'chip' %}
-    {% content_for 'block', type: 'group', id: 'chips' %}
+    {% content_for 'block', type: '_tab-head-region', id: 'chips' %}
   </div>
   <div class='tab-panes gap-{{ s.pane_gap_spy }}'>
-    {% content_for 'block', type: '_tab-content', id: 'pane' %}
-    {% content_for 'block', type: 'group', id: 'panes' %}
+    {% content_for 'block', type: '_tab-content-region', id: 'panes' %}
   </div>
 </div>
 
@@ -357,8 +355,8 @@
       "name": "Tabs",
       "settings": { "mode": "tab" },
       "blocks": {
-        "chip": { "type": "_tab-head", "static": true },
-        "pane": { "type": "_tab-content", "static": true }
+        "chips": { "type": "_tab-head-region", "static": true },
+        "panes": { "type": "_tab-content-region", "static": true }
       },
       "block_order": []
     }

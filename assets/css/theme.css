@@ -1362,6 +1362,10 @@
   .tab-panes > .group-block {
     display: contents;
   }
+  .tab-head-region,
+  .tab-content-region {
+    display: contents;
+  }
   .chip-strip[class*="bg-"]:not(.bg-none) {
     align-items: center;
   }
