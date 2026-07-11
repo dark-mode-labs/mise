@@ -1,6 +1,5 @@
 {% assign s = block.settings %}
 
-{% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign classes = 'footer-block' %}
 
 {% if s.width and s.width != blank %}
@@ -17,7 +16,6 @@
 
 {% assign block_classes = classes | join: ' ' %}
 
-{% comment %} --- Styles Array Building --- {% endcomment %}
 {% assign text_color_value = blank %}
 {% if s.text_role == 'palette' and s.text_role_palette != blank %}
   {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
@@ -30,7 +28,6 @@
 {% endif %}
 {% assign block_styles = styles | join: ';' %}
 
-{% comment %} --- Typography Utilities --- {% endcomment %}
 {% assign utilities = blank %}
 
 {% case s.text_wrap %}
@@ -42,9 +39,6 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% comment %} --- Font Family --- {% endcomment %}
-
-{% comment %} --- Component Render --- {% endcomment %}
 {% assign color_role = s.text_role %}
 {% if s.text_role == 'custom' or s.text_role == 'palette' %}{% assign color_role = 'primary' %}{% endif %}
 <div
@@ -53,15 +47,6 @@
   {{ context.attached_attributes }}
 >
   <details class='group' open>
-    {% comment %}
-      Mobile: `flex items-center justify-between` puts the heading at
-      the start and the collapse chevron at the end. Desktop (md+):
-      chevron is `md:hidden`, leaving only the heading — flex with one
-      child still pins it to the start, ignoring the wrapper's
-      text-align. `md:block` reverts the summary to plain block flow
-      on desktop so `.text-align-{X}` from the wrapper inherits down
-      and the heading honors source intent.
-    {% endcomment %}
     <summary class='flex items-center justify-between md:block cursor-pointer md:cursor-default list-none mb-4'>
       {% render 'typography',
         text: s.heading,
@@ -83,6 +68,7 @@
 {% schema %}
 {
   "name": "Nav Group",
+  "restriction": { "groups": ["footer"] },
   "blocks": [
     {
       "type": "_nav-group"
