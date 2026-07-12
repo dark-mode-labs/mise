@@ -1,0 +1,48 @@
+{% assign s = block.settings %}
+
+{% assign tab_group = s.tab_group %}
+{% if tab_group == blank %}{% assign tab_group = section.id %}{% endif %}
+
+<div
+  {{ context.attached_attributes }}
+  class='tab-content'
+  data-behavior='tab-content'
+  data-tab-id='{{ s.tab_id }}'
+  data-tab-group='{{ tab_group }}'
+  aria-expanded='false'
+>
+  {% content_for 'blocks' %}
+</div>
+{% schema %}
+{
+  "name": "Tab Content",
+  "settings": [
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "default": "body"
+    },
+    {
+      "type": "header",
+      "content": "Binding"
+    },
+    {
+      "type": "text",
+      "id": "tab_id",
+      "label": "Tab Identifier",
+      "default": "{{ context.item.uuid }}"
+    },
+    {
+      "type": "text",
+      "id": "tab_group",
+      "label": "Tab Group"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ]
+}
+{% endschema %}
