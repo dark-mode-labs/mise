@@ -31,6 +31,9 @@
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
+{% if s.align_self != blank and s.align_self != 'auto' %}
+  {% assign classes = classes | push: 'self-{{ s.align_self }}' %}
+{% endif %}
 {% assign block_classes = classes | join: ' ' %}
 
 {% assign styles = blank %}
@@ -338,6 +341,19 @@
       "default": 0,
       "unit": "rem",
       "conditional": "setting.margin_horizontal == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "start", "label": "Top / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom / End" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
     }
   ],
   "presets": [

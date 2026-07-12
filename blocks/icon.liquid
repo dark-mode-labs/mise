@@ -7,6 +7,9 @@
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
 %}
+{% if s.align_self != blank and s.align_self != 'auto' -%}
+  {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
+{%- endif %}
 
 {%- capture color_class -%}{%- render 'text-color-class', color_role: s.text_role -%}{%- endcapture -%}
 {% if color_class == blank and s.text_role != 'inherit' and s.text_role != 'none' %}
@@ -72,6 +75,19 @@
 {
   "name": "Icon",
   "settings": [
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "start", "label": "Top / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom / End" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
     {
       "type": "textarea",
       "id": "svg",

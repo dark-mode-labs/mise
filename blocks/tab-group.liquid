@@ -31,6 +31,9 @@
 {% assign content_layer_classes = 'tabs-content-layer tabs-position-{{ s.chip_position }} limit-width width-{{ s.width }}'
   | push: 'tab-mode-{{ s.mode }}'
 %}
+{% if s.align_self != blank and s.align_self != 'auto' -%}
+  {%- assign content_layer_classes = content_layer_classes | push: 'self-{{ s.align_self }}' -%}
+{%- endif %}
 {% if s.column_gap != blank and s.column_gap != 'none' %}
   {% assign content_layer_classes = content_layer_classes | push: 'gap-{{ s.column_gap }}' %}
 {% endif %}
@@ -121,6 +124,19 @@
 {
   "name": "Tab Group",
   "settings": [
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "start", "label": "Top / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom / End" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
     { "type": "header", "content": "Behavior" },
     {
       "type": "select",

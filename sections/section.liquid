@@ -9,37 +9,15 @@
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
 
-{% comment %}
-  --- 1. Surface scoping (CSS-var context) ---
-  Sections always introduce a surface scope (they're the natural surface
-  boundary in the layout tree). Defaults to `default` so descendants always
-  inherit a usable set of CSS variables.
-{% endcomment %}
 {% assign surface_safe = s.surface_id | default: 'default' %}
 {% assign surface_class = 'surface-' | append: surface_safe %}
 
-{% comment %} --- 2. Background role (paints from active surface) --- {% endcomment %}
 {% assign bg_role_safe = s.bg_role | default: 'body' %}
 {% assign bg_class = '' %}
 {% if bg_color_value == blank and bg_role_safe != 'none' %}
   {% assign bg_class = 'bg-' | append: bg_role_safe %}
 {% endif %}
 
-{% comment %}
-  --- 3. Container class pipelines (TWO LAYERS) ---
-  Sections render as two stacked `limit-width` boxes:
-
-    bg layer     – carries the section background + padding + height.
-                   Width is `width_bg` (default fill ⇒ full-bleed).
-    content layer – caps the actual content area. Width is `width`
-                   (default fill ⇒ matches bg). Centered via mx-auto.
-
-  When `width_bg: fill` and `width: canvas` (the common ultra-wide
-  pattern), the bg paints the whole viewport but the content is
-  capped at canvas (1280px) and centered. When both are `fill` (the
-  default) the two collapse and behavior matches the pre-refactor
-  single wrapper.
-{% endcomment %}
 {% assign bg_layer_classes = 'section-layout limit-width'
   | push: bg_class
   | push: 'width-{{ s.width_bg }}'
@@ -50,7 +28,6 @@
 {% assign bg_layer_class_str = bg_layer_classes | join: ' ' %}
 {% assign content_layer_class_str = 'section-content limit-width width-' | append: s.width %}
 
-{% comment %} --- 4. Style Pipeline (spacing + bg layer) --- {% endcomment %}
 {% assign styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -72,7 +49,6 @@
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
-{% comment %} --- 5. Inner Flex Pipeline --- {% endcomment %}
 {% assign inner_classes = 'flex flex-auto gap-6'
   | push: 'flex-{{ s.flex_direction }}'
   | push: 'section-align-content-{{ s.content_align }}'
@@ -97,7 +73,6 @@
 {% endif %}
 {% assign margin_style_str = margin_styles | join: ';' %}
 
-{% comment %} --- Component Render --- {% endcomment %}
 <section
   class='{{ surface_class }} margin-my-{{ s.margin_vertical }} margin-mx-{{ s.margin_horizontal }}'
   style='{{ margin_style_str }}'

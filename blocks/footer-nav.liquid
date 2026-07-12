@@ -1,6 +1,9 @@
 {% assign s = block.settings %}
 
 {% assign classes = 'footer-block' %}
+{% if s.align_self != blank and s.align_self != 'auto' -%}
+  {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
+{%- endif %}
 
 {% if s.width and s.width != blank %}
   {% assign classes = classes | push: 'width-{{ s.width }}' %}
@@ -75,6 +78,19 @@
     }
   ],
   "settings": [
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "start", "label": "Top / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom / End" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
     {
       "type": "text",
       "id": "heading",
