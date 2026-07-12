@@ -157,6 +157,9 @@
   {% endif %}
 {% endif %}
 
+{% assign tab_group = s.tab_group %}
+{% if tab_group == blank %}{% assign tab_group = section.id %}{% endif %}
+
 <div
   {{ context.attached_attributes }}
   class='tab-head cursor-pointer relative {{ classes | join: ' ' }}'
@@ -166,12 +169,22 @@
   data-tab-active-styles='{{ active_state_styles | join: ';' }}'
   data-tab-inactive-class='{{ inactive_state_classes | join: ' ' }}'
   data-tab-inactive-styles='{{ inactive_state_styles | join: ';' }}'
-  data-tab-group='{{ section.id }}'
+  data-tab-group='{{ tab_group }}'
   data-action='tab-switch'
   data-tab-id='{{ s.tab_id }}'
   role='tab'
 >
-  <div class='relative z-10'>
+  {% assign inner_classes = 'relative z-10' %}
+  {% if s.vertical_align != blank or s.content_align != blank %}
+    {% assign inner_classes = inner_classes | push: 'flex' | push: 'direction-row' %}
+    {% if s.vertical_align != blank -%}
+      {%- assign inner_classes = inner_classes | push: 'vertical-{{ s.vertical_align }}' -%}
+    {%- endif %}
+    {% if s.content_align != blank -%}
+      {%- assign inner_classes = inner_classes | push: 'content-{{ s.content_align }}' -%}
+    {%- endif %}
+  {% endif %}
+  <div class='{{ inner_classes | join: ' ' }}'>
     {% content_for 'blocks' %}
   </div>
 
@@ -196,6 +209,11 @@
       "id": "tab_id",
       "label": "Tab Identifier",
       "default": "{{ context.item.uuid }}"
+    },
+    {
+      "type": "text",
+      "id": "tab_group",
+      "label": "Tab Group"
     },
     {
       "type": "header",
@@ -773,6 +791,29 @@
       "default": 0,
       "unit": "rem",
       "conditional": "setting.padding_horizontal == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top / Start" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom / End" },
+        { "value": "baseline", "label": "Baseline" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "between", "label": "Space Between" }
+      ]
     }
   ],
   "blocks": [

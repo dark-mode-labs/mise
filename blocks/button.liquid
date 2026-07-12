@@ -33,6 +33,9 @@
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
 %}
+{% if s.align_self != blank and s.align_self != 'auto' -%}
+  {%- assign wrapper_classes = wrapper_classes | push: 'self-{{ s.align_self }}' -%}
+{%- endif %}
 
 {% assign wrapper_classes = wrapper_classes | push: 'block width-{{ s.width }} limit-width' %}
 
@@ -108,6 +111,8 @@
     {%- assign inner_classes = inner_classes | push: 'align-items-center' %}
   {% when 'bottom' -%}
     {%- assign inner_classes = inner_classes | push: 'align-items-end' %}
+  {% when 'baseline' -%}
+    {%- assign inner_classes = inner_classes | push: 'align-items-baseline' %}
   {% else -%}
     {%- assign inner_classes = inner_classes | push: 'align-items-stretch' %}
 {% endcase %}
@@ -228,6 +233,19 @@
 {
   "name": "Button",
   "settings": [
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "start", "label": "Top / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom / End" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
     {
       "type": "text",
       "id": "label",
@@ -661,6 +679,10 @@
         {
           "value": "bottom",
           "label": "Bottom / End"
+        },
+        {
+          "value": "baseline",
+          "label": "Baseline"
         },
         {
           "value": "between",

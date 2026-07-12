@@ -96,6 +96,7 @@
           .direction-responsive.bp-{{ bp_id }}.vertical-top { align-items: flex-start; }
           .direction-responsive.bp-{{ bp_id }}.vertical-middle { align-items: center; }
           .direction-responsive.bp-{{ bp_id }}.vertical-bottom { align-items: flex-end; }
+          .direction-responsive.bp-{{ bp_id }}.vertical-baseline { align-items: baseline; }
           .direction-responsive.bp-{{ bp_id }}.vertical-stretch { align-items: stretch; }
           .direction-responsive.bp-{{ bp_id }}.content-left { justify-content: flex-start; }
           .direction-responsive.bp-{{ bp_id }}.content-center { justify-content: center; }
@@ -125,6 +126,7 @@
       .direction-responsive:not([class*="bp-"]).vertical-top { align-items: flex-start; }
       .direction-responsive:not([class*="bp-"]).vertical-middle { align-items: center; }
       .direction-responsive:not([class*="bp-"]).vertical-bottom { align-items: flex-end; }
+      .direction-responsive:not([class*="bp-"]).vertical-baseline { align-items: baseline; }
       .direction-responsive:not([class*="bp-"]).vertical-stretch { align-items: stretch; }
       .direction-responsive:not([class*="bp-"]).content-left { justify-content: flex-start; }
       .direction-responsive:not([class*="bp-"]).content-center { justify-content: center; }
@@ -196,9 +198,9 @@
     @media (min-width: {{ bp_mw }}rem) {
       .tabpos-{{ bp_id }}-none .chip-strip { display: none; }
       .tabpos-{{ bp_id }}-left .chip-strip { display: flex; flex-direction: column; flex: 0 0 auto; align-self: start; }
-      .tabpos-{{ bp_id }}-left .tabs-content-layer { flex-direction: row; }
+      .tabpos-{{ bp_id }}-left.tabs-content-layer { flex-direction: row; }
       .tabpos-{{ bp_id }}-top .chip-strip { display: flex; flex-direction: row; flex: 0 1 auto; }
-      .tabpos-{{ bp_id }}-top .tabs-content-layer { flex-direction: column; }
+      .tabpos-{{ bp_id }}-top.tabs-content-layer { flex-direction: column; }
     }
     {% endfor %}
 

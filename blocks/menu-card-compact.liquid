@@ -15,6 +15,9 @@
   | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
+{% if s.align_self != blank and s.align_self != 'auto' -%}
+  {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
+{%- endif %}
 {% if s.backdrop_blur and s.backdrop_blur != 'none' %}
   {% assign classes = classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
 {% endif %}
@@ -152,6 +155,19 @@
 {
   "name": "Menu Card Compact",
   "settings": [
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "start", "label": "Top / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom / End" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
     {
       "type": "data_source",
       "id": "bind_to",

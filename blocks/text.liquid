@@ -5,6 +5,9 @@
   | push: 'margin-my-{{ s.margin_vertical }}'
   | push: 'margin-mx-{{ s.margin_horizontal }}'
 %}
+{% if s.align_self != blank and s.align_self != 'auto' -%}
+  {%- assign wrapper_classes = wrapper_classes | push: 'self-{{ s.align_self }}' -%}
+{%- endif %}
 {% if s.text_align != blank %}
   {% assign wrapper_classes = wrapper_classes | push: 'text-align-{{ s.text_align }}' %}
 {% endif %}
@@ -90,6 +93,19 @@
 {
   "name": "Text",
   "settings": [
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "start", "label": "Top / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom / End" },
+        { "value": "stretch", "label": "Stretch" }
+      ]
+    },
     {
       "type": "textarea",
       "id": "content",

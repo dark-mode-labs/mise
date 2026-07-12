@@ -8,18 +8,19 @@
 {% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
-{% comment %} --- 1. Layout & Media Logic --- {% endcomment %}
 {% assign has_media_2 = false %}
 {% if s.bg_image_2 != blank or s.video_url_2 != blank %}
   {% assign has_media_2 = true %}
 {% endif %}
 
-{% comment %} Background class (unified bg primitive) {% endcomment %}
-{% assign bg_role_safe = s.bg_role | default: 'body' %}
-{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% assign bg_class = 'bg-{{ s.bg_role }}' %}
 {% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
 
-{% assign layout_classes = 'overflow-hidden' | push: bg_class | push: 'height-{{ s.height }}' %}
+{% assign layout_classes = 'overflow-hidden limit-width'
+  | push: bg_class
+  | push: 'width-{{ s.width_bg }}'
+  | push: 'height-{{ s.height }}'
+%}
 {% case s.layout_mode %}
   {% when 'split_right' %}
     {% assign layout_classes = layout_classes | push: 'hero-layout-split-right' %}
@@ -35,7 +36,6 @@
     {% assign content_classes = 'hero-content-overlay' %}
 {% endcase %}
 
-{% comment %} --- 2. Spacing & Container Pipeline --- {% endcomment %}
 {% assign layout_classes = layout_classes
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
@@ -75,7 +75,6 @@
 {% endif %}
 {% assign margin_style_str = margin_styles | join: ';' %}
 
-{% comment %} --- 3. Content Pipeline --- {% endcomment %}
 {% assign content_pipeline = content_classes
   | push: 'width-{{ s.width }}'
   | push: 'limit-width gap-6 transition-all'
@@ -90,9 +89,8 @@
 {% assign placeholder_name = '' %}
 {% if s.show_placeholder %}{% assign placeholder_name = 'scene-3' %}{% endif %}
 
-{% comment %} --- Hero Render --- {% endcomment %}
 <section
-  class='section-hero surface-{{ s.surface_id | default: 'default' }} margin-my-{{ s.margin_vertical }} margin-mx-{{ s.margin_horizontal }}'
+  class='section-hero surface-{{ s.surface_id }} margin-my-{{ s.margin_vertical }} margin-mx-{{ s.margin_horizontal }}'
   style='{{ margin_style_str }}'
   {{ context.attached_attributes }}
 >
@@ -100,9 +98,7 @@
     class='{{ layout_class_str }}'
     style='{{ style_str }}'
   >
-    {% comment %} Media Layer {% endcomment %}
-    <div class='{{ media_classes }} width-{{ s.width_bg }} limit-width'>
-      {% comment %} Primary Media Slot {% endcomment %}
+    <div class='{{ media_classes }}'>
       {% if has_media_2 %}
         {% assign media_1_classes = 'hero-media-inner relative w-1/2 border-r border-default' %}
       {% else %}
@@ -129,7 +125,6 @@
         %}
       </div>
 
-      {% comment %} Secondary Media Slot {% endcomment %}
       {% if has_media_2 %}
         <div class='hero-media-inner w-1/2'>
           {% render 'media',
@@ -152,7 +147,6 @@
       {% endif %}
     </div>
 
-    {% comment %} Content Layer {% endcomment %}
     <div class='{{ content_class_str }}'>
       {% content_for 'blocks' %}
     </div>

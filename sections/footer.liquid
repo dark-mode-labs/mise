@@ -8,7 +8,6 @@
 {% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
-{% comment %} --- Section Container Classes --- {% endcomment %}
 {% assign container_classes = 'width-{{ s.width }} limit-width'
   | push: 'padding-py-{{ s.padding_vertical }}'
   | push: 'padding-px-{{ s.padding_horizontal }}'
@@ -16,7 +15,6 @@
 
 {% assign container_class_str = container_classes | join: ' ' %}
 
-{% comment %} --- Section Spacing Styles --- {% endcomment %}
 {% assign spacing_styles = blank %}
 
 {% if s.padding_vertical == 'custom' %}
@@ -35,15 +33,16 @@
 
 {% assign spacing_style_str = spacing_styles | join: ';' %}
 
-{% comment %} --- Background class + styles (unified bg primitive) --- {% endcomment %}
-{% assign bg_role_safe = s.bg_role | default: 'body' %}
-{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% assign bg_class = 'bg-{{ s.bg_role }}' %}
 {% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
 
-{% assign styles = blank %}
+{% assign bg_layer_style = blank %}
 {% if bg_color_value != blank %}
-  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+  {% assign bg_layer_style = bg_layer_style | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
+{% assign bg_layer_style_str = bg_layer_style | join: ';' %}
+
+{% assign styles = blank %}
 {% if s.margin_vertical == 'custom' %}
   {% assign styles = styles
     | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
@@ -58,26 +57,30 @@
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
-{% comment %} --- Component Render --- {% endcomment %}
 <footer
-  class='section-footer surface-{{ s.surface_id | default: 'default' }} {{ bg_class }} text-primary relative isolate margin-my-{{ s.margin_vertical }} margin-mx-{{ s.margin_horizontal }}'
+  class='section-footer surface-{{ s.surface_id }} text-primary relative isolate margin-my-{{ s.margin_vertical }} margin-mx-{{ s.margin_horizontal }}'
   style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
-  {% render 'bg-overlay',
-    role: s.overlay_role,
-    alpha: s.overlay_alpha,
-    palette_token: s.overlay_role_palette,
-    custom_color: s.overlay_role_custom,
-    gradient_token: s.overlay_role_gradient,
-    behind: true
-  %}
   <div
-    class='{{ container_class_str }} relative'
-    style='{{ spacing_style_str }}'
+    class='footer-bg-layer relative width-{{ s.width_bg }} limit-width {{ bg_class }}'
+    style='{{ bg_layer_style_str }}'
   >
-    <div class='flex flex-auto flex-col md:flex-row justify-content-{{ s.content_align }}'>
-      {% content_for 'blocks' %}
+    {% render 'bg-overlay',
+      role: s.overlay_role,
+      alpha: s.overlay_alpha,
+      palette_token: s.overlay_role_palette,
+      custom_color: s.overlay_role_custom,
+      gradient_token: s.overlay_role_gradient,
+      behind: true
+    %}
+    <div
+      class='{{ container_class_str }} relative'
+      style='{{ spacing_style_str }}'
+    >
+      <div class='flex flex-auto flex-col justify-content-{{ s.content_align }}'>
+        {% content_for 'blocks' %}
+      </div>
     </div>
   </div>
 </footer>
@@ -121,6 +124,12 @@
       "type": "width",
       "id": "width",
       "label": "Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "width",
+      "id": "width_bg",
+      "label": "Background Width",
       "default": "fill"
     },
     {
@@ -426,7 +435,7 @@
       "type": "group"
     },
     {
-      "type": "_footer-nav"
+      "type": "footer-nav"
     },
     {
       "type": "_footer-newsletter"
