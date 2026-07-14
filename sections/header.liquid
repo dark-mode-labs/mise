@@ -47,15 +47,15 @@
   | push: 'surface-{{ s.surface_id }}'
   | push: 'bp-{{ s.mobile_breakpoint }}'
   | push: 'mobile-{{ s.mobile_layout }}'
-  | push: 'margin-my-{{ s.margin_vertical }}'
-  | push: 'margin-mx-{{ s.margin_horizontal }}'
+  | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
+  | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
 %}
 
 {% assign bg_layer_classes = 'header-bar limit-width'
   | push: 'width-{{ s.width_bg }}'
   | push: bg_class
-  | push: 'padding-py-{{ s.padding_vertical }}'
-  | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
 %}
 
 {% assign border_color_value = blank %}
@@ -90,36 +90,12 @@
 {% assign bg_layer_class_str = bg_layer_classes | join: ' ' %}
 
 {% assign styles = blank %}
-{% if s.margin_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
-    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-{% if s.margin_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
-    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
-  %}
-{% endif %}
 {% if text_override_value != blank %}
   {% assign styles = styles | push: '--text: {{ text_override_value }}' %}
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
 {% assign bar_styles = blank %}
-{% if s.padding_vertical == 'custom' %}
-  {% assign bar_styles = bar_styles
-    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
-    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-{% if s.padding_horizontal == 'custom' %}
-  {% assign bar_styles = bar_styles
-    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
-    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
-  %}
-{% endif %}
 {% if bg_color_value != blank %}
   {% assign bar_styles = bar_styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
@@ -305,7 +281,6 @@
 {% if needs_spacer %}
   <div class='w-full h-16'></div>
 {% endif %}
-
 {% schema %}
 {
   "name": "Header",
@@ -372,9 +347,18 @@
       "id": "mobile_layout",
       "label": "Mobile logo placement",
       "options": [
-        { "value": "logo_center", "label": "Center" },
-        { "value": "logo_left", "label": "Left" },
-        { "value": "logo_right", "label": "Right" }
+        {
+          "value": "logo_center",
+          "label": "Center"
+        },
+        {
+          "value": "logo_left",
+          "label": "Left"
+        },
+        {
+          "value": "logo_right",
+          "label": "Right"
+        }
       ],
       "default": "logo_center"
     },
@@ -391,115 +375,51 @@
     },
     {
       "type": "space",
-      "id": "padding_vertical",
-      "label": "Vertical Padding",
+      "id": "padding_top",
+      "label": "Padding Top",
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "padding_vertical_custom_top",
-      "label": "Custom Top Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_bottom",
-      "label": "Custom Bottom Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none"
     },
     {
       "type": "space",
-      "id": "padding_horizontal",
-      "label": "Horizontal Padding",
+      "id": "padding_left",
+      "label": "Padding Left",
       "default": "xs"
     },
     {
-      "type": "range",
-      "id": "padding_horizontal_custom_left",
-      "label": "Custom Left Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_horizontal_custom_right",
-      "label": "Custom Right Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "xs"
     },
     {
       "type": "space",
-      "id": "margin_vertical",
-      "label": "Vertical Margin",
+      "id": "margin_top",
+      "label": "Margin Top",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_top",
-      "label": "Custom Top Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_bottom",
-      "label": "Custom Bottom Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_horizontal",
-      "label": "Horizontal Margin",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_left",
-      "label": "Custom Left Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_right",
-      "label": "Custom Right Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
     },
     {
       "type": "header",
@@ -511,9 +431,18 @@
       "label": "Border",
       "default": "none",
       "options": [
-        { "value": "custom", "label": "Custom" },
-        { "value": "full", "label": "Full" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ]
     },
     {
@@ -522,11 +451,26 @@
       "label": "Border Color",
       "default": "default",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "default", "label": "Default" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
@@ -549,10 +493,22 @@
       "label": "Border Style",
       "default": "solid",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "dashed", "label": "Dashed" },
-        { "value": "dotted", "label": "Dotted" },
-        { "value": "double", "label": "Double" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
@@ -562,12 +518,36 @@
       "label": "Border Size",
       "default": "xxs",
       "options": [
-        { "value": "xxs", "label": "XXS", "info": "1px" },
-        { "value": "xs", "label": "XS", "info": "2px" },
-        { "value": "sm", "label": "SM", "info": "4px" },
-        { "value": "md", "label": "MD", "info": "6px" },
-        { "value": "lg", "label": "LG", "info": "8px" },
-        { "value": "custom", "label": "Custom", "info": "Exact px width" }
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "SM",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "MD",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "LG",
+          "info": "8px"
+        },
+        {
+          "value": "custom",
+          "label": "Custom",
+          "info": "Exact px width"
+        }
       ],
       "conditional": "setting.border_mode != 'none'"
     },
@@ -662,7 +642,7 @@
       "type": "checkbox",
       "id": "show_nav",
       "label": "Show Navigation",
-      "info": "Renders the desktop nav (and the drawer's nav links). Disable for minimal headers — e.g. checkout, order confirmation.",
+      "info": "Renders the desktop nav (and the drawer's nav links). Disable for minimal headers \u2014 e.g. checkout, order confirmation.",
       "default": true
     },
     {
@@ -721,8 +701,14 @@
       "label": "Cart Button Shape",
       "default": "icon",
       "options": [
-        { "value": "icon", "label": "Icon Only" },
-        { "value": "circle", "label": "Circle" }
+        {
+          "value": "icon",
+          "label": "Icon Only"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        }
       ],
       "conditional": "setting.show_cart == true"
     },
@@ -732,9 +718,18 @@
       "label": "Cart Button BG",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "palette", "label": "Palette" },
-        { "value": "custom", "label": "Raw" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw"
+        }
       ],
       "conditional": "setting.show_cart == true"
     },
@@ -756,9 +751,18 @@
       "label": "Cart Icon Color",
       "default": "none",
       "options": [
-        { "value": "none", "label": "Inherit" },
-        { "value": "palette", "label": "Palette" },
-        { "value": "custom", "label": "Raw" }
+        {
+          "value": "none",
+          "label": "Inherit"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw"
+        }
       ],
       "conditional": "setting.show_cart == true"
     },
@@ -801,9 +805,18 @@
       "label": "Badge BG",
       "default": "none",
       "options": [
-        { "value": "none", "label": "Default" },
-        { "value": "palette", "label": "Palette" },
-        { "value": "custom", "label": "Raw" }
+        {
+          "value": "none",
+          "label": "Default"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw"
+        }
       ],
       "conditional": "setting.show_cart == true"
     },
@@ -825,9 +838,18 @@
       "label": "Badge Text",
       "default": "none",
       "options": [
-        { "value": "none", "label": "Default" },
-        { "value": "palette", "label": "Palette" },
-        { "value": "custom", "label": "Raw" }
+        {
+          "value": "none",
+          "label": "Default"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw"
+        }
       ],
       "conditional": "setting.show_cart == true"
     },
@@ -860,15 +882,42 @@
       "info": "Header text color. Child blocks inherit this unless overridden.",
       "default": "primary",
       "options": [
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "on-accent", "label": "On Accent" },
-        { "value": "on-button", "label": "On Button" },
-        { "value": "on-control", "label": "On Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" }
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
     },
     {
@@ -962,13 +1011,34 @@
       "info": "Frosted-glass blur strength behind the header.",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "sm", "label": "Small" },
-        { "value": "md", "label": "Medium" },
-        { "value": "lg", "label": "Large" },
-        { "value": "xl", "label": "X-Large" },
-        { "value": "2xl", "label": "2X-Large" },
-        { "value": "3xl", "label": "3X-Large" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "X-Large"
+        },
+        {
+          "value": "2xl",
+          "label": "2X-Large"
+        },
+        {
+          "value": "3xl",
+          "label": "3X-Large"
+        }
       ]
     },
     {
@@ -989,17 +1059,50 @@
       "label": "Drawer Background",
       "default": "body",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ]
     },
     {
@@ -1028,16 +1131,46 @@
       "label": "Drawer Text Role",
       "default": "inherit",
       "options": [
-        { "value": "inherit", "label": "Inherit from Header" },
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "on-accent", "label": "On Accent" },
-        { "value": "on-button", "label": "On Button" },
-        { "value": "on-control", "label": "On Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" }
+        {
+          "value": "inherit",
+          "label": "Inherit from Header"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
     },
     {
@@ -1117,12 +1250,16 @@
                 "wordmark": {
                   "type": "text",
                   "name": "Brand Word",
-                  "settings": { "type_style": "heading-3" }
+                  "settings": {
+                    "type_style": "heading-3"
+                  }
                 },
                 "tagline": {
                   "type": "text",
                   "name": "Brand Tagline",
-                  "settings": { "type_style": "caption" }
+                  "settings": {
+                    "type_style": "caption"
+                  }
                 }
               }
             }

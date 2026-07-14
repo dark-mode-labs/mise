@@ -404,6 +404,23 @@
               "label": "Capitalize"
             }
           ]
+        },
+        {
+          "type": "select",
+          "id": "visibility",
+          "label": "Visibility",
+          "info": "`curated` roles appear in the editor picker; `overflow` styles are precompiled but hidden (brand-minted one-offs).",
+          "default": "curated",
+          "options": [
+            {
+              "value": "curated",
+              "label": "Curated"
+            },
+            {
+              "value": "overflow",
+              "label": "Overflow"
+            }
+          ]
         }
       ]
     },
@@ -439,6 +456,23 @@
           "label": "Per-Breakpoint Width Overrides",
           "info": "JSON map of breakpoint_scale tier id to width value. e.g. `{\"read\": \"auto\"}` applies at viewports at or above the read breakpoint.",
           "default": ""
+        },
+        {
+          "type": "select",
+          "id": "visibility",
+          "label": "Visibility",
+          "info": "`curated` tiers appear in the editor picker; `overflow` tiers are precompiled but hidden (brand-minted one-offs).",
+          "default": "curated",
+          "options": [
+            {
+              "value": "curated",
+              "label": "Curated"
+            },
+            {
+              "value": "overflow",
+              "label": "Overflow"
+            }
+          ]
         }
       ]
     },
@@ -502,6 +536,23 @@
           "label": "Floor + flex stretch",
           "info": "Like `floor`, but also stretches the block to fill available height while never shrinking below `value`. Useful for hero or section blocks.",
           "default": false
+        },
+        {
+          "type": "select",
+          "id": "visibility",
+          "label": "Visibility",
+          "info": "`curated` tiers appear in the editor picker; `overflow` tiers are precompiled but hidden (brand-minted one-offs).",
+          "default": "curated",
+          "options": [
+            {
+              "value": "curated",
+              "label": "Curated"
+            },
+            {
+              "value": "overflow",
+              "label": "Overflow"
+            }
+          ]
         }
       ]
     },
@@ -530,6 +581,23 @@
           "label": "Per-Breakpoint Overrides",
           "info": "JSON map of breakpoint_scale tier id to length. e.g. `{\"column\": \"3.5rem\"}` applies at viewports at or above the column breakpoint.",
           "default": ""
+        },
+        {
+          "type": "select",
+          "id": "visibility",
+          "label": "Visibility",
+          "info": "`curated` tiers appear in the editor picker; `overflow` tiers are precompiled but hidden (brand-minted one-offs).",
+          "default": "curated",
+          "options": [
+            {
+              "value": "curated",
+              "label": "Curated"
+            },
+            {
+              "value": "overflow",
+              "label": "Overflow"
+            }
+          ]
         }
       ]
     },
@@ -861,152 +929,188 @@
           "settings": {
             "title": "Fit Content",
             "max_width": "fit-content",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "fill": {
           "settings": {
             "title": "Fill Parent",
             "max_width": "100%",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "square": {
           "settings": {
             "title": "Square (icon)",
             "max_width": "2.5rem",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "half": {
           "settings": {
             "title": "Half (1/2)",
             "max_width": "50%",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "third": {
           "settings": {
             "title": "Third (1/3)",
             "max_width": "33.333%",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "two-thirds": {
           "settings": {
             "title": "Two Thirds (2/3)",
             "max_width": "66.667%",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "quarter": {
           "settings": {
             "title": "Quarter (1/4)",
             "max_width": "25%",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "three-quarters": {
           "settings": {
             "title": "Three Quarters (3/4)",
             "max_width": "75%",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "narrow": {
           "settings": {
             "title": "Narrow",
-            "max_width": "20rem"
+            "max_width": "20rem",
+            "visibility": "curated"
           }
         },
         "tight": {
           "settings": {
             "title": "Tight",
-            "max_width": "24rem"
+            "max_width": "24rem",
+            "visibility": "curated"
           }
         },
         "compact": {
           "settings": {
             "title": "Compact",
-            "max_width": "28rem"
+            "max_width": "28rem",
+            "visibility": "curated"
           }
         },
         "card": {
           "settings": {
             "title": "Card",
-            "max_width": "32rem"
+            "max_width": "32rem",
+            "visibility": "curated"
           }
         },
         "snug": {
           "settings": {
             "title": "Snug",
-            "max_width": "36rem"
+            "max_width": "36rem",
+            "visibility": "curated"
           }
         },
         "read": {
           "settings": {
             "title": "Read",
-            "max_width": "42rem"
+            "max_width": "42rem",
+            "visibility": "curated"
           }
         },
         "column": {
           "settings": {
             "title": "Column",
-            "max_width": "48rem"
+            "max_width": "48rem",
+            "visibility": "curated"
           }
         },
         "regular": {
           "settings": {
             "title": "Regular",
-            "max_width": "56rem"
+            "max_width": "56rem",
+            "visibility": "curated"
           }
         },
         "broad": {
           "settings": {
             "title": "Broad",
-            "max_width": "64rem"
+            "max_width": "64rem",
+            "visibility": "curated"
           }
         },
         "wide": {
           "settings": {
             "title": "Wide",
-            "max_width": "72rem"
+            "max_width": "72rem",
+            "visibility": "curated"
           }
         },
         "canvas": {
           "settings": {
             "title": "Canvas",
-            "max_width": "80rem"
+            "max_width": "80rem",
+            "visibility": "curated"
           }
         },
         "extra-wide": {
           "settings": {
             "title": "Extra Wide",
-            "max_width": "96rem"
+            "max_width": "96rem",
+            "visibility": "curated"
           }
         },
         "unbounded": {
           "settings": {
             "title": "Unbounded",
-            "max_width": "none"
+            "max_width": "none",
+            "visibility": "curated"
           }
         }
       },
       "breakpoint_scale": {
         "read": {
-          "settings": { "title": "Read", "max_width": 42 }
+          "settings": {
+            "title": "Read",
+            "max_width": 42
+          }
         },
         "column": {
-          "settings": { "title": "Column", "max_width": 48 }
+          "settings": {
+            "title": "Column",
+            "max_width": 48
+          }
         },
         "broad": {
-          "settings": { "title": "Broad", "max_width": 64 }
+          "settings": {
+            "title": "Broad",
+            "max_width": 64
+          }
         },
         "canvas": {
-          "settings": { "title": "Canvas", "max_width": 80 }
+          "settings": {
+            "title": "Canvas",
+            "max_width": 80
+          }
         },
         "extra-wide": {
-          "settings": { "title": "Extra Wide", "max_width": 96 }
+          "settings": {
+            "title": "Extra Wide",
+            "max_width": 96
+          }
         }
       },
       "height_scale": {
@@ -1014,104 +1118,121 @@
           "settings": {
             "title": "Auto",
             "value": "auto",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "full": {
           "settings": {
             "title": "Full Height",
             "value": "100%",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "tiny": {
           "settings": {
             "title": "Tiny",
-            "value": "3.5rem"
+            "value": "3.5rem",
+            "visibility": "curated"
           }
         },
         "small": {
           "settings": {
             "title": "Small",
-            "value": "4rem"
+            "value": "4rem",
+            "visibility": "curated"
           }
         },
         "compact": {
           "settings": {
             "title": "Compact",
-            "value": "8rem"
+            "value": "8rem",
+            "visibility": "curated"
           }
         },
         "card-short": {
           "settings": {
             "title": "Card Short",
-            "value": "12rem"
+            "value": "12rem",
+            "visibility": "curated"
           }
         },
         "card-banner": {
           "settings": {
             "title": "Card Banner",
-            "value": "14rem"
+            "value": "14rem",
+            "visibility": "curated"
           }
         },
         "card": {
           "settings": {
             "title": "Card",
-            "value": "16rem"
+            "value": "16rem",
+            "visibility": "curated"
           }
         },
         "card-mid": {
           "settings": {
             "title": "Card Mid",
-            "value": "18rem"
+            "value": "18rem",
+            "visibility": "curated"
           }
         },
         "card-tall": {
           "settings": {
             "title": "Card Tall",
-            "value": "20rem"
+            "value": "20rem",
+            "visibility": "curated"
           }
         },
         "feature": {
           "settings": {
             "title": "Feature",
-            "value": "24rem"
+            "value": "24rem",
+            "visibility": "curated"
           }
         },
         "gallery": {
           "settings": {
             "title": "Gallery",
-            "value": "32rem"
+            "value": "32rem",
+            "visibility": "curated"
           }
         },
         "viewport-short": {
           "settings": {
             "title": "Viewport Short",
-            "value": "38vh"
+            "value": "38vh",
+            "visibility": "curated"
           }
         },
         "viewport-mid": {
           "settings": {
             "title": "Viewport Mid",
-            "value": "62vh"
+            "value": "62vh",
+            "visibility": "curated"
           }
         },
         "viewport-tall": {
           "settings": {
             "title": "Viewport Tall",
-            "value": "78vh"
+            "value": "78vh",
+            "visibility": "curated"
           }
         },
         "screen": {
           "settings": {
             "title": "Screen",
-            "value": "100vh"
+            "value": "100vh",
+            "visibility": "curated"
           }
         },
         "custom": {
           "settings": {
             "title": "Custom",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         }
       },
@@ -1120,79 +1241,85 @@
           "settings": {
             "title": "None",
             "value": "0",
-            "structural": true
-          }
-        },
-        "xxs": {
-          "settings": {
-            "title": "XXS",
-            "value": "0.25rem"
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "xs": {
           "settings": {
             "title": "XS",
-            "value": "0.5rem"
+            "value": "0.5rem",
+            "visibility": "curated"
           }
         },
         "sm": {
           "settings": {
             "title": "Small",
-            "value": "1rem"
+            "value": "1rem",
+            "visibility": "curated"
           }
         },
         "md": {
           "settings": {
             "title": "Medium",
-            "value": "1.5rem"
+            "value": "1.5rem",
+            "visibility": "curated"
           }
         },
         "lg": {
           "settings": {
             "title": "Large",
-            "value": "2.5rem"
+            "value": "2.5rem",
+            "visibility": "curated"
           }
         },
         "xl": {
           "settings": {
             "title": "XL",
-            "value": "4rem"
+            "value": "4rem",
+            "visibility": "curated"
           }
         },
         "2xl": {
           "settings": {
             "title": "2XL",
-            "value": "6rem"
+            "value": "6rem",
+            "visibility": "curated"
           }
         },
         "3xl": {
           "settings": {
             "title": "3XL",
-            "value": "8rem"
+            "value": "8rem",
+            "visibility": "curated"
           }
         },
         "custom": {
           "settings": {
             "title": "Custom",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "auto": {
           "settings": {
             "title": "Auto",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "auto-top": {
           "settings": {
             "title": "Auto Top",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         },
         "auto-bottom": {
           "settings": {
             "title": "Auto Bottom",
-            "structural": true
+            "structural": true,
+            "visibility": "curated"
           }
         }
       }

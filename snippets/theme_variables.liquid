@@ -36,14 +36,21 @@
 
     {% for s in space_scale %}
       {% unless s[1].settings.structural %}
-      .padding-py-{{ s[0] }} { padding-top: var(--space-{{ s[0] }}); padding-bottom: var(--space-{{ s[0] }}); }
-      .padding-px-{{ s[0] }} { padding-left: var(--space-{{ s[0] }}); padding-right: var(--space-{{ s[0] }}); }
-      .margin-my-{{ s[0] }} { margin-top: var(--space-{{ s[0] }}); margin-bottom: var(--space-{{ s[0] }}); }
-      .margin-mx-{{ s[0] }} { margin-left: var(--space-{{ s[0] }}); margin-right: var(--space-{{ s[0] }}); }
+      .pt-{{ s[0] }} { padding-top: var(--space-{{ s[0] }}); }
+      .pb-{{ s[0] }} { padding-bottom: var(--space-{{ s[0] }}); }
+      .pl-{{ s[0] }} { padding-left: var(--space-{{ s[0] }}); }
+      .pr-{{ s[0] }} { padding-right: var(--space-{{ s[0] }}); }
+      .mt-{{ s[0] }} { margin-top: var(--space-{{ s[0] }}); }
+      .mb-{{ s[0] }} { margin-bottom: var(--space-{{ s[0] }}); }
+      .ml-{{ s[0] }} { margin-left: var(--space-{{ s[0] }}); }
+      .mr-{{ s[0] }} { margin-right: var(--space-{{ s[0] }}); }
       .gap-{{ s[0] }} { gap: var(--space-{{ s[0] }}); }
       .direction-row.gap-{{ s[0] }}, .direction-responsive.gap-{{ s[0] }} { --children-gap: var(--space-{{ s[0] }}); }
       {% endunless %}
     {% endfor %}
+    .pt-none{padding-top:0}.pb-none{padding-bottom:0}.pl-none{padding-left:0}.pr-none{padding-right:0}
+    .mt-none{margin-top:0}.mb-none{margin-bottom:0}.ml-none{margin-left:0}.mr-none{margin-right:0}
+    .mt-auto{margin-top:auto}.mb-auto{margin-bottom:auto}.ml-auto{margin-left:auto}.mr-auto{margin-right:auto}
 
     :root {
 
@@ -205,7 +212,6 @@
     {% endfor %}
 
     .direction-row, .direction-responsive { --children-gap: 0px; }
-    .direction-row.gap-custom, .direction-responsive.gap-custom { --children-gap: var(--space-gap); }
 
     @media (max-width: 767px) {
       .direction-row > .width-half,

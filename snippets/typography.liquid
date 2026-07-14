@@ -12,10 +12,10 @@
     class      — extra utility classes (italic, hyphens-auto, etc.).
 {% endcomment %}
 {% assign tag_el = tag | default: 'p' %}
-{% assign style_class = 'ts-' | append: type_style | default: 'ts-body' %}
-{% if type_style == blank %}{% assign style_class = 'ts-body' %}{% endif %}
 {%- capture color_class -%}{%- render 'text-color-class', color_role: color_role -%}{%- endcapture -%}
 {%- if color_class == blank and color_role != 'inherit' and color_role != 'none' -%}
   {%- assign color_class = 'text-primary' -%}
 {%- endif -%}
+{%- assign style_class = 'ts-' | append: type_style | default: 'ts-body' -%}
+{%- if type_style == blank -%}{%- assign style_class = 'ts-body' -%}{%- endif -%}
 <{{ tag_el }} class='{{ style_class }} {{ color_class }} {{ class }}'>{{ text }}</{{ tag_el }}>

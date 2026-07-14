@@ -17,26 +17,23 @@
   {% assign overlay_color_value = s.overlay_role_custom %}
 {% endif %}
 
+{%- comment -%}
+  Padding lives on grid-content-overlay (below), not here: that makes content-overlay
+  a full-width (width_bg) padding-box, so absolute decorations anchor to the section box (not the
+  padded content box) while text content stays padded. grid-layout-overlay is the unpadded clip box.
+{%- endcomment -%}
 {% assign container_classes = 'grid-layout-overlay limit-width'
   | push: 'width-{{ s.width }}'
-  | push: 'padding-py-{{ s.padding_vertical }}'
-  | push: 'padding-px-{{ s.padding_horizontal }}'
   | push: 'height-{{ s.height }}'
+  | push_if: 'overflow-hidden', s.overflow_hidden
 %}
+{% assign content_overlay_classes = 'grid-content-overlay'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
+%}
+{% assign content_overlay_class_str = content_overlay_classes | join: ' ' %}
 
 {% assign spacing_styles = blank %}
-{% if s.padding_vertical == 'custom' %}
-  {% assign spacing_styles = spacing_styles
-    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
-    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-{% if s.padding_horizontal == 'custom' %}
-  {% assign spacing_styles = spacing_styles
-    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
-    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
-  %}
-{% endif %}
 
 {% assign container_class_str = container_classes | join: ' ' %}
 {% assign spacing_style_str = spacing_styles | join: ';' %}
@@ -54,18 +51,6 @@
 {% assign bg_layer_style_str = bg_layer_style | join: ';' %}
 
 {% assign styles = blank %}
-{% if s.margin_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
-    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-{% if s.margin_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
-    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
-  %}
-{% endif %}
 {% assign style_str = styles | join: ';' %}
 
 {% assign has_overlay = false %}
@@ -92,7 +77,7 @@
 {% assign flex_style_str = flex_styles | join: ';' %}
 
 <section
-  class='section-flex surface-{{ s.surface_id }} margin-my-{{ s.margin_vertical }} margin-mx-{{ s.margin_horizontal }}'
+  class='section-flex surface-{{ s.surface_id }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
   style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
@@ -125,9 +110,8 @@
 
   <div
     class='{{ container_class_str }}'
-    style='{{ spacing_style_str }}'
   >
-    <div class='grid-content-overlay'>
+    <div class='{{ content_overlay_class_str }}' style='{{ spacing_style_str }}'>
       <div
         class='{{ flex_class_str }}'
         style='{{ flex_style_str }}'
@@ -137,7 +121,6 @@
     </div>
   </div>
 </section>
-
 {% schema %}
 {
   "name": "Flex Container",
@@ -145,6 +128,12 @@
     {
       "type": "header",
       "content": "Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "overflow_hidden",
+      "label": "Clip overflow",
+      "default": false
     },
     {
       "type": "select",
@@ -370,115 +359,51 @@
     },
     {
       "type": "space",
-      "id": "padding_vertical",
-      "label": "Vertical Padding",
+      "id": "padding_top",
+      "label": "Padding Top",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_top",
-      "label": "Custom Top Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_bottom",
-      "label": "Custom Bottom Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_vertical",
-      "label": "Vertical Margin",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_top",
-      "label": "Custom Top Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_bottom",
-      "label": "Custom Bottom Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_horizontal",
-      "label": "Horizontal Margin",
+      "id": "padding_left",
+      "label": "Padding Left",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "margin_horizontal_custom_left",
-      "label": "Custom Left Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "margin_horizontal_custom_right",
-      "label": "Custom Right Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
     },
     {
       "type": "space",
-      "id": "padding_horizontal",
-      "label": "Horizontal Padding",
+      "id": "padding_right",
+      "label": "Padding Right",
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "padding_horizontal_custom_left",
-      "label": "Custom Left Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
     },
     {
-      "type": "range",
-      "id": "padding_horizontal_custom_right",
-      "label": "Custom Right Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
     },
     {
       "type": "header",

@@ -69,6 +69,11 @@
     inset: 0;
   }
 
+  .group-block.anchor-cover {
+    width: auto;
+    max-width: none;
+  }
+
   .header-drawer {
     @apply fixed inset-0 z-overlay h-screen transform transition-transform duration-300 ease-in-out -translate-x-full pointer-events-none;
   }
@@ -435,7 +440,8 @@
     gap: 0;
   }
 
-  .gap-custom {
+  .gap-custom,
+  .gap-fluid {
     gap: var(--space-gap);
   }
 
@@ -444,7 +450,8 @@
     padding-bottom: 0;
   }
 
-  .padding-py-custom {
+  .padding-py-custom,
+  .padding-py-fluid {
     padding-top: var(--space-pt);
     padding-bottom: var(--space-pb);
   }
@@ -454,7 +461,8 @@
     padding-right: 0;
   }
 
-  .padding-px-custom {
+  .padding-px-custom,
+  .padding-px-fluid {
     padding-left: var(--space-pl);
     padding-right: var(--space-pr);
   }
@@ -479,7 +487,8 @@
     margin-bottom: auto;
   }
 
-  .margin-my-custom {
+  .margin-my-custom,
+  .margin-my-fluid {
     margin-top: var(--space-mt);
     margin-bottom: var(--space-mb);
   }
@@ -494,7 +503,8 @@
     margin-right: auto;
   }
 
-  .margin-mx-custom {
+  .margin-mx-custom,
+  .margin-mx-fluid {
     margin-left: var(--space-ml);
     margin-right: var(--space-mr);
   }

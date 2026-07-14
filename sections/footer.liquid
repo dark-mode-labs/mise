@@ -9,27 +9,13 @@
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
 {% assign container_classes = 'width-{{ s.width }} limit-width'
-  | push: 'padding-py-{{ s.padding_vertical }}'
-  | push: 'padding-px-{{ s.padding_horizontal }}'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
 %}
 
 {% assign container_class_str = container_classes | join: ' ' %}
 
 {% assign spacing_styles = blank %}
-
-{% if s.padding_vertical == 'custom' %}
-  {% assign spacing_styles = spacing_styles
-    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
-    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-
-{% if s.padding_horizontal == 'custom' %}
-  {% assign spacing_styles = spacing_styles
-    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
-    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
-  %}
-{% endif %}
 
 {% assign spacing_style_str = spacing_styles | join: ';' %}
 
@@ -43,22 +29,10 @@
 {% assign bg_layer_style_str = bg_layer_style | join: ';' %}
 
 {% assign styles = blank %}
-{% if s.margin_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
-    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-{% if s.margin_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
-    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
-  %}
-{% endif %}
 {% assign style_str = styles | join: ';' %}
 
 <footer
-  class='section-footer surface-{{ s.surface_id }} text-primary relative isolate margin-my-{{ s.margin_vertical }} margin-mx-{{ s.margin_horizontal }}'
+  class='section-footer surface-{{ s.surface_id }} text-primary relative isolate mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
   style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
@@ -84,7 +58,6 @@
     </div>
   </div>
 </footer>
-
 {% schema %}
 {
   "name": "Footer",
@@ -138,111 +111,51 @@
     },
     {
       "type": "space",
-      "id": "padding_vertical",
-      "label": "Vertical Padding",
+      "id": "padding_top",
+      "label": "Padding Top",
       "default": "sm"
     },
     {
-      "type": "range",
-      "id": "padding_vertical_custom_top",
-      "label": "Custom Top Padding",
-      "min": 0,
-      "max": 128,
-      "step": 4,
-      "default": 0,
-      "conditional": "setting.padding_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_bottom",
-      "label": "Custom Bottom Padding",
-      "min": 0,
-      "max": 128,
-      "step": 4,
-      "default": 0,
-      "conditional": "setting.padding_vertical == 'custom'"
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "sm"
     },
     {
       "type": "space",
-      "id": "padding_horizontal",
-      "label": "Horizontal Padding",
+      "id": "padding_left",
+      "label": "Padding Left",
       "default": "xs"
     },
     {
-      "type": "range",
-      "id": "padding_horizontal_custom_left",
-      "label": "Custom Left Padding",
-      "min": 0,
-      "max": 128,
-      "step": 4,
-      "default": 0,
-      "conditional": "setting.padding_horizontal == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_horizontal_custom_right",
-      "label": "Custom Right Padding",
-      "min": 0,
-      "max": 128,
-      "step": 4,
-      "default": 0,
-      "conditional": "setting.padding_horizontal == 'custom'"
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "xs"
     },
     {
       "type": "space",
-      "id": "margin_vertical",
-      "label": "Vertical Margin",
+      "id": "margin_top",
+      "label": "Margin Top",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_top",
-      "label": "Custom Top Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_bottom",
-      "label": "Custom Bottom Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_horizontal",
-      "label": "Horizontal Margin",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_left",
-      "label": "Custom Left Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_right",
-      "label": "Custom Right Margin",
-      "min": -8,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
     },
     {
       "type": "header",
