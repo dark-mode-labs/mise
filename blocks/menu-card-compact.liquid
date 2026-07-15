@@ -4,7 +4,7 @@
 {% if s.border_radius_override %}
   {% assign radius_class = 'rounded-custom' %}
 {% endif %}
-{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all width-fill height-full'
+{% assign classes = 'group-block group cursor-pointer flex flex-row items-center relative isolate transition-all width-fill'
   | push: radius_class
   | push: 'text-align-{{ s.text_align }}'
   | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
@@ -710,41 +710,26 @@
       "blocks": {
         "menu-card-header": {
           "type": "group",
-          "name": "Heading",
+          "name": "Media",
           "static": true,
           "settings": {
-            "gap": "xs",
-            "direction": "row",
-            "content_align": "between",
-            "vertical_align": "top",
+            "width": "fit",
             "padding_top": "none",
             "padding_bottom": "none",
             "padding_left": "none",
-            "padding_right": "none",
-            "width": "fill"
+            "padding_right": "none"
           },
           "blocks": {
-            "title": {
-              "type": "text",
+            "img": {
+              "type": "media",
               "settings": {
-                "tag": "h3",
-                "content": "{{ context.item.name }}",
-                "text_wrap": "balance",
-                "text_align": "left",
-                "type_style": "body"
-              }
-            },
-            "price": {
-              "type": "text",
-              "settings": {
-                "tag": "span",
-                "content": "{{ context.item.formatted_price }}",
-                "text_align": "right",
-                "type_style": "body"
+                "image": "{{ context.item.asset.url }}",
+                "object_fit": "cover",
+                "aspect_ratio": "square"
               }
             }
           },
-          "block_order": ["title", "price"]
+          "block_order": ["img"]
         },
         "menu-card-content": {
           "type": "group",
@@ -759,6 +744,16 @@
             "grow_content": true
           },
           "blocks": {
+            "title": {
+              "type": "text",
+              "settings": {
+                "tag": "h3",
+                "content": "{{ context.item.name }}",
+                "text_wrap": "balance",
+                "text_align": "left",
+                "type_style": "body"
+              }
+            },
             "desc": {
               "type": "text",
               "settings": {
@@ -768,7 +763,7 @@
               }
             }
           },
-          "block_order": ["desc"]
+          "block_order": ["title", "desc"]
         },
         "menu-card-footer": {
           "type": "group",
@@ -776,14 +771,24 @@
           "static": true,
           "settings": {
             "gap": "xs",
-            "padding_top": "xs",
-            "padding_bottom": "xs",
-            "padding_left": "none",
-            "padding_right": "none",
             "direction": "row",
-            "content_align": "right"
+            "vertical_align": "center",
+            "content_align": "right",
+            "padding_top": "none",
+            "padding_bottom": "none",
+            "padding_left": "none",
+            "padding_right": "none"
           },
           "blocks": {
+            "price": {
+              "type": "text",
+              "settings": {
+                "tag": "span",
+                "content": "{{ context.item.formatted_price }}",
+                "text_align": "right",
+                "type_style": "body"
+              }
+            },
             "btn": {
               "type": "button",
               "settings": {
@@ -793,15 +798,15 @@
               }
             }
           },
-          "block_order": ["btn"]
+          "block_order": ["price", "btn"]
         }
       },
       "settings": {
-        "gap": "xs",
+        "gap": "md",
         "padding_top": "sm",
         "padding_bottom": "sm",
-        "padding_left": "md",
-        "padding_right": "md",
+        "padding_left": "none",
+        "padding_right": "none",
         "border_mode": "custom",
         "border_custom_bottom": true,
         "border_size": "xxs"

@@ -87,6 +87,7 @@
           src_mobile: s.mobile_image,
           video: s.video_url,
           fit: 'cover',
+          position: s.bg_focal,
           loading: 'eager',
           placeholder: placeholder_name,
           animate: s.enable_zoom
@@ -234,6 +235,11 @@
       "type": "image_picker",
       "id": "bg_image",
       "label": "Image 1 (Desktop)"
+    },
+    {
+      "type": "text",
+      "id": "bg_focal",
+      "label": "Image Focal Point"
     },
     {
       "type": "image_picker",

@@ -16,11 +16,15 @@ export default class TabHead {
       `[data-action="tab-switch"][data-tab-group="${this.groupId}"]`
     );
     const explicitActive = this.el.getAttribute("aria-selected") === "true";
-    const anySiblingActive = Array.from(familyMembers).some(
-      (tab) => tab.getAttribute("aria-selected") === "true"
+    const uniqueTabIds = [
+      ...new Set(Array.from(familyMembers).map((t) => t.getAttribute("data-tab-id"))),
+    ];
+    const otherSelected = Array.from(familyMembers).some(
+      (tab) =>
+        tab.getAttribute("aria-selected") === "true" &&
+        tab.getAttribute("data-tab-id") !== this.tabId
     );
-    const isFirst = familyMembers[0] === this.el;
-    const shouldBeActive = explicitActive || (!anySiblingActive && isFirst);
+    const shouldBeActive = explicitActive || (!otherSelected && uniqueTabIds[0] === this.tabId);
 
     this.setState(shouldBeActive);
 

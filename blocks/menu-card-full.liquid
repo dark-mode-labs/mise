@@ -5,7 +5,8 @@
 {% if s.border_radius_override %}
   {% assign radius_class = 'rounded-custom' %}
 {% endif %}
-{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all width-fill height-full'
+{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all height-full block-limit-width'
+  | push: 'width-{{ s.width }}'
   | push: radius_class
   | push: 'text-align-{{ s.text_align }}'
   | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
@@ -215,6 +216,12 @@
         }
       ],
       "default": "left"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Card Width",
+      "default": "fill"
     },
     {
       "type": "space",

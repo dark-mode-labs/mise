@@ -74,6 +74,30 @@
     max-width: none;
   }
 
+  .anchor-cover-left {
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .anchor-cover-right {
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  .anchor-cover-top {
+    left: 0;
+    right: 0;
+    top: 0;
+  }
+
+  .anchor-cover-bottom {
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
   .header-drawer {
     @apply fixed inset-0 z-overlay h-screen transform transition-transform duration-300 ease-in-out -translate-x-full pointer-events-none;
   }
@@ -164,6 +188,10 @@
     @apply group-hover:pointer-events-none;
   }
 
+  .group-block.flex-1 {
+    min-width: 0;
+  }
+
   .carousel-block .slideshow-track {
     -webkit-user-select: none;
     user-select: none;
@@ -175,7 +203,7 @@
 
   [data-behavior="slideshow"] .slideshow-track > *,
   [data-behavior="slideshow"] .slideshow-track > .contents > * {
-    flex-shrink: 0;
+    flex: 0 0 auto;
     scroll-snap-align: start;
     box-sizing: border-box;
   }
@@ -257,6 +285,7 @@
     width: 100%;
     height: 100%;
     object-fit: var(--object-fit, "cover");
+    object-position: var(--object-position, center);
     display: block;
   }
 
@@ -1294,8 +1323,8 @@
 
   .cart-count-badge {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -0.125rem;
+    right: -0.125rem;
     min-width: var(--space-sm);
     height: var(--space-sm);
     padding-inline: var(--space-xxs);
@@ -1394,6 +1423,21 @@
     white-space: nowrap;
   }
   .chip-strip-top.chip-strip-scroll-snap::-webkit-scrollbar {
+    display: none;
+  }
+  /* Plain horizontal scroll — no scroll-snap (source `overflow-x-auto` without snap classes).
+     Mandatory snap would force-scroll the first chip to x=0, eating the strip's left padding. */
+  .chip-strip-top.chip-strip-scroll {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .chip-strip-top.chip-strip-scroll > *,
+  .chip-strip-top.chip-strip-scroll > * > * {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .chip-strip-top.chip-strip-scroll::-webkit-scrollbar {
     display: none;
   }
   @media (max-width: 768px) {

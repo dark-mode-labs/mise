@@ -198,6 +198,12 @@
           {% elsif s.cart_text_role == 'custom' and s.cart_text_role_custom != blank %}
             {% assign cart_text_color = s.cart_text_role_custom %}
           {% endif %}
+          {% assign cart_border_color = blank %}
+          {% if s.cart_border_role == 'palette' and s.cart_border_role_palette != blank %}
+            {% assign cart_border_color = 'var(--palette-{{ s.cart_border_role_palette }})' %}
+          {% elsif s.cart_border_role == 'custom' and s.cart_border_role_custom != blank %}
+            {% assign cart_border_color = s.cart_border_role_custom %}
+          {% endif %}
           {% assign badge_bg_color = blank %}
           {% if s.cart_badge_bg_role == 'palette' and s.cart_badge_bg_role_palette != blank %}
             {% assign badge_bg_color = 'var(--palette-{{ s.cart_badge_bg_role_palette }})' %}
@@ -226,11 +232,22 @@
           {% if s.cart_shadow_color_override and s.cart_shadow_color != blank %}
             {% assign cart_button_styles = cart_button_styles | push: '--shadow: {{ s.cart_shadow_color }}' %}
           {% endif %}
+          {% if cart_border_color != blank %}
+            {% assign cart_button_styles = cart_button_styles
+              | push: '--border: {{ cart_border_color }}'
+              | push: '--border-style: solid'
+            %}
+          {% endif %}
           {% assign cart_btn_class = 'header-cart-btn relative hover:opacity-90 inline-flex items-center justify-center shrink-0' %}
           {% if s.cart_shadow %}
             {% assign cart_btn_class = cart_btn_class | append: ' shadow-lg' %}
           {% endif %}
-          {% if s.cart_shape == 'circle' or cart_bg_color != blank %}
+          {% if cart_border_color != blank %}
+            {% assign cart_btn_class = cart_btn_class
+              | append: ' group-border-full group-border-size-{{ s.cart_border_size }}'
+            %}
+          {% endif %}
+          {% if s.cart_shape == 'circle' or cart_bg_color != blank or cart_border_color != blank %}
             {% assign cart_btn_class = cart_btn_class | append: ' rounded-full' %}
           {% else %}
             {% assign cart_btn_class = cart_btn_class | append: ' p-2 hover:opacity-70' %}
@@ -744,6 +761,60 @@
       "id": "cart_bg_role_custom",
       "label": "Cart BG Color",
       "conditional": "setting.show_cart == true and setting.cart_bg_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "cart_border_role",
+      "label": "Cart Button Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw"
+        }
+      ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "palette",
+      "id": "cart_border_role_palette",
+      "label": "Cart Border Palette",
+      "conditional": "setting.show_cart == true and setting.cart_border_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_border_role_custom",
+      "label": "Cart Border Color",
+      "conditional": "setting.show_cart == true and setting.cart_border_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "cart_border_size",
+      "label": "Cart Border Width",
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "Hairline"
+        },
+        {
+          "value": "xs",
+          "label": "Thin"
+        },
+        {
+          "value": "sm",
+          "label": "Medium"
+        }
+      ],
+      "conditional": "setting.show_cart == true and setting.cart_border_role != 'none'"
     },
     {
       "type": "select",

@@ -9,6 +9,8 @@
   | push: radius_class
   | push: 'width-{{ s.width | default: "fill" }}'
   | push: 'height-{{ s.height }}'
+  | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
+  | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
 %}
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
@@ -43,6 +45,7 @@
     ratio: s.aspect_ratio,
     ratio_custom: s.aspect_ratio_custom,
     fit: s.object_fit,
+    position: s.object_position,
     animate_hover: s.enable_hover,
     controls: s.show_controls,
     autoplay: s.autoplay,
@@ -173,6 +176,12 @@
       "default": "cover"
     },
     {
+      "type": "text",
+      "id": "object_position",
+      "label": "Focal Point",
+      "default": ""
+    },
+    {
       "type": "header",
       "content": "Style"
     },
@@ -187,6 +196,30 @@
       "id": "show_shadow",
       "label": "Show Shadow",
       "default": false
+    },
+    {
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
     },
     {
       "type": "header",

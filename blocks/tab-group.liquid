@@ -105,7 +105,25 @@
   >
     {% content_for 'block', type: '_tab-head-region', id: 'chips' %}
   </div>
-  <div class='tab-panes gap-{{ s.pane_gap_spy }}'>
+  {% assign panes_bg_value = blank %}
+  {% if s.panes_bg_role == 'gradient' and s.panes_bg_role_gradient != blank %}
+    {% assign panes_bg_value = 'var(--gradient-{{ s.panes_bg_role_gradient }})' %}
+  {% elsif s.panes_bg_role == 'palette' and s.panes_bg_role_palette != blank %}
+    {% assign panes_bg_value = 'var(--palette-{{ s.panes_bg_role_palette }})' %}
+  {% elsif s.panes_bg_role == 'custom' and s.panes_bg_role_custom != blank %}
+    {% assign panes_bg_value = s.panes_bg_role_custom %}
+  {% endif %}
+  {% assign panes_classes = 'tab-panes'
+    | push: 'gap-{{ s.pane_gap_spy }}'
+    | push: 'pt-{{ s.panes_padding_top }} pb-{{ s.panes_padding_bottom }}'
+    | push: 'pl-{{ s.panes_padding_left }} pr-{{ s.panes_padding_right }}'
+  %}
+  <div
+    class='{{ panes_classes | join: ' ' }}'
+    {% if panes_bg_value != blank %}
+      style='background: {{ panes_bg_value }}'
+    {% endif %}
+  >
     {% content_for 'block', type: '_tab-content-region', id: 'panes' %}
   </div>
 </div>
@@ -215,6 +233,10 @@
           "label": "Scroll-snap"
         },
         {
+          "value": "scroll",
+          "label": "Scroll"
+        },
+        {
           "value": "responsive",
           "label": "Responsive"
         }
@@ -247,6 +269,41 @@
       "id": "pane_gap_spy",
       "label": "Gap Between Panes (Spy Mode)",
       "default": "medium"
+    },
+    { "type": "space", "id": "panes_padding_top", "label": "Panes Padding Top", "default": "none" },
+    { "type": "space", "id": "panes_padding_bottom", "label": "Panes Padding Bottom", "default": "none" },
+    { "type": "space", "id": "panes_padding_left", "label": "Panes Padding Left", "default": "none" },
+    { "type": "space", "id": "panes_padding_right", "label": "Panes Padding Right", "default": "none" },
+    {
+      "type": "select",
+      "id": "panes_bg_role",
+      "label": "Panes Background",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "panes_bg_role_palette",
+      "label": "Panes Bg Palette",
+      "default": "brand",
+      "conditional": "setting.panes_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "panes_bg_role_custom",
+      "label": "Panes Bg Raw",
+      "conditional": "setting.panes_bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "panes_bg_role_gradient",
+      "label": "Panes Bg Gradient",
+      "conditional": "setting.panes_bg_role == 'gradient'"
     },
     {
       "type": "header",

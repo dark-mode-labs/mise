@@ -40,6 +40,14 @@
 {% elsif s.text_role_inactive == 'custom' and s.text_role_inactive_custom != blank %}
   {% assign text_color_inactive_value = s.text_role_inactive_custom %}
 {% endif %}
+{% assign border_color_inactive_value = blank %}
+{% if s.border_role_inactive == 'palette' and s.border_role_inactive_palette != blank %}
+  {% assign border_color_inactive_value = 'var(--palette-{{ s.border_role_inactive_palette }})' %}
+{% elsif s.border_role_inactive == 'gradient' and s.border_role_inactive_gradient != blank %}
+  {% assign border_color_inactive_value = 'var(--gradient-{{ s.border_role_inactive_gradient }})' %}
+{% elsif s.border_role_inactive == 'custom' and s.border_role_inactive_custom != blank %}
+  {% assign border_color_inactive_value = s.border_role_inactive_custom %}
+{% endif %}
 {% assign classes = '' %}
 {% assign styles = '' %}
 {% assign active_state_classes = '' %}
@@ -48,6 +56,9 @@
 {% assign inactive_state_styles = '' %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
+{% if s.width != blank %}
+  {% assign classes = classes | push: 'width-{{ s.width }}' %}
+{% endif %}
 {% if s.padding_top != blank or s.padding_bottom != blank %}
   {% assign classes = classes | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}' %}
 {% endif %}
@@ -76,6 +87,9 @@
     | push: 'group-border-{{ s.border_mode_inactive }}'
     | push: 'group-border-size-{{ s.border_size_inactive }}'
   %}
+  {% if border_color_inactive_value != blank %}
+    {% assign inactive_state_styles = inactive_state_styles | push: '--border:{{ border_color_inactive_value }}' %}
+  {% endif %}
   {% assign inactive_state_styles = inactive_state_styles | push: '--border-style:{{ s.border_style_inactive }}' %}
   {% if s.border_size_inactive == 'custom' %}
     {% assign inactive_state_styles = inactive_state_styles
@@ -288,6 +302,40 @@
       "id": "border_role_gradient",
       "label": "Border Gradient",
       "conditional": "setting.border_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "border_role_inactive",
+      "label": "Border Color (Inactive)",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "conditional": "setting.border_mode_inactive != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_inactive_palette",
+      "label": "Inactive Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.border_role_inactive == 'palette' and setting.border_mode_inactive != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_inactive_custom",
+      "label": "Inactive Raw Border",
+      "conditional": "setting.border_role_inactive == 'custom' and setting.border_mode_inactive != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "border_role_inactive_gradient",
+      "label": "Inactive Border Gradient",
+      "conditional": "setting.border_role_inactive == 'gradient'"
     },
     {
       "type": "select",
@@ -865,6 +913,11 @@
       "default": 0,
       "unit": "px",
       "conditional": "setting.border_radius_override"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Width"
     },
     {
       "type": "space",
