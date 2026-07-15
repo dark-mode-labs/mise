@@ -5,10 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================================================================
   bootstrapBehaviorsIn(document);
 
-  // Dynamic content (lists rendered from JSON, cloned templates, etc.) can
-  // introduce [data-behavior] nodes after this initial pass. Observe the
-  // document tree and bootstrap them as they appear so consumers never need
-  // to import and instantiate behavior classes by hand.
   new MutationObserver((mutations) => {
     for (const m of mutations) {
       for (const node of m.addedNodes) {
@@ -16,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         bootstrapBehaviorsIn(node);
       }
     }
-  }).observe(document.body, { childList: true, subtree: true });
+  }).observe(document.documentElement, { childList: true, subtree: true });
 
   // =========================================================================
   // 2. INTERSECTION OBSERVER FOR VISUAL ANIMATIONS ONLY

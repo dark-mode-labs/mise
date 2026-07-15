@@ -316,6 +316,4 @@
       {% endif %}
     {% endfor %}
   {% endcapture %}
-<style>
-  {{- stylesheet | strip_newlines | replace: '  ', '' | replace: '  ', '' | replace: ' : ', ':' | replace: ': ', ':' | replace: ' {', '{' | replace: ' {', '{' | replace: ' {', '{' | replace: ' }', '}' | replace: '} ', '}' | replace: '; ', ';' -}}
-</style>
+{{- stylesheet -}}
