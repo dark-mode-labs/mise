@@ -81,6 +81,7 @@
 {% assign styles = styles
   | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
   | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+  | push_if: 'container-type: inline-size', s.container_query
 %}
 
 {% unless s.border_mode == 'none' %}
@@ -660,6 +661,13 @@
       "id": "overflow_hidden",
       "label": "Clip Content",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "container_query",
+      "label": "Container Query Context",
+      "default": false,
+      "info": "Inline-size query container for descendant cqi/cqw values."
     },
     {
       "type": "range",
