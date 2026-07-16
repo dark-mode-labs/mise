@@ -27,10 +27,14 @@
 {% assign positions = blank %}
 
 {% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
-  {% assign positions = positions | push: 'fixed top-[var(--top-nav,0)] inset-x-0' %}
-  {% unless is_overlay %}
-    {% assign needs_spacer = true %}
-  {% endunless %}
+  {% if s.sticky_behavior == 'always' and is_overlay != true %}
+    {% assign positions = positions | push: 'sticky top-[var(--top-nav,0)] inset-x-0' %}
+  {% else %}
+    {% assign positions = positions | push: 'fixed top-[var(--top-nav,0)] inset-x-0' %}
+    {% unless is_overlay %}
+      {% assign needs_spacer = true %}
+    {% endunless %}
+  {% endif %}
 {% elsif is_overlay %}
   {% assign positions = positions | push: 'absolute top-[var(--top-nav,0)] inset-x-0' %}
 {% else %}
