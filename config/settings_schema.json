@@ -440,10 +440,10 @@
           ]
         },
         {
-          "type": "text",
+          "type": "gradient",
           "id": "text_fill_gradient",
           "label": "Text fill gradient",
-          "info": "CSS gradient painted into the glyphs when Text fill = gradient (e.g. `linear-gradient(168deg, #fbeeb6, #c08c10)`).",
+          "info": "Gradient token painted into the glyphs when Text fill = gradient.",
           "conditional": "setting.text_fill == 'gradient'"
         }
       ]
