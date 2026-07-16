@@ -421,6 +421,30 @@
               "label": "Overflow"
             }
           ]
+        },
+        {
+          "type": "select",
+          "id": "text_fill",
+          "label": "Text fill",
+          "info": "`gradient` paints a gradient into the glyphs (background-clip: text); the text's own color becomes transparent.",
+          "default": "solid",
+          "options": [
+            {
+              "value": "solid",
+              "label": "Solid"
+            },
+            {
+              "value": "gradient",
+              "label": "Gradient"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "text_fill_gradient",
+          "label": "Text fill gradient",
+          "info": "CSS gradient painted into the glyphs when Text fill = gradient (e.g. `linear-gradient(168deg, #fbeeb6, #c08c10)`).",
+          "conditional": "setting.text_fill == 'gradient'"
         }
       ]
     },
