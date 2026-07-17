@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 2. INTERSECTION OBSERVER FOR VISUAL ANIMATIONS ONLY
   // =========================================================================
   const animatedElements = document.querySelectorAll(
-    ".fade-up, .fade-in, .scale-in, .stagger-load"
+    ".anim-fade-in, .anim-rise-in, .anim-zoom-in, .stagger-load"
   );
 
   const observerOptions = {

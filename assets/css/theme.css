@@ -1005,109 +1005,144 @@
     z-index: 1;
   }
 
-  .animate {
-    animation-name: var(--animation-name);
-    animation-duration: var(--animation-duration, 0.6s);
-    animation-timing-function: var(--animation-ease, ease-out);
-    animation-fill-mode: both;
-    animation-iteration-count: var(--animation-iteration, 1);
+  .anim-speed-slow {
+    --anim-speed-mult: 1.6;
+  }
+  .anim-speed-normal {
+    --anim-speed-mult: 1;
+  }
+  .anim-speed-fast {
+    --anim-speed-mult: 0.6;
   }
 
+  .anim-loop-once {
+    --anim-iter: 1;
+    --anim-dir: normal;
+  }
+  .anim-loop-loop {
+    --anim-iter: infinite;
+    --anim-dir: normal;
+  }
+  .anim-loop-loop-alternate {
+    --anim-iter: infinite;
+    --anim-dir: alternate;
+  }
+
+  .anim-intensity-subtle {
+    --anim-dist: 8px;
+    --anim-scale: 1.03;
+  }
+  .anim-intensity-normal {
+    --anim-dist: 20px;
+    --anim-scale: 1.08;
+  }
+  .anim-intensity-strong {
+    --anim-dist: 40px;
+    --anim-scale: 1.15;
+  }
+
+  /* Entrance primitives stay hidden until the IntersectionObserver adds .animate. */
+  .anim-fade-in,
+  .anim-rise-in,
+  .anim-zoom-in {
+    opacity: 0;
+    will-change: opacity, transform;
+  }
+  .anim-fade-in.animate {
+    animation: anim-fade-in calc(0.8s * var(--anim-speed-mult, 1)) ease-out both;
+  }
+  .anim-rise-in.animate {
+    animation: anim-rise-in calc(0.6s * var(--anim-speed-mult, 1)) cubic-bezier(0.16, 1, 0.3, 1)
+      both;
+  }
+  .anim-zoom-in.animate {
+    animation: anim-zoom-in calc(0.5s * var(--anim-speed-mult, 1)) ease-out both;
+  }
+
+  /* Loop primitives run on load. */
+  .anim-float {
+    animation: anim-float calc(6s * var(--anim-speed-mult, 1)) ease-in-out
+      var(--anim-iter, infinite) var(--anim-dir, normal);
+    will-change: transform;
+  }
+  .anim-pulse {
+    animation: anim-pulse calc(3s * var(--anim-speed-mult, 1)) ease-in-out
+      var(--anim-iter, infinite) var(--anim-dir, normal);
+  }
+  .anim-ken-burns {
+    animation: anim-ken-burns calc(20s * var(--anim-speed-mult, 1)) ease-out
+      var(--anim-iter, infinite) var(--anim-dir, alternate);
+    will-change: transform;
+  }
+  .anim-rise {
+    animation: anim-rise calc(8s * var(--anim-speed-mult, 1)) linear var(--anim-iter, infinite)
+      var(--anim-dir, normal);
+    will-change: transform, opacity;
+  }
+  .anim-shimmer {
+    animation: anim-shimmer calc(3s * var(--anim-speed-mult, 1)) linear var(--anim-iter, infinite)
+      var(--anim-dir, normal);
+    background-size: 200% auto;
+  }
+  .anim-spin {
+    animation: anim-spin calc(4s * var(--anim-speed-mult, 1)) linear var(--anim-iter, infinite)
+      var(--anim-dir, normal);
+  }
+  .anim-bounce {
+    animation: anim-bounce calc(1s * var(--anim-speed-mult, 1)) ease-in-out
+      var(--anim-iter, infinite) var(--anim-dir, normal);
+  }
+
+  .stagger-load {
+    --stagger-step: 150ms;
+  }
+  .anim-delay-short {
+    --stagger-step: 80ms;
+  }
+  .anim-delay-long {
+    --stagger-step: 250ms;
+  }
   .stagger-load > *:not(.no-stagger) {
     opacity: 0;
     will-change: opacity, transform;
-
-    --animation-name: fadeUp;
-    --animation-duration: 0.6s;
-
     animation: none !important;
   }
-
   .stagger-load > *:nth-child(1) {
-    --stagger-delay: 0ms;
+    --stagger-i: 0;
   }
-
   .stagger-load > *:nth-child(2) {
-    --stagger-delay: 150ms;
+    --stagger-i: 1;
   }
-
   .stagger-load > *:nth-child(3) {
-    --stagger-delay: 300ms;
+    --stagger-i: 2;
   }
-
   .stagger-load > *:nth-child(4) {
-    --stagger-delay: 450ms;
+    --stagger-i: 3;
   }
-
   .stagger-load > *:nth-child(5) {
-    --stagger-delay: 600ms;
+    --stagger-i: 4;
   }
-
   .stagger-load > *:nth-child(6) {
-    --stagger-delay: 750ms;
+    --stagger-i: 5;
   }
-
   .stagger-load > *:nth-child(7) {
-    --stagger-delay: 900ms;
+    --stagger-i: 6;
   }
-
   .stagger-load > *:nth-child(8) {
-    --stagger-delay: 1050ms;
+    --stagger-i: 7;
   }
-
   .stagger-load > *:nth-child(9) {
-    --stagger-delay: 1200ms;
+    --stagger-i: 8;
   }
-
   .stagger-load > *:nth-child(10) {
-    --stagger-delay: 1350ms;
+    --stagger-i: 9;
   }
-
   .stagger-load > *:nth-child(n + 11) {
-    --stagger-delay: 1500ms;
+    --stagger-i: 10;
   }
-
   .stagger-load.animate > *:not(.no-stagger) {
-    animation-name: var(--animation-name) !important;
-    animation-duration: var(--animation-duration) !important;
-    animation-timing-function: var(--animation-ease, ease-out) !important;
-    animation-fill-mode: both !important;
-    animation-delay: var(--stagger-delay) !important;
-  }
-
-  .fade-up,
-  .stagger-load > .fade-up {
-    --animation-name: fadeUp;
-    --animation-duration: 0.6s;
-    opacity: 0;
-    transform: translateY(30px);
-    will-change: opacity, transform;
-  }
-
-  .fade-in,
-  .stagger-load > .fade-in {
-    --animation-name: fadeIn;
-    --animation-duration: 0.8s;
-    opacity: 0;
-    will-change: opacity;
-  }
-
-  .scale-in,
-  .stagger-load > .scale-in {
-    --animation-name: scaleIn;
-    --animation-duration: 0.5s;
-    opacity: 0;
-    transform: scale(0.95);
-    will-change: opacity, transform;
-  }
-
-  .float {
-    --animation-name: float;
-    --animation-duration: 6s;
-    --animation-ease: ease-in-out;
-    --animation-iteration: infinite;
-    --animation-fill: none;
-    will-change: transform;
+    animation: anim-rise-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+    animation-delay: calc(var(--stagger-i, 0) * var(--stagger-step, 150ms)) !important;
   }
 
   .hover-shadow {
@@ -1143,48 +1178,125 @@
     cursor: inherit;
   }
 
-  @keyframes fadeUp {
+  @keyframes anim-fade-in {
     from {
       opacity: 0;
-      transform: translateY(30px);
     }
+    to {
+      opacity: 1;
+    }
+  }
 
+  @keyframes anim-rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--anim-dist, 20px));
+    }
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
 
-  @keyframes fadeIn {
+  @keyframes anim-zoom-in {
     from {
       opacity: 0;
+      transform: scale(calc(2 - var(--anim-scale, 1.08)));
     }
-
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-
     to {
       opacity: 1;
       transform: scale(1);
     }
   }
 
-  @keyframes float {
+  @keyframes anim-float {
     0%,
     100% {
-      transform: translateY(0px);
+      transform: translateY(0);
     }
-
     50% {
-      transform: translateY(-20px);
+      transform: translateY(calc(-1 * var(--anim-dist, 20px)));
+    }
+  }
+
+  @keyframes anim-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(var(--anim-scale, 1.08));
+    }
+  }
+
+  @keyframes anim-ken-burns {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(var(--anim-scale, 1.08));
+    }
+  }
+
+  @keyframes anim-rise {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    12% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(calc(-8 * var(--anim-dist, 20px)));
+      opacity: 0;
+    }
+  }
+
+  @keyframes anim-shimmer {
+    from {
+      background-position: 200% center;
+    }
+    to {
+      background-position: -200% center;
+    }
+  }
+
+  @keyframes anim-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes anim-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(calc(-1 * var(--anim-dist, 20px)));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anim-fade-in,
+    .anim-rise-in,
+    .anim-zoom-in,
+    .anim-float,
+    .anim-pulse,
+    .anim-ken-burns,
+    .anim-rise,
+    .anim-shimmer,
+    .anim-spin,
+    .anim-bounce,
+    .stagger-load > *:not(.no-stagger) {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
     }
   }
 
