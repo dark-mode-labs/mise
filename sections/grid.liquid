@@ -17,11 +17,6 @@
   {% assign overlay_color_value = s.overlay_role_custom %}
 {% endif %}
 
-{%- comment -%}
-  Padding lives on grid-content-overlay (below), not here: that makes content-overlay
-  a full-width (width_bg) padding-box, so absolute decorations anchor to the section box (not the
-  padded content box) while text content stays padded. grid-layout-overlay is the unpadded clip box.
-{%- endcomment -%}
 {% assign container_classes = 'grid-layout-overlay limit-width'
   | push: 'width-{{ s.width }}'
   | push: 'height-{{ s.height }}'
