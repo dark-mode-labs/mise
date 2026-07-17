@@ -7,27 +7,32 @@
 {% assign classes = 'carousel-block transition-all rotate-custom block-limit-width'
   | push: radius_class
   | push: 'height-{{ s.height }}'
-  | push: 'padding-py-{{ s.padding_vertical }}'
-  | push: 'padding-px-{{ s.padding_horizontal }}'
-  | push: 'margin-my-{{ s.margin_vertical }}'
-  | push: 'margin-mx-{{ s.margin_horizontal }}'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
+  | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
+  | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
   | push: 'aspect-{{ s.aspect_ratio }}'
-  | push_if: 'float', s.animate_float
-  | push_if: 'scale-in', s.animate_scale_in
-  | push_if: 'stagger-load', s.animate_stagger
   | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
+
+{% if s.animation != blank and s.animation != 'none' %}
+  {% assign classes = classes
+    | push: 'anim-{{ s.animation }}'
+    | push: 'anim-speed-{{ s.animation_speed }}'
+    | push: 'anim-loop-{{ s.animation_loop }}'
+    | push: 'anim-intensity-{{ s.animation_intensity }}'
+  %}
+{% endif %}
+{% if s.animation_delay != blank and s.animation_delay != 'none' %}
+  {% assign classes = classes | push: 'stagger-load' | push: 'anim-delay-{{ s.animation_delay }}' %}
+{% endif %}
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
 
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
-{% endif %}
-
-{% if s.animate_fade != 'none' %}
-  {% assign classes = classes | push: 'fade-{{ s.animate_fade }}' %}
 {% endif %}
 
 {% unless s.grow_content %}
@@ -89,38 +94,6 @@
   {% assign border_color_value = s.border_role_custom %}
 {% endif %}
 {% assign styles = blank %}
-
-{% if s.padding_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
-    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-
-{% if s.padding_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
-    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
-  %}
-{% endif %}
-
-{% if s.margin_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
-    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-
-{% if s.margin_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
-    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
-  %}
-{% endif %}
-
-{% if s.gap == 'custom' %}
-  {% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}
-{% endif %}
 
 {% unless s.border_mode == 'none' %}
   {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
@@ -220,7 +193,6 @@
     </div>
   </div>
 </div>
-
 {% schema %}
 {
   "name": "Carousel",
@@ -231,11 +203,26 @@
       "label": "Align Self",
       "default": "auto",
       "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "start", "label": "Top / Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "Bottom / End" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "start",
+          "label": "Top / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
     {
@@ -629,115 +616,51 @@
     },
     {
       "type": "space",
-      "id": "padding_vertical",
-      "label": "Vertical Padding",
+      "id": "padding_top",
+      "label": "Padding Top",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_top",
-      "label": "Custom Top Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_bottom",
-      "label": "Custom Bottom Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
     },
     {
       "type": "space",
-      "id": "padding_horizontal",
-      "label": "Horizontal Padding",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "padding_horizontal_custom_left",
-      "label": "Custom Left Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_horizontal_custom_right",
-      "label": "Custom Right Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_vertical",
-      "label": "Vertical margin",
+      "id": "padding_left",
+      "label": "Padding Left",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_top",
-      "label": "Custom Top margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_bottom",
-      "label": "Custom Bottom margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_horizontal",
-      "label": "Horizontal margin",
+      "id": "padding_right",
+      "label": "Padding Right",
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_left",
-      "label": "Custom Left margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_right",
-      "label": "Custom Right margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
     },
     {
       "type": "space",
@@ -746,56 +669,74 @@
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "gap_custom",
-      "label": "Custom Gap",
-      "min": 0,
-      "max": 6,
-      "step": 0.25,
-      "default": 1,
-      "unit": "rem",
-      "conditional": "setting.gap == 'custom'"
-    },
-    {
       "type": "header",
       "content": "Animation"
     },
     {
-      "type": "checkbox",
-      "id": "animate_float",
-      "label": "Float",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "animate_scale_in",
-      "label": "Scale In",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "animate_stagger",
-      "label": "Stagger",
-      "default": false
+      "type": "select",
+      "id": "animation",
+      "label": "Animation",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fade-in", "label": "Fade In" },
+        { "value": "rise-in", "label": "Rise In" },
+        { "value": "zoom-in", "label": "Zoom In" },
+        { "value": "float", "label": "Float" },
+        { "value": "pulse", "label": "Pulse" },
+        { "value": "ken-burns", "label": "Ken Burns" },
+        { "value": "rise", "label": "Rise (drift)" },
+        { "value": "shimmer", "label": "Shimmer" },
+        { "value": "spin", "label": "Spin" },
+        { "value": "bounce", "label": "Bounce" }
+      ]
     },
     {
       "type": "select",
-      "id": "animate_fade",
-      "label": "Fade Animation",
+      "id": "animation_speed",
+      "label": "Speed",
+      "default": "normal",
+      "conditional": "setting.animation != 'none'",
+      "options": [
+        { "value": "slow", "label": "Slow" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "fast", "label": "Fast" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "animation_loop",
+      "label": "Loop",
+      "default": "once",
+      "conditional": "setting.animation != 'none'",
+      "options": [
+        { "value": "once", "label": "Once" },
+        { "value": "loop", "label": "Loop" },
+        { "value": "loop-alternate", "label": "Loop (alternate)" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "animation_intensity",
+      "label": "Intensity",
+      "default": "normal",
+      "conditional": "setting.animation != 'none'",
+      "options": [
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "strong", "label": "Strong" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "animation_delay",
+      "label": "Stagger Children",
+      "info": "Reveals child blocks with an incremental delay.",
       "default": "none",
       "options": [
-        {
-          "value": "in",
-          "label": "In"
-        },
-        {
-          "value": "up",
-          "label": "Up"
-        },
-        {
-          "value": "none",
-          "label": "None"
-        }
+        { "value": "none", "label": "None" },
+        { "value": "short", "label": "Short" },
+        { "value": "long", "label": "Long" }
       ]
     },
     {

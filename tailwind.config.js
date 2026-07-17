@@ -11,15 +11,33 @@ export default {
     "./assets/js/**/*.js",
   ],
   safelist: [
-    // Liquid-interpolated `backdrop-blur-{{ s.backdrop_blur }}` on
-    // group / header / badge — content scanner can't see the dynamic
-    // tier so emit all named tiers explicitly.
     "backdrop-blur-sm",
     "backdrop-blur-md",
     "backdrop-blur-lg",
     "backdrop-blur-xl",
     "backdrop-blur-2xl",
     "backdrop-blur-3xl",
+    "anim-fade-in",
+    "anim-rise-in",
+    "anim-float",
+    "anim-pulse",
+    "anim-zoom-in",
+    "anim-ken-burns",
+    "anim-rise",
+    "anim-shimmer",
+    "anim-spin",
+    "anim-bounce",
+    "anim-speed-slow",
+    "anim-speed-normal",
+    "anim-speed-fast",
+    "anim-loop-once",
+    "anim-loop-loop",
+    "anim-loop-loop-alternate",
+    "anim-intensity-subtle",
+    "anim-intensity-normal",
+    "anim-intensity-strong",
+    "anim-delay-short",
+    "anim-delay-long",
   ],
   theme: {
     extend: {
@@ -42,20 +60,10 @@ export default {
           "0%": { transform: "translateX(-50%)" },
           "100%": { transform: "translateX(0)" },
         },
-        "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(1.25rem)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "ken-burns": {
-          "0%": { transform: "scale(1)" },
-          "100%": { transform: "scale(1.15)" },
-        },
       },
       animation: {
         marquee: "marquee linear infinite",
         "marquee-reverse": "marquee-reverse linear infinite",
-        "fade-up": "fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
-        "ken-burns": "ken-burns 20s ease-out infinite alternate",
       },
       zIndex: {
         // The Mise Layer System

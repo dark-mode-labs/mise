@@ -34,7 +34,12 @@
         {% endif %}
       >
         {% for item in list %}
-          <span class='marquee-item {{ size_class }} font-bold {{ case_class }} whitespace-nowrap'>{{ item }}</span>
+          <span
+            class='marquee-item {{ size_class }} font-bold {{ case_class }} whitespace-nowrap'
+            style='{{ item_style }}'
+          >
+            {{- item -}}
+          </span>
         {% endfor %}
       </div>
     {% endfor %}

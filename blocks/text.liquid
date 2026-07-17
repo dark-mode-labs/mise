@@ -1,10 +1,12 @@
 {% assign s = block.settings %}
 
-{% comment %} --- Wrapper Classes --- {% endcomment %}
 {% assign wrapper_classes = ''
-  | push: 'margin-my-{{ s.margin_vertical }}'
-  | push: 'margin-mx-{{ s.margin_horizontal }}'
+  | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
+  | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
 %}
+{% if s.type_style != blank and s.type_style != 'custom' %}
+  {% assign wrapper_classes = wrapper_classes | push: 'ts-{{ s.type_style }}' %}
+{% endif %}
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign wrapper_classes = wrapper_classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
@@ -31,20 +33,6 @@
 {% endif %}
 {% assign styles = blank %}
 
-{% if s.margin_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
-    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-
-{% if s.margin_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
-    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
-  %}
-{% endif %}
-
 {% if text_color_value != blank %}
   {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
 {% endif %}
@@ -67,6 +55,16 @@
     {%- assign utilities = utilities | push: 'truncate' %}
 {% endcase %}
 
+{% comment %} Animation rides on the text element itself so shimmer moves the gradient-clip fill. {% endcomment %}
+{% if s.animation != blank and s.animation != 'none' %}
+  {% assign utilities = utilities
+    | push: 'anim-{{ s.animation }}'
+    | push: 'anim-speed-{{ s.animation_speed }}'
+    | push: 'anim-loop-{{ s.animation_loop }}'
+    | push: 'anim-intensity-{{ s.animation_intensity }}'
+  %}
+{% endif %}
+
 {% assign utility_classes = utilities | join: ' ' %}
 
 {% assign color_role = s.text_role %}
@@ -88,7 +86,6 @@
     color_role: color_role
   %}
 </div>
-
 {% schema %}
 {
   "name": "Text",
@@ -99,11 +96,26 @@
       "label": "Align Self",
       "default": "auto",
       "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "start", "label": "Top / Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "Bottom / End" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "start",
+          "label": "Top / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
     {
@@ -268,59 +280,27 @@
     },
     {
       "type": "space",
-      "id": "margin_vertical",
-      "label": "Vertical margin",
+      "id": "margin_top",
+      "label": "Margin Top",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_top",
-      "label": "Custom Top margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_bottom",
-      "label": "Custom Bottom margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_horizontal",
-      "label": "Horizontal margin",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_left",
-      "label": "Custom Left margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_right",
-      "label": "Custom Right margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
     },
     {
       "type": "header",
@@ -386,6 +366,65 @@
       "id": "text_role_custom",
       "label": "Raw Text Color",
       "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Animation",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fade-in", "label": "Fade In" },
+        { "value": "rise-in", "label": "Rise In" },
+        { "value": "zoom-in", "label": "Zoom In" },
+        { "value": "float", "label": "Float" },
+        { "value": "pulse", "label": "Pulse" },
+        { "value": "ken-burns", "label": "Ken Burns" },
+        { "value": "rise", "label": "Rise (drift)" },
+        { "value": "shimmer", "label": "Shimmer" },
+        { "value": "spin", "label": "Spin" },
+        { "value": "bounce", "label": "Bounce" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "animation_speed",
+      "label": "Speed",
+      "default": "normal",
+      "conditional": "setting.animation != 'none'",
+      "options": [
+        { "value": "slow", "label": "Slow" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "fast", "label": "Fast" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "animation_loop",
+      "label": "Loop",
+      "default": "once",
+      "conditional": "setting.animation != 'none'",
+      "options": [
+        { "value": "once", "label": "Once" },
+        { "value": "loop", "label": "Loop" },
+        { "value": "loop-alternate", "label": "Loop (alternate)" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "animation_intensity",
+      "label": "Intensity",
+      "default": "normal",
+      "conditional": "setting.animation != 'none'",
+      "options": [
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "strong", "label": "Strong" }
+      ]
     },
     {
       "type": "header",

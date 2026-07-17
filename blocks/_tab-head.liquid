@@ -40,6 +40,14 @@
 {% elsif s.text_role_inactive == 'custom' and s.text_role_inactive_custom != blank %}
   {% assign text_color_inactive_value = s.text_role_inactive_custom %}
 {% endif %}
+{% assign border_color_inactive_value = blank %}
+{% if s.border_role_inactive == 'palette' and s.border_role_inactive_palette != blank %}
+  {% assign border_color_inactive_value = 'var(--palette-{{ s.border_role_inactive_palette }})' %}
+{% elsif s.border_role_inactive == 'gradient' and s.border_role_inactive_gradient != blank %}
+  {% assign border_color_inactive_value = 'var(--gradient-{{ s.border_role_inactive_gradient }})' %}
+{% elsif s.border_role_inactive == 'custom' and s.border_role_inactive_custom != blank %}
+  {% assign border_color_inactive_value = s.border_role_inactive_custom %}
+{% endif %}
 {% assign classes = '' %}
 {% assign styles = '' %}
 {% assign active_state_classes = '' %}
@@ -48,23 +56,20 @@
 {% assign inactive_state_styles = '' %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
-{% if s.padding_vertical != blank and s.padding_vertical != 'none' %}
-  {% assign classes = classes | push: 'padding-py-{{ s.padding_vertical }}' %}
+{% if s.width != blank %}
+  {% assign classes = classes | push: 'width-{{ s.width }}' %}
 {% endif %}
-{% if s.padding_horizontal != blank and s.padding_horizontal != 'none' %}
-  {% assign classes = classes | push: 'padding-px-{{ s.padding_horizontal }}' %}
+{% if s.padding_top != blank or s.padding_bottom != blank %}
+  {% assign classes = classes | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}' %}
 {% endif %}
-{% if s.padding_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
-    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
-  %}
+{% if s.padding_left != blank or s.padding_right != blank %}
+  {% assign classes = classes | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}' %}
 {% endif %}
-{% if s.padding_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
-    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
-  %}
+{% if s.margin_top != blank or s.margin_bottom != blank %}
+  {% assign classes = classes | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}' %}
+{% endif %}
+{% if s.margin_left != blank or s.margin_right != blank %}
+  {% assign classes = classes | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}' %}
 {% endif %}
 {% if s.border_radius_override %}
   {% assign classes = classes | push: 'rounded-custom' %}
@@ -82,6 +87,9 @@
     | push: 'group-border-{{ s.border_mode_inactive }}'
     | push: 'group-border-size-{{ s.border_size_inactive }}'
   %}
+  {% if border_color_inactive_value != blank %}
+    {% assign inactive_state_styles = inactive_state_styles | push: '--border:{{ border_color_inactive_value }}' %}
+  {% endif %}
   {% assign inactive_state_styles = inactive_state_styles | push: '--border-style:{{ s.border_style_inactive }}' %}
   {% if s.border_size_inactive == 'custom' %}
     {% assign inactive_state_styles = inactive_state_styles
@@ -195,7 +203,6 @@
     ></div>
   {% endif %}
 </div>
-
 {% schema %}
 {
   "name": "Tab Head",
@@ -214,6 +221,11 @@
       "type": "text",
       "id": "tab_group",
       "label": "Tab Group"
+    },
+    {
+      "type": "data_source",
+      "id": "bind_to",
+      "label": "Bind to"
     },
     {
       "type": "header",
@@ -290,6 +302,40 @@
       "id": "border_role_gradient",
       "label": "Border Gradient",
       "conditional": "setting.border_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "border_role_inactive",
+      "label": "Border Color (Inactive)",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "conditional": "setting.border_mode_inactive != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_inactive_palette",
+      "label": "Inactive Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.border_role_inactive == 'palette' and setting.border_mode_inactive != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_inactive_custom",
+      "label": "Inactive Raw Border",
+      "conditional": "setting.border_role_inactive == 'custom' and setting.border_mode_inactive != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "border_role_inactive_gradient",
+      "label": "Inactive Border Gradient",
+      "conditional": "setting.border_role_inactive == 'gradient'"
     },
     {
       "type": "select",
@@ -405,17 +451,50 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ],
       "conditional": "setting.enable_overlay == true"
     },
@@ -445,17 +524,50 @@
       "default": "none",
       "info": "Text color when this tab is active. Inherited by child text/icon blocks via --text.",
       "options": [
-        { "value": "none", "label": "Inherit" },
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "on-accent", "label": "On Accent" },
-        { "value": "on-button", "label": "On Button" },
-        { "value": "on-control", "label": "On Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "none",
+          "label": "Inherit"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ]
     },
     {
@@ -624,17 +736,50 @@
       "label": "Overlay",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "body", "label": "Body" },
-        { "value": "body-alt", "label": "Body (alt)" },
-        { "value": "surface", "label": "Surface" },
-        { "value": "surface-alt", "label": "Surface (alt)" },
-        { "value": "accent", "label": "Accent" },
-        { "value": "button", "label": "Button" },
-        { "value": "control", "label": "Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ],
       "conditional": "setting.enable_overlay_inactive == true"
     },
@@ -664,17 +809,50 @@
       "default": "none",
       "info": "Text color when this tab is inactive. Inherited by child text/icon blocks via --text.",
       "options": [
-        { "value": "none", "label": "Inherit" },
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "on-accent", "label": "On Accent" },
-        { "value": "on-button", "label": "On Button" },
-        { "value": "on-control", "label": "On Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "none",
+          "label": "Inherit"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ]
     },
     {
@@ -737,71 +915,83 @@
       "conditional": "setting.border_radius_override"
     },
     {
-      "type": "space",
-      "id": "padding_vertical",
-      "label": "Vertical Padding",
-      "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_top",
-      "label": "Custom Top Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_bottom",
-      "label": "Custom Bottom Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
+      "type": "width",
+      "id": "width",
+      "label": "Width"
     },
     {
       "type": "space",
-      "id": "padding_horizontal",
-      "label": "Horizontal Padding",
+      "id": "padding_top",
+      "label": "Padding Top",
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "padding_horizontal_custom_left",
-      "label": "Custom Left Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none"
     },
     {
-      "type": "range",
-      "id": "padding_horizontal_custom_right",
-      "label": "Custom Right Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
+      "type": "space",
+      "id": "padding_left",
+      "label": "Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
     },
     {
       "type": "select",
       "id": "vertical_align",
       "label": "Vertical Alignment",
       "options": [
-        { "value": "top", "label": "Top / Start" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom / End" },
-        { "value": "baseline", "label": "Baseline" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "top",
+          "label": "Top / Start"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "baseline",
+          "label": "Baseline"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
     {
@@ -809,10 +999,22 @@
       "id": "content_align",
       "label": "Horizontal Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" },
-        { "value": "between", "label": "Space Between" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        }
       ]
     }
   ],

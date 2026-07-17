@@ -4,8 +4,17 @@
 {% assign can_autoplay = autoplay | default: false %}
 {% assign anim_class = '' %}
 
-{% if animate %}
-  {% assign anim_class = 'animate-ken-burns' %}
+{% if animation != blank and animation != 'none' %}
+  {% assign anim_class = 'anim-{{ animation }}' %}
+  {% if animation_speed != blank %}
+    {% assign anim_class = anim_class | append: ' anim-speed-{{ animation_speed }}' %}
+  {% endif %}
+  {% if animation_loop != blank %}
+    {% assign anim_class = anim_class | append: ' anim-loop-{{ animation_loop }}' %}
+  {% endif %}
+  {% if animation_intensity != blank %}
+    {% assign anim_class = anim_class | append: ' anim-intensity-{{ animation_intensity }}' %}
+  {% endif %}
 {% endif %}
 
 {% if animate_hover %}
@@ -35,7 +44,7 @@
 
 <div
   class='media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}'
-  style='--object-fit: {{ fit_mode }}{% if ratio == 'custom' and ratio_custom != blank %}; --aspect-ratio-custom: {{ ratio_custom }}{% endif %}'
+  style='--object-fit: {{ fit_mode }}{% if position != blank %}; --object-position: {{ position }}{% endif %}{% if ratio == 'custom' and ratio_custom != blank %}; --aspect-ratio-custom: {{ ratio_custom }}{% endif %}'
 >
   {% if video != blank %}
     <video

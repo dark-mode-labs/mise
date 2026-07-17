@@ -5,13 +5,14 @@
 {% if s.border_radius_override %}
   {% assign radius_class = 'rounded-custom' %}
 {% endif %}
-{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all width-fill height-full'
+{% assign classes = 'group-block group cursor-pointer flex flex-col relative isolate transition-all height-full block-limit-width'
+  | push: 'width-{{ s.width }}'
   | push: radius_class
   | push: 'text-align-{{ s.text_align }}'
-  | push: 'padding-py-{{ s.padding_vertical }}'
-  | push: 'padding-px-{{ s.padding_horizontal }}'
-  | push: 'margin-my-{{ s.margin_vertical }}'
-  | push: 'margin-mx-{{ s.margin_horizontal }}'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
+  | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
+  | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
   | push: 'gap-{{ s.gap }}'
   | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
@@ -77,41 +78,10 @@
 {% endif %}
 {% assign styles = blank %}
 
-{% if s.padding_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-pt: {{ s.padding_vertical_custom_top }}rem'
-    | push: '--space-pb: {{ s.padding_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-
-{% if s.padding_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-pl: {{ s.padding_horizontal_custom_left }}rem'
-    | push: '--space-pr: {{ s.padding_horizontal_custom_right }}rem'
-  %}
-{% endif %}
-
-{% if s.margin_vertical == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-mt: {{ s.margin_vertical_custom_top }}rem'
-    | push: '--space-mb: {{ s.margin_vertical_custom_bottom }}rem'
-  %}
-{% endif %}
-
-{% if s.margin_horizontal == 'custom' %}
-  {% assign styles = styles
-    | push: '--space-ml: {{ s.margin_horizontal_custom_left }}rem'
-    | push: '--space-mr: {{ s.margin_horizontal_custom_right }}rem'
-  %}
-{% endif %}
-
-{% if s.gap == 'custom' %}
-  {% assign styles = styles | push: '--space-gap: {{ s.gap_custom }}rem' %}
-{% endif %}
-
 {% assign styles = styles
   | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
   | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
+  | push_if: 'container-type: inline-size', s.container_query
 %}
 
 {% unless s.border_mode == 'none' %}
@@ -159,7 +129,6 @@
   {% content_for 'block', type: 'group', id: 'menu-card-content' %}
   {% content_for 'block', type: 'group', id: 'menu-card-footer' %}
 </div>
-
 {% schema %}
 {
   "name": "Menu Card",
@@ -170,11 +139,26 @@
       "label": "Align Self",
       "default": "auto",
       "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "start", "label": "Top / Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "Bottom / End" },
-        { "value": "stretch", "label": "Stretch" }
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "start",
+          "label": "Top / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
       ]
     },
     {
@@ -235,133 +219,64 @@
       "default": "left"
     },
     {
-      "type": "space",
-      "id": "padding_vertical",
-      "label": "Vertical Padding",
-      "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_top",
-      "label": "Custom Top Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_vertical_custom_bottom",
-      "label": "Custom Bottom Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_vertical == 'custom'"
+      "type": "width",
+      "id": "width",
+      "label": "Card Width",
+      "default": "fill"
     },
     {
       "type": "space",
-      "id": "padding_horizontal",
-      "label": "Horizontal Padding",
+      "id": "padding_top",
+      "label": "Padding Top",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "padding_horizontal_custom_left",
-      "label": "Custom Left Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "padding_horizontal_custom_right",
-      "label": "Custom Right Padding",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.padding_horizontal == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_vertical",
-      "label": "Vertical margin",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_top",
-      "label": "Custom Top margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
-    },
-    {
-      "type": "range",
-      "id": "margin_vertical_custom_bottom",
-      "label": "Custom Bottom margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_vertical == 'custom'"
     },
     {
       "type": "space",
-      "id": "margin_horizontal",
-      "label": "Horizontal margin",
+      "id": "padding_left",
+      "label": "Padding Left",
       "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_left",
-      "label": "Custom Left margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "none"
     },
     {
-      "type": "range",
-      "id": "margin_horizontal_custom_right",
-      "label": "Custom Right margin",
-      "min": 0,
-      "max": 8,
-      "step": 0.25,
-      "default": 0,
-      "unit": "rem",
-      "conditional": "setting.margin_horizontal == 'custom'"
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
     },
     {
       "type": "space",
       "id": "gap",
       "label": "Gap",
       "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "gap_custom",
-      "label": "Custom Gap",
-      "min": 0,
-      "max": 6,
-      "step": 0.25,
-      "default": 1,
-      "unit": "rem",
-      "conditional": "setting.gap == 'custom'"
     },
     {
       "type": "header",
@@ -748,6 +663,13 @@
       "default": true
     },
     {
+      "type": "checkbox",
+      "id": "container_query",
+      "label": "Container Query Context",
+      "default": false,
+      "info": "Inline-size query container for descendant cqi/cqw values."
+    },
+    {
       "type": "range",
       "id": "opacity",
       "min": 0,
@@ -816,8 +738,10 @@
           "static": true,
           "settings": {
             "gap": "none",
-            "padding_vertical": "none",
-            "padding_horizontal": "none"
+            "padding_top": "none",
+            "padding_bottom": "none",
+            "padding_left": "none",
+            "padding_right": "none"
           },
           "blocks": {
             "img": {
@@ -837,8 +761,10 @@
           "static": true,
           "settings": {
             "gap": "sm",
-            "padding_vertical": "xs",
-            "padding_horizontal": "md",
+            "padding_top": "xs",
+            "padding_bottom": "xs",
+            "padding_left": "md",
+            "padding_right": "md",
             "grow_content": true
           },
           "blocks": {
@@ -879,8 +805,10 @@
                 "direction": "row",
                 "content_align": "between",
                 "vertical_align": "top",
-                "padding_vertical": "xs",
-                "padding_horizontal": "none"
+                "padding_top": "xs",
+                "padding_bottom": "xs",
+                "padding_left": "none",
+                "padding_right": "none"
               },
               "block_order": ["title", "price"]
             }
@@ -893,8 +821,10 @@
           "static": true,
           "settings": {
             "gap": "xs",
-            "padding_vertical": "xs",
-            "padding_horizontal": "md"
+            "padding_top": "xs",
+            "padding_bottom": "xs",
+            "padding_left": "md",
+            "padding_right": "md"
           },
           "blocks": {
             "btn": {
