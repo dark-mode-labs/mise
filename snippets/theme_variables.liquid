@@ -279,8 +279,8 @@ var(--block-height, auto); }
     font-weight: {{ ts_weight }}; letter-spacing: {{ ts_tracking }}; line-height: {{ ts_leading }}; text-transform:
     {{ ts.transform | default: 'none' }};
     {%- if ts.text_fill == 'gradient' and ts.text_fill_gradient != blank %}
-      background-image: var(--gradient-{{ ts.text_fill_gradient }}); -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent; color: transparent;
+      background-image: var(--gradient-{{ ts.text_fill_gradient }}); -webkit-background-clip: text; background-clip:
+      text; -webkit-text-fill-color: transparent; color: transparent;
     {%- endif %}
     }
     {% if ts.font_size_by_bp != blank %}
