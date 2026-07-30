@@ -92,6 +92,8 @@
           position: s.bg_focal,
           loading: 'eager',
           placeholder: placeholder_name,
+          controls: s.show_controls,
+          autoplay: s.autoplay,
           animation: s.animation,
           animation_speed: s.animation_speed,
           animation_loop: s.animation_loop,
@@ -116,6 +118,8 @@
             fit: 'cover',
             loading: 'eager',
             placeholder: placeholder_name,
+            controls: s.show_controls,
+            autoplay: s.autoplay,
             animation: s.animation,
             animation_speed: s.animation_speed,
             animation_loop: s.animation_loop,
@@ -280,6 +284,20 @@
     },
     {
       "type": "checkbox",
+      "id": "show_controls",
+      "label": "Show Video Controls",
+      "default": false,
+      "conditional": "setting.video_url != blank or setting.video_url_2 != blank"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay Video",
+      "default": false,
+      "conditional": "setting.video_url != blank or setting.video_url_2 != blank"
+    },
+    {
+      "type": "checkbox",
       "id": "show_placeholder",
       "label": "Show Placeholder",
       "default": true,
@@ -395,7 +413,8 @@
       "options": [
         { "value": "once", "label": "Once" },
         { "value": "loop", "label": "Loop" },
-        { "value": "loop-alternate", "label": "Loop (alternate)" }
+        { "value": "loop-alternate", "label": "Loop (alternate)" },
+        { "value": "reverse", "label": "Loop (reverse)" }
       ]
     },
     {

@@ -1027,6 +1027,10 @@
     --anim-iter: infinite;
     --anim-dir: alternate;
   }
+  .anim-loop-reverse {
+    --anim-iter: infinite;
+    --anim-dir: reverse;
+  }
 
   .anim-intensity-subtle {
     --anim-dist: 8px;
@@ -1201,21 +1205,21 @@
   @keyframes anim-zoom-in {
     from {
       opacity: 0;
-      transform: scale(calc(2 - var(--anim-scale, 1.08)));
+      scale: calc(2 - var(--anim-scale, 1.08));
     }
     to {
       opacity: 1;
-      transform: scale(1);
+      scale: 1;
     }
   }
 
   @keyframes anim-float {
     0%,
     100% {
-      transform: translateY(0);
+      translate: 0 0;
     }
     50% {
-      transform: translateY(calc(-1 * var(--anim-dist, 20px)));
+      translate: 0 calc(-1 * var(--anim-dist, 20px));
     }
   }
 
@@ -1223,33 +1227,33 @@
     0%,
     100% {
       opacity: 1;
-      transform: scale(1);
+      scale: 1;
     }
     50% {
       opacity: 0.6;
-      transform: scale(var(--anim-scale, 1.08));
+      scale: var(--anim-scale, 1.08);
     }
   }
 
   @keyframes anim-ken-burns {
     from {
-      transform: scale(1);
+      scale: 1;
     }
     to {
-      transform: scale(var(--anim-scale, 1.08));
+      scale: var(--anim-scale, 1.08);
     }
   }
 
   @keyframes anim-rise {
     0% {
-      transform: translateY(0);
+      translate: 0 0;
       opacity: 0;
     }
     12% {
       opacity: 1;
     }
     100% {
-      transform: translateY(calc(-8 * var(--anim-dist, 20px)));
+      translate: 0 calc(-8 * var(--anim-dist, 20px));
       opacity: 0;
     }
   }
@@ -1265,20 +1269,20 @@
 
   @keyframes anim-spin {
     from {
-      transform: rotate(0deg);
+      rotate: 0deg;
     }
     to {
-      transform: rotate(360deg);
+      rotate: 360deg;
     }
   }
 
   @keyframes anim-bounce {
     0%,
     100% {
-      transform: translateY(0);
+      translate: 0 0;
     }
     50% {
-      transform: translateY(calc(-1 * var(--anim-dist, 20px)));
+      translate: 0 calc(-1 * var(--anim-dist, 20px));
     }
   }
 
@@ -1296,7 +1300,9 @@
     .stagger-load > *:not(.no-stagger) {
       animation: none !important;
       opacity: 1 !important;
-      transform: none !important;
+      scale: none !important;
+      translate: none !important;
+      rotate: none !important;
     }
   }
 
@@ -1552,7 +1558,6 @@
     @apply antialiased;
   }
 
-  section,
   footer {
     @apply relative w-full overflow-hidden;
   }
