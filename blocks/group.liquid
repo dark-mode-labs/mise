@@ -173,13 +173,16 @@
 {% assign block_styles = styles | join: ';' %}
 
 {% capture content %}
-  {% if s.bg_image != blank %}
+  {% if s.bg_image != blank or s.video_url != blank %}
     <div class="absolute inset-0 -z-10 pointer-events-none rounded-inherit overflow-hidden">
       {% render 'media',
         src: s.bg_image,
         src_mobile: s.bg_image_mobile,
+        video: s.video_url,
         fit: 'cover',
-        loading: 'lazy'
+        loading: 'lazy',
+        controls: s.show_controls,
+        autoplay: s.autoplay
       %}
     </div>
   {% endif %}
@@ -806,7 +809,8 @@
       "options": [
         { "value": "once", "label": "Once" },
         { "value": "loop", "label": "Loop" },
-        { "value": "loop-alternate", "label": "Loop (alternate)" }
+        { "value": "loop-alternate", "label": "Loop (alternate)" },
+        { "value": "reverse", "label": "Loop (reverse)" }
       ]
     },
     {
@@ -852,6 +856,25 @@
       "type": "image_picker",
       "id": "bg_image_mobile",
       "label": "Background Image (Mobile)"
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Background Video (MP4)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_controls",
+      "label": "Show Video Controls",
+      "default": false,
+      "conditional": "setting.video_url != blank"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay Video",
+      "default": false,
+      "conditional": "setting.video_url != blank"
     },
     {
       "type": "select",

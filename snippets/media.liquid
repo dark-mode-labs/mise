@@ -62,7 +62,7 @@
         poster='{{ src | image_url: width: 800 }}'
       {% endif %}
     >
-      <source src='{{ video }}' type='video/mp4'>
+      <source src='{{ video | image_url: width: 800 }}' type='video/mp4'>
     </video>
 
   {% elsif src != blank %}

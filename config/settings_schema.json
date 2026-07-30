@@ -965,6 +965,14 @@
             "visibility": "curated"
           }
         },
+        "auto": {
+          "settings": {
+            "title": "Auto (edge-pinned)",
+            "max_width": "none",
+            "structural": true,
+            "visibility": "overflow"
+          }
+        },
         "square": {
           "settings": {
             "title": "Square (icon)",
