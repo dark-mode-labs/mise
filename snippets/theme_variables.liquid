@@ -44,6 +44,127 @@
     { --children-gap: var(--space-{{ s[0] }}); }
   {% endunless %}
 {% endfor %}
+{% for a in transformation_scale %}
+  {% assign tf = a[1].settings %}
+  {% unless tf.structural %}
+    .tf-{{ a[0] }} {
+    {% if tf.distance != blank %}--anim-dist: {{ tf.distance }};{% endif %}
+    {% if tf.scale_to != blank %}--anim-scale: {{ tf.scale_to }};{% endif %}
+    {% if tf.scale != blank %}--anim-scale-from: {{ tf.scale }};{% endif %}
+    {% if tf.reveal %}opacity: 0;{% endif %}
+    }
+    {% case tf.text_role %}
+      {% when 'primary' -%}
+        {%- assign text_var = '--text' %}
+      {% when 'secondary' -%}
+        {%- assign text_var = '--text-secondary' %}
+      {% when 'subtle' -%}
+        {%- assign text_var = '--text-subtle' %}
+      {% when 'emphasis' -%}
+        {%- assign text_var = '--text-emphasis' %}
+      {% when 'on-accent' -%}
+        {%- assign text_var = '--text-on-accent' %}
+      {% when 'on-button' -%}
+        {%- assign text_var = '--text-on-button' %}
+      {% when 'on-control' -%}
+        {%- assign text_var = '--text-on-control' %}
+      {% else -%}
+        {%- assign text_var = blank %}
+    {% endcase %}
+    {% case tf.bg_role %}
+      {% when 'body' -%}
+        {%- assign bg_var = '--background' %}
+      {% when 'body-alt' -%}
+        {%- assign bg_var = '--background-alt' %}
+      {% when 'surface' -%}
+        {%- assign bg_var = '--surface' %}
+      {% when 'surface-alt' -%}
+        {%- assign bg_var = '--surface-alt' %}
+      {% when 'accent' -%}
+        {%- assign bg_var = '--accent-bg' %}
+      {% when 'button' -%}
+        {%- assign bg_var = '--button-bg' %}
+      {% when 'control' -%}
+        {%- assign bg_var = '--control-bg' %}
+      {% else -%}
+        {%- assign bg_var = blank %}
+    {% endcase %}
+    {% case tf.border_role %}
+      {% when 'default' -%}
+        {%- assign border_var = '--border' %}
+      {% when 'emphasis' -%}
+        {%- assign border_var = '--border-emphasis' %}
+      {% else -%}
+        {%- assign border_var = blank %}
+    {% endcase %}
+    {% capture hover_text %}
+      {% if tf.text_role == 'palette' and tf.text_role_palette != blank %}
+        color: var(--palette-{{ tf.text_role_palette }});
+      {% elsif tf.text_role == 'custom' and tf.text_role_custom != blank %}
+        color: {{ tf.text_role_custom }};
+      {% elsif text_var != blank %}
+        color: var({{ text_var }}, currentColor);
+      {% endif %}
+    {% endcapture %}
+    {% capture rest %}
+      {% if tf.scale != blank %}scale: {{ tf.scale }};{% endif %}
+      {% if tf.rotate != blank %}rotate: {{ tf.rotate }};{% endif %}
+      {% if tf.translate != blank %}translate: {{ tf.translate }};{% endif %}
+      {% if tf.origin != blank %}transform-origin: {{ tf.origin }};{% endif %}
+      {% if tf.opacity != blank %}opacity: {{ tf.opacity }};{% endif %}
+      {% if tf.glow != blank %}box-shadow: {{ tf.glow }};{% endif %}
+      {% if tf.backdrop_blur != blank %}backdrop-filter: blur({{ tf.backdrop_blur }});{% endif %}
+      {% if tf.text_role == 'palette' and tf.text_role_palette != blank %}
+        color: var(--palette-{{ tf.text_role_palette }});
+      {% elsif tf.text_role == 'custom' and tf.text_role_custom != blank %}
+        color: {{ tf.text_role_custom }};
+      {% elsif text_var != blank %}
+        color: var({{ text_var }}, currentColor);
+      {% endif %}
+      {% if tf.bg_role == 'palette' and tf.bg_role_palette != blank %}
+        background: var(--palette-{{ tf.bg_role_palette }});
+      {% elsif tf.bg_role == 'custom' and tf.bg_role_custom != blank %}
+        background: {{ tf.bg_role_custom }};
+      {% elsif bg_var != blank %}
+        background: var({{ bg_var }});
+      {% endif %}
+      {% if tf.border_role == 'palette' and tf.border_role_palette != blank %}
+        border-color: var(--palette-{{ tf.border_role_palette }});
+      {% elsif tf.border_role == 'custom' and tf.border_role_custom != blank %}
+        border-color: {{ tf.border_role_custom }};
+      {% elsif border_var != blank %}
+        border-color: var({{ border_var }}, transparent);
+      {% endif %}
+    {% endcapture %}
+    {% if tf.type == 'static' %}
+      .tf-{{ a[0] }} { {{ rest }} }
+    {% elsif tf.type == 'hover' %}
+      .tf-{{ a[0] }} { transition: all {{ tf.duration }}
+      {{ tf.timing }}; } .tf-{{ a[0] }}:hover { {{ rest }} }
+      {% if tf.text_role != blank and tf.text_role != 'none' %}
+        .tf-{{ a[0] }}:hover * { {{ hover_text }} }
+      {% endif %}
+    {% else %}
+      {% assign kf = 'anim-{{ tf.primitive }}' %}
+      {% if tf.glow_to != blank or tf.opacity_to != blank %}
+        {% assign kf = 'kf-{{ a[0] }}' %}
+        @keyframes {{ kf }} { 0%, 100% { scale: {{ tf.scale }};
+        {% if tf.opacity != blank %}opacity: {{ tf.opacity }};{% endif %}
+        {% if tf.glow != blank %}box-shadow: {{ tf.glow }};{% endif %} } 50% { scale: {{ tf.scale_to }};
+        {% if tf.opacity_to != blank %}opacity: {{ tf.opacity_to }};{% endif %}
+        {% if tf.glow_to != blank %}box-shadow: {{ tf.glow_to }};{% endif %} } }
+      {% endif %}
+      .tf-{{ a[0] -}}
+      {%- if tf.reveal %}.animate{% endif %} { animation: {{ kf }}
+      {{ tf.duration }}
+      {{ tf.timing }}
+      {{ tf.delay }}
+      {{ tf.iterations }}
+      {{ tf.direction }}
+      {{ tf.fill }}; }
+    {% endif %}
+  {% endunless %}
+{% endfor %}
 .pt-none{padding-top:0}.pb-none{padding-bottom:0}.pl-none{padding-left:0}.pr-none{padding-right:0}
 .mt-none{margin-top:0}.mb-none{margin-bottom:0}.ml-none{margin-left:0}.mr-none{margin-right:0}
 .mt-auto{margin-top:auto}.mb-auto{margin-bottom:auto}.ml-auto{margin-left:auto}.mr-auto{margin-right:auto}

@@ -36,14 +36,11 @@
   | push: 'gap-{{ s.gap }}'
   | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
   | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-  | push_if: 'shadow-lg', s.shadow
 %}
+
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
-{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
-  {% assign classes = classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
-{% endif %}
 
 {% comment %}
   Background layer: scheme-driven via .bg-<role>. Escape-hatch
@@ -84,7 +81,6 @@
 {% assign block_classes = classes | join: ' ' %}
 {% assign styles = blank %}
 
-{% assign styles = styles | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override %}
 {% if s.border_mode != 'none' and s.border_size == 'custom' %}
   {% assign styles = styles | push: '--border-width: {{ s.border_size_custom }}px' %}
 {% endif %}
@@ -628,49 +624,6 @@
       "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
     },
     {
-      "type": "checkbox",
-      "id": "shadow",
-      "label": "Show Shadow",
-      "default": false
-    },
-    {
-      "type": "select",
-      "id": "backdrop_blur",
-      "label": "Backdrop Blur",
-      "info": "Frosted-glass blur strength behind the badge.",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "X-Large"
-        },
-        {
-          "value": "2xl",
-          "label": "2X-Large"
-        },
-        {
-          "value": "3xl",
-          "label": "3X-Large"
-        }
-      ]
-    },
-    {
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
@@ -688,20 +641,6 @@
       "label": "Color Scheme",
       "default": "default",
       "conditional": "setting.surface_override == true"
-    },
-    {
-      "type": "checkbox",
-      "id": "shadow_color_override",
-      "label": "Override Shadow Color",
-      "default": false,
-      "conditional": "true"
-    },
-    {
-      "type": "color",
-      "id": "shadow_color",
-      "label": "Custom Shadow Color",
-      "default": "rgba(0,0,0,1)",
-      "conditional": "setting.shadow_color_override"
     },
     {
       "type": "checkbox",

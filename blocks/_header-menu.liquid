@@ -38,12 +38,17 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
+{% assign link_tf = '' %}
+{% for tf_id in s.link_transformation %}
+  {% assign link_tf = link_tf | append: 'tf-' | append: tf_id | append: ' ' %}
+{% endfor %}
+
 <nav
   class='{{ block_classes }}'
   style='{{ block_styles }}'
   {{ context.attached_attributes }}
 >
-  <ul class='flex items-center gap-8'>
+  <ul class='flex items-center gap-{{ s.gap }}'>
     {% for link in s.nav.links %}
       {% assign has_mega = false %}
       {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
@@ -51,7 +56,7 @@
       <li class='group flex items-center relative'>
         <a
           href='{{ link.url }}'
-          class='hover:opacity-70 flex items-center gap-1'
+          class='{{ link_tf }}flex items-center gap-1'
         >
           {% render 'typography',
             text: link.title,
@@ -182,6 +187,23 @@
       "type": "link_list",
       "id": "nav",
       "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "space",
+      "id": "gap",
+      "label": "Gap",
+      "default": "xs"
+    },
+    {
+      "type": "transformation",
+      "id": "link_transformation",
+      "label": "Link Effects",
+      "default": [],
+      "info": "Effects applied to each nav link; several compose."
     },
     {
       "type": "header",

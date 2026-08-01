@@ -57,10 +57,7 @@
       video: s.video_url,
       fit: 'cover',
       placeholder: placeholder_name,
-      animation: s.animation,
-      animation_speed: s.animation_speed,
-      animation_loop: s.animation_loop,
-      animation_intensity: s.animation_intensity
+      transformation: s.transformation
     %}
 
     {% render 'bg-overlay',
@@ -102,7 +99,7 @@
       "label": "Mobile Image"
     },
     {
-      "type": "text",
+      "type": "video_picker",
       "id": "video_url",
       "label": "Video URL (MP4)"
     },
@@ -114,61 +111,11 @@
       "info": "Show a pattern when no image is selected."
     },
     {
-      "type": "select",
-      "id": "animation",
-      "label": "Media Animation",
-      "info": "Motion applied to the slide background media.",
-      "default": "none",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "fade-in", "label": "Fade In" },
-        { "value": "rise-in", "label": "Rise In" },
-        { "value": "zoom-in", "label": "Zoom In" },
-        { "value": "float", "label": "Float" },
-        { "value": "pulse", "label": "Pulse" },
-        { "value": "ken-burns", "label": "Ken Burns" },
-        { "value": "rise", "label": "Rise (drift)" },
-        { "value": "shimmer", "label": "Shimmer" },
-        { "value": "spin", "label": "Spin" },
-        { "value": "bounce", "label": "Bounce" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_speed",
-      "label": "Speed",
-      "default": "normal",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "slow", "label": "Slow" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "fast", "label": "Fast" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_loop",
-      "label": "Loop",
-      "default": "once",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "once", "label": "Once" },
-        { "value": "loop", "label": "Loop" },
-        { "value": "loop-alternate", "label": "Loop (alternate)" },
-        { "value": "reverse", "label": "Loop (reverse)" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_intensity",
-      "label": "Intensity",
-      "default": "normal",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "strong", "label": "Strong" }
-      ]
+      "type": "transformation",
+      "id": "transformation",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied to this element; several compose."
     },
     {
       "type": "header",

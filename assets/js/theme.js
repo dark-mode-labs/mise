@@ -17,8 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================================================================
   // 2. INTERSECTION OBSERVER FOR VISUAL ANIMATIONS ONLY
   // =========================================================================
-  const animatedElements = document.querySelectorAll(
-    ".anim-fade-in, .anim-rise-in, .anim-zoom-in, .stagger-load"
+  const animatedElements = [...document.querySelectorAll('[class^="tf-"], [class*=" tf-"]')].filter(
+    (el) => {
+      const cs = getComputedStyle(el);
+      return cs.animationName === "none" && cs.opacity === "0";
+    }
   );
 
   const observerOptions = {
