@@ -56,7 +56,7 @@ for (const { role, cssPrefix, property, liquidVar } of CASES) {
   });
 }
 
-const effects = schema.schema.find((s) => s.id === "transformation_scale");
+const effects = schema.schema.find((s) => s.id === "effect_scale");
 const optionValues = (id) => effects.settings.find((f) => f.id === id).options.map((o) => o.value);
 
 // Values the emission handles outside the slot map.
