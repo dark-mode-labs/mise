@@ -19,7 +19,7 @@
 {% if s.border_radius_override %}
   {% assign radius_class = 'rounded-custom' %}
 {% endif %}
-{% assign classes = 'group-block transition-all rotate-custom block-limit-width'
+{% assign classes = 'group-block transition-all block-limit-width'
   | push: radius_class
   | push: layout_class
   | push: justify_class
@@ -33,28 +33,15 @@
   | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
   | push: 'aspect-{{ s.aspect_ratio }}'
   | push: 'cursor-{{ s.cursor }}'
-  | push_if: 'hover-shadow', s.animate_shadow_hover
-  | push_if: 'shadow-lg', s.shadow
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
 
-{% if s.animation != blank and s.animation != 'none' %}
-  {% assign classes = classes
-    | push: 'anim-{{ s.animation }}'
-    | push: 'anim-speed-{{ s.animation_speed }}'
-    | push: 'anim-loop-{{ s.animation_loop }}'
-    | push: 'anim-intensity-{{ s.animation_intensity }}'
-  %}
-{% endif %}
-{% if s.animation_delay != blank and s.animation_delay != 'none' %}
-  {% assign classes = classes | push: 'stagger-load' | push: 'anim-delay-{{ s.animation_delay }}' %}
-{% endif %}
+{% for ef_id in s.effect %}
+  {% assign classes = classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
-{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
-  {% assign classes = classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
-{% endif %}
 
 {% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
@@ -156,13 +143,11 @@
   {%- endif %}
 {% endunless %}
 
-{% assign styles = styles | push: '--rotation: {{ s.rotation }}deg' %}
-
 {% assign styles = styles
   | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override
-  | push_if: '--shadow: {{ s.shadow_color }}', s.shadow_color_override
   | push_if: 'container-type: inline-size', s.container_query
 %}
+
 {% if s.aspect_ratio == 'custom' and s.aspect_ratio_custom != blank %}
   {% assign styles = styles | push: '--aspect-ratio-custom: {{ s.aspect_ratio_custom }}' %}
 {% endif %}
@@ -766,82 +751,11 @@
       "default": "none"
     },
     {
-      "type": "header",
-      "content": "Animation"
-    },
-    {
-      "type": "select",
-      "id": "animation",
-      "label": "Animation",
-      "default": "none",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "fade-in", "label": "Fade In" },
-        { "value": "rise-in", "label": "Rise In" },
-        { "value": "zoom-in", "label": "Zoom In" },
-        { "value": "float", "label": "Float" },
-        { "value": "pulse", "label": "Pulse" },
-        { "value": "ken-burns", "label": "Ken Burns" },
-        { "value": "rise", "label": "Rise (drift)" },
-        { "value": "shimmer", "label": "Shimmer" },
-        { "value": "spin", "label": "Spin" },
-        { "value": "bounce", "label": "Bounce" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_speed",
-      "label": "Speed",
-      "default": "normal",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "slow", "label": "Slow" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "fast", "label": "Fast" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_loop",
-      "label": "Loop",
-      "default": "once",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "once", "label": "Once" },
-        { "value": "loop", "label": "Loop" },
-        { "value": "loop-alternate", "label": "Loop (alternate)" },
-        { "value": "reverse", "label": "Loop (reverse)" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_intensity",
-      "label": "Intensity",
-      "default": "normal",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "strong", "label": "Strong" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_delay",
-      "label": "Stagger Children",
-      "info": "Reveals child blocks with an incremental delay.",
-      "default": "none",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "short", "label": "Short" },
-        { "value": "long", "label": "Long" }
-      ]
-    },
-    {
-      "type": "checkbox",
-      "id": "animate_shadow_hover",
-      "label": "Hover Shadow",
-      "default": false
+      "type": "effect",
+      "id": "effect",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied to this element; several compose."
     },
     {
       "type": "header",
@@ -858,7 +772,7 @@
       "label": "Background Image (Mobile)"
     },
     {
-      "type": "text",
+      "type": "video_picker",
       "id": "video_url",
       "label": "Background Video (MP4)"
     },
@@ -949,49 +863,6 @@
     },
     {
       "type": "checkbox",
-      "id": "shadow",
-      "label": "Show Shadow",
-      "default": false
-    },
-    {
-      "type": "select",
-      "id": "backdrop_blur",
-      "label": "Backdrop Blur",
-      "info": "Frosted-glass blur strength applied behind the block.",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "sm",
-          "label": "Small"
-        },
-        {
-          "value": "md",
-          "label": "Medium"
-        },
-        {
-          "value": "lg",
-          "label": "Large"
-        },
-        {
-          "value": "xl",
-          "label": "X-Large"
-        },
-        {
-          "value": "2xl",
-          "label": "2X-Large"
-        },
-        {
-          "value": "3xl",
-          "label": "3X-Large"
-        }
-      ]
-    },
-    {
-      "type": "checkbox",
       "id": "overflow_hidden",
       "label": "Clip Content",
       "default": false
@@ -1002,16 +873,6 @@
       "label": "Container Query Context",
       "default": false,
       "info": "Inline-size query container for descendant cqi/cqw values."
-    },
-    {
-      "type": "range",
-      "id": "rotation",
-      "label": "Rotation",
-      "min": -90,
-      "max": 90,
-      "step": 1,
-      "default": 0,
-      "unit": "deg"
     },
     {
       "type": "header",
@@ -1312,20 +1173,6 @@
       "default": 0,
       "unit": "px",
       "conditional": "setting.border_radius_override"
-    },
-    {
-      "type": "checkbox",
-      "id": "shadow_color_override",
-      "label": "Override Shadow Color",
-      "default": false,
-      "conditional": "true"
-    },
-    {
-      "type": "color",
-      "id": "shadow_color",
-      "label": "Custom Shadow Color",
-      "default": "rgba(0,0,0,1)",
-      "conditional": "setting.shadow_color_override"
     }
   ],
   "blocks": [

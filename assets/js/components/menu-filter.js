@@ -12,7 +12,6 @@ export default class MenuFilter {
     this.emptyState = this.scope.querySelector("#filter-empty-state");
 
     this.navLinks = this.scope.querySelectorAll("[data-filter-nav]");
-    this.grids = this.scope.querySelectorAll("[data-filter-grid]");
 
     this.items = Array.from(this.scope.querySelectorAll("[data-filter-item]")).map((el) => ({
       element: el,
@@ -68,10 +67,6 @@ export default class MenuFilter {
 
   updateFilteringState() {
     this.state.isFiltering = isFiltering(this.state);
-
-    if (this.state.isFiltering) {
-      this.grids.forEach((grid) => grid.classList.remove("stagger-load"));
-    }
   }
 
   reset() {

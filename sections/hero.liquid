@@ -58,10 +58,6 @@
   | push: 'section-align-v-{{ s.vertical_align }}'
   | push: 'section-align-text-{{ s.text_align }}'
 %}
-{% if s.animation_delay != blank and s.animation_delay != 'none' %}
-  {% assign content_pipeline = content_pipeline | push: 'stagger-load' | push: 'anim-delay-{{ s.animation_delay }}' %}
-{% endif %}
-
 {% assign content_class_str = content_pipeline | join: ' ' %}
 
 {% assign placeholder_name = '' %}
@@ -94,10 +90,7 @@
           placeholder: placeholder_name,
           controls: s.show_controls,
           autoplay: s.autoplay,
-          animation: s.animation,
-          animation_speed: s.animation_speed,
-          animation_loop: s.animation_loop,
-          animation_intensity: s.animation_intensity
+          effect: s.effect
         %}
 
         {% render 'bg-overlay',
@@ -120,10 +113,7 @@
             placeholder: placeholder_name,
             controls: s.show_controls,
             autoplay: s.autoplay,
-            animation: s.animation,
-            animation_speed: s.animation_speed,
-            animation_loop: s.animation_loop,
-            animation_intensity: s.animation_intensity
+            effect: s.effect
           %}
           {% render 'bg-overlay',
             role: s.overlay_role,
@@ -259,7 +249,7 @@
       "label": "Image 1 (Mobile)"
     },
     {
-      "type": "text",
+      "type": "video_picker",
       "id": "video_url",
       "label": "Video 1 (MP4)"
     },
@@ -278,7 +268,7 @@
       "label": "Image 2 (Mobile)"
     },
     {
-      "type": "text",
+      "type": "video_picker",
       "id": "video_url_2",
       "label": "Video 2 (MP4)"
     },
@@ -369,77 +359,11 @@
       "default": "middle"
     },
     {
-      "type": "header",
-      "content": "Animation"
-    },
-    {
-      "type": "select",
-      "id": "animation",
-      "label": "Media Animation",
-      "info": "Motion applied to the hero background media.",
-      "default": "none",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "fade-in", "label": "Fade In" },
-        { "value": "rise-in", "label": "Rise In" },
-        { "value": "zoom-in", "label": "Zoom In" },
-        { "value": "float", "label": "Float" },
-        { "value": "pulse", "label": "Pulse" },
-        { "value": "ken-burns", "label": "Ken Burns" },
-        { "value": "rise", "label": "Rise (drift)" },
-        { "value": "shimmer", "label": "Shimmer" },
-        { "value": "spin", "label": "Spin" },
-        { "value": "bounce", "label": "Bounce" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_speed",
-      "label": "Speed",
-      "default": "normal",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "slow", "label": "Slow" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "fast", "label": "Fast" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_loop",
-      "label": "Loop",
-      "default": "once",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "once", "label": "Once" },
-        { "value": "loop", "label": "Loop" },
-        { "value": "loop-alternate", "label": "Loop (alternate)" },
-        { "value": "reverse", "label": "Loop (reverse)" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_intensity",
-      "label": "Intensity",
-      "default": "normal",
-      "conditional": "setting.animation != 'none'",
-      "options": [
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "normal", "label": "Normal" },
-        { "value": "strong", "label": "Strong" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "animation_delay",
-      "label": "Stagger Content",
-      "info": "Reveals hero content blocks with an incremental delay.",
-      "default": "none",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "short", "label": "Short" },
-        { "value": "long", "label": "Long" }
-      ]
+      "type": "effect",
+      "id": "effect",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied to this element; several compose."
     },
     {
       "type": "header",

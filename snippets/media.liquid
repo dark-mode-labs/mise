@@ -4,25 +4,9 @@
 {% assign can_autoplay = autoplay | default: false %}
 {% assign anim_class = '' %}
 
-{% if animation != blank and animation != 'none' %}
-  {% assign anim_class = 'anim-{{ animation }}' %}
-  {% if animation_speed != blank %}
-    {% assign anim_class = anim_class | append: ' anim-speed-{{ animation_speed }}' %}
-  {% endif %}
-  {% if animation_loop != blank %}
-    {% assign anim_class = anim_class | append: ' anim-loop-{{ animation_loop }}' %}
-  {% endif %}
-  {% if animation_intensity != blank %}
-    {% assign anim_class = anim_class | append: ' anim-intensity-{{ animation_intensity }}' %}
-  {% endif %}
-{% endif %}
-
-{% if animate_hover %}
-  {% assign anim_class = anim_class
-    | append: ' '
-    | append: 'transition-transform duration-700 ease-out group-hover:scale-110'
-  %}
-{% endif %}
+{% for ef_id in effect %}
+  {% assign anim_class = anim_class | append: ' ef-{{ ef_id }}' %}
+{% endfor %}
 
 {% if curtain_reveal_parallax %}
   {% assign anim_class = anim_class | append: ' ' | append: 'fixed inset-0' %}

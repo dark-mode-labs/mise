@@ -44,6 +44,127 @@
     { --children-gap: var(--space-{{ s[0] }}); }
   {% endunless %}
 {% endfor %}
+{% for a in effect_scale %}
+  {% assign ef = a[1].settings %}
+  {% unless ef.structural %}
+    .ef-{{ a[0] }} {
+    {% if ef.distance != blank %}--anim-dist: {{ ef.distance }};{% endif %}
+    {% if ef.scale_to != blank %}--anim-scale: {{ ef.scale_to }};{% endif %}
+    {% if ef.scale != blank %}--anim-scale-from: {{ ef.scale }};{% endif %}
+    {% if ef.reveal %}opacity: 0;{% endif %}
+    }
+    {% case ef.text_role %}
+      {% when 'primary' -%}
+        {%- assign text_var = '--text' %}
+      {% when 'secondary' -%}
+        {%- assign text_var = '--text-secondary' %}
+      {% when 'subtle' -%}
+        {%- assign text_var = '--text-subtle' %}
+      {% when 'emphasis' -%}
+        {%- assign text_var = '--text-emphasis' %}
+      {% when 'on-accent' -%}
+        {%- assign text_var = '--text-on-accent' %}
+      {% when 'on-button' -%}
+        {%- assign text_var = '--text-on-button' %}
+      {% when 'on-control' -%}
+        {%- assign text_var = '--text-on-control' %}
+      {% else -%}
+        {%- assign text_var = blank %}
+    {% endcase %}
+    {% case ef.bg_role %}
+      {% when 'body' -%}
+        {%- assign bg_var = '--background' %}
+      {% when 'body-alt' -%}
+        {%- assign bg_var = '--background-alt' %}
+      {% when 'surface' -%}
+        {%- assign bg_var = '--surface' %}
+      {% when 'surface-alt' -%}
+        {%- assign bg_var = '--surface-alt' %}
+      {% when 'accent' -%}
+        {%- assign bg_var = '--accent-bg' %}
+      {% when 'button' -%}
+        {%- assign bg_var = '--button-bg' %}
+      {% when 'control' -%}
+        {%- assign bg_var = '--control-bg' %}
+      {% else -%}
+        {%- assign bg_var = blank %}
+    {% endcase %}
+    {% case ef.border_role %}
+      {% when 'default' -%}
+        {%- assign border_var = '--border' %}
+      {% when 'emphasis' -%}
+        {%- assign border_var = '--border-emphasis' %}
+      {% else -%}
+        {%- assign border_var = blank %}
+    {% endcase %}
+    {% capture hover_text %}
+      {% if ef.text_role == 'palette' and ef.text_role_palette != blank %}
+        color: var(--palette-{{ ef.text_role_palette }});
+      {% elsif ef.text_role == 'custom' and ef.text_role_custom != blank %}
+        color: {{ ef.text_role_custom }};
+      {% elsif text_var != blank %}
+        color: var({{ text_var }}, currentColor);
+      {% endif %}
+    {% endcapture %}
+    {% capture rest %}
+      {% if ef.scale != blank %}scale: {{ ef.scale }};{% endif %}
+      {% if ef.rotate != blank %}rotate: {{ ef.rotate }};{% endif %}
+      {% if ef.translate != blank %}translate: {{ ef.translate }};{% endif %}
+      {% if ef.origin != blank %}transform-origin: {{ ef.origin }};{% endif %}
+      {% if ef.opacity != blank %}opacity: {{ ef.opacity }};{% endif %}
+      {% if ef.glow != blank %}box-shadow: {{ ef.glow }};{% endif %}
+      {% if ef.backdrop_blur != blank %}backdrop-filter: blur({{ ef.backdrop_blur }});{% endif %}
+      {% if ef.text_role == 'palette' and ef.text_role_palette != blank %}
+        color: var(--palette-{{ ef.text_role_palette }});
+      {% elsif ef.text_role == 'custom' and ef.text_role_custom != blank %}
+        color: {{ ef.text_role_custom }};
+      {% elsif text_var != blank %}
+        color: var({{ text_var }}, currentColor);
+      {% endif %}
+      {% if ef.bg_role == 'palette' and ef.bg_role_palette != blank %}
+        background: var(--palette-{{ ef.bg_role_palette }});
+      {% elsif ef.bg_role == 'custom' and ef.bg_role_custom != blank %}
+        background: {{ ef.bg_role_custom }};
+      {% elsif bg_var != blank %}
+        background: var({{ bg_var }});
+      {% endif %}
+      {% if ef.border_role == 'palette' and ef.border_role_palette != blank %}
+        border-color: var(--palette-{{ ef.border_role_palette }});
+      {% elsif ef.border_role == 'custom' and ef.border_role_custom != blank %}
+        border-color: {{ ef.border_role_custom }};
+      {% elsif border_var != blank %}
+        border-color: var({{ border_var }}, transparent);
+      {% endif %}
+    {% endcapture %}
+    {% if ef.type == 'static' %}
+      .ef-{{ a[0] }} { {{ rest }} }
+    {% elsif ef.type == 'hover' %}
+      .ef-{{ a[0] }} { transition: all {{ ef.duration }}
+      {{ ef.timing }}; } .ef-{{ a[0] }}:hover { {{ rest }} }
+      {% if ef.text_role != blank and ef.text_role != 'none' %}
+        .ef-{{ a[0] }}:hover * { {{ hover_text }} }
+      {% endif %}
+    {% else %}
+      {% assign kf = 'anim-{{ ef.primitive }}' %}
+      {% if ef.glow_to != blank or ef.opacity_to != blank %}
+        {% assign kf = 'kf-{{ a[0] }}' %}
+        @keyframes {{ kf }} { 0%, 100% { scale: {{ ef.scale }};
+        {% if ef.opacity != blank %}opacity: {{ ef.opacity }};{% endif %}
+        {% if ef.glow != blank %}box-shadow: {{ ef.glow }};{% endif %} } 50% { scale: {{ ef.scale_to }};
+        {% if ef.opacity_to != blank %}opacity: {{ ef.opacity_to }};{% endif %}
+        {% if ef.glow_to != blank %}box-shadow: {{ ef.glow_to }};{% endif %} } }
+      {% endif %}
+      .ef-{{ a[0] -}}
+      {%- if ef.reveal %}.animate{% endif %} { animation: {{ kf }}
+      {{ ef.duration }}
+      {{ ef.timing }}
+      {{ ef.delay }}
+      {{ ef.iterations }}
+      {{ ef.direction }}
+      {{ ef.fill }}; }
+    {% endif %}
+  {% endunless %}
+{% endfor %}
 .pt-none{padding-top:0}.pb-none{padding-bottom:0}.pl-none{padding-left:0}.pr-none{padding-right:0}
 .mt-none{margin-top:0}.mb-none{margin-bottom:0}.ml-none{margin-left:0}.mr-none{margin-right:0}
 .mt-auto{margin-top:auto}.mb-auto{margin-bottom:auto}.ml-auto{margin-left:auto}.mr-auto{margin-right:auto}

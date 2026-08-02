@@ -250,14 +250,16 @@
           "id": "font_size",
           "label": "Font Size",
           "info": "Font size (e.g. `3rem`). Applies at every viewport unless `font_size_by_bp` sets per-breakpoint overrides.",
-          "default": "1rem"
+          "default": "1rem",
+          "subtype": "length"
         },
         {
           "type": "text",
           "id": "font_size_by_bp",
           "label": "Per-Breakpoint Font Size",
           "info": "JSON map of breakpoint_scale tier id to font size. e.g. `{\"broad\": \"3rem\"}` applies at viewports at or above the broad breakpoint.",
-          "default": ""
+          "default": "",
+          "subtype": "bp_overrides"
         },
         {
           "type": "select",
@@ -289,7 +291,8 @@
               "value": "black",
               "label": "Black"
             }
-          ]
+          ],
+          "subtype": "font_weight"
         },
         {
           "type": "select",
@@ -329,14 +332,16 @@
               "value": "custom",
               "label": "Custom"
             }
-          ]
+          ],
+          "subtype": "text_tracking"
         },
         {
           "type": "text",
           "id": "tracking_custom",
           "label": "Tracking (custom)",
           "info": "Arbitrary letter-spacing value (e.g. `-0.015em`, `0.04em`).",
-          "conditional": "setting.tracking == 'custom'"
+          "conditional": "setting.tracking == 'custom'",
+          "subtype": "custom_length"
         },
         {
           "type": "select",
@@ -372,14 +377,16 @@
               "value": "custom",
               "label": "Custom"
             }
-          ]
+          ],
+          "subtype": "text_leading"
         },
         {
           "type": "text",
           "id": "leading_custom",
           "label": "Leading (custom)",
           "info": "Arbitrary line-height value (unitless ratio like `1.1` or `1.55`, or `<N>rem` / `<N>em`).",
-          "conditional": "setting.leading == 'custom'"
+          "conditional": "setting.leading == 'custom'",
+          "subtype": "custom_length"
         },
         {
           "type": "select",
@@ -403,7 +410,8 @@
               "value": "capitalize",
               "label": "Capitalize"
             }
-          ]
+          ],
+          "subtype": "text_transform"
         },
         {
           "type": "select",
@@ -465,21 +473,22 @@
           "id": "max_width",
           "label": "Max Width",
           "info": "Any CSS max-width value: rem (e.g. 56rem), %, or \"none\" for unbounded.",
-          "default": "56rem"
+          "default": "56rem",
+          "subtype": "length"
         },
         {
           "type": "text",
           "id": "value",
           "label": "Width Value",
           "info": "Width value (e.g. `50%`, `100%`, `auto`, `10rem`). Percentage values also act as flex-grow ratios in flex-row parents.",
-          "default": ""
+          "subtype": "length"
         },
         {
           "type": "text",
           "id": "value_by_bp",
           "label": "Per-Breakpoint Width Overrides",
           "info": "JSON map of breakpoint_scale tier id to width value. e.g. `{\"read\": \"auto\"}` applies at viewports at or above the read breakpoint.",
-          "default": ""
+          "subtype": "bp_overrides"
         },
         {
           "type": "select",
@@ -538,14 +547,14 @@
           "id": "value",
           "label": "Value",
           "info": "Any CSS length: rem (e.g. `16rem`), %, vh (e.g. `100vh`), or `auto`.",
-          "default": ""
+          "subtype": "length"
         },
         {
           "type": "text",
           "id": "value_by_bp",
           "label": "Per-Breakpoint Overrides",
           "info": "JSON map of breakpoint_scale tier id to length. e.g. `{\"broad\": \"32rem\"}` applies at viewports at or above the broad breakpoint.",
-          "default": ""
+          "subtype": "bp_overrides"
         },
         {
           "type": "checkbox",
@@ -581,6 +590,451 @@
       ]
     },
     {
+      "name": "Effects",
+      "type": "group",
+      "id": "effect_scale",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Effect"
+        },
+        {
+          "type": "select",
+          "id": "type",
+          "label": "Type",
+          "default": "animation",
+          "options": [
+            {
+              "value": "static",
+              "label": "Always on"
+            },
+            {
+              "value": "animation",
+              "label": "Animation"
+            },
+            {
+              "value": "hover",
+              "label": "Hover"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Motion",
+          "conditional": "setting.type != 'static'"
+        },
+        {
+          "type": "select",
+          "id": "primitive",
+          "label": "Primitive",
+          "default": "pulse",
+          "options": [
+            {
+              "value": "fade-in",
+              "label": "Fade in"
+            },
+            {
+              "value": "rise-in",
+              "label": "Rise in"
+            },
+            {
+              "value": "zoom-in",
+              "label": "Zoom in"
+            },
+            {
+              "value": "float",
+              "label": "Float"
+            },
+            {
+              "value": "pulse",
+              "label": "Pulse"
+            },
+            {
+              "value": "ken-burns",
+              "label": "Ken Burns"
+            },
+            {
+              "value": "rise",
+              "label": "Rise"
+            },
+            {
+              "value": "shimmer",
+              "label": "Shimmer"
+            },
+            {
+              "value": "spin",
+              "label": "Spin"
+            },
+            {
+              "value": "bounce",
+              "label": "Bounce"
+            }
+          ],
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "text",
+          "id": "duration",
+          "label": "Duration",
+          "info": "e.g. `7s`, `450ms`.",
+          "default": "3s",
+          "conditional": "setting.type != 'static'"
+        },
+        {
+          "type": "text",
+          "id": "delay",
+          "label": "Delay",
+          "info": "Phase offset, e.g. `1.4s`.",
+          "default": "0s",
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "text",
+          "id": "timing",
+          "label": "Timing Function",
+          "info": "`linear`, `ease-in-out`, `cubic-bezier(...)`.",
+          "default": "ease-in-out",
+          "conditional": "setting.type != 'static'"
+        },
+        {
+          "type": "text",
+          "id": "iterations",
+          "label": "Iterations",
+          "info": "A count, or `infinite`.",
+          "default": "infinite",
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "select",
+          "id": "direction",
+          "label": "Direction",
+          "default": "normal",
+          "options": [
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "reverse",
+              "label": "Reverse"
+            },
+            {
+              "value": "alternate",
+              "label": "Alternate"
+            },
+            {
+              "value": "alternate-reverse",
+              "label": "Alternate reverse"
+            }
+          ],
+          "conditional": "setting.type == 'animation'",
+          "subtype": "animation_direction"
+        },
+        {
+          "type": "select",
+          "id": "fill",
+          "label": "Fill Mode",
+          "info": "`both` holds the end state \u2014 needed for a play-once reveal.",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "both",
+              "label": "Both"
+            },
+            {
+              "value": "forwards",
+              "label": "Forwards"
+            },
+            {
+              "value": "backwards",
+              "label": "Backwards"
+            }
+          ],
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "checkbox",
+          "id": "reveal",
+          "label": "Entrance (reveal on scroll)",
+          "info": "Hidden until scrolled into view, then plays once.",
+          "default": false,
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "header",
+          "content": "Amplitude",
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "text",
+          "id": "distance",
+          "label": "Travel Distance",
+          "info": "Translate amplitude (float/rise/bounce).",
+          "default": "20px",
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "text",
+          "id": "scale_to",
+          "label": "Scale To",
+          "default": "1.08",
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "text",
+          "id": "opacity_to",
+          "label": "Opacity At Peak",
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "text",
+          "id": "glow_to",
+          "label": "Halo At Peak",
+          "conditional": "setting.type == 'animation'"
+        },
+        {
+          "type": "header",
+          "content": "Rest state"
+        },
+        {
+          "type": "text",
+          "id": "scale",
+          "label": "Scale",
+          "info": "`1` is unscaled.",
+          "default": "1"
+        },
+        {
+          "type": "text",
+          "id": "rotate",
+          "label": "Rotate",
+          "info": "e.g. `-3deg`."
+        },
+        {
+          "type": "text",
+          "id": "translate",
+          "label": "Translate",
+          "info": "e.g. `0 -4px`."
+        },
+        {
+          "type": "text",
+          "id": "origin",
+          "label": "Transform Origin",
+          "info": "Pivot for scale/rotate, e.g. `50% 46%`."
+        },
+        {
+          "type": "text",
+          "id": "opacity",
+          "label": "Opacity",
+          "info": "Blank keeps the element's own."
+        },
+        {
+          "type": "text",
+          "id": "glow",
+          "label": "Glow",
+          "info": "Full `box-shadow`, e.g. `0 0 7px 2px rgba(\u2026)`."
+        },
+        {
+          "type": "text",
+          "id": "backdrop_blur",
+          "label": "Backdrop Blur",
+          "info": "e.g. `0.25rem`."
+        },
+        {
+          "type": "header",
+          "content": "Colour"
+        },
+        {
+          "type": "select",
+          "id": "text_role",
+          "label": "Text Color Role",
+          "default": "inherit",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Inherit"
+            },
+            {
+              "value": "primary",
+              "label": "Primary"
+            },
+            {
+              "value": "secondary",
+              "label": "Secondary"
+            },
+            {
+              "value": "subtle",
+              "label": "Subtle"
+            },
+            {
+              "value": "emphasis",
+              "label": "Emphasis"
+            },
+            {
+              "value": "on-accent",
+              "label": "On Accent"
+            },
+            {
+              "value": "on-button",
+              "label": "On Button"
+            },
+            {
+              "value": "on-control",
+              "label": "On Control"
+            },
+            {
+              "value": "palette",
+              "label": "Base Palette"
+            },
+            {
+              "value": "custom",
+              "label": "Raw Color"
+            }
+          ]
+        },
+        {
+          "type": "palette",
+          "id": "text_role_palette",
+          "label": "Text Palette Token",
+          "default": "brand",
+          "conditional": "setting.text_role == 'palette'"
+        },
+        {
+          "type": "color",
+          "id": "text_role_custom",
+          "label": "Raw Text Color",
+          "conditional": "setting.text_role == 'custom'"
+        },
+        {
+          "type": "select",
+          "id": "bg_role",
+          "label": "Background",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "body",
+              "label": "Body"
+            },
+            {
+              "value": "body-alt",
+              "label": "Body (alt)"
+            },
+            {
+              "value": "surface",
+              "label": "Surface"
+            },
+            {
+              "value": "surface-alt",
+              "label": "Surface (alt)"
+            },
+            {
+              "value": "accent",
+              "label": "Accent"
+            },
+            {
+              "value": "button",
+              "label": "Button"
+            },
+            {
+              "value": "control",
+              "label": "Control"
+            },
+            {
+              "value": "palette",
+              "label": "Base Palette"
+            },
+            {
+              "value": "custom",
+              "label": "Raw Color"
+            }
+          ]
+        },
+        {
+          "type": "palette",
+          "id": "bg_role_palette",
+          "label": "Background Palette Token",
+          "default": "brand",
+          "conditional": "setting.bg_role == 'palette'"
+        },
+        {
+          "type": "color",
+          "id": "bg_role_custom",
+          "label": "Raw Background",
+          "conditional": "setting.bg_role == 'custom'"
+        },
+        {
+          "type": "select",
+          "id": "border_role",
+          "label": "Border Color",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "default",
+              "label": "Default"
+            },
+            {
+              "value": "emphasis",
+              "label": "Emphasis"
+            },
+            {
+              "value": "palette",
+              "label": "Base Palette"
+            },
+            {
+              "value": "custom",
+              "label": "Raw Color"
+            }
+          ]
+        },
+        {
+          "type": "palette",
+          "id": "border_role_palette",
+          "label": "Border Palette Token",
+          "default": "brand",
+          "conditional": "setting.border_role == 'palette'"
+        },
+        {
+          "type": "color",
+          "id": "border_role_custom",
+          "label": "Raw Border",
+          "conditional": "setting.border_role == 'custom'"
+        },
+        {
+          "type": "header",
+          "content": "Editor"
+        },
+        {
+          "type": "select",
+          "id": "visibility",
+          "label": "Visibility",
+          "default": "curated",
+          "options": [
+            {
+              "value": "curated",
+              "label": "Curated"
+            },
+            {
+              "value": "overflow",
+              "label": "Overflow"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Space Scale",
       "type": "group",
       "id": "space_scale",
@@ -597,14 +1051,14 @@
           "id": "value",
           "label": "Value",
           "info": "Any CSS length: rem (e.g. `1rem`, `1.5rem`), em, or px.",
-          "default": ""
+          "subtype": "length"
         },
         {
           "type": "text",
           "id": "value_by_bp",
           "label": "Per-Breakpoint Overrides",
           "info": "JSON map of breakpoint_scale tier id to length. e.g. `{\"column\": \"3.5rem\"}` applies at viewports at or above the column breakpoint.",
-          "default": ""
+          "subtype": "bp_overrides"
         },
         {
           "type": "select",
@@ -641,7 +1095,8 @@
           "id": "value",
           "label": "Gradient",
           "info": "Any CSS gradient (linear-gradient, radial-gradient, conic-gradient).",
-          "default": "linear-gradient(to bottom, #000, transparent)"
+          "default": "linear-gradient(to bottom, #000, transparent)",
+          "subtype": "gradient_value"
         }
       ]
     },
@@ -1351,6 +1806,190 @@
           "settings": {
             "title": "Auto Bottom",
             "structural": true,
+            "visibility": "curated"
+          }
+        }
+      },
+      "effect_scale": {
+        "fade-in": {
+          "settings": {
+            "title": "Fade In",
+            "type": "animation",
+            "primitive": "fade-in",
+            "duration": "0.8s",
+            "delay": "0s",
+            "timing": "ease-out",
+            "iterations": "1",
+            "direction": "normal",
+            "fill": "both",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": true,
+            "visibility": "curated"
+          }
+        },
+        "rise-in": {
+          "settings": {
+            "title": "Rise In",
+            "type": "animation",
+            "primitive": "rise-in",
+            "duration": "0.6s",
+            "delay": "0s",
+            "timing": "cubic-bezier(0.16, 1, 0.3, 1)",
+            "iterations": "1",
+            "direction": "normal",
+            "fill": "both",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": true,
+            "visibility": "curated"
+          }
+        },
+        "zoom-in": {
+          "settings": {
+            "title": "Zoom In",
+            "type": "animation",
+            "primitive": "zoom-in",
+            "duration": "0.5s",
+            "delay": "0s",
+            "timing": "ease-out",
+            "iterations": "1",
+            "direction": "normal",
+            "fill": "both",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": true,
+            "visibility": "curated"
+          }
+        },
+        "float": {
+          "settings": {
+            "title": "Float",
+            "type": "animation",
+            "primitive": "float",
+            "duration": "6s",
+            "delay": "0s",
+            "timing": "ease-in-out",
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill": "none",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": false,
+            "visibility": "curated"
+          }
+        },
+        "pulse": {
+          "settings": {
+            "title": "Pulse",
+            "type": "animation",
+            "primitive": "pulse",
+            "duration": "3s",
+            "delay": "0s",
+            "timing": "ease-in-out",
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill": "none",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "opacity": "1",
+            "opacity_to": "0.6",
+            "reveal": false,
+            "visibility": "curated"
+          }
+        },
+        "ken-burns": {
+          "settings": {
+            "title": "Ken Burns",
+            "type": "animation",
+            "primitive": "ken-burns",
+            "duration": "20s",
+            "delay": "0s",
+            "timing": "ease-out",
+            "iterations": "infinite",
+            "direction": "alternate",
+            "fill": "none",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": false,
+            "visibility": "curated"
+          }
+        },
+        "rise": {
+          "settings": {
+            "title": "Drift",
+            "type": "animation",
+            "primitive": "rise",
+            "duration": "8s",
+            "delay": "0s",
+            "timing": "linear",
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill": "none",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": false,
+            "visibility": "curated"
+          }
+        },
+        "shimmer": {
+          "settings": {
+            "title": "Shimmer",
+            "type": "animation",
+            "primitive": "shimmer",
+            "duration": "3s",
+            "delay": "0s",
+            "timing": "linear",
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill": "none",
+            "distance": "200%",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": false,
+            "visibility": "curated"
+          }
+        },
+        "spin": {
+          "settings": {
+            "title": "Spin",
+            "type": "animation",
+            "primitive": "spin",
+            "duration": "4s",
+            "delay": "0s",
+            "timing": "linear",
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill": "none",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": false,
+            "visibility": "curated"
+          }
+        },
+        "bounce": {
+          "settings": {
+            "title": "Bounce",
+            "type": "animation",
+            "primitive": "bounce",
+            "duration": "1s",
+            "delay": "0s",
+            "timing": "ease-in-out",
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill": "none",
+            "distance": "20px",
+            "scale": "1",
+            "scale_to": "1.08",
+            "reveal": false,
             "visibility": "curated"
           }
         }
