@@ -55,8 +55,8 @@
     {%- assign utilities = utilities | push: 'truncate' %}
 {% endcase %}
 
-{% for tf_id in s.transformation %}
-  {% assign utilities = utilities | push: 'tf-{{ tf_id }}' %}
+{% for ef_id in s.effect %}
+  {% assign utilities = utilities | push: 'ef-{{ ef_id }}' %}
 {% endfor %}
 
 {% assign utility_classes = utilities | join: ' ' %}
@@ -362,8 +362,8 @@
       "conditional": "setting.text_role == 'custom'"
     },
     {
-      "type": "transformation",
-      "id": "transformation",
+      "type": "effect",
+      "id": "effect",
       "label": "Effects",
       "default": [],
       "info": "Effects applied to this element; several compose."

@@ -41,8 +41,8 @@
   | push: 'section-align-v-{{ s.vertical_align }}'
   | push: 'section-align-text-{{ s.text_align }}'
 %}
-{% for tf_id in s.transformation %}
-  {% assign inner_classes = inner_classes | push: 'tf-{{ tf_id }}' %}
+{% for ef_id in s.effect %}
+  {% assign inner_classes = inner_classes | push: 'ef-{{ ef_id }}' %}
 {% endfor %}
 {% assign inner_class_str = inner_classes | join: ' ' %}
 
@@ -226,8 +226,8 @@
       "default": "none"
     },
     {
-      "type": "transformation",
-      "id": "transformation",
+      "type": "effect",
+      "id": "effect",
       "label": "Effects",
       "default": [],
       "info": "Effects applied to this element; several compose."

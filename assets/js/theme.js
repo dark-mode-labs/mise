@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================================================================
   // 2. INTERSECTION OBSERVER FOR VISUAL ANIMATIONS ONLY
   // =========================================================================
-  const animatedElements = [...document.querySelectorAll('[class^="tf-"], [class*=" tf-"]')].filter(
+  const animatedElements = [...document.querySelectorAll('[class^="ef-"], [class*=" ef-"]')].filter(
     (el) => {
       const cs = getComputedStyle(el);
       return cs.animationName === "none" && cs.opacity === "0";

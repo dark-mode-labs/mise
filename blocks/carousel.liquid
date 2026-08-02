@@ -15,8 +15,8 @@
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
 
-{% for tf_id in s.transformation %}
-  {% assign classes = classes | push: 'tf-{{ tf_id }}' %}
+{% for ef_id in s.effect %}
+  {% assign classes = classes | push: 'ef-{{ ef_id }}' %}
 {% endfor %}
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
@@ -658,8 +658,8 @@
       "default": "none"
     },
     {
-      "type": "transformation",
-      "id": "transformation",
+      "type": "effect",
+      "id": "effect",
       "label": "Effects",
       "default": [],
       "info": "Effects applied to this element; several compose."

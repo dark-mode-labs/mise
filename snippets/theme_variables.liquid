@@ -44,16 +44,16 @@
     { --children-gap: var(--space-{{ s[0] }}); }
   {% endunless %}
 {% endfor %}
-{% for a in transformation_scale %}
-  {% assign tf = a[1].settings %}
-  {% unless tf.structural %}
-    .tf-{{ a[0] }} {
-    {% if tf.distance != blank %}--anim-dist: {{ tf.distance }};{% endif %}
-    {% if tf.scale_to != blank %}--anim-scale: {{ tf.scale_to }};{% endif %}
-    {% if tf.scale != blank %}--anim-scale-from: {{ tf.scale }};{% endif %}
-    {% if tf.reveal %}opacity: 0;{% endif %}
+{% for a in effect_scale %}
+  {% assign ef = a[1].settings %}
+  {% unless ef.structural %}
+    .ef-{{ a[0] }} {
+    {% if ef.distance != blank %}--anim-dist: {{ ef.distance }};{% endif %}
+    {% if ef.scale_to != blank %}--anim-scale: {{ ef.scale_to }};{% endif %}
+    {% if ef.scale != blank %}--anim-scale-from: {{ ef.scale }};{% endif %}
+    {% if ef.reveal %}opacity: 0;{% endif %}
     }
-    {% case tf.text_role %}
+    {% case ef.text_role %}
       {% when 'primary' -%}
         {%- assign text_var = '--text' %}
       {% when 'secondary' -%}
@@ -71,7 +71,7 @@
       {% else -%}
         {%- assign text_var = blank %}
     {% endcase %}
-    {% case tf.bg_role %}
+    {% case ef.bg_role %}
       {% when 'body' -%}
         {%- assign bg_var = '--background' %}
       {% when 'body-alt' -%}
@@ -89,7 +89,7 @@
       {% else -%}
         {%- assign bg_var = blank %}
     {% endcase %}
-    {% case tf.border_role %}
+    {% case ef.border_role %}
       {% when 'default' -%}
         {%- assign border_var = '--border' %}
       {% when 'emphasis' -%}
@@ -98,70 +98,70 @@
         {%- assign border_var = blank %}
     {% endcase %}
     {% capture hover_text %}
-      {% if tf.text_role == 'palette' and tf.text_role_palette != blank %}
-        color: var(--palette-{{ tf.text_role_palette }});
-      {% elsif tf.text_role == 'custom' and tf.text_role_custom != blank %}
-        color: {{ tf.text_role_custom }};
+      {% if ef.text_role == 'palette' and ef.text_role_palette != blank %}
+        color: var(--palette-{{ ef.text_role_palette }});
+      {% elsif ef.text_role == 'custom' and ef.text_role_custom != blank %}
+        color: {{ ef.text_role_custom }};
       {% elsif text_var != blank %}
         color: var({{ text_var }}, currentColor);
       {% endif %}
     {% endcapture %}
     {% capture rest %}
-      {% if tf.scale != blank %}scale: {{ tf.scale }};{% endif %}
-      {% if tf.rotate != blank %}rotate: {{ tf.rotate }};{% endif %}
-      {% if tf.translate != blank %}translate: {{ tf.translate }};{% endif %}
-      {% if tf.origin != blank %}transform-origin: {{ tf.origin }};{% endif %}
-      {% if tf.opacity != blank %}opacity: {{ tf.opacity }};{% endif %}
-      {% if tf.glow != blank %}box-shadow: {{ tf.glow }};{% endif %}
-      {% if tf.backdrop_blur != blank %}backdrop-filter: blur({{ tf.backdrop_blur }});{% endif %}
-      {% if tf.text_role == 'palette' and tf.text_role_palette != blank %}
-        color: var(--palette-{{ tf.text_role_palette }});
-      {% elsif tf.text_role == 'custom' and tf.text_role_custom != blank %}
-        color: {{ tf.text_role_custom }};
+      {% if ef.scale != blank %}scale: {{ ef.scale }};{% endif %}
+      {% if ef.rotate != blank %}rotate: {{ ef.rotate }};{% endif %}
+      {% if ef.translate != blank %}translate: {{ ef.translate }};{% endif %}
+      {% if ef.origin != blank %}transform-origin: {{ ef.origin }};{% endif %}
+      {% if ef.opacity != blank %}opacity: {{ ef.opacity }};{% endif %}
+      {% if ef.glow != blank %}box-shadow: {{ ef.glow }};{% endif %}
+      {% if ef.backdrop_blur != blank %}backdrop-filter: blur({{ ef.backdrop_blur }});{% endif %}
+      {% if ef.text_role == 'palette' and ef.text_role_palette != blank %}
+        color: var(--palette-{{ ef.text_role_palette }});
+      {% elsif ef.text_role == 'custom' and ef.text_role_custom != blank %}
+        color: {{ ef.text_role_custom }};
       {% elsif text_var != blank %}
         color: var({{ text_var }}, currentColor);
       {% endif %}
-      {% if tf.bg_role == 'palette' and tf.bg_role_palette != blank %}
-        background: var(--palette-{{ tf.bg_role_palette }});
-      {% elsif tf.bg_role == 'custom' and tf.bg_role_custom != blank %}
-        background: {{ tf.bg_role_custom }};
+      {% if ef.bg_role == 'palette' and ef.bg_role_palette != blank %}
+        background: var(--palette-{{ ef.bg_role_palette }});
+      {% elsif ef.bg_role == 'custom' and ef.bg_role_custom != blank %}
+        background: {{ ef.bg_role_custom }};
       {% elsif bg_var != blank %}
         background: var({{ bg_var }});
       {% endif %}
-      {% if tf.border_role == 'palette' and tf.border_role_palette != blank %}
-        border-color: var(--palette-{{ tf.border_role_palette }});
-      {% elsif tf.border_role == 'custom' and tf.border_role_custom != blank %}
-        border-color: {{ tf.border_role_custom }};
+      {% if ef.border_role == 'palette' and ef.border_role_palette != blank %}
+        border-color: var(--palette-{{ ef.border_role_palette }});
+      {% elsif ef.border_role == 'custom' and ef.border_role_custom != blank %}
+        border-color: {{ ef.border_role_custom }};
       {% elsif border_var != blank %}
         border-color: var({{ border_var }}, transparent);
       {% endif %}
     {% endcapture %}
-    {% if tf.type == 'static' %}
-      .tf-{{ a[0] }} { {{ rest }} }
-    {% elsif tf.type == 'hover' %}
-      .tf-{{ a[0] }} { transition: all {{ tf.duration }}
-      {{ tf.timing }}; } .tf-{{ a[0] }}:hover { {{ rest }} }
-      {% if tf.text_role != blank and tf.text_role != 'none' %}
-        .tf-{{ a[0] }}:hover * { {{ hover_text }} }
+    {% if ef.type == 'static' %}
+      .ef-{{ a[0] }} { {{ rest }} }
+    {% elsif ef.type == 'hover' %}
+      .ef-{{ a[0] }} { transition: all {{ ef.duration }}
+      {{ ef.timing }}; } .ef-{{ a[0] }}:hover { {{ rest }} }
+      {% if ef.text_role != blank and ef.text_role != 'none' %}
+        .ef-{{ a[0] }}:hover * { {{ hover_text }} }
       {% endif %}
     {% else %}
-      {% assign kf = 'anim-{{ tf.primitive }}' %}
-      {% if tf.glow_to != blank or tf.opacity_to != blank %}
+      {% assign kf = 'anim-{{ ef.primitive }}' %}
+      {% if ef.glow_to != blank or ef.opacity_to != blank %}
         {% assign kf = 'kf-{{ a[0] }}' %}
-        @keyframes {{ kf }} { 0%, 100% { scale: {{ tf.scale }};
-        {% if tf.opacity != blank %}opacity: {{ tf.opacity }};{% endif %}
-        {% if tf.glow != blank %}box-shadow: {{ tf.glow }};{% endif %} } 50% { scale: {{ tf.scale_to }};
-        {% if tf.opacity_to != blank %}opacity: {{ tf.opacity_to }};{% endif %}
-        {% if tf.glow_to != blank %}box-shadow: {{ tf.glow_to }};{% endif %} } }
+        @keyframes {{ kf }} { 0%, 100% { scale: {{ ef.scale }};
+        {% if ef.opacity != blank %}opacity: {{ ef.opacity }};{% endif %}
+        {% if ef.glow != blank %}box-shadow: {{ ef.glow }};{% endif %} } 50% { scale: {{ ef.scale_to }};
+        {% if ef.opacity_to != blank %}opacity: {{ ef.opacity_to }};{% endif %}
+        {% if ef.glow_to != blank %}box-shadow: {{ ef.glow_to }};{% endif %} } }
       {% endif %}
-      .tf-{{ a[0] -}}
-      {%- if tf.reveal %}.animate{% endif %} { animation: {{ kf }}
-      {{ tf.duration }}
-      {{ tf.timing }}
-      {{ tf.delay }}
-      {{ tf.iterations }}
-      {{ tf.direction }}
-      {{ tf.fill }}; }
+      .ef-{{ a[0] -}}
+      {%- if ef.reveal %}.animate{% endif %} { animation: {{ kf }}
+      {{ ef.duration }}
+      {{ ef.timing }}
+      {{ ef.delay }}
+      {{ ef.iterations }}
+      {{ ef.direction }}
+      {{ ef.fill }}; }
     {% endif %}
   {% endunless %}
 {% endfor %}

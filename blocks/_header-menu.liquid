@@ -39,8 +39,8 @@
 {% assign utility_classes = utilities | join: ' ' %}
 
 {% assign link_tf = '' %}
-{% for tf_id in s.link_transformation %}
-  {% assign link_tf = link_tf | append: 'tf-' | append: tf_id | append: ' ' %}
+{% for ef_id in s.link_effect %}
+  {% assign link_tf = link_tf | append: 'ef-' | append: ef_id | append: ' ' %}
 {% endfor %}
 
 <nav
@@ -199,8 +199,8 @@
       "default": "xs"
     },
     {
-      "type": "transformation",
-      "id": "link_transformation",
+      "type": "effect",
+      "id": "link_effect",
       "label": "Link Effects",
       "default": [],
       "info": "Effects applied to each nav link; several compose."

@@ -592,7 +592,7 @@
     {
       "name": "Effects",
       "type": "group",
-      "id": "transformation_scale",
+      "id": "effect_scale",
       "settings": [
         {
           "type": "text",
@@ -1810,7 +1810,7 @@
           }
         }
       },
-      "transformation_scale": {
+      "effect_scale": {
         "fade-in": {
           "settings": {
             "title": "Fade In",

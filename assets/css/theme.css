@@ -1133,8 +1133,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [class^="tf-"],
-    [class*=" tf-"] {
+    [class^="ef-"],
+    [class*=" ef-"] {
       animation: none !important;
       opacity: 1 !important;
       scale: none !important;

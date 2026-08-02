@@ -57,7 +57,7 @@
       video: s.video_url,
       fit: 'cover',
       placeholder: placeholder_name,
-      transformation: s.transformation
+      effect: s.effect
     %}
 
     {% render 'bg-overlay',
@@ -111,8 +111,8 @@
       "info": "Show a pattern when no image is selected."
     },
     {
-      "type": "transformation",
-      "id": "transformation",
+      "type": "effect",
+      "id": "effect",
       "label": "Effects",
       "default": [],
       "info": "Effects applied to this element; several compose."

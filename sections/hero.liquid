@@ -90,7 +90,7 @@
           placeholder: placeholder_name,
           controls: s.show_controls,
           autoplay: s.autoplay,
-          transformation: s.transformation
+          effect: s.effect
         %}
 
         {% render 'bg-overlay',
@@ -113,7 +113,7 @@
             placeholder: placeholder_name,
             controls: s.show_controls,
             autoplay: s.autoplay,
-            transformation: s.transformation
+            effect: s.effect
           %}
           {% render 'bg-overlay',
             role: s.overlay_role,
@@ -359,8 +359,8 @@
       "default": "middle"
     },
     {
-      "type": "transformation",
-      "id": "transformation",
+      "type": "effect",
+      "id": "effect",
       "label": "Effects",
       "default": [],
       "info": "Effects applied to this element; several compose."

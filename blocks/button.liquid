@@ -71,8 +71,8 @@
   {% endif %}
 {% endunless %}
 
-{% for tf_id in s.transformation %}
-  {% assign wrapper_classes = wrapper_classes | push: 'tf-{{ tf_id }}' %}
+{% for ef_id in s.effect %}
+  {% assign wrapper_classes = wrapper_classes | push: 'ef-{{ ef_id }}' %}
 {% endfor %}
 
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
@@ -820,8 +820,8 @@
       "conditional": "setting.text_role == 'custom'"
     },
     {
-      "type": "transformation",
-      "id": "transformation",
+      "type": "effect",
+      "id": "effect",
       "label": "Effects",
       "default": [],
       "info": "Effects applied to this element; several compose."
