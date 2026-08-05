@@ -1,0 +1,86 @@
+{% comment %}
+  Args:
+    menu               link_list with `links`
+    drawer_surface_id  surface tier id
+    drawer_bg_role     role enum (body / palette / custom / gradient / …)
+    drawer_bg_value    resolved CSS value for palette/custom/gradient (else blank)
+    drawer_text_value  resolved CSS value for --text override (blank → cascade)
+    drawer_type_style  type style id
+    drawer_alpha_pct   0–100 backdrop opacity
+    actions_html       rendered HTML of `_header-actions` (or blank)
+{% endcomment %}
+
+{% assign bg_class = 'bg-{{ drawer_bg_role }}' %}
+{% if drawer_bg_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign panel_classes = 'drawer-panel surface-{{ drawer_surface_id }}' %}
+{% if bg_class != blank %}{% assign panel_classes = '{{ panel_classes }} {{ bg_class }}' %}{% endif %}
+
+{% assign panel_styles = blank %}
+{% if drawer_bg_value != blank %}
+  {% assign panel_styles = panel_styles | push: 'background: {{ drawer_bg_value }}' %}
+{% endif %}
+{% if drawer_text_value != blank %}
+  {% assign panel_styles = panel_styles | push: '--text: {{ drawer_text_value }}' %}
+{% endif %}
+{% assign panel_style_str = panel_styles | join: ';' %}
+
+<div
+  class='header-drawer'
+  aria-hidden='true'
+  style='--drawer-backdrop-alpha: {{ drawer_alpha_pct | divided_by: 100.0 }}'
+>
+  <div class='drawer-backdrop' data-action='close'></div>
+  <div class='{{ panel_classes }}' style='{{ panel_style_str }}'>
+    <div class='flex items-center justify-end px-6 h-16 border-b border-current/10'>
+      <button type='button' class='p-2 -mr-2 hover:opacity-70' data-action='close' aria-label='Close Menu'>
+        {% render 'icon', name: 'close', class: 'w-6 h-6' %}
+      </button>
+    </div>
+    <nav class='flex-1 overflow-y-auto py-6 px-6'>
+      <ul class='flex flex-col gap-4'>
+        {% for link in menu.links %}
+          <li>
+            {% if link.links != blank %}
+              <details class='group'>
+                <summary class='flex items-center justify-between py-2 cursor-pointer list-none select-none'>
+                  {% render 'typography', text: link.title, type_style: drawer_type_style %}
+                  {% render 'icon', name: 'chevron-right', class: 'w-4 h-4 transition-transform group-open:rotate-90' %}
+                </summary>
+                <ul class='pl-4 mt-2 flex flex-col gap-md border-l border-current/20'>
+                  {% for child in link.links %}
+                    <li>
+                      <a href='{{ child.url }}' class='block opacity-80 hover:opacity-100 py-1'>
+                        {% render 'typography', text: child.title, type_style: drawer_type_style %}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </details>
+            {% else %}
+              <a
+                href='{{ link.url }}'
+                class='block py-2'
+              >
+                {% render 'typography', text: link.title, type_style: drawer_type_style %}
+              </a>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    {% if actions_html != blank %}
+      <div class='drawer-actions p-6 border-t border-current/10'>
+        {{ actions_html }}
+      </div>
+    {% endif %}
+    <div class='p-6 border-t border-current/10'>
+      {%
+        render 'typography',
+        text: shop.name | append: ' © ' | append: 'now' | date: '%Y',
+        type_style: 'caption',
+        class: 'opacity-60 text-center'
+      %}
+    </div>
+  </div>
+</div>

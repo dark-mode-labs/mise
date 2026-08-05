@@ -1,0 +1,588 @@
+{% assign s = block.settings %}
+
+{% assign chip_strip_bg_value = blank %}
+{% if s.chip_strip_bg_role == 'palette' and s.chip_strip_bg_role_palette != blank %}
+  {% assign chip_strip_bg_value = 'var(--palette-{{ s.chip_strip_bg_role_palette }})' %}
+{% elsif s.chip_strip_bg_role == 'gradient' and s.chip_strip_bg_role_gradient != blank %}
+  {% assign chip_strip_bg_value = 'var(--gradient-{{ s.chip_strip_bg_role_gradient }})' %}
+{% elsif s.chip_strip_bg_role == 'custom' and s.chip_strip_bg_role_custom != blank %}
+  {% assign chip_strip_bg_value = s.chip_strip_bg_role_custom %}
+{% endif %}
+
+{% assign chip_strip_border_color_value = blank %}
+{% if s.chip_strip_border_role == 'palette' and s.chip_strip_border_role_palette != blank %}
+  {% assign chip_strip_border_color_value = 'var(--palette-{{ s.chip_strip_border_role_palette }})' %}
+{% elsif s.chip_strip_border_role == 'gradient' and s.chip_strip_border_role_gradient != blank %}
+  {% assign chip_strip_border_color_value = 'var(--gradient-{{ s.chip_strip_border_role_gradient }})' %}
+{% elsif s.chip_strip_border_role == 'custom' and s.chip_strip_border_role_custom != blank %}
+  {% assign chip_strip_border_color_value = s.chip_strip_border_role_custom %}
+{% endif %}
+
+{% assign chip_strip_bg_class = '' %}
+{% if chip_strip_bg_value == blank and s.chip_strip_bg_role != blank and s.chip_strip_bg_role != 'none' %}
+  {% assign chip_strip_bg_class = 'bg-' | append: s.chip_strip_bg_role %}
+{% endif %}
+
+{% assign chip_strip_surface_class = '' %}
+{% if s.chip_strip_surface_id != blank and s.chip_strip_surface_id != 'none' %}
+  {% assign chip_strip_surface_class = 'surface-' | append: s.chip_strip_surface_id %}
+{% endif %}
+
+{% assign content_layer_classes = 'tabs-content-layer tabs-position-{{ s.chip_position }} limit-width width-{{ s.width }}'
+  | push: 'tab-mode-{{ s.mode }}'
+%}
+{% if s.align_self != blank and s.align_self != 'auto' -%}
+  {%- assign content_layer_classes = content_layer_classes | push: 'self-{{ s.align_self }}' -%}
+{%- endif %}
+{% if s.column_gap != blank and s.column_gap != 'none' %}
+  {% assign content_layer_classes = content_layer_classes | push: 'gap-{{ s.column_gap }}' %}
+{% endif %}
+{% if s.chip_position_by_bp != blank %}
+  {% for bp in s.chip_position_by_bp %}
+    {% assign content_layer_classes = content_layer_classes | push: 'tabpos-{{ bp[0] }}-{{ bp[1] }}' %}
+  {% endfor %}
+{% endif %}
+
+{% assign chip_strip_classes = 'chip-strip chip-strip-{{ s.chip_position }} chip-strip-{{ s.chip_layout }}'
+  | push: 'pt-{{ s.chip_strip_padding_top }} pb-{{ s.chip_strip_padding_bottom }}'
+  | push: 'pl-{{ s.chip_strip_padding_left }} pr-{{ s.chip_strip_padding_right }}'
+  | push: chip_strip_bg_class
+  | push: chip_strip_surface_class
+  | push_if: 'rounded-custom', s.chip_strip_border_radius
+  | push_if: 'chip-strip-sticky', s.sticky_chips
+%}
+{% if s.chip_strip_width != blank %}
+  {% assign chip_strip_classes = chip_strip_classes | push: 'width-{{ s.chip_strip_width }}' %}
+{% endif %}
+
+{% assign chip_strip_styles = blank %}
+{% if s.chip_strip_border_radius > 0 %}
+  {% assign chip_strip_styles = chip_strip_styles | push: '--radius-custom: {{ s.chip_strip_border_radius }}px' %}
+{% endif %}
+{% if chip_strip_bg_value != blank %}
+  {% assign chip_strip_styles = chip_strip_styles | push: 'background: {{ chip_strip_bg_value }}' %}
+{% endif %}
+{% if s.chip_strip_gap != blank and s.chip_strip_gap != 'none' %}
+  {% assign chip_strip_styles = chip_strip_styles | push: '--chip-strip-gap: var(--space-{{ s.chip_strip_gap }})' %}
+{% endif %}
+
+{% unless s.chip_strip_border_mode == blank or s.chip_strip_border_mode == 'none' %}
+  {% assign chip_strip_classes = chip_strip_classes
+    | push: 'group-border-{{ s.chip_strip_border_mode }}'
+    | push: 'group-border-size-{{ s.chip_strip_border_size }}'
+  %}
+  {% if chip_strip_border_color_value != blank %}
+    {% assign chip_strip_styles = chip_strip_styles | push: '--border: {{ chip_strip_border_color_value }}' %}
+  {% elsif s.chip_strip_border_role != blank and s.chip_strip_border_role != 'none' %}
+    {% assign chip_strip_classes = chip_strip_classes | push: 'border-{{ s.chip_strip_border_role }}' %}
+  {% endif %}
+  {% if s.chip_strip_border_mode == 'custom' %}
+    {% assign chip_strip_classes = chip_strip_classes
+      | push_if: 'group-border-custom-left', s.chip_strip_border_custom_left
+      | push_if: 'group-border-custom-right', s.chip_strip_border_custom_right
+      | push_if: 'group-border-custom-top', s.chip_strip_border_custom_top
+      | push_if: 'group-border-custom-bottom', s.chip_strip_border_custom_bottom
+    %}
+  {% endif %}
+  {% assign chip_strip_styles = chip_strip_styles | push: '--border-style:solid' %}
+{% endunless %}
+
+<div
+  class='{{ content_layer_classes | join: ' ' }}'
+  style='--pane-scroll-mt: var(--space-{{ s.pane_gap_spy }})'
+  data-tab-group='{{ section.id }}'
+  {% if s.mode == 'spy' %}
+    data-spy-scope='{{ section.id }}'
+  {% endif %}
+  {{ context.attached_attributes }}
+>
+  <div
+    class='{{ chip_strip_classes | join: ' ' }}'
+    style='{{ chip_strip_styles | join: ';' }}'
+    {% if s.mode == 'spy' %}
+      data-behavior='menu-spy'
+    {% endif %}
+  >
+    {% content_for 'block', type: '_tab-head-region', id: 'chips' %}
+  </div>
+  {% assign panes_bg_value = blank %}
+  {% if s.panes_bg_role == 'gradient' and s.panes_bg_role_gradient != blank %}
+    {% assign panes_bg_value = 'var(--gradient-{{ s.panes_bg_role_gradient }})' %}
+  {% elsif s.panes_bg_role == 'palette' and s.panes_bg_role_palette != blank %}
+    {% assign panes_bg_value = 'var(--palette-{{ s.panes_bg_role_palette }})' %}
+  {% elsif s.panes_bg_role == 'custom' and s.panes_bg_role_custom != blank %}
+    {% assign panes_bg_value = s.panes_bg_role_custom %}
+  {% endif %}
+  {% assign panes_classes = 'tab-panes'
+    | push: 'gap-{{ s.pane_gap_spy }}'
+    | push: 'pt-{{ s.panes_padding_top }} pb-{{ s.panes_padding_bottom }}'
+    | push: 'pl-{{ s.panes_padding_left }} pr-{{ s.panes_padding_right }}'
+  %}
+  <div
+    class='{{ panes_classes | join: ' ' }}'
+    {% if panes_bg_value != blank %}
+      style='background: {{ panes_bg_value }}'
+    {% endif %}
+  >
+    {% content_for 'block', type: '_tab-content-region', id: 'panes' %}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Tab Group",
+  "settings": [
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "start",
+          "label": "Top / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Behavior"
+    },
+    {
+      "type": "select",
+      "id": "mode",
+      "label": "Activation Mode",
+      "default": "spy",
+      "options": [
+        {
+          "value": "tab",
+          "label": "Tab"
+        },
+        {
+          "value": "spy",
+          "label": "Scroll Spy"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "chip_position",
+      "label": "Chip Position",
+      "default": "top",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "left",
+          "label": "Left sidebar"
+        },
+        {
+          "value": "none",
+          "label": "Hidden"
+        }
+      ]
+    },
+    {
+      "type": "chip_position_bp",
+      "id": "chip_position_by_bp",
+      "label": "Chip Position by Breakpoint",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "left",
+          "label": "Left sidebar"
+        },
+        {
+          "value": "none",
+          "label": "Hidden"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "chip_layout",
+      "label": "Chip Layout",
+      "default": "responsive",
+      "options": [
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "scroll-snap",
+          "label": "Scroll-snap"
+        },
+        {
+          "value": "scroll",
+          "label": "Scroll"
+        },
+        {
+          "value": "responsive",
+          "label": "Responsive"
+        }
+      ],
+      "conditional": "setting.chip_position == 'top'"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_chips",
+      "label": "Sticky Chip Strip",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "space",
+      "id": "column_gap",
+      "label": "Column Gap"
+    },
+    {
+      "type": "space",
+      "id": "pane_gap_spy",
+      "label": "Gap Between Panes (Spy Mode)",
+      "default": "medium"
+    },
+    { "type": "space", "id": "panes_padding_top", "label": "Panes Padding Top", "default": "none" },
+    { "type": "space", "id": "panes_padding_bottom", "label": "Panes Padding Bottom", "default": "none" },
+    { "type": "space", "id": "panes_padding_left", "label": "Panes Padding Left", "default": "none" },
+    { "type": "space", "id": "panes_padding_right", "label": "Panes Padding Right", "default": "none" },
+    {
+      "type": "select",
+      "id": "panes_bg_role",
+      "label": "Panes Background",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "panes_bg_role_palette",
+      "label": "Panes Bg Palette",
+      "default": "brand",
+      "conditional": "setting.panes_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "panes_bg_role_custom",
+      "label": "Panes Bg Raw",
+      "conditional": "setting.panes_bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "panes_bg_role_gradient",
+      "label": "Panes Bg Gradient",
+      "conditional": "setting.panes_bg_role == 'gradient'"
+    },
+    {
+      "type": "header",
+      "content": "Chip Strip Style"
+    },
+    {
+      "type": "surface",
+      "id": "chip_strip_surface_id",
+      "label": "Chip Strip Color Scheme",
+      "default": "default"
+    },
+    {
+      "type": "space",
+      "id": "chip_strip_padding_top",
+      "label": "Chip Strip Vertical Padding",
+      "default": "md"
+    },
+    {
+      "type": "space",
+      "id": "chip_strip_padding_bottom",
+      "label": "Chip Strip Vertical Padding",
+      "default": "md"
+    },
+    {
+      "type": "space",
+      "id": "chip_strip_padding_left",
+      "label": "Chip Strip Horizontal Padding",
+      "default": "md"
+    },
+    {
+      "type": "space",
+      "id": "chip_strip_padding_right",
+      "label": "Chip Strip Horizontal Padding",
+      "default": "md"
+    },
+    {
+      "type": "space",
+      "id": "chip_strip_gap",
+      "label": "Chip Strip Gap"
+    },
+    {
+      "type": "width",
+      "id": "chip_strip_width",
+      "label": "Chip Strip Width"
+    },
+    {
+      "type": "range",
+      "id": "chip_strip_border_radius",
+      "label": "Chip Strip Border Radius",
+      "min": 0,
+      "max": 1000,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_bg_role",
+      "label": "Chip Strip Background",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "chip_strip_bg_role_palette",
+      "label": "Chip Strip Palette Token",
+      "default": "brand",
+      "conditional": "setting.chip_strip_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "chip_strip_bg_role_custom",
+      "label": "Raw Chip Strip Color",
+      "conditional": "setting.chip_strip_bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "chip_strip_bg_role_gradient",
+      "label": "Chip Strip Gradient",
+      "conditional": "setting.chip_strip_bg_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_border_mode",
+      "label": "Chip Strip Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_border_size",
+      "label": "Chip Strip Border Size",
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        }
+      ],
+      "conditional": "setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_border_role",
+      "label": "Chip Strip Border Color",
+      "default": "default",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "conditional": "setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "chip_strip_border_role_palette",
+      "label": "Chip Strip Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.chip_strip_border_role == 'palette' and setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "chip_strip_border_role_custom",
+      "label": "Raw Chip Strip Border",
+      "conditional": "setting.chip_strip_border_role == 'custom' and setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "gradient",
+      "id": "chip_strip_border_role_gradient",
+      "label": "Chip Strip Border Gradient",
+      "conditional": "setting.chip_strip_border_role == 'gradient' and setting.chip_strip_border_mode != 'none'"
+    },
+    {
+      "type": "checkbox",
+      "id": "chip_strip_border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.chip_strip_border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "chip_strip_border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.chip_strip_border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "chip_strip_border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.chip_strip_border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "chip_strip_border_custom_bottom",
+      "label": "Border Bottom",
+      "default": true,
+      "conditional": "setting.chip_strip_border_mode == 'custom'"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Tabs",
+      "settings": {
+        "mode": "tab"
+      },
+      "blocks": {
+        "chips": {
+          "type": "_tab-head-region",
+          "static": true
+        },
+        "panes": {
+          "type": "_tab-content-region",
+          "static": true
+        }
+      },
+      "block_order": []
+    }
+  ]
+}
+{% endschema %}
