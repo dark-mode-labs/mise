@@ -46,7 +46,12 @@
   Background layer: scheme-driven via .bg-<role>. Escape-hatch
   (bg_color_override) is rendered as inline style further down.
 {% endcomment %}
-{% if s.bg_role and s.bg_role != 'none' and s.bg_role != 'custom' and s.bg_role != 'palette' %}
+{% if s.bg_role
+  and s.bg_role != 'none'
+  and s.bg_role != 'custom'
+  and s.bg_role != 'palette'
+  and s.bg_role != 'gradient'
+%}
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
