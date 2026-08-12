@@ -16,11 +16,12 @@ export default class TabContent {
 
     let shouldBeActive;
 
-    // If my head has already been initialized (e.g. user clicked it before scrolling here), sync to it.
-    if (myHead && myHead.hasAttribute("aria-selected")) {
-      shouldBeActive = myHead.getAttribute("aria-selected") === "true";
+    if (myHead) {
+      shouldBeActive = myHead.hasAttribute("aria-selected")
+        ? myHead.getAttribute("aria-selected") === "true"
+        : document.querySelector(`[data-behavior="tab-head"][data-tab-group="${this.groupId}"]`) ===
+          myHead;
     } else {
-      // Fallback: The head isn't ready yet, so determine state based on other contents
       const familyMembers = document.querySelectorAll(
         `.tab-content[data-tab-group="${this.groupId}"]`
       );

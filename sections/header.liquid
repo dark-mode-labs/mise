@@ -221,7 +221,7 @@
             {% assign badge_text_color = s.cart_badge_text_role_custom %}
           {% endif %}
           {% assign cart_button_styles = blank %}
-          {% if s.cart_size %}
+          {% if s.cart_size > 0 %}
             {% assign cart_button_styles = cart_button_styles
               | push: 'width: {{ s.cart_size }}rem'
               | push: 'height: {{ s.cart_size }}rem'
