@@ -136,11 +136,31 @@
         border-color: var({{ border_var }}, transparent);
       {% endif %}
     {% endcapture %}
+    {% assign moved = '' | split: '' %}
+    {% if ef.scale != blank %}{% assign moved = moved | push: 'scale' %}{% endif %}
+    {% if ef.rotate != blank %}{% assign moved = moved | push: 'rotate' %}{% endif %}
+    {% if ef.translate != blank %}{% assign moved = moved | push: 'translate' %}{% endif %}
+    {% if ef.origin != blank %}{% assign moved = moved | push: 'transform-origin' %}{% endif %}
+    {% if ef.opacity != blank %}{% assign moved = moved | push: 'opacity' %}{% endif %}
+    {% if ef.glow != blank %}{% assign moved = moved | push: 'box-shadow' %}{% endif %}
+    {% if ef.backdrop_blur != blank %}{% assign moved = moved | push: 'backdrop-filter' %}{% endif %}
+    {% if ef.text_role != blank and ef.text_role != 'none' %}
+      {% assign moved = moved | push: 'color' %}
+    {% endif %}
+    {% if ef.bg_role != blank and ef.bg_role != 'none' %}
+      {% assign moved = moved | push: 'background' %}
+    {% endif %}
+    {% if ef.border_role != blank and ef.border_role != 'none' %}
+      {% assign moved = moved | push: 'border-color' %}
+    {% endif %}
     {% if ef.type == 'static' %}
       .ef-{{ a[0] }} { {{ rest }} }
     {% elsif ef.type == 'hover' %}
-      .ef-{{ a[0] }} { transition: all {{ ef.duration }}
-      {{ ef.timing }}; } .ef-{{ a[0] }}:hover { {{ rest }} }
+      {%- if moved.size > 0 -%}
+        .ef-{{ a[0] }} { transition-property: {{ moved | join: ', ' }}; transition-duration: {{ ef.duration }};
+        transition-timing-function: {{ ef.timing }}; }
+      {%- endif %}
+      .ef-{{ a[0] }}:hover { {{ rest }} }
       {% if ef.text_role != blank and ef.text_role != 'none' %}
         .ef-{{ a[0] }}:hover * { {{ hover_text }} }
       {% endif %}
@@ -282,29 +302,55 @@ flex: 0 0 calc(75% - (var(--children-gap, 0px) * 3) / 4); }
 {% for c in container_scale %}
   {% assign cv = c[1].settings.value %}
   {% if cv != blank %}
+    {% assign arms = '' | split: '' %}
+    {% if c[1].settings.value_by_bp != blank %}
+      {% for bp_id in sorted_bp_ids %}
+        {% assign bp_val = c[1].settings.value_by_bp[bp_id] %}
+        {% assign bp_mw = breakpoint_scale[bp_id].settings.max_width %}
+        {% if bp_val != blank and bp_mw != blank %}
+          {% assign arms = arms | push: '{{ bp_mw }}|{{ bp_val }}' %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
     {% if cv == '0' %}
-      .width-{{ c[0] }} { display: none; }
+      {% assign restore_mw = blank %}
+      {% for arm in arms %}
+        {% assign pair = arm | split: '|' %}
+        {% if pair[1] != '0' %}
+          {% assign restore_mw = pair[0] %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+      {% if restore_mw != blank %}
+        @media (max-width: calc({{ restore_mw }}rem - 0.0625rem)) { .width-{{ c[0] }} { display: none; } }
+      {% else %}
+        .width-{{ c[0] }} { display: none; }
+      {% endif %}
     {% else %}
       {% assign cv_shrink = '1' -%}
       {%- if cv contains 'rem' or cv contains 'px' %}{% assign cv_shrink = '0' %}{% endif %} .width-{{ c[0] }} {
       --limit-width: {{ cv }}; width: {{ cv }}; max-width: 100%; flex-shrink: {{ cv_shrink }}; }
     {% endif %}
-    {% if c[1].settings.value_by_bp != blank %}
-      {% for bp_id in sorted_bp_ids %}
-        {% assign bp_val = c[1].settings.value_by_bp[bp_id] %}
-        {% if bp_val != blank %}
-          {% assign bp_mw = breakpoint_scale[bp_id].settings.max_width %}
-          {% if bp_val == '0' %}
-            @media (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: none; } }
-          {% else %}
-            {% assign bp_shrink = '1' -%}
-            {%- if bp_val contains 'rem' or bp_val contains 'px' %}{% assign bp_shrink = '0' %}{% endif %} @media
-            (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: revert; --limit-width: {{ bp_val }}; width:
-            {{ bp_val }}; flex-shrink: {{ bp_shrink }}; } }
-          {% endif %}
+    {% for arm in arms %}
+      {% assign pair = arm | split: '|' %}
+      {% assign bp_mw = pair[0] %}
+      {% assign bp_val = pair[1] %}
+      {% if bp_val == '0' %}
+        {% assign next_arm = arms[forloop.index] %}
+        {% assign next_mw = next_arm | split: '|' | first %}
+        {% if next_mw %}
+          @media (min-width: {{ bp_mw }}rem) and (max-width: calc({{ next_mw }}rem - 0.0625rem)) { .width-{{ c[0] }} {
+          display: none; } }
+        {% else %}
+          @media (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: none; } }
         {% endif %}
-      {% endfor %}
-    {% endif %}
+      {% else %}
+        {% assign bp_shrink = '1' -%}
+        {%- if bp_val contains 'rem' or bp_val contains 'px' %}{% assign bp_shrink = '0' %}{% endif %} @media
+        (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { --limit-width: {{ bp_val }}; width: {{ bp_val }}; flex-shrink:
+        {{ bp_shrink }}; } }
+      {% endif %}
+    {% endfor %}
   {% endif %}
 {% endfor %}
 

@@ -184,6 +184,15 @@
     @apply group-hover:pointer-events-none;
   }
 
+  .group:hover :is(a[href], button, [data-action], [class*="ef-hov-"]) {
+    pointer-events: auto;
+  }
+
+  .tab-head-bg {
+    background: var(--tab-bg);
+    transition: background 200ms;
+  }
+
   .group-block.flex-1 {
     min-width: 0;
   }
@@ -378,15 +387,27 @@
   }
 
   .btn-primary {
-    @apply btn-base bg-button hover:opacity-90;
+    @apply btn-base bg-button;
+  }
+
+  .btn-primary:not([class*="ef-hov-"]):hover {
+    @apply opacity-90;
   }
 
   .btn-outline {
-    @apply btn-base bg-transparent hover:opacity-75;
+    @apply btn-base bg-transparent;
+  }
+
+  .btn-outline:not([class*="ef-hov-"]):hover {
+    @apply opacity-75;
   }
 
   .btn-link {
-    @apply btn-base bg-transparent p-0 hover:underline hover:underline-offset-4;
+    @apply btn-base bg-transparent p-0;
+  }
+
+  .btn-link:not([class*="ef-hov-"]):hover {
+    @apply underline underline-offset-4;
   }
 
   .btn-nav {

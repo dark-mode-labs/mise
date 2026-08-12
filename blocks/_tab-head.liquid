@@ -107,15 +107,17 @@
 {% endunless %}
 
 {% if s.enable_overlay_inactive %}
-  {% assign inactive_state_styles = inactive_state_styles | push: '--overlay-opacity:1' %}
   {% if overlay_color_inactive_value != blank -%}
-    {%- assign inactive_state_styles = inactive_state_styles
-      | push: '--overlay-bg:{{ overlay_color_inactive_value }}'
-    -%}
+    {%- assign inactive_state_styles = inactive_state_styles | push: '--tab-bg:{{ overlay_color_inactive_value }}' -%}
+    {%- assign inactive_state_classes = inactive_state_classes | push: 'tab-head-bg' -%}
   {%- elsif s.overlay_role_inactive and s.overlay_role_inactive != 'none' -%}
     {%- assign inactive_state_classes = inactive_state_classes | push: 'bg-{{ s.overlay_role_inactive }}' -%}
   {%- endif %}
 {% endif %}
+
+{% for ef_id in s.effect_inactive %}
+  {% assign inactive_state_classes = inactive_state_classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
 
 {% if text_color_inactive_value != blank %}
   {% assign inactive_state_classes = inactive_state_classes | push: 'text-primary' %}
@@ -147,13 +149,17 @@
 {% endunless %}
 
 {% if s.enable_overlay %}
-  {% assign active_state_styles = active_state_styles | push: '--overlay-opacity:1' %}
   {% if overlay_color_value != blank -%}
-    {%- assign active_state_styles = active_state_styles | push: '--overlay-bg:{{ overlay_color_value }}' -%}
+    {%- assign active_state_styles = active_state_styles | push: '--tab-bg:{{ overlay_color_value }}' -%}
+    {%- assign active_state_classes = active_state_classes | push: 'tab-head-bg' -%}
   {%- elsif s.overlay_role and s.overlay_role != 'none' -%}
     {%- assign active_state_classes = active_state_classes | push: 'bg-{{ s.overlay_role }}' -%}
   {%- endif %}
 {% endif %}
+
+{% for ef_id in s.effect %}
+  {% assign active_state_classes = active_state_classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
 
 {% if text_color_value != blank %}
   {% assign active_state_classes = active_state_classes | push: 'text-primary' %}
@@ -195,13 +201,6 @@
   <div class='{{ inner_classes | join: ' ' }}'>
     {% content_for 'blocks' %}
   </div>
-
-  {% if s.enable_overlay or s.enable_overlay_inactive %}
-    <div
-      class='rounded-inherit absolute inset-0 pointer-events-none transition-all duration-200'
-      style='background: var(--overlay-bg, transparent); opacity: var(--overlay-opacity, 0);'
-    ></div>
-  {% endif %}
 </div>
 {% schema %}
 {
@@ -591,6 +590,13 @@
       "conditional": "setting.text_role == 'gradient'"
     },
     {
+      "type": "effect",
+      "id": "effect",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied while this tab is activated; several compose."
+    },
+    {
       "type": "header",
       "content": "Deactivated Style"
     },
@@ -873,6 +879,13 @@
       "id": "text_role_inactive_gradient",
       "label": "Text Gradient",
       "conditional": "setting.text_role_inactive == 'gradient'"
+    },
+    {
+      "type": "effect",
+      "id": "effect_inactive",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied while this tab is deactivated; several compose."
     },
     {
       "type": "header",

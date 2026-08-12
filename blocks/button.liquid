@@ -48,33 +48,6 @@
   {% assign wrapper_classes = wrapper_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
 {% endif %}
 
-{% unless s.border_mode == 'none' %}
-  {% assign wrapper_classes = wrapper_classes
-    | push: 'group-border-{{ s.border_mode }}'
-    | push: 'group-border-size-{{ s.border_size }}'
-  %}
-  {% if s.border_role
-    and s.border_role != 'none'
-    and s.border_role != 'custom'
-    and s.border_role != 'palette'
-    and s.border_role != 'gradient'
-  %}
-    {% assign wrapper_classes = wrapper_classes | push: 'border-{{ s.border_role }}' %}
-  {% endif %}
-  {% if s.border_mode == 'custom' %}
-    {% assign wrapper_classes = wrapper_classes
-      | push_if: 'group-border-custom-left', s.border_custom_left
-      | push_if: 'group-border-custom-right', s.border_custom_right
-      | push_if: 'group-border-custom-top', s.border_custom_top
-      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
-    %}
-  {% endif %}
-{% endunless %}
-
-{% for ef_id in s.effect %}
-  {% assign wrapper_classes = wrapper_classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
-
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
 
 {% assign inner_classes = 'w-full flex' | push: radius_class | push: inner_classes_height %}
@@ -122,6 +95,33 @@
   {% else -%}
     {%- assign inner_classes = inner_classes | push: 'align-items-stretch' %}
 {% endcase %}
+
+{% unless s.border_mode == 'none' %}
+  {% assign inner_classes = inner_classes
+    | push: 'group-border-{{ s.border_mode }}'
+    | push: 'group-border-size-{{ s.border_size }}'
+  %}
+  {% if s.border_role
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+    and s.border_role != 'gradient'
+  %}
+    {% assign inner_classes = inner_classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
+  {% if s.border_mode == 'custom' %}
+    {% assign inner_classes = inner_classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
+  {% endif %}
+{% endunless %}
+
+{% for ef_id in s.effect %}
+  {% assign inner_classes = inner_classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
 
 {% assign inner_class_str = inner_classes | join: ' ' %}
 
