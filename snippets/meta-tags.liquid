@@ -38,10 +38,14 @@
 {% endif %}
 
 {% liquid
-  assign og_title = page.title | default: shop.name
+  if page.title != blank
+    assign meta_title = page.title
+  else
+    assign meta_title = page.name | append: ' – ' | append: shop.name
+  endif
   assign og_url = page.canonical_url | default: shop.origin
   assign og_type = 'website'
-  assign og_description = page.description | default: shop.name
+  assign og_description = page.description | default: meta_title
 %}
 
 <meta
@@ -54,7 +58,7 @@
 >
 <meta
   property='og:title'
-  content='{{ og_title | escape }}'
+  content='{{ meta_title | escape }}'
 >
 <meta
   property='og:type'
@@ -92,17 +96,14 @@
 >
 <meta
   name='twitter:title'
-  content='{{ og_title | escape }}'
+  content='{{ meta_title | escape }}'
 >
 <meta
   name='twitter:description'
   content='{{ og_description | escape }}'
 >
 
-<title>
-  {{ page.title }}
-  {% unless page.title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
-</title>
+<title>{{ meta_title | escape }}</title>
 
 <link
   rel='canonical'
