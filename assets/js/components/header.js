@@ -28,7 +28,9 @@ export default class Header {
 
     document.querySelectorAll('[data-action="toggle-drawer"]').forEach((btn) => {
       if (drawer) {
-        btn.addEventListener("click", () => this.toggleDrawer(true));
+        btn.addEventListener("click", () =>
+          this.toggleDrawer(!drawer.classList.contains("is-open"))
+        );
         btn.classList.remove("hidden");
       }
     });
@@ -58,13 +60,10 @@ export default class Header {
     const drawer = this.el.querySelector(".header-drawer");
     if (!drawer) return;
 
-    if (open) {
-      drawer.classList.add("is-open");
-      document.body.classList.add("overflow-hidden");
-    } else {
-      drawer.classList.remove("is-open");
-      document.body.classList.remove("overflow-hidden");
-    }
+    const overlays = !drawer.classList.contains("is-panel");
+
+    drawer.classList.toggle("is-open", open);
+    if (overlays) document.body.classList.toggle("overflow-hidden", open);
   }
 
   handleScroll() {

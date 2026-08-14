@@ -54,11 +54,21 @@
   | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
   | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
 %}
+{% if s.mobile_actions == 'bar' %}
+  {% assign header_classes = header_classes | push: 'actions-in-bar' %}
+{% endif %}
 
+{% assign bar_pb = 'pb-{{ s.padding_bottom }}' %}
+{% assign grid_pb = '' %}
+{% if s.mobile_nav_mode == 'panel' %}
+  {% assign bar_pb = '' %}
+  {% assign grid_pb = 'pb-{{ s.padding_bottom }}' %}
+{% endif %}
 {% assign bg_layer_classes = 'header-bar limit-width'
   | push: 'width-{{ s.width_bg }}'
   | push: bg_class
-  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pt-{{ s.padding_top }}'
+  | push: bar_pb
   | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
 %}
 
@@ -86,7 +96,9 @@
     %}
   {% endif %}
 {% endunless %}
-{% if s.backdrop_blur and s.backdrop_blur != 'none' %}
+{% if s.backdrop_blur == 'base' %}
+  {% assign bg_layer_classes = bg_layer_classes | push: 'backdrop-blur' %}
+{% elsif s.backdrop_blur and s.backdrop_blur != 'none' %}
   {% assign bg_layer_classes = bg_layer_classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
 {% endif %}
 
@@ -114,20 +126,47 @@
 {% endunless %}
 {% assign bar_style_str = bar_styles | join: ';' %}
 
-{% comment %}
-  `slot_actions` must be captured BEFORE `slot_nav` — slot_nav
-  forwards the rendered actions HTML to the drawer via
-  `context.drawer_actions_html`.
-{% endcomment %}
 {% capture slot_logo %}{% content_for 'block', type: 'group', id: 'header-logo' %}{% endcapture %}
 {% capture slot_actions %}{% content_for 'block', type: '_header-actions', id: 'header-actions' %}{% endcapture %}
-{% capture slot_nav %}{% content_for 'block', type: '_header-menu', id: 'header-menu', context.drawer_actions_html: slot_actions %}{% endcapture %}
+{% capture slot_nav %}{% content_for 'block', type: '_header-menu', id: 'header-menu' %}{% endcapture %}
+{% capture slot_drawer_nav %}{% content_for 'block', type: '_header-menu', id: 'header-drawer-menu' %}{% endcapture %}
+
+{% assign toggle_border_value = blank %}
+{% if s.toggle_border_role == 'palette' and s.toggle_border_role_palette != blank %}
+  {% assign toggle_border_value = 'var(--palette-{{ s.toggle_border_role_palette }})' %}
+{% elsif s.toggle_border_role == 'custom' and s.toggle_border_role_custom != blank %}
+  {% assign toggle_border_value = s.toggle_border_role_custom %}
+{% endif %}
+{% assign toggle_classes = 'header-mobile-toggle hover:opacity-70 inline-flex items-center justify-center shrink-0' %}
+{% if s.toggle_shape == 'circle' %}
+  {% assign toggle_classes = '{{ toggle_classes }} rounded-full' %}
+{% endif %}
+{% if s.toggle_border_role != blank and s.toggle_border_role != 'none' %}
+  {% assign toggle_classes = '{{ toggle_classes }} group-border-full group-border-size-{{ s.toggle_border_size }}' %}
+  {% if s.toggle_border_role != 'custom' and s.toggle_border_role != 'palette' %}
+    {% assign toggle_classes = '{{ toggle_classes }} border-{{ s.toggle_border_role }}' %}
+  {% endif %}
+{% endif %}
+{% assign toggle_styles = blank %}
+{% if s.toggle_size > 0 %}
+  {% assign toggle_styles = toggle_styles
+    | push: 'width: {{ s.toggle_size }}rem'
+    | push: 'height: {{ s.toggle_size }}rem'
+  %}
+{% else %}
+  {% assign toggle_classes = '{{ toggle_classes }} p-2' %}
+{% endif %}
+{% if toggle_border_value != blank %}
+  {% assign toggle_styles = toggle_styles | push: '--border: {{ toggle_border_value }}' %}
+{% endif %}
+{% assign toggle_style_str = toggle_styles | join: ';' %}
 
 {% capture hamburger_btn %}
   {% if s.show_mobile_menu %}
     <button
       type='button'
-      class='header-mobile-toggle p-2 hover:opacity-70'
+      class='{{ toggle_classes }}'
+      style='{{ toggle_style_str }}'
       data-action='toggle-drawer'
       aria-label='Menu'
     >
@@ -145,12 +184,12 @@
   {{ context.attached_attributes }}
 >
   <div class='{{ bg_layer_class_str }}' style='{{ bar_style_str }}'>
-    <div class='width-{{ s.width }} header-grid limit-width'>
+    <div class='width-{{ s.width }} header-grid limit-width {{ grid_pb }}'>
       <div class='flex items-center justify-start gap-4'>
         {% if s.mobile_layout != 'logo_left' %}{{ hamburger_btn }}{% endif %}
 
         {% if s.desktop_layout == 'logo_left' %}
-          <div class='mr-8 flex-shrink-0 hidden header-logo-desktop'>{{ slot_logo }}</div>
+          <div class='flex-shrink-0 hidden header-logo-desktop'>{{ slot_logo }}</div>
           {% if s.show_nav and s.nav_alignment == 'left' %}{{ slot_nav }}{% endif %}
         {% else %}
           {% if s.show_nav %}{{ slot_nav }}{% endif %}
@@ -173,7 +212,7 @@
         {% endif %}
       </div>
 
-      <div class='flex items-center justify-end gap-4'>
+      <div class='flex items-center justify-end gap-{{ s.actions_gap }}'>
         {% if s.show_nav and s.desktop_layout == 'logo_left' and s.nav_alignment == 'right' %}{{ slot_nav }}{% endif %}
 
         {% if s.mobile_layout == 'logo_right' %}
@@ -201,6 +240,8 @@
             {% assign cart_text_color = 'var(--palette-{{ s.cart_text_role_palette }})' %}
           {% elsif s.cart_text_role == 'custom' and s.cart_text_role_custom != blank %}
             {% assign cart_text_color = s.cart_text_role_custom %}
+          {% elsif s.cart_text_role != blank and s.cart_text_role != 'inherit' and s.cart_text_role != 'primary' %}
+            {% assign cart_text_color = 'var(--text-{{ s.cart_text_role }})' %}
           {% endif %}
           {% assign cart_border_color = blank %}
           {% if s.cart_border_role == 'palette' and s.cart_border_role_palette != blank %}
@@ -219,6 +260,11 @@
             {% assign badge_text_color = 'var(--palette-{{ s.cart_badge_text_role_palette }})' %}
           {% elsif s.cart_badge_text_role == 'custom' and s.cart_badge_text_role_custom != blank %}
             {% assign badge_text_color = s.cart_badge_text_role_custom %}
+          {% elsif s.cart_badge_text_role != blank
+            and s.cart_badge_text_role != 'inherit'
+            and s.cart_badge_text_role != 'primary'
+          %}
+            {% assign badge_text_color = 'var(--text-{{ s.cart_badge_text_role }})' %}
           {% endif %}
           {% assign cart_button_styles = blank %}
           {% if s.cart_size > 0 %}
@@ -249,6 +295,15 @@
           {% if cart_border_color != blank %}
             {% assign cart_btn_class = cart_btn_class
               | append: ' group-border-full group-border-size-{{ s.cart_border_size }}'
+            %}
+          {% elsif s.cart_border_role != blank
+            and s.cart_border_role != 'none'
+            and s.cart_border_role != 'custom'
+            and s.cart_border_role != 'palette'
+          %}
+            {% assign cart_btn_class = cart_btn_class
+              | append: ' group-border-full group-border-size-{{ s.cart_border_size }}'
+              | append: ' border-{{ s.cart_border_role }}'
             %}
           {% endif %}
           {% if s.cart_shape == 'circle' or cart_bg_color != blank or cart_border_color != blank %}
@@ -296,6 +351,29 @@
         {% if s.mobile_layout == 'logo_left' %}{{ hamburger_btn }}{% endif %}
       </div>
     </div>
+    {% assign actions_in_drawer = slot_actions %}
+    {% if s.mobile_actions == 'bar' %}{% assign actions_in_drawer = blank %}{% endif %}
+    {% if s.show_mobile_menu != false and s.show_nav != false %}
+      {% assign drawer_surface = s.drawer_surface_id %}
+      {% if drawer_surface == blank %}{% assign drawer_surface = s.surface_id | default: 'default' %}{% endif %}
+      {% assign drawer_bg_value = '' %}
+      {% if s.drawer_bg_role == 'palette' and s.drawer_bg_role_palette != blank %}
+        {% assign drawer_bg_value = 'var(--palette-{{ s.drawer_bg_role_palette }})' %}
+      {% elsif s.drawer_bg_role == 'gradient' and s.drawer_bg_role_gradient != blank %}
+        {% assign drawer_bg_value = 'var(--gradient-{{ s.drawer_bg_role_gradient }})' %}
+      {% elsif s.drawer_bg_role == 'custom' and s.drawer_bg_role_custom != blank %}
+        {% assign drawer_bg_value = s.drawer_bg_role_custom %}
+      {% endif %}
+      {% render 'header-drawer',
+        nav_html: slot_drawer_nav,
+        drawer_surface_id: drawer_surface,
+        drawer_bg_role: s.drawer_bg_role,
+        drawer_bg_value: drawer_bg_value,
+        drawer_alpha_pct: s.drawer_backdrop_alpha,
+        nav_mode: s.mobile_nav_mode,
+        actions_html: actions_in_drawer
+      %}
+    {% endif %}
   </div>
 </header>
 
@@ -382,6 +460,100 @@
         }
       ],
       "default": "logo_center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_actions",
+      "label": "Mobile Actions",
+      "info": "Where the header actions live below the nav breakpoint.",
+      "default": "drawer",
+      "options": [
+        {
+          "value": "drawer",
+          "label": "In the menu"
+        },
+        {
+          "value": "bar",
+          "label": "In the bar"
+        }
+      ]
+    },
+    {
+      "type": "space",
+      "id": "actions_gap",
+      "label": "Actions Gap",
+      "default": "sm",
+      "info": "Separation between the header's action controls."
+    },
+    {
+      "type": "select",
+      "id": "toggle_shape",
+      "label": "Menu Button Shape",
+      "default": "icon",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon only"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "toggle_size",
+      "label": "Menu Button Size",
+      "min": 0,
+      "max": 5,
+      "step": 0.125,
+      "unit": "rem",
+      "default": 0,
+      "info": "0 = default icon-only sizing."
+    },
+    {
+      "type": "select",
+      "subtype": "border_role",
+      "id": "toggle_border_role",
+      "label": "Menu Button Border",
+      "default": "none"
+    },
+    {
+      "type": "palette",
+      "id": "toggle_border_role_palette",
+      "label": "Menu Button Border Token",
+      "conditional": "setting.toggle_border_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "toggle_border_role_custom",
+      "label": "Menu Button Border Color",
+      "conditional": "setting.toggle_border_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "subtype": "border_size",
+      "id": "toggle_border_size",
+      "label": "Menu Button Border Width",
+      "default": "xxs"
+    },
+    {
+      "type": "select",
+      "id": "mobile_nav_mode",
+      "label": "Mobile Nav Style",
+      "info": "Drawer slides over the page; panel drops in flow below the bar.",
+      "default": "drawer",
+      "options": [
+        {
+          "value": "drawer",
+          "label": "Drawer"
+        },
+        {
+          "value": "panel",
+          "label": "Panel"
+        }
+      ]
     },
     {
       "type": "width",
@@ -1095,6 +1267,10 @@
           "label": "Small"
         },
         {
+          "value": "base",
+          "label": "Base"
+        },
+        {
           "value": "md",
           "label": "Medium"
         },
@@ -1200,74 +1376,6 @@
       "conditional": "setting.drawer_bg_role == 'gradient'"
     },
     {
-      "type": "select",
-      "subtype": "text_role",
-      "id": "drawer_text_role",
-      "label": "Drawer Text Role",
-      "default": "inherit",
-      "options": [
-        {
-          "value": "inherit",
-          "label": "Inherit from Header"
-        },
-        {
-          "value": "primary",
-          "label": "Primary"
-        },
-        {
-          "value": "secondary",
-          "label": "Secondary"
-        },
-        {
-          "value": "subtle",
-          "label": "Subtle"
-        },
-        {
-          "value": "emphasis",
-          "label": "Emphasis"
-        },
-        {
-          "value": "on-accent",
-          "label": "On Accent"
-        },
-        {
-          "value": "on-button",
-          "label": "On Button"
-        },
-        {
-          "value": "on-control",
-          "label": "On Control"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        }
-      ]
-    },
-    {
-      "type": "palette",
-      "id": "drawer_text_role_palette",
-      "label": "Drawer Text Palette Token",
-      "default": "brand",
-      "conditional": "setting.drawer_text_role == 'palette'"
-    },
-    {
-      "type": "color",
-      "id": "drawer_text_role_custom",
-      "label": "Raw Drawer Text Color",
-      "conditional": "setting.drawer_text_role == 'custom'"
-    },
-    {
-      "type": "type_style",
-      "id": "drawer_type_style",
-      "label": "Drawer Type Style",
-      "default": "nav"
-    },
-    {
       "type": "range",
       "id": "drawer_backdrop_alpha",
       "label": "Drawer Backdrop Opacity",
@@ -1359,6 +1467,22 @@
           "type": "_header-actions",
           "name": "Header Actions",
           "static": true
+        },
+        "header-drawer-menu": {
+          "type": "_header-menu",
+          "name": "Header Drawer Nav",
+          "static": true,
+          "settings": {
+            "nav": {
+              "links": [
+                {
+                  "url": "/",
+                  "title": "Home"
+                }
+              ]
+            },
+            "link_align": "stretch"
+          }
         }
       },
       "settings": {

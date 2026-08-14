@@ -112,32 +112,71 @@
     background-color: rgba(0, 0, 0, var(--drawer-backdrop-alpha, 0.5));
   }
 
+  .header-drawer.is-panel {
+    @apply static inset-auto h-auto w-full transform-none transition-none pointer-events-auto hidden;
+  }
+
+  .header-drawer.is-panel.is-open {
+    @apply block;
+  }
+
+  .header-drawer.is-panel .drawer-panel {
+    @apply w-full max-w-none h-auto shadow-none;
+  }
+
+  .header-drawer.is-panel .drawer-backdrop {
+    @apply hidden;
+  }
+
   .header-section {
     color: var(--text, currentColor);
   }
 
-  /* `minmax(0, 1fr)` overrides the implicit auto-min so side cols
-     split leftover space equally regardless of content asymmetry,
-     keeping the auto middle col centered. Children's `min-width: 0`
-     lets their flex shrink without pushing the grid. */
   .header-section .header-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-columns: auto auto auto;
+    justify-content: space-between;
     align-items: center;
   }
   .header-section .header-grid > * {
     min-width: 0;
   }
+  .header-section .header-grid > *:has(.header-actions) {
+    min-width: min-content;
+  }
 
-  /* Mobile-state visibility defaults; per-tier overrides emitted
-     in theme_variables.liquid. lg=1024 fallback for legacy brands. */
   .header-section .header-nav {
     display: none;
+  }
+  .header-section .header-drawer .header-nav {
+    display: block;
+  }
+  .header-section .header-drawer .header-nav > ul {
+    flex-direction: column;
+  }
+  .header-section .header-drawer .header-nav > ul > li {
+    display: block;
+  }
+
+  .footer-nav-summary {
+    cursor: pointer;
+  }
+  @media (min-width: 768px) {
+    .footer-nav-summary {
+      display: block;
+      cursor: default;
+    }
   }
   .header-section .header-mobile-toggle {
     display: inline-flex;
   }
   .header-section .header-actions-children {
+    display: none;
+  }
+  .header-section.actions-in-bar .header-actions-children {
+    display: contents;
+  }
+  .header-section .header-actions:not(:has(.header-actions-children > *)) {
     display: none;
   }
   .header-section .header-logo-desktop {
