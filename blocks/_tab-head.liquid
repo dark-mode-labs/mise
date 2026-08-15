@@ -308,14 +308,33 @@
       "label": "Border Color (Inactive)",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "default", "label": "Default" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ],
-      "conditional": "setting.border_mode_inactive != 'none'"
+      "conditional": "setting.border_mode_inactive != 'none'",
+      "subtype": "border_role"
     },
     {
       "type": "palette",
@@ -859,7 +878,8 @@
           "value": "gradient",
           "label": "Gradient"
         }
-      ]
+      ],
+      "subtype": "text_role"
     },
     {
       "type": "palette",

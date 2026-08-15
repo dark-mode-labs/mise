@@ -1,6 +1,30 @@
 {% assign s = block.settings %}
 
-{% assign nav_classes = 'header-nav items-center' %}
+{% assign nav_classes = 'header-nav'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
+%}
+{% unless s.border_mode == 'none' or s.border_mode == blank %}
+  {% assign nav_classes = nav_classes
+    | push: 'group-border-{{ s.border_mode }}'
+    | push: 'group-border-size-{{ s.border_size }}'
+  %}
+  {% if s.border_role != blank
+    and s.border_role != 'none'
+    and s.border_role != 'custom'
+    and s.border_role != 'palette'
+  %}
+    {% assign nav_classes = nav_classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
+  {% if s.border_mode == 'custom' %}
+    {% assign nav_classes = nav_classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
+  {% endif %}
+{% endunless %}
 
 {% if s.surface_override %}
   {% assign nav_classes = nav_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
@@ -20,6 +44,22 @@
 {% if text_color_value != blank %}
   {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
 {% endif %}
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
+{% unless s.border_mode == 'none' or s.border_mode == blank %}
+  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if s.border_size == 'custom' %}
+    {% assign styles = styles | push: '--border-width: {{ s.border_size_custom }}px' %}
+  {% endif %}
+  {% if border_color_value != blank %}
+    {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
+  {% endif %}
+{% endunless %}
+{% assign styles = styles | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override %}
 {% assign block_styles = styles | join: ';' %}
 
 {% assign color_role = s.text_role %}
@@ -38,25 +78,125 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% assign link_tf = '' %}
+{% assign link_classes = 'flex direction-row'
+  | push: 'vertical-{{ s.link_align }}'
+  | push_if: 'rounded-custom', s.border_radius_override
+  | push: 'pt-{{ s.link_padding_top }} pb-{{ s.link_padding_bottom }}'
+  | push: 'pl-{{ s.link_padding_left }} pr-{{ s.link_padding_right }}'
+%}
 {% for ef_id in s.link_effect %}
-  {% assign link_tf = link_tf | append: 'ef-' | append: ef_id | append: ' ' %}
+  {% assign link_classes = link_classes | push: 'ef-{{ ef_id }}' %}
 {% endfor %}
+{% if s.link_border_role != blank and s.link_border_role != 'none' %}
+  {% assign link_classes = link_classes
+    | push: 'group-border-custom-bottom group-border-size-{{ s.link_border_size }}'
+  %}
+  {% if s.link_border_role != 'custom' and s.link_border_role != 'palette' %}
+    {% assign link_classes = link_classes | push: 'border-{{ s.link_border_role }}' %}
+  {% endif %}
+{% endif %}
+{% assign link_class_str = link_classes | join: ' ' %}
+
+{% assign link_border_value = blank %}
+{% if s.link_border_role == 'palette' and s.link_border_role_palette != blank %}
+  {% assign link_border_value = 'var(--palette-{{ s.link_border_role_palette }})' %}
+{% elsif s.link_border_role == 'custom' and s.link_border_role_custom != blank %}
+  {% assign link_border_value = s.link_border_role_custom %}
+{% endif %}
+{% assign link_styles = blank %}
+{% if link_border_value != blank %}
+  {% assign link_styles = link_styles | push: '--border-style:solid' | push: '--border: {{ link_border_value }}' %}
+{% endif %}
+{% assign link_style_str = link_styles | join: ';' %}
+
+{% assign list_classes = 'flex direction-row' | push: 'vertical-{{ s.link_align }}' | push: 'gap-{{ s.gap }}' %}
+{% assign list_class_str = list_classes | join: ' ' %}
+
+{%- comment -%}Unlike `_tab-head`, the state is known at render, so one bag is chosen here.{%- endcomment -%}
+{% assign active_classes = 'flex direction-row'
+  | push: 'vertical-{{ s.link_align }}'
+  | push_if: 'rounded-custom', s.border_radius_override
+  | push: 'pt-{{ s.link_padding_top_active }} pb-{{ s.link_padding_bottom_active }}'
+  | push: 'pl-{{ s.link_padding_left_active }} pr-{{ s.link_padding_right_active }}'
+%}
+{% for ef_id in s.link_effect %}
+  {% assign active_classes = active_classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
+{% if s.bg_role_active != blank
+  and s.bg_role_active != 'none'
+  and s.bg_role_active != 'custom'
+  and s.bg_role_active != 'palette'
+%}
+  {% assign active_classes = active_classes | push: 'bg-{{ s.bg_role_active }}' %}
+{% endif %}
+{% if s.link_border_role_active != blank and s.link_border_role_active != 'none' %}
+  {% assign active_classes = active_classes
+    | push: 'group-border-custom-bottom group-border-size-{{ s.link_border_size_active }}'
+  %}
+  {% if s.link_border_role_active != 'custom' and s.link_border_role_active != 'palette' %}
+    {% assign active_classes = active_classes | push: 'border-{{ s.link_border_role_active }}' %}
+  {% endif %}
+{% endif %}
+{%- capture active_text_class -%}{%- render 'text-color-class', color_role: s.text_role_active -%}{%- endcapture -%}
+{% if active_text_class != blank %}
+  {% assign active_classes = active_classes | push: active_text_class %}
+{% endif %}
+{% assign active_class_str = active_classes | join: ' ' %}
+
+{% assign active_styles = blank %}
+{% if s.text_role_active == 'palette' and s.text_role_active_palette != blank %}
+  {% assign active_styles = active_styles | push: '--text: var(--palette-{{ s.text_role_active_palette }})' %}
+{% elsif s.text_role_active == 'custom' and s.text_role_active_custom != blank %}
+  {% assign active_styles = active_styles | push: '--text: {{ s.text_role_active_custom }}' %}
+{% endif %}
+{% if s.bg_role_active == 'palette' and s.bg_role_active_palette != blank %}
+  {% assign active_styles = active_styles | push: 'background: var(--palette-{{ s.bg_role_active_palette }})' %}
+{% elsif s.bg_role_active == 'custom' and s.bg_role_active_custom != blank %}
+  {% assign active_styles = active_styles | push: 'background: {{ s.bg_role_active_custom }}' %}
+{% endif %}
+{% if s.link_border_role_active == 'palette' and s.link_border_role_active_palette != blank %}
+  {% assign active_styles = active_styles
+    | push: '--border-style:solid'
+    | push: '--border: var(--palette-{{ s.link_border_role_active_palette }})'
+  %}
+{% elsif s.link_border_role_active == 'custom' and s.link_border_role_active_custom != blank %}
+  {% assign active_styles = active_styles
+    | push: '--border-style:solid'
+    | push: '--border: {{ s.link_border_role_active_custom }}'
+  %}
+{% endif %}
+{% assign active_style_str = active_styles | join: ';' %}
+{%- comment -%}No declared paint means no state: swapping an unfilled bag in strips the link.{%- endcomment -%}
+{% assign has_active_state = false %}
+{% if s.text_role_active != blank or s.bg_role_active != blank or s.link_border_role_active != blank %}
+  {% assign has_active_state = true %}
+{% endif %}
+
+{% assign last_link = s.nav.links | size | minus: 1 %}
 
 <nav
   class='{{ block_classes }}'
   style='{{ block_styles }}'
   {{ context.attached_attributes }}
 >
-  <ul class='flex items-center gap-{{ s.gap }}'>
+  <ul class='{{ list_class_str }}'>
     {% for link in s.nav.links %}
-      {% assign has_mega = false %}
-      {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
-
-      <li class='group flex items-center relative'>
+      {% assign this_link_class = link_class_str %}
+      {% assign this_link_style = link_style_str %}
+      {%- comment -%}A link with no id can never be the current page, so a blank one never matches.{%- endcomment -%}
+      {% if has_active_state and link.link_id != blank and link.link_id == page.uuid %}
+        {% assign this_link_class = active_class_str %}
+        {% assign this_link_style = active_style_str %}
+      {% endif %}
+      {%- comment -%}Stripped after the bag is chosen, so the last link ends flush in either state.{%- endcomment -%}
+      {% if forloop.index0 == last_link %}
+        {% assign this_link_class = this_link_class | replace: 'group-border-custom-bottom', '' %}
+      {% endif %}
+      <li class='group flex direction-row vertical-{{ s.link_align }} relative'>
         <a
           href='{{ link.url }}'
-          class='{{ link_tf }}flex items-center gap-1'
+          class='{{ this_link_class }}'
+          style='{{ this_link_style }}'
         >
           {% render 'typography',
             text: link.title,
@@ -64,120 +204,11 @@
             color_role: color_role,
             class: utility_classes
           %}
-          {% if link.links != blank %}
-            {% render 'icon',
-              name: 'chevron-down',
-              class: 'w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform'
-            %}
-          {% endif %}
         </a>
-
-        {% if link.links != blank %}
-          <div
-            class='
-              absolute top-full left-0 border border-default shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating
-              {% if has_mega %}!fixed left-0 right-0 w-full border-x-0{% else %}w-64{% endif %}
-            '
-          >
-            {% if has_mega %}
-              <div class='mx-auto px-8 py-12 grid grid-cols-4 gap-8'>
-                {% for child in link.links %}
-                  <div>
-                    <a
-                      href='{{ child.url }}'
-                      class='block mb-4 hover:underline underline-offset-4'
-                    >
-                      {% render 'typography',
-                        type_style: s.type_style,
-                        text: child.title,
-                        color_role: color_role,
-                        class: utility_classes
-                      %}
-                    </a>
-                    <ul class='flex flex-col gap-xs'>
-                      {% for grandchild in child.links %}
-                        <li>
-                          <a
-                            href='{{ grandchild.url }}'
-                            class='opacity-70 hover:opacity-100 block'
-                          >
-                            {% render 'typography',
-                              type_style: s.type_style,
-                              text: grandchild.title,
-                              color_role: color_role,
-                              class: utility_classes
-                            %}
-                          </a>
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                {% endfor %}
-              </div>
-
-            {% else %}
-              <ul class='py-4'>
-                {% for child in link.links %}
-                  <li>
-                    <a href='{{ child.url }}' class='ts-body-sm block px-6 py-2 hover:bg-gray-50/5 whitespace-nowrap'>
-                      {{ child.title }}
-                    </a>
-                  </li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-        {% endif %}
       </li>
     {% endfor %}
   </ul>
 </nav>
-
-{% comment %}
-  Resolve section drawer_* settings into concrete values, then
-  hand them to the atomic header-drawer snippet — the snippet
-  itself never reads section.settings.
-{% endcomment %}
-{% if s.nav and section.settings.show_mobile_menu != false and section.settings.show_nav != false %}
-  {% assign drawer = section.settings %}
-
-  {% assign drawer_surface = drawer.drawer_surface_id %}
-  {% if drawer_surface == blank %}
-    {% assign drawer_surface = drawer.surface_id | default: 'default' %}
-  {% endif %}
-
-  {% assign drawer_bg_value = '' %}
-  {% if drawer.drawer_bg_role == 'palette' and drawer.drawer_bg_role_palette != blank %}
-    {% assign drawer_bg_value = 'var(--palette-{{ drawer.drawer_bg_role_palette }})' %}
-  {% elsif drawer.drawer_bg_role == 'gradient' and drawer.drawer_bg_role_gradient != blank %}
-    {% assign drawer_bg_value = 'var(--gradient-{{ drawer.drawer_bg_role_gradient }})' %}
-  {% elsif drawer.drawer_bg_role == 'custom' and drawer.drawer_bg_role_custom != blank %}
-    {% assign drawer_bg_value = drawer.drawer_bg_role_custom %}
-  {% endif %}
-
-  {% assign drawer_text_value = '' %}
-  {% if drawer.drawer_text_role == 'palette' and drawer.drawer_text_role_palette != blank %}
-    {% assign drawer_text_value = 'var(--palette-{{ drawer.drawer_text_role_palette }})' %}
-  {% elsif drawer.drawer_text_role == 'custom' and drawer.drawer_text_role_custom != blank %}
-    {% assign drawer_text_value = drawer.drawer_text_role_custom %}
-  {% elsif drawer.drawer_text_role != 'inherit'
-    and drawer.drawer_text_role != 'primary'
-    and drawer.drawer_text_role != blank
-  %}
-    {% assign drawer_text_value = 'var(--text-{{ drawer.drawer_text_role }})' %}
-  {% endif %}
-
-  {% render 'header-drawer',
-    menu: s.nav,
-    drawer_surface_id: drawer_surface,
-    drawer_bg_role: drawer.drawer_bg_role,
-    drawer_bg_value: drawer_bg_value,
-    drawer_text_value: drawer_text_value,
-    drawer_type_style: drawer.drawer_type_style,
-    drawer_alpha_pct: drawer.drawer_backdrop_alpha,
-    actions_html: context.drawer_actions_html
-  %}
-{% endif %}
 
 {% schema %}
 {
@@ -191,6 +222,555 @@
     {
       "type": "header",
       "content": "Layout"
+    },
+    {
+      "type": "space",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_left",
+      "label": "Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "border_size",
+      "label": "Border Size",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "Small",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "info": "8px"
+        },
+        {
+          "value": "custom",
+          "label": "Custom",
+          "info": "Exact px width"
+        }
+      ],
+      "default": "md",
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "range",
+      "id": "border_size_custom",
+      "label": "Custom Border Width",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 1,
+      "unit": "px",
+      "conditional": "setting.border_size == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "link_align",
+      "label": "Link Vertical Align",
+      "info": "Cross-axis alignment of each link and of the strip.",
+      "default": "middle",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "baseline",
+          "label": "Baseline"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Custom Border Radius",
+      "min": 0,
+      "max": 1000,
+      "default": 4,
+      "unit": "px",
+      "conditional": "setting.border_radius_override"
+    },
+    {
+      "type": "header",
+      "content": "Current Page"
+    },
+    {
+      "type": "select",
+      "id": "text_role_active",
+      "label": "Current Link Text",
+      "default": "inherit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit from Header"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
+      "subtype": "text_role"
+    },
+    {
+      "type": "palette",
+      "id": "text_role_active_palette",
+      "label": "Current Link Text Token",
+      "conditional": "setting.text_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_active_custom",
+      "label": "Current Link Text Color",
+      "conditional": "setting.text_role_active == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "bg_role_active",
+      "label": "Current Link Background",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body Alt"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface Alt"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "subtype": "bg_role"
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_active_palette",
+      "label": "Current Link Background Token",
+      "conditional": "setting.bg_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_active_custom",
+      "label": "Current Link Background Color",
+      "conditional": "setting.bg_role_active == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "link_border_role_active",
+      "label": "Current Link Rule",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "subtype": "border_role"
+    },
+    {
+      "type": "palette",
+      "id": "link_border_role_active_palette",
+      "label": "Current Link Rule Token",
+      "conditional": "setting.link_border_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "link_border_role_active_custom",
+      "label": "Current Link Rule Color",
+      "conditional": "setting.link_border_role_active == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "link_border_size_active",
+      "label": "Current Link Rule Width",
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "SM"
+        },
+        {
+          "value": "md",
+          "label": "MD"
+        },
+        {
+          "value": "lg",
+          "label": "LG"
+        }
+      ],
+      "subtype": "border_size"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_top_active",
+      "label": "Current Link Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_right_active",
+      "label": "Current Link Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_bottom_active",
+      "label": "Current Link Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_left_active",
+      "label": "Current Link Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "link_border_role",
+      "label": "Link Divider",
+      "default": "none",
+      "info": "A rule under every link but the last.",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "subtype": "border_role"
+    },
+    {
+      "type": "palette",
+      "id": "link_border_role_palette",
+      "label": "Link Divider Token",
+      "conditional": "setting.link_border_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "link_border_role_custom",
+      "label": "Link Divider Color",
+      "conditional": "setting.link_border_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "link_border_size",
+      "label": "Link Divider Width",
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "SM"
+        },
+        {
+          "value": "md",
+          "label": "MD"
+        },
+        {
+          "value": "lg",
+          "label": "LG"
+        }
+      ],
+      "subtype": "border_size"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_top",
+      "label": "Link Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_bottom",
+      "label": "Link Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_left",
+      "label": "Link Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_right",
+      "label": "Link Padding Right",
+      "default": "none"
     },
     {
       "type": "space",
@@ -242,16 +822,46 @@
       "info": "Defaults to inheriting the header section's text role.",
       "default": "inherit",
       "options": [
-        { "value": "inherit", "label": "Inherit from Header" },
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "on-accent", "label": "On Accent" },
-        { "value": "on-button", "label": "On Button" },
-        { "value": "on-control", "label": "On Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" }
+        {
+          "value": "inherit",
+          "label": "Inherit from Header"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
       ]
     },
     {

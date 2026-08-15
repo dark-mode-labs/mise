@@ -97,15 +97,15 @@
       {% else -%}
         {%- assign border_var = blank %}
     {% endcase %}
-    {% capture hover_text %}
-      {% if ef.text_role == 'palette' and ef.text_role_palette != blank %}
-        color: var(--palette-{{ ef.text_role_palette }});
-      {% elsif ef.text_role == 'custom' and ef.text_role_custom != blank %}
-        color: {{ ef.text_role_custom }};
-      {% elsif text_var != blank %}
-        color: var({{ text_var }}, currentColor);
-      {% endif %}
-    {% endcapture %}
+    {%- capture hover_text_value -%}
+      {%- if ef.text_role == 'palette' and ef.text_role_palette != blank -%}
+        var(--palette-{{ ef.text_role_palette }})
+      {%- elsif ef.text_role == 'custom' and ef.text_role_custom != blank -%}
+        {{ ef.text_role_custom }}
+      {%- elsif text_var != blank -%}
+        var({{ text_var }}, currentColor)
+      {%- endif -%}
+    {%- endcapture -%}
     {% capture rest %}
       {% if ef.scale != blank %}scale: {{ ef.scale }};{% endif %}
       {% if ef.rotate != blank %}rotate: {{ ef.rotate }};{% endif %}
@@ -160,10 +160,13 @@
         .ef-{{ a[0] }} { transition-property: {{ moved | join: ', ' }}; transition-duration: {{ ef.duration }};
         transition-timing-function: {{ ef.timing }}; }
       {%- endif %}
-      .ef-{{ a[0] }}:hover { {{ rest }} }
-      {% if ef.text_role != blank and ef.text_role != 'none' %}
-        .ef-{{ a[0] }}:hover * { {{ hover_text }} }
-      {% endif %}
+      {%- if ef.text_role != blank and ef.text_role != 'none' -%}
+        {%- assign hover_inherit = '--text: {{ hover_text_value }};' -%}
+      {%- else -%}
+        {%- assign hover_inherit = '' -%}
+      {%- endif %}
+      .ef-{{ a[0] }}:hover { {{ rest -}}
+      {{- hover_inherit }} }
     {% else %}
       {% assign kf = 'anim-{{ ef.primitive }}' %}
       {% if ef.glow_to != blank or ef.opacity_to != blank %}
