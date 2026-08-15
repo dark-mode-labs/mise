@@ -136,9 +136,15 @@ test("nothing in the bar asserts spacing the source did not ask for", () => {
   const css = read("assets/css/theme.css");
 
   // A fixed margin on the logo padded it away from a centred nav; distribution spaces it now.
-  assert.doesNotMatch(header, /class='mr-8[^']*header-logo-desktop|header-logo-desktop[^']*mr-8/,
-    "the logo wrapper carries a hardcoded margin again");
+  assert.doesNotMatch(
+    header,
+    /class='mr-8[^']*header-logo-desktop|header-logo-desktop[^']*mr-8/,
+    "the logo wrapper carries a hardcoded margin again"
+  );
   // An empty group is still a flex item, so it spends a gap on nothing.
-  assert.match(css, /\.header-actions:not\(:has\(\.header-actions-children > \*\)\)\s*\{\s*display: none;/,
-    "an actions group with no children still consumes a gap");
+  assert.match(
+    css,
+    /\.header-actions:not\(:has\(\.header-actions-children > \*\)\)\s*\{\s*display: none;/,
+    "an actions group with no children still consumes a gap"
+  );
 });

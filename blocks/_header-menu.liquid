@@ -59,6 +59,7 @@
     {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
   {% endif %}
 {% endunless %}
+{% assign styles = styles | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override %}
 {% assign block_styles = styles | join: ';' %}
 
 {% assign color_role = s.text_role %}
@@ -77,9 +78,9 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% assign link_classes = 'flex'
-  | push: 'items-center'
-  | push: 'gap-{{ s.link_icon_gap }}'
+{% assign link_classes = 'flex direction-row'
+  | push: 'vertical-{{ s.link_align }}'
+  | push_if: 'rounded-custom', s.border_radius_override
   | push: 'pt-{{ s.link_padding_top }} pb-{{ s.link_padding_bottom }}'
   | push: 'pl-{{ s.link_padding_left }} pr-{{ s.link_padding_right }}'
 %}
@@ -111,6 +112,63 @@
 {% assign list_classes = 'flex direction-row' | push: 'vertical-{{ s.link_align }}' | push: 'gap-{{ s.gap }}' %}
 {% assign list_class_str = list_classes | join: ' ' %}
 
+{%- comment -%}Unlike `_tab-head`, the state is known at render, so one bag is chosen here.{%- endcomment -%}
+{% assign active_classes = 'flex direction-row'
+  | push: 'vertical-{{ s.link_align }}'
+  | push_if: 'rounded-custom', s.border_radius_override
+  | push: 'pt-{{ s.link_padding_top_active }} pb-{{ s.link_padding_bottom_active }}'
+  | push: 'pl-{{ s.link_padding_left_active }} pr-{{ s.link_padding_right_active }}'
+%}
+{% for ef_id in s.link_effect %}
+  {% assign active_classes = active_classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
+{% if s.bg_role_active != blank and s.bg_role_active != 'none'
+  and s.bg_role_active != 'custom' and s.bg_role_active != 'palette' %}
+  {% assign active_classes = active_classes | push: 'bg-{{ s.bg_role_active }}' %}
+{% endif %}
+{% if s.link_border_role_active != blank and s.link_border_role_active != 'none' %}
+  {% assign active_classes = active_classes
+    | push: 'group-border-custom-bottom group-border-size-{{ s.link_border_size_active }}'
+  %}
+  {% if s.link_border_role_active != 'custom' and s.link_border_role_active != 'palette' %}
+    {% assign active_classes = active_classes | push: 'border-{{ s.link_border_role_active }}' %}
+  {% endif %}
+{% endif %}
+{%- capture active_text_class -%}{%- render 'text-color-class', color_role: s.text_role_active -%}{%- endcapture -%}
+{% if active_text_class != blank %}
+  {% assign active_classes = active_classes | push: active_text_class %}
+{% endif %}
+{% assign active_class_str = active_classes | join: ' ' %}
+
+{% assign active_styles = blank %}
+{% if s.text_role_active == 'palette' and s.text_role_active_palette != blank %}
+  {% assign active_styles = active_styles | push: '--text: var(--palette-{{ s.text_role_active_palette }})' %}
+{% elsif s.text_role_active == 'custom' and s.text_role_active_custom != blank %}
+  {% assign active_styles = active_styles | push: '--text: {{ s.text_role_active_custom }}' %}
+{% endif %}
+{% if s.bg_role_active == 'palette' and s.bg_role_active_palette != blank %}
+  {% assign active_styles = active_styles | push: 'background: var(--palette-{{ s.bg_role_active_palette }})' %}
+{% elsif s.bg_role_active == 'custom' and s.bg_role_active_custom != blank %}
+  {% assign active_styles = active_styles | push: 'background: {{ s.bg_role_active_custom }}' %}
+{% endif %}
+{% if s.link_border_role_active == 'palette' and s.link_border_role_active_palette != blank %}
+  {% assign active_styles = active_styles
+    | push: '--border-style:solid'
+    | push: '--border: var(--palette-{{ s.link_border_role_active_palette }})'
+  %}
+{% elsif s.link_border_role_active == 'custom' and s.link_border_role_active_custom != blank %}
+  {% assign active_styles = active_styles
+    | push: '--border-style:solid'
+    | push: '--border: {{ s.link_border_role_active_custom }}'
+  %}
+{% endif %}
+{% assign active_style_str = active_styles | join: ';' %}
+{%- comment -%}No declared paint means no state: swapping an unfilled bag in strips the link.{%- endcomment -%}
+{% assign has_active_state = false %}
+{% if s.text_role_active != blank or s.bg_role_active != blank or s.link_border_role_active != blank %}
+  {% assign has_active_state = true %}
+{% endif %}
+
 {% assign last_link = s.nav.links | size | minus: 1 %}
 
 <nav
@@ -120,18 +178,22 @@
 >
   <ul class='{{ list_class_str }}'>
     {% for link in s.nav.links %}
-      {% assign has_mega = false %}
-      {% if link.levels > 1 %}{% assign has_mega = true %}{% endif %}
-
       {% assign this_link_class = link_class_str %}
-      {% if forloop.index0 == last_link %}
-        {% assign this_link_class = link_class_str | replace: 'group-border-custom-bottom', '' %}
+      {% assign this_link_style = link_style_str %}
+      {%- comment -%}A link with no id can never be the current page, so a blank one never matches.{%- endcomment -%}
+      {% if has_active_state and link.link_id != blank and link.link_id == page.uuid %}
+        {% assign this_link_class = active_class_str %}
+        {% assign this_link_style = active_style_str %}
       {% endif %}
-      <li class='group flex items-center relative'>
+      {%- comment -%}Stripped after the bag is chosen, so the last link ends flush in either state.{%- endcomment -%}
+      {% if forloop.index0 == last_link %}
+        {% assign this_link_class = this_link_class | replace: 'group-border-custom-bottom', '' %}
+      {% endif %}
+      <li class='group flex direction-row vertical-{{ s.link_align }} relative'>
         <a
           href='{{ link.url }}'
           class='{{ this_link_class }}'
-          style='{{ link_style_str }}'
+          style='{{ this_link_style }}'
         >
           {% render 'typography',
             text: link.title,
@@ -139,70 +201,7 @@
             color_role: color_role,
             class: utility_classes
           %}
-          {% if link.links != blank %}
-            {% render 'icon',
-              name: 'chevron-down',
-              class: 'w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform'
-            %}
-          {% endif %}
         </a>
-
-        {% if link.links != blank %}
-          <div
-            class='
-              absolute top-full left-0 border border-default shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-floating
-              {% if has_mega %}!fixed left-0 right-0 w-full border-x-0{% else %}w-64{% endif %}
-            '
-          >
-            {% if has_mega %}
-              <div class='mx-auto px-8 py-12 grid grid-cols-4 gap-8'>
-                {% for child in link.links %}
-                  <div>
-                    <a
-                      href='{{ child.url }}'
-                      class='block mb-4 hover:underline underline-offset-4'
-                    >
-                      {% render 'typography',
-                        type_style: s.type_style,
-                        text: child.title,
-                        color_role: color_role,
-                        class: utility_classes
-                      %}
-                    </a>
-                    <ul class='flex flex-col gap-xs'>
-                      {% for grandchild in child.links %}
-                        <li>
-                          <a
-                            href='{{ grandchild.url }}'
-                            class='opacity-70 hover:opacity-100 block'
-                          >
-                            {% render 'typography',
-                              type_style: s.type_style,
-                              text: grandchild.title,
-                              color_role: color_role,
-                              class: utility_classes
-                            %}
-                          </a>
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                {% endfor %}
-              </div>
-
-            {% else %}
-              <ul class='py-4'>
-                {% for child in link.links %}
-                  <li>
-                    <a href='{{ child.url }}' class='ts-body-sm block px-6 py-2 hover:bg-gray-50/5 whitespace-nowrap'>
-                      {{ child.title }}
-                    </a>
-                  </li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-        {% endif %}
       </li>
     {% endfor %}
   </ul>
@@ -443,19 +442,282 @@
       ]
     },
     {
-      "type": "space",
-      "id": "link_icon_gap",
-      "label": "Link Icon Gap",
-      "info": "Between a link's label and its submenu chevron.",
-      "default": "xxs"
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Custom Border Radius",
+      "min": 0,
+      "max": 1000,
+      "default": 4,
+      "unit": "px",
+      "conditional": "setting.border_radius_override"
+    },
+    {
+      "type": "header",
+      "content": "Current Page"
     },
     {
       "type": "select",
-      "subtype": "border_role",
+      "id": "text_role_active",
+      "label": "Current Link Text",
+      "default": "inherit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit from Header"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_active_palette",
+      "label": "Current Link Text Token",
+      "conditional": "setting.text_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_active_custom",
+      "label": "Current Link Text Color",
+      "conditional": "setting.text_role_active == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "bg_role_active",
+      "label": "Current Link Background",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body Alt"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface Alt"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_active_palette",
+      "label": "Current Link Background Token",
+      "conditional": "setting.bg_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_active_custom",
+      "label": "Current Link Background Color",
+      "conditional": "setting.bg_role_active == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "link_border_role_active",
+      "label": "Current Link Rule",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "link_border_role_active_palette",
+      "label": "Current Link Rule Token",
+      "conditional": "setting.link_border_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "link_border_role_active_custom",
+      "label": "Current Link Rule Color",
+      "conditional": "setting.link_border_role_active == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "link_border_size_active",
+      "label": "Current Link Rule Width",
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "SM"
+        },
+        {
+          "value": "md",
+          "label": "MD"
+        },
+        {
+          "value": "lg",
+          "label": "LG"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "space",
+      "id": "link_padding_top_active",
+      "label": "Current Link Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_right_active",
+      "label": "Current Link Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_bottom_active",
+      "label": "Current Link Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_left_active",
+      "label": "Current Link Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "select",
       "id": "link_border_role",
       "label": "Link Divider",
       "default": "none",
-      "info": "A rule under every link but the last."
+      "info": "A rule under every link but the last.",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
     },
     {
       "type": "palette",
@@ -471,10 +733,35 @@
     },
     {
       "type": "select",
-      "subtype": "border_size",
       "id": "link_border_size",
       "label": "Link Divider Width",
-      "default": "xxs"
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS"
+        },
+        {
+          "value": "xs",
+          "label": "XS"
+        },
+        {
+          "value": "sm",
+          "label": "SM"
+        },
+        {
+          "value": "md",
+          "label": "MD"
+        },
+        {
+          "value": "lg",
+          "label": "LG"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
     },
     {
       "type": "space",
