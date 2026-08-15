@@ -15,6 +15,8 @@
   {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
 {% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
   {% assign text_color_value = s.text_role_custom %}
+{% elsif s.text_role != blank and s.text_role != 'inherit' and s.text_role != 'primary' %}
+  {% assign text_color_value = 'var(--text-{{ s.text_role }})' %}
 {% endif %}
 {% assign styles = blank %}
 
@@ -106,7 +108,7 @@
       "type": "select",
       "id": "text_role",
       "label": "Text Color Role",
-      "default": "button",
+      "default": "inherit",
       "options": [
         {
           "value": "inherit",
@@ -148,7 +150,8 @@
           "value": "custom",
           "label": "Raw Color"
         }
-      ]
+      ],
+      "subtype": "text_role"
     },
     {
       "type": "palette",

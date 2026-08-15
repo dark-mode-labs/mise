@@ -57,12 +57,9 @@ const CONCERNS = ["text_role", "bg_role", "border_role", "border_size"];
 const variantOf = (id) =>
   CONCERNS.find((c) => id !== c && new RegExp(`^(\\w+_)?${c}(_active|_inactive)?$`).test(id));
 
-// Variants that predate this rule and still render as a bare dropdown. The list may only SHRINK:
-// converting one is a UI change to a working control, so it is done deliberately, not by a sweep.
-const BARE_VARIANTS = new Set([
-  "blocks/_tab-head.liquid:border_role_inactive",
-  "blocks/_tab-head.liquid:text_role_inactive",
-]);
+// Variants that still render as a bare dropdown. The list may only SHRINK: converting one is a UI
+// change to a working control, so it is done deliberately rather than by a sweep. Empty is the goal.
+const BARE_VARIANTS = new Set([]);
 
 test("a colour or size variant reaches the same picker its base does", () => {
   const bare = [];
@@ -122,9 +119,7 @@ test("every option that names a companion field has one", () => {
   assert.deepEqual(dead, [], "these choices resolve to nothing");
 });
 
-// Pre-existing, and not safe to guess: `_nav-group.text_role` defaults to `button` while offering
-// `on-button`. Either fixing the typo or falling back to `inherit` changes what existing blocks paint.
-const ORPHANED_DEFAULTS = new Set(["blocks/_nav-group.liquid:text_role"]);
+const ORPHANED_DEFAULTS = new Set([]);
 
 test("every select can still show the value it defaults to", () => {
   // Widening a field's options by copying a base's list dropped `none` from two cart fields, whose
