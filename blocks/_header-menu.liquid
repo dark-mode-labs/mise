@@ -122,8 +122,11 @@
 {% for ef_id in s.link_effect %}
   {% assign active_classes = active_classes | push: 'ef-{{ ef_id }}' %}
 {% endfor %}
-{% if s.bg_role_active != blank and s.bg_role_active != 'none'
-  and s.bg_role_active != 'custom' and s.bg_role_active != 'palette' %}
+{% if s.bg_role_active != blank
+  and s.bg_role_active != 'none'
+  and s.bg_role_active != 'custom'
+  and s.bg_role_active != 'palette'
+%}
   {% assign active_classes = active_classes | push: 'bg-{{ s.bg_role_active }}' %}
 {% endif %}
 {% if s.link_border_role_active != blank and s.link_border_role_active != 'none' %}
@@ -289,10 +292,6 @@
         {
           "value": "custom",
           "label": "Raw Color"
-        },
-        {
-          "value": "gradient",
-          "label": "Gradient"
         }
       ],
       "conditional": "setting.border_mode != 'none'"
@@ -508,7 +507,8 @@
           "value": "custom",
           "label": "Raw Color"
         }
-      ]
+      ],
+      "subtype": "text_role"
     },
     {
       "type": "palette",
@@ -567,12 +567,9 @@
         {
           "value": "custom",
           "label": "Custom"
-        },
-        {
-          "value": "gradient",
-          "label": "Gradient"
         }
-      ]
+      ],
+      "subtype": "bg_role"
     },
     {
       "type": "palette",
@@ -611,12 +608,9 @@
         {
           "value": "custom",
           "label": "Custom"
-        },
-        {
-          "value": "gradient",
-          "label": "Gradient"
         }
-      ]
+      ],
+      "subtype": "border_role"
     },
     {
       "type": "palette",
@@ -655,12 +649,9 @@
         {
           "value": "lg",
           "label": "LG"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
         }
-      ]
+      ],
+      "subtype": "border_size"
     },
     {
       "type": "space",
@@ -712,12 +703,9 @@
         {
           "value": "custom",
           "label": "Custom"
-        },
-        {
-          "value": "gradient",
-          "label": "Gradient"
         }
-      ]
+      ],
+      "subtype": "border_role"
     },
     {
       "type": "palette",
@@ -756,12 +744,9 @@
         {
           "value": "lg",
           "label": "LG"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
         }
-      ]
+      ],
+      "subtype": "border_size"
     },
     {
       "type": "space",

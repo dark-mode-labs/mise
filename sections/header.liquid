@@ -517,7 +517,29 @@
       "subtype": "border_role",
       "id": "toggle_border_role",
       "label": "Menu Button Border",
-      "default": "none"
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
     },
     {
       "type": "palette",
@@ -536,7 +558,34 @@
       "subtype": "border_size",
       "id": "toggle_border_size",
       "label": "Menu Button Border Width",
-      "default": "xxs"
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "SM",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "MD",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "LG",
+          "info": "8px"
+        }
+      ]
     },
     {
       "type": "select",
@@ -835,7 +884,7 @@
       "type": "checkbox",
       "id": "show_nav",
       "label": "Show Navigation",
-      "info": "Renders the desktop nav (and the drawer's nav links). Disable for minimal headers \u2014 e.g. checkout, order confirmation.",
+      "info": "Renders the desktop nav (and the drawer's nav links). Disable for minimal headers — e.g. checkout, order confirmation.",
       "default": true
     },
     {
@@ -924,7 +973,8 @@
           "label": "Raw"
         }
       ],
-      "conditional": "setting.show_cart == true"
+      "conditional": "setting.show_cart == true",
+      "subtype": "bg_role"
     },
     {
       "type": "palette",
@@ -949,15 +999,24 @@
           "label": "None"
         },
         {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
           "value": "palette",
-          "label": "Palette"
+          "label": "Base Palette"
         },
         {
           "value": "custom",
-          "label": "Raw"
+          "label": "Raw Color"
         }
       ],
-      "conditional": "setting.show_cart == true"
+      "conditional": "setting.show_cart == true",
+      "subtype": "border_role"
     },
     {
       "type": "palette",
@@ -979,18 +1038,32 @@
       "options": [
         {
           "value": "xxs",
-          "label": "Hairline"
+          "label": "XXS",
+          "info": "1px"
         },
         {
           "value": "xs",
-          "label": "Thin"
+          "label": "XS",
+          "info": "2px"
         },
         {
           "value": "sm",
-          "label": "Medium"
+          "label": "SM",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "MD",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "LG",
+          "info": "8px"
         }
       ],
-      "conditional": "setting.show_cart == true and setting.cart_border_role != 'none'"
+      "conditional": "setting.show_cart == true and setting.cart_border_role != 'none'",
+      "subtype": "border_size"
     },
     {
       "type": "select",
@@ -1003,15 +1076,44 @@
           "label": "Inherit"
         },
         {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
           "value": "palette",
-          "label": "Palette"
+          "label": "Base Palette"
         },
         {
           "value": "custom",
-          "label": "Raw"
+          "label": "Raw Color"
         }
       ],
-      "conditional": "setting.show_cart == true"
+      "conditional": "setting.show_cart == true",
+      "subtype": "text_role"
     },
     {
       "type": "palette",
@@ -1065,7 +1167,8 @@
           "label": "Raw"
         }
       ],
-      "conditional": "setting.show_cart == true"
+      "conditional": "setting.show_cart == true",
+      "subtype": "bg_role"
     },
     {
       "type": "palette",
@@ -1087,18 +1190,47 @@
       "options": [
         {
           "value": "none",
-          "label": "Default"
+          "label": "Inherit"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
         },
         {
           "value": "palette",
-          "label": "Palette"
+          "label": "Base Palette"
         },
         {
           "value": "custom",
-          "label": "Raw"
+          "label": "Raw Color"
         }
       ],
-      "conditional": "setting.show_cart == true"
+      "conditional": "setting.show_cart == true",
+      "subtype": "text_role"
     },
     {
       "type": "palette",

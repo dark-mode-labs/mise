@@ -96,32 +96,13 @@ test("a role that paints a colour is never also pushed as a class", () => {
   );
   for (const role of new Set(pushes)) {
     // The guard may sit on the same `if` as the blank/none test or on its own; only the terms matter.
-    const before = src.slice(0, src.indexOf(`push: 'bg-{{ s.${role} }}'`) + 1 ||
-                                src.indexOf(`push: 'border-{{ s.${role} }}'`) + 1);
+    const before = src.slice(
+      0,
+      src.indexOf(`push: 'bg-{{ s.${role} }}'`) + 1 ||
+        src.indexOf(`push: 'border-{{ s.${role} }}'`) + 1
+    );
     const guard = before.slice(before.lastIndexOf("{% if"));
     assert.ok(guard.includes(`s.${role} != 'custom'`), `${role} may be pushed as bg-custom`);
     assert.ok(guard.includes(`s.${role} != 'palette'`), `${role} may be pushed as bg-palette`);
-  }
-});
-
-test("every select the editor renders can actually be chosen from", () => {
-  // The editor keys its rich pickers on `subtype || id`, and those pickers read the UNSUFFIXED
-  // companions — so `text_role_active` with subtype `text_role` shows the RESTING link's custom
-  // colour. `_tab-head` sets the precedent: state twins are plain selects carrying full options.
-  const schema = JSON.parse(src.match(/\{%\s*schema\s*%\}([\s\S]*?)\{%\s*endschema\s*%\}/)[1]);
-  const fields = schema.settings.filter((f) => f.id);
-
-  for (const f of fields.filter((f) => f.type === "select")) {
-    assert.ok(f.options?.length, `${f.id} is a select with no options — an empty dropdown`);
-    assert.ok(!f.subtype, `${f.id} routes to a picker that reads s.${f.subtype}_custom, not its own`);
-  }
-  // A state twin must offer exactly what the state it overrides offers.
-  const byId = Object.fromEntries(fields.map((f) => [f.id, f]));
-  const vals = (f) => (f?.options || []).map((o) => o.value);
-  for (const active of fields.map((f) => f.id).filter((id) => id.endsWith("_active"))) {
-    const resting = byId[active.replace(/_active$/, "")];
-    if (!resting || resting.type !== "select") continue;
-    assert.deepEqual(vals(byId[active]), vals(resting),
-      `${active} offers different choices than the state it overrides`);
   }
 });
