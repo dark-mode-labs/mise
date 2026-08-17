@@ -457,36 +457,35 @@
     @apply transition-all duration-300;
   }
 
-  /* Nav dot/bar pill — paints with brand palette color so it stays
-     visible regardless of the parent surface's `control_bg` setting
-     (which defaults to `transparent` for auto-minted surfaces lacking
-     explicit form/control elements). The dot represents a UI control
-     so brand-color is a sensible default. */
+  /* Nav dots: active + muted colour, size and active-scale all resolve through the block's own vars. */
   .slideshow-dot-pill {
-    background: var(--palette-brand);
+    background: var(--dot-muted-color, var(--dot-color, var(--palette-brand)));
+    opacity: var(--dot-muted-opacity, 0.5);
+  }
+
+  .slideshow-dot-round {
+    width: var(--dot-size, 0.625rem);
+    height: var(--dot-size, 0.625rem);
   }
 
   .slideshow-dot-num {
-    color: var(--palette-brand);
+    color: var(--dot-color, var(--palette-brand));
   }
 
   .slideshow-dot.is-active span {
     opacity: 1;
-    transform: scale(1.2);
+    transform: scale(var(--dot-active-scale, 1.2));
   }
 
   .slideshow-dot.is-active .slideshow-dot-pill {
-    background: var(--palette-brand);
+    background: var(--dot-color, var(--palette-brand));
+    opacity: 1;
   }
 
   .slideshow-dot.is-active span.text-sm {
     opacity: 1;
     background: transparent;
     color: var(--control-bg);
-  }
-
-  .slideshow-dot.is-active span.ring-1 {
-    box-shadow: 0 0 0 1px var(--text-on-control);
   }
 
   .header-section {

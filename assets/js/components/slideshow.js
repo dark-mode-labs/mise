@@ -13,7 +13,10 @@ export default class Slideshow {
     this.controls = this.el.querySelector(".slideshow-controls");
     this.prevBtn = this.el.querySelector(".slideshow-prev");
     this.nextBtn = this.el.querySelector(".slideshow-next");
-    this.dotsContainer = this.el.querySelector(".slideshow-dots");
+    const section = this.el.closest("section");
+    this.dotsContainer =
+      this.el.querySelector(".slideshow-dots") ||
+      (section && section.querySelector(".slideshow-dots"));
     this.dots = [];
 
     this.counter =
@@ -86,10 +89,10 @@ export default class Slideshow {
     for (let i = 0; i < pageCount; i++) {
       const inner =
         style === "bars"
-          ? `<span class='slideshow-dot-pill block w-8 h-1 rounded-sm opacity-50 hover:opacity-100'></span>`
+          ? `<span class='slideshow-dot-pill block w-8 h-1 rounded-sm'></span>`
           : style === "numbers"
             ? `<span class='slideshow-dot-num text-sm font-bold opacity-50'>${i + 1}</span>`
-            : `<span class='slideshow-dot-pill block w-2.5 h-2.5 rounded-full opacity-50 hover:opacity-100 ring-1 ring-transparent'></span>`;
+            : `<span class='slideshow-dot-pill slideshow-dot-round block rounded-full'></span>`;
       html.push(
         `<button type='button' class='slideshow-dot transition-all duration-300' data-index='${i}' aria-label='Go to page ${i + 1}'>${inner}</button>`
       );
@@ -191,6 +194,9 @@ export default class Slideshow {
     this.el
       .querySelectorAll(".slideshow-nav, .slideshow-dots")
       .forEach((el) => (el.style.display = totalPages <= 1 ? "none" : ""));
+    if (this.dotsContainer) {
+      this.dotsContainer.style.display = totalPages <= 1 ? "none" : "";
+    }
 
     if (totalPages <= 1) {
       this.track.classList.add("justify-center");
