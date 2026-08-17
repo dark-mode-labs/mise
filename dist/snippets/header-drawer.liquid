@@ -1,0 +1,60 @@
+{% comment %}
+  Args:
+    nav_html           rendered HTML of the drawer's own `_header-menu` block
+    drawer_surface_id  surface tier id
+    drawer_bg_role     role enum (body / palette / custom / gradient / …)
+    drawer_bg_value    resolved CSS value for palette/custom/gradient (else blank)
+    drawer_alpha_pct   0–100 backdrop opacity (drawer only)
+    nav_mode           `drawer` (slides over) or `panel` (drops in flow)
+    actions_html       rendered HTML of `_header-actions` (or blank)
+{% endcomment %}
+
+{% assign bg_class = 'bg-{{ drawer_bg_role }}' %}
+{% if drawer_bg_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign panel_classes = 'drawer-panel surface-{{ drawer_surface_id }}' %}
+{% if bg_class != blank %}{% assign panel_classes = '{{ panel_classes }} {{ bg_class }}' %}{% endif %}
+
+{% assign panel_styles = blank %}
+{% if drawer_bg_value != blank %}
+  {% assign panel_styles = panel_styles | push: 'background: {{ drawer_bg_value }}' %}
+{% endif %}
+{% assign panel_style_str = panel_styles | join: ';' %}
+
+{% assign shell_classes = 'header-drawer' %}
+{% if nav_mode == 'panel' %}{% assign shell_classes = 'header-drawer is-panel' %}{% endif %}
+
+<div
+  class='{{ shell_classes }}'
+  aria-hidden='true'
+  style='--drawer-backdrop-alpha: {{ drawer_alpha_pct | divided_by: 100.0 }}'
+>
+  <div class='drawer-backdrop' data-action='close'></div>
+  <div class='{{ panel_classes }}' style='{{ panel_style_str }}'>
+    {% if nav_mode != 'panel' %}
+      <div class='flex items-center justify-end px-6 h-16 border-b border-current/10'>
+        <button type='button' class='p-2 -mr-2 hover:opacity-70' data-action='close' aria-label='Close Menu'>
+          {% render 'icon', name: 'close', class: 'w-6 h-6' %}
+        </button>
+      </div>
+    {% endif %}
+    {% assign nav_box = 'flex-1 overflow-y-auto py-6 px-6' %}
+    {% if nav_mode == 'panel' %}{% assign nav_box = 'w-full' %}{% endif %}
+    <div class='{{ nav_box }}'>{{ nav_html }}</div>
+    {% if actions_html != blank %}
+      <div class='drawer-actions p-6 border-t border-current/10'>
+        {{ actions_html }}
+      </div>
+    {% endif %}
+    {% if nav_mode != 'panel' %}
+      <div class='p-6 border-t border-current/10'>
+        {%
+          render 'typography',
+          text: shop.name | append: ' © ' | append: 'now' | date: '%Y',
+          type_style: 'caption',
+          class: 'opacity-60 text-center'
+        %}
+      </div>
+    {% endif %}
+  </div>
+</div>
