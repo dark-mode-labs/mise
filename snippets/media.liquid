@@ -24,7 +24,12 @@
     {% endif %}
   {% endfor %}
 {% endfor %}
-{% assign desc_bp_ids = sorted_bp_ids | reverse %}
+{% assign bp_px_list = blank %}
+{% for bp_id in sorted_bp_ids %}
+  {% assign bp_px = settings.breakpoint_scale[bp_id].settings.max_width | times: 16 %}
+  {% assign bp_px_list = bp_px_list | push: bp_px %}
+{% endfor %}
+{% assign widest_px = bp_px_list | last %}
 
 <div
   class='media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}'
@@ -43,38 +48,48 @@
       {% endif %}
       class='{% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}'
       {% if src %}
-        poster='{{ src | image_url: width: 800 }}'
+        poster='{{ src | image_url: width: widest_px }}'
       {% endif %}
     >
       <source src='{{ video | image_url: width: 800 }}' type='video/mp4'>
     </video>
 
   {% elsif src != blank %}
+    {% assign sizes_attr = '100vw' %}
+    {% assign width_max = settings.container_scale[width_tier].settings.max_width %}
+    {% if width_max contains 'rem' %}
+      {% assign width_px = width_max | remove: 'rem' | times: 16 %}
+      {% assign sizes_attr = '(max-width: {{ width_px }}px) 100vw, {{ width_px }}px' %}
+    {% endif %}
+    {% capture srcset_desktop %}
+      {%- for bp_px in bp_px_list -%}
+        {{ src | image_url: width: bp_px }} {{ bp_px }}w,
+      {%- endfor -%}
+      {%- assign retina_px = widest_px | times: 2 -%}
+      {%- if retina_px > 3200 -%}{%- assign retina_px = 3200 -%}{%- endif -%}
+      {{ src | image_url: width: retina_px }} {{ retina_px }}w
+    {% endcapture %}
+    {% assign mobile_bp = 768 %}
     <picture>
-      {% for bp_id in desc_bp_ids %}
-        {% assign bp_px = settings.breakpoint_scale[bp_id].settings.max_width | times: 16 %}
-        {% comment %} Below the 768px tier use the mobile art-direction image when provided. {% endcomment %}
-        {% if bp_px < 768 and src_mobile != blank %}
-          {% assign bp_src = src_mobile %}
-        {% else %}
-          {% assign bp_src = src %}
-        {% endif %}
-        {% assign img_w = bp_px | times: 2 %}
-        {% if img_w > 3200 %}{% assign img_w = 3200 %}{% endif %}
-        <source media='(min-width: {{ bp_px }}px)' srcset='{{ bp_src | image_url: width: img_w }}'>
-      {% endfor %}
       {% if src_mobile != blank %}
-        {% assign fallback_src = src_mobile %}
-      {% else %}
-        {% assign fallback_src = src %}
+        {% capture srcset_mobile %}
+          {%- for bp_px in bp_px_list -%}
+            {%- if bp_px < mobile_bp -%}
+              {{ src_mobile | image_url: width: bp_px }} {{ bp_px }}w,
+            {%- endif -%}
+          {%- endfor -%}
+          {%- assign mobile_cap = mobile_bp | times: 2 -%}
+          {{ src_mobile | image_url: width: mobile_cap }} {{ mobile_cap }}w
+        {% endcapture %}
+        <source media='(max-width: {{ mobile_bp | minus: 1 }}px)' srcset='{{ srcset_mobile }}' sizes='{{ sizes_attr }}'>
       {% endif %}
       <img
-        src='{{ fallback_src | image_url: width: 800 }}'
+        src='{{ src | image_url: width: widest_px }}'
+        srcset='{{ srcset_desktop }}'
+        sizes='{{ sizes_attr }}'
         alt='{{ src.alt | escape }}'
         loading='{{ load_mode }}'
-        width='{{ src.width }}'
-        height='{{ src.height }}'
-        class='transition-opacity duration-500 {{ anim_class }}'
+        class='{{ anim_class }}'
       >
     </picture>
 

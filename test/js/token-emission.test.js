@@ -51,6 +51,51 @@ test("every field the hover applies is a field it transitions", () => {
   assert.deepEqual([...applied].sort(), [...transitioned].sort());
 });
 
+// The test above compares field NAMES, which agree even when the conditions around them do not:
+// `text_role` defaults to `inherit`, a value the `case` has no arm for, so the paint gated on
+// `text_var` emitted nothing while the transition and the re-assert gated on `!= blank and != none`
+// and fired anyway. That shipped `--text:;` — an empty custom property, so `color: var(--text)`
+// turned invalid on hover and the element took its PARENT's colour. Compare the predicates.
+const DIMS = [
+  ["text", "color"],
+  ["bg", "background"],
+  ["border", "border-color"],
+];
+
+test("a colour is painted, transitioned and re-asserted under one predicate", () => {
+  const rest = src.slice(
+    src.indexOf("{% capture rest %}"),
+    src.indexOf("{% endcapture %}", src.indexOf("{% capture rest %}"))
+  );
+  const moved = src.slice(
+    src.indexOf("{% assign moved ="),
+    src.indexOf("{% if ef.type == 'static' %}")
+  );
+
+  for (const [dim, prop] of DIMS) {
+    const guard = `hover_${dim}_value != blank`;
+
+    const paint = rest.match(new RegExp(`\\{%\\s*if ([^%]*?)%\\}${prop}:`));
+    assert.ok(paint, `${prop} is no longer painted from a single guarded value`);
+    assert.equal(paint[1].trim(), guard, `${prop} paints on a different condition`);
+
+    const push = moved.match(
+      new RegExp(`\\{%\\s*if ([^%]*?)%\\}\\s*\\{%\\s*assign moved = moved \\| push: '${prop}'`)
+    );
+    assert.ok(push, `${prop} is no longer pushed onto the transition list`);
+    assert.equal(push[1].trim(), guard, `${prop} transitions on a different condition`);
+  }
+});
+
+test("the hover re-assert of `--text` fires only when there is a colour to assert", () => {
+  // `--text` is re-asserted so descendants inherit the hover colour; with no colour it must not
+  // be written at all, because an empty custom property is not the same as an absent one.
+  const at = src.indexOf("assign hover_inherit = '--text:");
+  assert.ok(at > 0, "the --text re-assert is gone");
+  const guard = src.slice(src.lastIndexOf("{%- if", at), at);
+  assert.match(guard, /hover_text_value != blank/, "the re-assert can emit an empty --text");
+});
+
 test("the only display a width tier sets is the one a `0` width means", () => {
   assert.ok(widthRuleBodies.length, "no width-tier rules found — did the emission change shape?");
   const displays = new Set(
