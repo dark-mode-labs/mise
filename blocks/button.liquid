@@ -119,6 +119,16 @@
   {% endif %}
 {% endunless %}
 
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}
+  {% assign color_role = 'on-button' %}
+{% endif %}
+
+{% capture label_color_class %}{% render 'text-color-class', color_role: color_role %}{% endcapture %}
+{% if label_color_class != blank %}
+  {% assign inner_classes = inner_classes | push: label_color_class %}
+{% endif %}
+
 {% for ef_id in s.effect %}
   {% assign inner_classes = inner_classes | push: 'ef-{{ ef_id }}' %}
 {% endfor %}
@@ -170,11 +180,6 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% assign color_role = s.text_role %}
-{% if s.text_role == 'custom' or s.text_role == 'palette' %}
-  {% assign color_role = 'on-button' %}
-{% endif %}
-
 <div
   class='{{ wrapper_class_str }}'
   style='{{ wrapper_style_str }}'
@@ -189,7 +194,7 @@
         data-action-args='{{ s.action_args | escape }}'
       {% endif %}
     >
-      {% render 'typography', text: s.label, type_style: s.type_style, color_role: color_role, class: utility_classes %}
+      {% render 'typography', text: s.label, type_style: s.type_style, color_role: 'inherit', class: utility_classes %}
     </button>
   {% elsif s.trigger == 'link' %}
     <a
@@ -202,7 +207,7 @@
       {% endif %}
       class='{{ inner_class_str }}'
     >
-      {% render 'typography', type_style: s.type_style, text: s.label, color_role: color_role, class: utility_classes %}
+      {% render 'typography', type_style: s.type_style, text: s.label, color_role: 'inherit', class: utility_classes %}
     </a>
   {% endif %}
 </div>

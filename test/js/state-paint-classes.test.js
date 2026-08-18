@@ -24,6 +24,26 @@ test("a button paints its border and its effect on the same element", () => {
   assert.deepEqual([...bagsPushing(src, "group-border-{{ s.border_mode }}")], ["inner_classes"]);
 });
 
+test("a button's text colour rides the effect element, and the label inherits it", () => {
+  // The colour used to be painted on the LABEL, a level below the element the effect rides, so a
+  // hover tier's `:hover { color }` could never win and every brand's buttons ignored hover colours.
+  // The wrapper also pins `--text-on-button` inline, and an inline declaration beats any class rule.
+  const src = read("blocks/button.liquid");
+
+  assert.deepEqual(
+    [...bagsPushing(src, "label_color_class")],
+    ["inner_classes"],
+    "the colour class must ride the same bag as the effect"
+  );
+  for (const m of src.matchAll(/\{%\s*render 'typography'[^%]*%\}/g)) {
+    assert.match(
+      m[0],
+      /color_role: 'inherit'/,
+      "the label re-pins its own colour, which no hover of ours can override"
+    );
+  }
+});
+
 test("a tab head's effects ride the bag of the state they belong to", () => {
   const src = read("blocks/_tab-head.liquid");
   const active = src.match(/\{%\s*for ef_id in s\.effect\s*%\}[\s\S]*?\{%\s*endfor\s*%\}/)[0];
