@@ -15,8 +15,11 @@ test("rounded-inherit takes its HOST's radius, not an inherited variable", () =>
   const rule = themeCss.match(/\.rounded-inherit\s*\{([^}]*)\}/);
   assert.ok(rule, "rule present");
   assert.match(rule[1], /border-radius:\s*inherit/);
-  assert.doesNotMatch(rule[1], /--radius-custom/,
-    "--radius-custom inherits, so reading it here rounds a square host's layer");
+  assert.doesNotMatch(
+    rule[1],
+    /--radius-custom/,
+    "--radius-custom inherits, so reading it here rounds a square host's layer"
+  );
 });
 
 test("every consumer is a layer that FILLS its host, which is what inherit assumes", () => {
