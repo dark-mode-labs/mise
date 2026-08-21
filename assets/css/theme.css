@@ -751,7 +751,7 @@
   }
 
   .rounded-inherit {
-    border-radius: var(--radius-custom, var(--radius-global));
+    border-radius: inherit;
   }
 
   .text-size-small {
