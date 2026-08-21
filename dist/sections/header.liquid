@@ -1,0 +1,1629 @@
+{% assign s = section.settings %}
+
+{% assign bg_color_value = blank %}
+{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
+  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
+{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
+  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
+{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
+  {% assign bg_color_value = s.bg_role_custom %}
+{% endif %}
+
+{% assign text_override_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_override_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_override_value = s.text_role_custom %}
+{% elsif s.text_role != blank and s.text_role != 'primary' and s.text_role != 'inherit' %}
+  {% assign text_override_value = 'var(--text-{{ s.text_role }})' %}
+{% endif %}
+
+{% assign is_overlay = false %}
+{% if s.header_overlay_mode == 'overlay' or s.header_overlay_mode == 'transparent' %}
+  {% assign is_overlay = true %}
+{% endif %}
+
+{% assign needs_spacer = false %}
+{% assign positions = blank %}
+
+{% if s.sticky_behavior == 'always' or s.sticky_behavior == 'on_scroll_up' %}
+  {% if s.sticky_behavior == 'always' and is_overlay != true %}
+    {% assign positions = positions | push: 'sticky top-[var(--top-nav,0)] inset-x-0' %}
+  {% else %}
+    {% assign positions = positions | push: 'fixed top-[var(--top-nav,0)] inset-x-0' %}
+    {% unless is_overlay %}
+      {% assign needs_spacer = true %}
+    {% endunless %}
+  {% endif %}
+{% elsif is_overlay %}
+  {% assign positions = positions | push: 'absolute top-[var(--top-nav,0)] inset-x-0' %}
+{% else %}
+  {% assign positions = positions | push: 'relative' %}
+{% endif %}
+
+{% assign position_class_str = positions | join: ' ' %}
+
+{% assign bg_class = 'bg-{{ s.bg_role }}' %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign header_classes = 'header-section z-header transition-all duration-300'
+  | push: position_class_str
+  | push: 'surface-{{ s.surface_id }}'
+  | push: 'bp-{{ s.mobile_breakpoint }}'
+  | push: 'mobile-{{ s.mobile_layout }}'
+  | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
+  | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
+%}
+{% if s.mobile_actions == 'bar' %}
+  {% assign header_classes = header_classes | push: 'actions-in-bar' %}
+{% endif %}
+
+{% assign bar_pb = 'pb-{{ s.padding_bottom }}' %}
+{% assign grid_pb = '' %}
+{% if s.mobile_nav_mode == 'panel' %}
+  {% assign bar_pb = '' %}
+  {% assign grid_pb = 'pb-{{ s.padding_bottom }}' %}
+{% endif %}
+{% assign bg_layer_classes = 'header-bar limit-width'
+  | push: 'width-{{ s.width_bg }}'
+  | push: bg_class
+  | push: 'pt-{{ s.padding_top }}'
+  | push: bar_pb
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
+%}
+
+{% assign border_color_value = blank %}
+{% if s.border_role == 'palette' and s.border_role_palette != blank %}
+  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
+{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
+  {% assign border_color_value = s.border_role_custom %}
+{% endif %}
+
+{% unless s.border_mode == 'none' or s.border_mode == blank %}
+  {% assign bg_layer_classes = bg_layer_classes
+    | push: 'group-border-{{ s.border_mode }}'
+    | push: 'group-border-size-{{ s.border_size }}'
+  %}
+  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' %}
+    {% assign bg_layer_classes = bg_layer_classes | push: 'border-{{ s.border_role }}' %}
+  {% endif %}
+  {% if s.border_mode == 'custom' %}
+    {% assign bg_layer_classes = bg_layer_classes
+      | push_if: 'group-border-custom-left', s.border_custom_left
+      | push_if: 'group-border-custom-right', s.border_custom_right
+      | push_if: 'group-border-custom-top', s.border_custom_top
+      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
+    %}
+  {% endif %}
+{% endunless %}
+{% if s.backdrop_blur == 'base' %}
+  {% assign bg_layer_classes = bg_layer_classes | push: 'backdrop-blur' %}
+{% elsif s.backdrop_blur and s.backdrop_blur != 'none' %}
+  {% assign bg_layer_classes = bg_layer_classes | push: 'backdrop-blur-{{ s.backdrop_blur }}' %}
+{% endif %}
+
+{% assign header_class_str = header_classes | join: ' ' %}
+{% assign bg_layer_class_str = bg_layer_classes | join: ' ' %}
+
+{% assign styles = blank %}
+{% if text_override_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_override_value }}' %}
+{% endif %}
+{% assign style_str = styles | join: ';' %}
+
+{% assign bar_styles = blank %}
+{% if bg_color_value != blank %}
+  {% assign bar_styles = bar_styles | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% unless s.border_mode == 'none' or s.border_mode == blank %}
+  {% assign bar_styles = bar_styles | push: '--border-style: {{ s.border_style }}' %}
+  {% if s.border_size == 'custom' %}
+    {% assign bar_styles = bar_styles | push: '--border-width: {{ s.border_size_custom }}px' %}
+  {% endif %}
+  {% if border_color_value != blank -%}
+    {%- assign bar_styles = bar_styles | push: '--border: {{ border_color_value }}' -%}
+  {%- endif %}
+{% endunless %}
+{% assign bar_style_str = bar_styles | join: ';' %}
+
+{% capture slot_logo %}{% content_for 'block', type: 'group', id: 'header-logo' %}{% endcapture %}
+{% capture slot_actions %}{% content_for 'block', type: '_header-actions', id: 'header-actions' %}{% endcapture %}
+{% capture slot_nav %}{% content_for 'block', type: '_header-menu', id: 'header-menu' %}{% endcapture %}
+{% capture slot_drawer_nav %}{% content_for 'block', type: '_header-menu', id: 'header-drawer-menu' %}{% endcapture %}
+
+{% assign toggle_border_value = blank %}
+{% if s.toggle_border_role == 'palette' and s.toggle_border_role_palette != blank %}
+  {% assign toggle_border_value = 'var(--palette-{{ s.toggle_border_role_palette }})' %}
+{% elsif s.toggle_border_role == 'custom' and s.toggle_border_role_custom != blank %}
+  {% assign toggle_border_value = s.toggle_border_role_custom %}
+{% endif %}
+{% assign toggle_classes = 'header-mobile-toggle hover:opacity-70 inline-flex items-center justify-center shrink-0' %}
+{% if s.toggle_shape == 'circle' %}
+  {% assign toggle_classes = '{{ toggle_classes }} rounded-full' %}
+{% endif %}
+{% if s.toggle_border_role != blank and s.toggle_border_role != 'none' %}
+  {% assign toggle_classes = '{{ toggle_classes }} group-border-full group-border-size-{{ s.toggle_border_size }}' %}
+  {% if s.toggle_border_role != 'custom' and s.toggle_border_role != 'palette' %}
+    {% assign toggle_classes = '{{ toggle_classes }} border-{{ s.toggle_border_role }}' %}
+  {% endif %}
+{% endif %}
+{% assign toggle_styles = blank %}
+{% if s.toggle_size > 0 %}
+  {% assign toggle_styles = toggle_styles
+    | push: 'width: {{ s.toggle_size }}rem'
+    | push: 'height: {{ s.toggle_size }}rem'
+  %}
+{% else %}
+  {% assign toggle_classes = '{{ toggle_classes }} p-2' %}
+{% endif %}
+{% if toggle_border_value != blank %}
+  {% assign toggle_styles = toggle_styles | push: '--border: {{ toggle_border_value }}' %}
+{% endif %}
+{% assign toggle_style_str = toggle_styles | join: ';' %}
+
+{% capture hamburger_btn %}
+  {% if s.show_mobile_menu %}
+    <button
+      type='button'
+      class='{{ toggle_classes }}'
+      style='{{ toggle_style_str }}'
+      data-action='toggle-drawer'
+      aria-label='Menu'
+    >
+      {% render 'icon', name: 'menu', class: 'w-6 h-6' %}
+    </button>
+  {% endif %}
+{% endcapture %}
+
+<header
+  class='{{ header_class_str }}'
+  data-behavior='header'
+  data-sticky='{{ s.sticky_behavior }}'
+  data-transparent='{% if s.header_overlay_mode == 'transparent' %}true{% else %}false{% endif %}'
+  style='{{ style_str }}'
+  {{ context.attached_attributes }}
+>
+  <div class='{{ bg_layer_class_str }}' style='{{ bar_style_str }}'>
+    <div class='width-{{ s.width }} header-grid limit-width {{ grid_pb }}'>
+      <div class='flex items-center justify-start gap-4'>
+        {% if s.mobile_layout != 'logo_left' %}{{ hamburger_btn }}{% endif %}
+
+        {% if s.desktop_layout == 'logo_left' %}
+          <div class='flex-shrink-0 hidden header-logo-desktop'>{{ slot_logo }}</div>
+          {% if s.show_nav and s.nav_alignment == 'left' %}{{ slot_nav }}{% endif %}
+        {% else %}
+          {% if s.show_nav %}{{ slot_nav }}{% endif %}
+        {% endif %}
+
+        {% if s.mobile_layout == 'logo_left' %}
+          <div class='header-logo-mobile'>{{ slot_logo }}</div>
+        {% endif %}
+      </div>
+
+      <div class='flex items-center justify-center'>
+        {% if s.show_nav and s.desktop_layout == 'logo_left' and s.nav_alignment == 'center' %}{{ slot_nav }}{% endif %}
+
+        {% if s.desktop_layout != 'logo_left' or s.mobile_layout == 'logo_center' %}
+          {% assign logo_wrap_class = '' %}
+          {% if s.desktop_layout == 'logo_left' and s.mobile_layout == 'logo_center' %}
+            {% assign logo_wrap_class = 'header-logo-mobile' %}
+          {% endif %}
+          <div class='{{ logo_wrap_class }}'>{{ slot_logo }}</div>
+        {% endif %}
+      </div>
+
+      <div class='flex items-center justify-end gap-{{ s.actions_gap }}'>
+        {% if s.show_nav and s.desktop_layout == 'logo_left' and s.nav_alignment == 'right' %}{{ slot_nav }}{% endif %}
+
+        {% if s.mobile_layout == 'logo_right' %}
+          <div class='header-logo-mobile'>{{ slot_logo }}</div>
+        {% endif %}
+
+        {% if s.show_actions %}{{ slot_actions }}{% endif %}
+
+        {% if s.show_search %}
+          <a href='/search' class='p-2 hover:opacity-70'>
+            <span class='sr-only'>Search</span>
+            {% render 'icon', name: 'search', class: 'w-5 h-5' %}
+          </a>
+        {% endif %}
+
+        {% if s.show_cart %}
+          {% assign cart_bg_color = blank %}
+          {% if s.cart_bg_role == 'palette' and s.cart_bg_role_palette != blank %}
+            {% assign cart_bg_color = 'var(--palette-{{ s.cart_bg_role_palette }})' %}
+          {% elsif s.cart_bg_role == 'custom' and s.cart_bg_role_custom != blank %}
+            {% assign cart_bg_color = s.cart_bg_role_custom %}
+          {% endif %}
+          {% assign cart_text_color = blank %}
+          {% if s.cart_text_role == 'palette' and s.cart_text_role_palette != blank %}
+            {% assign cart_text_color = 'var(--palette-{{ s.cart_text_role_palette }})' %}
+          {% elsif s.cart_text_role == 'custom' and s.cart_text_role_custom != blank %}
+            {% assign cart_text_color = s.cart_text_role_custom %}
+          {% elsif s.cart_text_role != blank and s.cart_text_role != 'inherit' and s.cart_text_role != 'primary' %}
+            {% assign cart_text_color = 'var(--text-{{ s.cart_text_role }})' %}
+          {% endif %}
+          {% assign cart_border_color = blank %}
+          {% if s.cart_border_role == 'palette' and s.cart_border_role_palette != blank %}
+            {% assign cart_border_color = 'var(--palette-{{ s.cart_border_role_palette }})' %}
+          {% elsif s.cart_border_role == 'custom' and s.cart_border_role_custom != blank %}
+            {% assign cart_border_color = s.cart_border_role_custom %}
+          {% endif %}
+          {% assign badge_bg_color = blank %}
+          {% if s.cart_badge_bg_role == 'palette' and s.cart_badge_bg_role_palette != blank %}
+            {% assign badge_bg_color = 'var(--palette-{{ s.cart_badge_bg_role_palette }})' %}
+          {% elsif s.cart_badge_bg_role == 'custom' and s.cart_badge_bg_role_custom != blank %}
+            {% assign badge_bg_color = s.cart_badge_bg_role_custom %}
+          {% endif %}
+          {% assign badge_text_color = blank %}
+          {% if s.cart_badge_text_role == 'palette' and s.cart_badge_text_role_palette != blank %}
+            {% assign badge_text_color = 'var(--palette-{{ s.cart_badge_text_role_palette }})' %}
+          {% elsif s.cart_badge_text_role == 'custom' and s.cart_badge_text_role_custom != blank %}
+            {% assign badge_text_color = s.cart_badge_text_role_custom %}
+          {% elsif s.cart_badge_text_role != blank
+            and s.cart_badge_text_role != 'inherit'
+            and s.cart_badge_text_role != 'primary'
+          %}
+            {% assign badge_text_color = 'var(--text-{{ s.cart_badge_text_role }})' %}
+          {% endif %}
+          {% assign cart_button_styles = blank %}
+          {% if s.cart_size > 0 %}
+            {% assign cart_button_styles = cart_button_styles
+              | push: 'width: {{ s.cart_size }}rem'
+              | push: 'height: {{ s.cart_size }}rem'
+            %}
+          {% endif %}
+          {% if cart_bg_color != blank %}
+            {% assign cart_button_styles = cart_button_styles | push: 'background: {{ cart_bg_color }}' %}
+          {% endif %}
+          {% if cart_text_color != blank %}
+            {% assign cart_button_styles = cart_button_styles | push: 'color: {{ cart_text_color }}' %}
+          {% endif %}
+          {% if s.cart_shadow_color_override and s.cart_shadow_color != blank %}
+            {% assign cart_button_styles = cart_button_styles | push: '--shadow: {{ s.cart_shadow_color }}' %}
+          {% endif %}
+          {% if cart_border_color != blank %}
+            {% assign cart_button_styles = cart_button_styles
+              | push: '--border: {{ cart_border_color }}'
+              | push: '--border-style: solid'
+            %}
+          {% endif %}
+          {% assign cart_btn_class = 'header-cart-btn relative hover:opacity-90 inline-flex items-center justify-center shrink-0' %}
+          {% if s.cart_shadow %}
+            {% assign cart_btn_class = cart_btn_class | append: ' shadow-lg' %}
+          {% endif %}
+          {% if cart_border_color != blank %}
+            {% assign cart_btn_class = cart_btn_class
+              | append: ' group-border-full group-border-size-{{ s.cart_border_size }}'
+            %}
+          {% elsif s.cart_border_role != blank
+            and s.cart_border_role != 'none'
+            and s.cart_border_role != 'custom'
+            and s.cart_border_role != 'palette'
+          %}
+            {% assign cart_btn_class = cart_btn_class
+              | append: ' group-border-full group-border-size-{{ s.cart_border_size }}'
+              | append: ' border-{{ s.cart_border_role }}'
+            %}
+          {% endif %}
+          {% if s.cart_shape == 'circle' or cart_bg_color != blank or cart_border_color != blank %}
+            {% assign cart_btn_class = cart_btn_class | append: ' rounded-full' %}
+          {% else %}
+            {% assign cart_btn_class = cart_btn_class | append: ' p-2 hover:opacity-70' %}
+          {% endif %}
+          <a
+            data-action='open-cart'
+            class='{{ cart_btn_class }}'
+            style='{{ cart_button_styles | join: ";" }}'
+          >
+            <span class='sr-only' data-cart-aria aria-live='polite'>{{ 'cart.aria_label_empty' | t }}</span>
+            {% if s.cart_icon_svg != blank %}
+              {{ s.cart_icon_svg }}
+            {% else %}
+              {% render 'icon', name: 'bag', class: 'w-6 h-6' %}
+            {% endif %}
+            {% assign badge_styles = blank %}
+            {% if badge_bg_color != blank %}
+              {% assign badge_styles = badge_styles | push: 'background: {{ badge_bg_color }}' %}
+            {% endif %}
+            {% if badge_text_color != blank %}
+              {% assign badge_styles = badge_styles | push: 'color: {{ badge_text_color }}' %}
+            {% endif %}
+            <span
+              class='cart-count-badge'
+              data-cart-badge
+              data-empty
+              style='{{ badge_styles | join: ";" }}'
+              data-aria-empty='{{ 'cart.aria_label_empty' | t }}'
+              data-aria-one='{{ 'cart.aria_label_one' | t }}'
+              data-aria-other='{{ 'cart.aria_label_other' | t }}'
+              ><span data-cart-count>
+                {%- if request.cart_count > 99 -%}
+                  99+
+                {%- elsif request.cart_count > 0 -%}
+                  {{- request.cart_count -}}
+                {%- endif -%}
+              </span></span
+            >
+          </a>
+        {% endif %}
+
+        {% if s.mobile_layout == 'logo_left' %}{{ hamburger_btn }}{% endif %}
+      </div>
+    </div>
+    {% assign actions_in_drawer = slot_actions %}
+    {% if s.mobile_actions == 'bar' %}{% assign actions_in_drawer = blank %}{% endif %}
+    {% if s.show_mobile_menu != false and s.show_nav != false %}
+      {% assign drawer_surface = s.drawer_surface_id %}
+      {% if drawer_surface == blank %}{% assign drawer_surface = s.surface_id | default: 'default' %}{% endif %}
+      {% assign drawer_bg_value = '' %}
+      {% if s.drawer_bg_role == 'palette' and s.drawer_bg_role_palette != blank %}
+        {% assign drawer_bg_value = 'var(--palette-{{ s.drawer_bg_role_palette }})' %}
+      {% elsif s.drawer_bg_role == 'gradient' and s.drawer_bg_role_gradient != blank %}
+        {% assign drawer_bg_value = 'var(--gradient-{{ s.drawer_bg_role_gradient }})' %}
+      {% elsif s.drawer_bg_role == 'custom' and s.drawer_bg_role_custom != blank %}
+        {% assign drawer_bg_value = s.drawer_bg_role_custom %}
+      {% endif %}
+      {% render 'header-drawer',
+        nav_html: slot_drawer_nav,
+        drawer_surface_id: drawer_surface,
+        drawer_bg_role: s.drawer_bg_role,
+        drawer_bg_value: drawer_bg_value,
+        drawer_alpha_pct: s.drawer_backdrop_alpha,
+        nav_mode: s.mobile_nav_mode,
+        actions_html: actions_in_drawer
+      %}
+    {% endif %}
+  </div>
+</header>
+
+{% if needs_spacer %}
+  <div class='w-full h-16'></div>
+{% endif %}
+{% schema %}
+{
+  "name": "Header",
+  "restriction": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Max Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "width",
+      "id": "width_bg",
+      "label": "Background Width",
+      "default": "fill"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Logo placement",
+      "options": [
+        {
+          "value": "logo_center",
+          "label": "Center"
+        },
+        {
+          "value": "logo_left",
+          "label": "Left"
+        }
+      ],
+      "default": "logo_center"
+    },
+    {
+      "type": "select",
+      "id": "nav_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "info": "Desktop only.",
+      "conditional": "setting.desktop_layout == 'logo_left'"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile logo placement",
+      "options": [
+        {
+          "value": "logo_center",
+          "label": "Center"
+        },
+        {
+          "value": "logo_left",
+          "label": "Left"
+        },
+        {
+          "value": "logo_right",
+          "label": "Right"
+        }
+      ],
+      "default": "logo_center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_actions",
+      "label": "Mobile Actions",
+      "info": "Where the header actions live below the nav breakpoint.",
+      "default": "drawer",
+      "options": [
+        {
+          "value": "drawer",
+          "label": "In the menu"
+        },
+        {
+          "value": "bar",
+          "label": "In the bar"
+        }
+      ]
+    },
+    {
+      "type": "space",
+      "id": "actions_gap",
+      "label": "Actions Gap",
+      "default": "sm",
+      "info": "Separation between the header's action controls."
+    },
+    {
+      "type": "select",
+      "id": "toggle_shape",
+      "label": "Menu Button Shape",
+      "default": "icon",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon only"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "toggle_size",
+      "label": "Menu Button Size",
+      "min": 0,
+      "max": 5,
+      "step": 0.125,
+      "unit": "rem",
+      "default": 0,
+      "info": "0 = default icon-only sizing."
+    },
+    {
+      "type": "select",
+      "subtype": "border_role",
+      "id": "toggle_border_role",
+      "label": "Menu Button Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "toggle_border_role_palette",
+      "label": "Menu Button Border Token",
+      "conditional": "setting.toggle_border_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "toggle_border_role_custom",
+      "label": "Menu Button Border Color",
+      "conditional": "setting.toggle_border_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "subtype": "border_size",
+      "id": "toggle_border_size",
+      "label": "Menu Button Border Width",
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "SM",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "MD",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "LG",
+          "info": "8px"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_nav_mode",
+      "label": "Mobile Nav Style",
+      "info": "Drawer slides over the page; panel drops in flow below the bar.",
+      "default": "drawer",
+      "options": [
+        {
+          "value": "drawer",
+          "label": "Drawer"
+        },
+        {
+          "value": "panel",
+          "label": "Panel"
+        }
+      ]
+    },
+    {
+      "type": "width",
+      "id": "mobile_breakpoint",
+      "label": "Desktop nav breakpoint",
+      "default": "broad",
+      "info": "Width threshold above which the desktop nav shows and the hamburger is hidden."
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "space",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_left",
+      "label": "Padding Left",
+      "default": "xs"
+    },
+    {
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "xs"
+    },
+    {
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Borders"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "custom",
+          "label": "Custom"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "border_size",
+      "label": "Border Size",
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "SM",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "MD",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "LG",
+          "info": "8px"
+        },
+        {
+          "value": "custom",
+          "label": "Custom",
+          "info": "Exact px width"
+        }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "range",
+      "id": "border_size_custom",
+      "label": "Custom Border Width",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 1,
+      "unit": "px",
+      "conditional": "setting.border_size == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Behavior"
+    },
+    {
+      "type": "select",
+      "id": "sticky_behavior",
+      "label": "Sticky Mode",
+      "options": [
+        {
+          "value": "none",
+          "label": "Static"
+        },
+        {
+          "value": "always",
+          "label": "Always"
+        },
+        {
+          "value": "on_scroll_up",
+          "label": "Scroll"
+        }
+      ],
+      "default": "always"
+    },
+    {
+      "type": "select",
+      "id": "header_overlay_mode",
+      "label": "Header Overlay",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "overlay",
+          "label": "Top of Content"
+        },
+        {
+          "value": "transparent",
+          "label": "Transparent on Top"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav",
+      "label": "Show Navigation",
+      "info": "Renders the desktop nav (and the drawer's nav links). Disable for minimal headers — e.g. checkout, order confirmation.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_actions",
+      "label": "Show Action Blocks",
+      "info": "Renders the user-arranged action blocks (buttons, groups). Cart and search icons have their own toggles.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_menu",
+      "label": "Show Mobile Drawer",
+      "info": "Renders the hamburger button and drawer below the desktop breakpoint. Disable for headers that don't need a mobile menu (e.g. checkout).",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Cart Style",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "textarea",
+      "id": "cart_icon_svg",
+      "label": "Cart Icon (custom SVG)",
+      "info": "Paste raw SVG. Falls back to default bag icon if empty.",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "range",
+      "id": "cart_size",
+      "label": "Cart Button Size",
+      "min": 0,
+      "max": 5,
+      "step": 0.125,
+      "unit": "rem",
+      "default": 0,
+      "info": "0 = default icon-only sizing.",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "select",
+      "id": "cart_shape",
+      "label": "Cart Button Shape",
+      "default": "icon",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon Only"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        }
+      ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "select",
+      "id": "cart_bg_role",
+      "label": "Cart Button BG",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw"
+        }
+      ],
+      "conditional": "setting.show_cart == true",
+      "subtype": "bg_role"
+    },
+    {
+      "type": "palette",
+      "id": "cart_bg_role_palette",
+      "label": "Cart BG Palette",
+      "conditional": "setting.show_cart == true and setting.cart_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_bg_role_custom",
+      "label": "Cart BG Color",
+      "conditional": "setting.show_cart == true and setting.cart_bg_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "cart_border_role",
+      "label": "Cart Button Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
+      "conditional": "setting.show_cart == true",
+      "subtype": "border_role"
+    },
+    {
+      "type": "palette",
+      "id": "cart_border_role_palette",
+      "label": "Cart Border Palette",
+      "conditional": "setting.show_cart == true and setting.cart_border_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_border_role_custom",
+      "label": "Cart Border Color",
+      "conditional": "setting.show_cart == true and setting.cart_border_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "cart_border_size",
+      "label": "Cart Border Width",
+      "default": "xxs",
+      "options": [
+        {
+          "value": "xxs",
+          "label": "XXS",
+          "info": "1px"
+        },
+        {
+          "value": "xs",
+          "label": "XS",
+          "info": "2px"
+        },
+        {
+          "value": "sm",
+          "label": "SM",
+          "info": "4px"
+        },
+        {
+          "value": "md",
+          "label": "MD",
+          "info": "6px"
+        },
+        {
+          "value": "lg",
+          "label": "LG",
+          "info": "8px"
+        }
+      ],
+      "conditional": "setting.show_cart == true and setting.cart_border_role != 'none'",
+      "subtype": "border_size"
+    },
+    {
+      "type": "select",
+      "id": "cart_text_role",
+      "label": "Cart Icon Color",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "Inherit"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
+      "conditional": "setting.show_cart == true",
+      "subtype": "text_role"
+    },
+    {
+      "type": "palette",
+      "id": "cart_text_role_palette",
+      "label": "Cart Icon Palette",
+      "conditional": "setting.show_cart == true and setting.cart_text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_text_role_custom",
+      "label": "Cart Icon Color",
+      "conditional": "setting.show_cart == true and setting.cart_text_role == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart_shadow",
+      "label": "Cart Button Shadow",
+      "default": false,
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart_shadow_color_override",
+      "label": "Override Cart Shadow Color",
+      "default": false,
+      "conditional": "setting.show_cart == true and setting.cart_shadow == true"
+    },
+    {
+      "type": "color",
+      "id": "cart_shadow_color",
+      "label": "Cart Shadow Color",
+      "default": "rgba(0,0,0,0.45)",
+      "conditional": "setting.show_cart == true and setting.cart_shadow == true and setting.cart_shadow_color_override == true"
+    },
+    {
+      "type": "select",
+      "id": "cart_badge_bg_role",
+      "label": "Badge BG",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "Default"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw"
+        }
+      ],
+      "conditional": "setting.show_cart == true",
+      "subtype": "bg_role"
+    },
+    {
+      "type": "palette",
+      "id": "cart_badge_bg_role_palette",
+      "label": "Badge BG Palette",
+      "conditional": "setting.show_cart == true and setting.cart_badge_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_badge_bg_role_custom",
+      "label": "Badge BG Color",
+      "conditional": "setting.show_cart == true and setting.cart_badge_bg_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "cart_badge_text_role",
+      "label": "Badge Text",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "Inherit"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
+      "conditional": "setting.show_cart == true",
+      "subtype": "text_role"
+    },
+    {
+      "type": "palette",
+      "id": "cart_badge_text_role_palette",
+      "label": "Badge Text Palette",
+      "conditional": "setting.show_cart == true and setting.cart_badge_text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "cart_badge_text_role_custom",
+      "label": "Badge Text Color",
+      "conditional": "setting.show_cart == true and setting.cart_badge_text_role == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "info": "Header text color. Child blocks inherit this unless overridden.",
+      "default": "primary",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "backdrop_blur",
+      "label": "Backdrop Blur",
+      "info": "Frosted-glass blur strength behind the header.",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "base",
+          "label": "Base"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "X-Large"
+        },
+        {
+          "value": "2xl",
+          "label": "2X-Large"
+        },
+        {
+          "value": "3xl",
+          "label": "3X-Large"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Mobile Drawer",
+      "info": "Tokens for the slide-out menu shown below the desktop breakpoint."
+    },
+    {
+      "type": "surface",
+      "id": "drawer_surface_id",
+      "label": "Drawer Color Scheme",
+      "info": "Defaults to the same surface as the header section. Set explicitly to use a different scheme for the slide-out menu."
+    },
+    {
+      "type": "select",
+      "subtype": "bg_role",
+      "id": "drawer_bg_role",
+      "label": "Drawer Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "drawer_bg_role_palette",
+      "label": "Drawer Background Palette Token",
+      "default": "brand",
+      "conditional": "setting.drawer_bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "drawer_bg_role_custom",
+      "label": "Raw Drawer Background",
+      "conditional": "setting.drawer_bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "drawer_bg_role_gradient",
+      "label": "Drawer Background Gradient",
+      "conditional": "setting.drawer_bg_role == 'gradient'"
+    },
+    {
+      "type": "range",
+      "id": "drawer_backdrop_alpha",
+      "label": "Drawer Backdrop Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "blocks": {
+        "header-logo": {
+          "type": "group",
+          "name": "Header Logo",
+          "static": true,
+          "settings": {
+            "direction": "row",
+            "vertical_align": "middle",
+            "gap": "sm",
+            "trigger": "link",
+            "link": "/",
+            "width": "fit"
+          },
+          "blocks": {
+            "logo-mark": {
+              "type": "group",
+              "name": "Logo Mark",
+              "settings": {
+                "direction": "row",
+                "vertical_align": "middle",
+                "content_align": "center",
+                "width": "fit"
+              }
+            },
+            "logo-image": {
+              "type": "media",
+              "name": "Brand Logo",
+              "settings": {
+                "width": "fit",
+                "height": "auto"
+              }
+            },
+            "logo-text-stack": {
+              "type": "group",
+              "name": "Brand Text",
+              "settings": {
+                "direction": "column",
+                "gap": "none",
+                "vertical_align": "middle"
+              },
+              "blocks": {
+                "wordmark": {
+                  "type": "text",
+                  "name": "Brand Word",
+                  "settings": {
+                    "type_style": "heading-3"
+                  }
+                },
+                "tagline": {
+                  "type": "text",
+                  "name": "Brand Tagline",
+                  "settings": {
+                    "type_style": "caption"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "header-menu": {
+          "type": "_header-menu",
+          "name": "Header Nav",
+          "static": true,
+          "settings": {
+            "nav": {
+              "links": [
+                {
+                  "url": "/",
+                  "title": "Home"
+                }
+              ]
+            }
+          }
+        },
+        "header-actions": {
+          "type": "_header-actions",
+          "name": "Header Actions",
+          "static": true
+        },
+        "header-drawer-menu": {
+          "type": "_header-menu",
+          "name": "Header Drawer Nav",
+          "static": true,
+          "settings": {
+            "nav": {
+              "links": [
+                {
+                  "url": "/",
+                  "title": "Home"
+                }
+              ]
+            },
+            "link_align": "stretch"
+          }
+        }
+      },
+      "settings": {
+        "header_overlay_mode": "none",
+        "show_mobile_menu": true,
+        "show_search": false,
+        "show_cart": false
+      }
+    }
+  ]
+}
+{% endschema %}
