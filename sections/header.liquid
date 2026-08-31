@@ -184,7 +184,9 @@
   {{ context.attached_attributes }}
 >
   <div class='{{ bg_layer_class_str }}' style='{{ bar_style_str }}'>
-    <div class='width-{{ s.width }} header-grid limit-width {{ grid_pb }}'>
+    {% assign grid_track = '' %}
+    {% if s.nav_track == 'balanced' %}{% assign grid_track = 'nav-track-balanced' %}{% endif %}
+    <div class='width-{{ s.width }} header-grid limit-width {{ grid_pb }} {{ grid_track }}'>
       <div class='flex items-center justify-start gap-4'>
         {% if s.mobile_layout != 'logo_left' %}{{ hamburger_btn }}{% endif %}
 
@@ -306,10 +308,31 @@
               | append: ' border-{{ s.cart_border_role }}'
             %}
           {% endif %}
+          {% assign cart_has_padding = false %}
+          {% unless s.cart_padding_top == blank or s.cart_padding_top == 'none' -%}
+            {%- assign cart_has_padding = true -%}
+          {%- endunless %}
+          {% unless s.cart_padding_bottom == blank or s.cart_padding_bottom == 'none' -%}
+            {%- assign cart_has_padding = true -%}
+          {%- endunless %}
+          {% unless s.cart_padding_left == blank or s.cart_padding_left == 'none' -%}
+            {%- assign cart_has_padding = true -%}
+          {%- endunless %}
+          {% unless s.cart_padding_right == blank or s.cart_padding_right == 'none' -%}
+            {%- assign cart_has_padding = true -%}
+          {%- endunless %}
           {% if s.cart_shape == 'circle' or cart_bg_color != blank or cart_border_color != blank %}
             {% assign cart_btn_class = cart_btn_class | append: ' rounded-full' %}
+          {% elsif cart_has_padding %}
+            {% assign cart_btn_class = cart_btn_class | append: ' hover:opacity-70' %}
           {% else %}
             {% assign cart_btn_class = cart_btn_class | append: ' p-2 hover:opacity-70' %}
+          {% endif %}
+          {% if cart_has_padding %}
+            {% assign cart_btn_class = cart_btn_class
+              | append: ' pt-{{ s.cart_padding_top }} pb-{{ s.cart_padding_bottom }}'
+              | append: ' pl-{{ s.cart_padding_left }} pr-{{ s.cart_padding_right }}'
+            %}
           {% endif %}
           <a
             data-action='open-cart'
@@ -354,8 +377,7 @@
     {% assign actions_in_drawer = slot_actions %}
     {% if s.mobile_actions == 'bar' %}{% assign actions_in_drawer = blank %}{% endif %}
     {% if s.show_mobile_menu != false and s.show_nav != false %}
-      {% assign drawer_surface = s.drawer_surface_id %}
-      {% if drawer_surface == blank %}{% assign drawer_surface = s.surface_id | default: 'default' %}{% endif %}
+      {% assign drawer_surface = s.drawer_surface_id | default: s.surface_id %}
       {% assign drawer_bg_value = '' %}
       {% if s.drawer_bg_role == 'palette' and s.drawer_bg_role_palette != blank %}
         {% assign drawer_bg_value = 'var(--palette-{{ s.drawer_bg_role_palette }})' %}
@@ -439,6 +461,24 @@
       ],
       "default": "left",
       "info": "Desktop only.",
+      "conditional": "setting.desktop_layout == 'logo_left'"
+    },
+    {
+      "type": "select",
+      "id": "nav_track",
+      "label": "Nav track",
+      "options": [
+        {
+          "value": "shared",
+          "label": "Share free space"
+        },
+        {
+          "value": "balanced",
+          "label": "Balance sides"
+        }
+      ],
+      "default": "shared",
+      "info": "Balanced puts the middle group on the page centre whatever the sides weigh. Desktop only.",
       "conditional": "setting.desktop_layout == 'logo_left'"
     },
     {
@@ -952,6 +992,34 @@
           "label": "Circle"
         }
       ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "space",
+      "id": "cart_padding_top",
+      "label": "Cart Padding Top",
+      "default": "none",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "space",
+      "id": "cart_padding_bottom",
+      "label": "Cart Padding Bottom",
+      "default": "none",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "space",
+      "id": "cart_padding_left",
+      "label": "Cart Padding Left",
+      "default": "none",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "space",
+      "id": "cart_padding_right",
+      "label": "Cart Padding Right",
+      "default": "none",
       "conditional": "setting.show_cart == true"
     },
     {

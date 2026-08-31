@@ -8,13 +8,8 @@
 {% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
-{% comment %} --- Slide Wrapper Classes --- {% endcomment %}
-{% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden' %}
+{% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden flex flex-col' %}
 
-{% comment %}
-  Background layer: scheme-driven via .bg-<role>. Escape-hatch
-  (bg_color_override) is rendered as inline style further down.
-{% endcomment %}
 {% if s.bg_role
   and s.bg_role != 'none'
   and s.bg_role != 'custom'
@@ -24,18 +19,16 @@
   {% assign classes = classes | push: 'bg-{{ s.bg_role }}' %}
 {% endif %}
 
-{% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
+{% assign classes = classes | push_if: 'surface-{{ s.surface_id }}', s.surface_override %}
 {% assign slide_classes = classes | join: ' ' %}
 
-{% comment %} --- Slide-level inline styles (bg escape-hatch + alpha) --- {% endcomment %}
 {% assign slide_styles = blank %}
 {% if bg_color_value != blank %}
   {% assign slide_styles = slide_styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
 {% assign slide_style_str = slide_styles | join: ';' %}
 
-{% comment %} --- Content Wrapper Classes --- {% endcomment %}
-{% assign content_classes = 'wrapper absolute inset-0 z-content flex flex-col flex-auto gap-4'
+{% assign content_classes = 'wrapper relative z-content flex flex-col flex-auto gap-4'
   | push: 'section-align-content-{{ s.content_align }}'
   | push: 'section-align-v-{{ s.vertical_align }}'
   | push: 'section-align-text-{{ s.text_align }}'
@@ -43,13 +36,11 @@
 
 {% assign content_class_str = content_classes | join: ' ' %}
 
-{% comment %} --- Media Placeholder --- {% endcomment %}
 {% assign placeholder_name = '' %}
 {% if s.show_placeholder %}
   {% assign placeholder_name = 'scene-1' %}
 {% endif %}
 
-{% comment %} --- Component Render --- {% endcomment %}
 <div
   class='{{ slide_classes }}'
   style='{{ slide_style_str }}'

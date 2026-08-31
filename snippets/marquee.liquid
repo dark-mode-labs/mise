@@ -28,7 +28,7 @@
   >
     {% for i in (1..copies) %}
       <div
-        class='flex gap-12 shrink-0 pr-12'
+        class='flex shrink-0 gap-{{ item_gap }} pr-{{ item_gap }}'
         {% if i > 1 %}
           aria-hidden='true'
         {% endif %}

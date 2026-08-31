@@ -34,12 +34,16 @@ function numericSettings(path, src) {
   return { ids, body: src.slice(0, m.index) };
 }
 
-// Every `and`/`or` term of every if/unless condition. Judged by SHAPE, not by position in the tag:
-// a term that is bare `s.x` is a truthiness test wherever it sits, and `{% if a and s.x %}` reads 0
-// as true exactly as `{% if s.x %}` does.
-function conditionTerms(body) {
-  const tags = body.matchAll(/\{%-?\s*(?:if|unless|elsif)\s+([^%]*?)-?%\}/g);
-  return [...tags].flatMap((m) => m[1].split(/\s+(?:and|or)\s+/).map((t) => t.trim()));
+// Every term whose TRUTHINESS decides something. Judged by SHAPE, not by position: a bare `s.x` is
+// a truthiness test wherever it sits — an `and` term of an `if`, or the flag of a `push_if`.
+function truthinessTerms(body) {
+  const conditions = [...body.matchAll(/\{%-?\s*(?:if|unless|elsif)\s+([^%]*?)-?%\}/g)].flatMap(
+    (m) => m[1].split(/\s+(?:and|or)\s+/)
+  );
+  const flags = [...body.matchAll(/push_if:\s*(?:'[^']*'|"[^"]*")\s*,\s*([^\s%|]+)/g)].map(
+    (m) => m[1]
+  );
+  return [...conditions, ...flags].map((t) => t.trim());
 }
 
 test("no numeric setting is gated on bare truthiness", () => {
@@ -49,8 +53,9 @@ test("no numeric setting is gated on bare truthiness", () => {
     const { ids, body } = numericSettings(path, src);
     swept += ids.length;
     const bare = new Set(ids.map((id) => `s.${id}`));
-    for (const term of conditionTerms(body)) {
-      if (bare.has(term)) offenders.push(`${path}: {% if ${term} %} — compare against 0`);
+    for (const term of truthinessTerms(body)) {
+      if (bare.has(term))
+        offenders.push(`${path}: ${term} is gated on truthiness — compare against 0`);
     }
   }
   assert.ok(swept > 0, "swept no numeric settings at all — the schema read has broken");

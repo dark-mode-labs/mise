@@ -231,20 +231,6 @@
   }
 {% endfor %}
 
-{% for c in container_scale %}
-  {% unless c[1].settings.structural %}
-    {% assign tier_id = c[0] %}
-    {% if tier_id contains 'synth-' or tier_id contains 'c-' %}
-      .width-{{ tier_id }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; width:
-      {{ c[1].settings.max_width | default: '100%' }}; max-width: 100%; flex-shrink: 0; }
-    {% else %}
-      .width-{{ tier_id }} { --limit-width: {{ c[1].settings.max_width | default: '100%' }}; } .absolute.width-
-      {{- tier_id }}
-      { width: auto; }
-    {% endif %}
-  {% endunless %}
-{% endfor %}
-
 .direction-responsive.responsive-order-reverse { flex-direction: column-reverse; }
 
 {% for bp_id in sorted_bp_ids %}
@@ -303,8 +289,11 @@ flex-shrink: 0; } .width-half { --limit-width: 50%; flex: 0 0 calc(50% - (var(--
 flex: 0 0 calc(75% - (var(--children-gap, 0px) * 3) / 4); }
 
 {% for c in container_scale %}
-  {% assign cv = c[1].settings.value %}
-  {% if cv != blank %}
+  {% unless c[1].settings.structural %}
+    {% assign tier_id = c[0] %}
+    {% assign locks = false %}
+    {% if tier_id contains 'synth-' or tier_id contains 'c-' %}{% assign locks = true %}{% endif %}
+    {% assign cv = c[1].settings.value | default: c[1].settings.max_width | default: '100%' %}
     {% assign arms = '' | split: '' %}
     {% if c[1].settings.value_by_bp != blank %}
       {% for bp_id in sorted_bp_ids %}
@@ -325,14 +314,17 @@ flex: 0 0 calc(75% - (var(--children-gap, 0px) * 3) / 4); }
         {% endif %}
       {% endfor %}
       {% if restore_mw != blank %}
-        @media (max-width: calc({{ restore_mw }}rem - 0.0625rem)) { .width-{{ c[0] }} { display: none; } }
+        @media (max-width: calc({{ restore_mw }}rem - 0.0625rem)) { .width-{{ tier_id }} { display: none; } }
       {% else %}
-        .width-{{ c[0] }} { display: none; }
+        .width-{{ tier_id }} { display: none; }
       {% endif %}
+    {% elsif locks %}
+      .width-{{ tier_id }} { --limit-width: {{ cv }}; width: {{ cv }}; max-width: 100%;
+      {%- if cv contains 'rem' or cv contains 'px' %} flex-shrink: 0;{% endif %} }
     {% else %}
-      {% assign cv_shrink = '1' -%}
-      {%- if cv contains 'rem' or cv contains 'px' %}{% assign cv_shrink = '0' %}{% endif %} .width-{{ c[0] }} {
-      --limit-width: {{ cv }}; width: {{ cv }}; max-width: 100%; flex-shrink: {{ cv_shrink }}; }
+      .width-{{ tier_id }} { --limit-width: {{ cv }}; } .absolute.width-
+      {{- tier_id }}
+      { width: auto; }
     {% endif %}
     {% for arm in arms %}
       {% assign pair = arm | split: '|' %}
@@ -342,19 +334,20 @@ flex: 0 0 calc(75% - (var(--children-gap, 0px) * 3) / 4); }
         {% assign next_arm = arms[forloop.index] %}
         {% assign next_mw = next_arm | split: '|' | first %}
         {% if next_mw %}
-          @media (min-width: {{ bp_mw }}rem) and (max-width: calc({{ next_mw }}rem - 0.0625rem)) { .width-{{ c[0] }} {
-          display: none; } }
+          @media (min-width: {{ bp_mw }}rem) and (max-width: calc({{ next_mw }}rem - 0.0625rem)) { .width-
+          {{- tier_id }}
+          { display: none; } }
         {% else %}
-          @media (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { display: none; } }
+          @media (min-width: {{ bp_mw }}rem) { .width-{{ tier_id }} { display: none; } }
         {% endif %}
+      {% elsif locks %}
+        @media (min-width: {{ bp_mw }}rem) { .width-{{ tier_id }} { --limit-width: {{ bp_val }}; width: {{ bp_val }};
+        {%- if bp_val contains 'rem' or bp_val contains 'px' %} flex-shrink: 0;{% endif %} } }
       {% else %}
-        {% assign bp_shrink = '1' -%}
-        {%- if bp_val contains 'rem' or bp_val contains 'px' %}{% assign bp_shrink = '0' %}{% endif %} @media
-        (min-width: {{ bp_mw }}rem) { .width-{{ c[0] }} { --limit-width: {{ bp_val }}; width: {{ bp_val }}; flex-shrink:
-        {{ bp_shrink }}; } }
+        @media (min-width: {{ bp_mw }}rem) { .width-{{ tier_id }} { --limit-width: {{ bp_val }}; } }
       {% endif %}
     {% endfor %}
-  {% endif %}
+  {% endunless %}
 {% endfor %}
 
 .layout-grid-explicit { grid-template-columns: var(--gtc, 1fr);
