@@ -17,6 +17,10 @@
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
 
+{% for ef_id in s.effect %}
+  {% assign classes = classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
+
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
@@ -639,6 +643,13 @@
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
+    },
+    {
+      "type": "effect",
+      "id": "effect",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied to this card; several compose."
     },
     {
       "type": "checkbox",
