@@ -127,8 +127,11 @@ test("a rail's no-shrink rule out-specifies the width tier that would release it
   const rule = css.match(/([^@}]*\.group-scroll-x[^{]*)\{\s*flex-shrink:\s*0/);
 
   assert.ok(rule, "the rail no longer pins its children");
-  assert.match(rule[1], /\.group-scroll-x\s*>\s*\[[\w-]+\]/,
-    "an unqualified child selector ties with `.width-<tier>` and loses on load order");
+  assert.match(
+    rule[1],
+    /\.group-scroll-x\s*>\s*\[[\w-]+\]/,
+    "an unqualified child selector ties with `.width-<tier>` and loses on load order"
+  );
 });
 
 test("the marquee section hands its snippet every arg the snippet reads", () => {
@@ -137,15 +140,21 @@ test("the marquee section hands its snippet every arg the snippet reads", () => 
   const snippet = read("snippets/marquee.liquid");
   const section = read("sections/marquee.liquid");
   const passed = new Set(
-    [...(section.match(/\{%\s*render 'marquee',([\s\S]*?)%\}/)?.[1] ?? "").matchAll(
-      /(\w+):/g
-    )].map((m) => m[1])
+    [...(section.match(/\{%\s*render 'marquee',([\s\S]*?)%\}/)?.[1] ?? "").matchAll(/(\w+):/g)].map(
+      (m) => m[1]
+    )
   );
   const read_ = new Set([...snippet.matchAll(/\{\{\s*(\w+)/g)].map((m) => m[1]));
   const locals = new Set(
     [...snippet.matchAll(/\{%-?\s*(?:assign|capture|for)\s+(\w+)/g)].map((m) => m[1])
   );
 
-  assert.ok(passed.size && read_.size, "read no args at all — the render or the snippet scan broke");
-  assert.deepEqual([...read_].filter((v) => !passed.has(v) && !locals.has(v) && v !== "forloop"), []);
+  assert.ok(
+    passed.size && read_.size,
+    "read no args at all — the render or the snippet scan broke"
+  );
+  assert.deepEqual(
+    [...read_].filter((v) => !passed.has(v) && !locals.has(v) && v !== "forloop"),
+    []
+  );
 });

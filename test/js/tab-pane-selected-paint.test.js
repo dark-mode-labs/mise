@@ -26,7 +26,10 @@ for (const [block, controller] of [
   test(`every state bag ${block} emits is one ${controller} applies`, () => {
     const bags = [...emitted(body(block))].sort();
 
-    assert.ok(bags.length, `${block} emits no state bag at all — the selected state is unpaintable`);
+    assert.ok(
+      bags.length,
+      `${block} emits no state bag at all — the selected state is unpaintable`
+    );
     assert.deepEqual(bags, [...consumed(read(controller))].sort());
   });
 }
