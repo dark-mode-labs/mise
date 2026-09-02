@@ -1,0 +1,125 @@
+{% assign s = block.settings %}
+
+{% assign active_border_value = blank %}
+{% if s.active_border_role == 'palette' and s.active_border_role_palette != blank %}
+  {% assign active_border_value = 'var(--palette-{{ s.active_border_role_palette }})' %}
+{% elsif s.active_border_role == 'custom' and s.active_border_role_custom != blank %}
+  {% assign active_border_value = s.active_border_role_custom %}
+{% endif %}
+
+{% assign active_state_classes = '' %}
+{% assign active_state_styles = '' %}
+
+{% if active_border_value != blank %}
+  {% assign active_state_styles = active_state_styles
+    | push: '--border:{{ active_border_value }}'
+    | push: '--border-emphasis:{{ active_border_value }}'
+  %}
+{% endif %}
+
+{% for ef_id in s.active_effect %}
+  {% assign active_state_classes = active_state_classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
+
+{% assign tab_group = s.tab_group %}
+{% if tab_group == blank %}{% assign tab_group = section.id %}{% endif %}
+
+<div
+  {{ context.attached_attributes }}
+  class='tab-content'
+  data-behavior='tab-content'
+  data-tab-id='{{ s.tab_id }}'
+  data-tab-group='{{ tab_group }}'
+  data-tab-active-class='{{ active_state_classes | join: ' ' }}'
+  data-tab-active-styles='{{ active_state_styles | join: ';' }}'
+  aria-expanded='{% if s.default_tab_id != blank and s.tab_id == s.default_tab_id %}true{% else %}false{% endif %}'
+>
+  {% content_for 'blocks' %}
+</div>
+{% schema %}
+{
+  "name": "Tab Content",
+  "settings": [
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "default": "body"
+    },
+    {
+      "type": "header",
+      "content": "Binding"
+    },
+    {
+      "type": "text",
+      "id": "tab_id",
+      "label": "Tab Identifier",
+      "default": "{{ context.item.uuid }}"
+    },
+    {
+      "type": "text",
+      "id": "tab_group",
+      "label": "Tab Group"
+    },
+    {
+      "type": "text",
+      "id": "default_tab_id",
+      "label": "Default Tab Identifier",
+      "info": "The pane that starts selected when no tab head decides; blank means the first."
+    },
+    {
+      "type": "data_source",
+      "id": "bind_to",
+      "label": "Bind to"
+    },
+    {
+      "type": "header",
+      "content": "Selected"
+    },
+    {
+      "type": "select",
+      "id": "active_border_role",
+      "label": "Selected Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
+      "info": "Border colour of descendants deferring to a surface slot, while this pane is selected. A slot role would resolve to the variable this rebinds, so there is none."
+    },
+    {
+      "type": "palette",
+      "id": "active_border_role_palette",
+      "label": "Selected Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.active_border_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "active_border_role_custom",
+      "label": "Selected Border Raw Color",
+      "conditional": "setting.active_border_role == 'custom'"
+    },
+    {
+      "type": "effect",
+      "id": "active_effect",
+      "label": "Selected Effect"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ]
+}
+{% endschema %}
