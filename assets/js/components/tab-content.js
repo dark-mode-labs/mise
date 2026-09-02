@@ -4,6 +4,9 @@ export default class TabContent {
     this.tabId = this.el.getAttribute("data-tab-id");
     this.groupId = this.el.getAttribute("data-tab-group");
 
+    this._baseClass = this.el.className || "";
+    this._baseStyle = this.el.style.cssText || "";
+
     this.handleGlobalSwitch = this.handleGlobalSwitch.bind(this);
 
     this.init();
@@ -35,15 +38,12 @@ export default class TabContent {
 
     this.setState(shouldBeActive);
 
-    // Listen to global broadcasts from the Tab Heads
     document.addEventListener("tab:activated", this.handleGlobalSwitch);
   }
 
   handleGlobalSwitch(event) {
-    // Ignore events from other groups
     if (event.detail.groupId !== this.groupId) return;
 
-    // Am I the content for the tab that was just clicked?
     const isMe = event.detail.tabId === this.tabId;
 
     this.setState(isMe);
@@ -51,5 +51,9 @@ export default class TabContent {
 
   setState(isActive) {
     this.el.setAttribute("aria-expanded", isActive ? "true" : "false");
+    const stateClasses = (isActive && this.el.getAttribute("data-tab-active-class")) || "";
+    const stateStyles = (isActive && this.el.getAttribute("data-tab-active-styles")) || "";
+    this.el.className = `${this._baseClass} ${stateClasses}`.trim();
+    this.el.style.cssText = `${this._baseStyle}; ${stateStyles}`.trim();
   }
 }

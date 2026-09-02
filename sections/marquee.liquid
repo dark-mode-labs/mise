@@ -9,9 +9,7 @@
   {% assign bg_color_value = s.bg_role_custom %}
 {% endif %}
 
-{% comment %} --- Background class (unified bg primitive) --- {% endcomment %}
-{% assign bg_role_safe = s.bg_role | default: 'body' %}
-{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% assign bg_class = 'bg-{{ s.bg_role }}' %}
 {% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
 
 {% assign separator_color = blank %}
@@ -30,7 +28,17 @@
   {% assign border_color_value = s.border_role_custom %}
 {% endif %}
 
-{% assign container_classes = 'text-primary limit-width'
+{% assign text_color_value = blank %}
+{% if s.text_role == 'palette' and s.text_role_palette != blank %}
+  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
+{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
+  {% assign text_color_value = s.text_role_custom %}
+{% endif %}
+{% assign text_class = 'text-{{ s.text_role }}' %}
+{% if text_color_value != blank %}{% assign text_class = '' %}{% endif %}
+
+{% assign container_classes = 'limit-width'
+  | push: text_class
   | push: bg_class
   | push: 'width-{{ s.width }}'
   | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
@@ -65,6 +73,9 @@
 {% if bg_color_value != blank %}
   {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: 'color: {{ text_color_value }}' %}
+{% endif %}
 {% unless s.border_mode == 'none' %}
   {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
   {% if s.border_size == 'custom' %}
@@ -88,7 +99,7 @@
 {% endif %}
 
 <section
-  class='section-marquee surface-{{ s.surface_id | default: 'default' }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
+  class='section-marquee surface-{{ s.surface_id }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
   style='{{ margin_style_str }}'
   {{ context.attached_attributes }}
 >
@@ -99,6 +110,7 @@
     {% render 'marquee',
       items: s.text_list,
       speed: s.speed,
+      item_gap: s.item_gap,
       direction: s.direction,
       size_class: mq_size_class,
       item_style: mq_item_style,
@@ -232,6 +244,40 @@
       "id": "separator_role_custom",
       "label": "Separator Raw Color",
       "conditional": "setting.separator_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "item_gap",
+      "label": "Space Between Items",
+      "default": "lg"
     },
     {
       "type": "header",

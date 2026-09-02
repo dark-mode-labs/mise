@@ -8,10 +8,10 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const src = readFileSync(
-  join(dirname(fileURLToPath(import.meta.url)), "../../snippets/theme_variables.liquid"),
-  "utf8"
-);
+const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
+const read = (p) => readFileSync(join(root, p), "utf8");
+
+const src = read("snippets/theme_variables.liquid");
 
 // Every `.width-… { … }` rule body the snippet emits. Scoped by SELECTOR, not by position: mise's
 // own responsive rules (`.header-nav`, `.chip-strip`) set display legitimately, on their own classes.
@@ -103,4 +103,58 @@ test("the only display a width tier sets is the one a `0` width means", () => {
   );
 
   assert.deepEqual([...displays], ["none"]);
+});
+
+test("a width tier asserts flex-shrink only to LOCK it, never to release it", () => {
+  // This sheet loads last, so a single-class tier rule outranks a container that said its children
+  // do not shrink; a tier may pin the `0`, but releasing is the browser's job.
+  const shrinks = [...src.matchAll(/flex-shrink:\s*([\w.]+)/g)].map((m) => m[1]);
+  assert.ok(shrinks.length, "no flex-shrink emitted at all — did the emission change shape?");
+  assert.deepEqual([...new Set(shrinks)], ["0"]);
+});
+
+test("a container tier is emitted from one loop, not two", () => {
+  // It was spelled twice — once from `max_width`, once from `value` — so a bp-aware tier got two
+  // `.width-<id>` rules whose `flex-shrink` disagreed, and the later one silently won.
+  const loops = [...src.matchAll(/\{%\s*for\s+c\s+in\s+container_scale\s*%\}/g)];
+  assert.equal(loops.length, 1, "container_scale is walked more than once — the rules will drift");
+});
+
+test("a rail's no-shrink rule out-specifies the width tier that would release it", () => {
+  // Both are one class, and this sheet loads after theme.css — so a tie goes to the tier and the
+  // rail loses. The rail rule is attribute-qualified to outrank it.
+  const css = read("assets/css/theme.css");
+  const rule = css.match(/([^@}]*\.group-scroll-x[^{]*)\{\s*flex-shrink:\s*0/);
+
+  assert.ok(rule, "the rail no longer pins its children");
+  assert.match(
+    rule[1],
+    /\.group-scroll-x\s*>\s*\[[\w-]+\]/,
+    "an unqualified child selector ties with `.width-<tier>` and loses on load order"
+  );
+});
+
+test("the marquee section hands its snippet every arg the snippet reads", () => {
+  // Snippets are atomic — no `| default:` backfill — so an arg the section forgets renders as a
+  // half-written class (`gap-`), not as a fallback.
+  const snippet = read("snippets/marquee.liquid");
+  const section = read("sections/marquee.liquid");
+  const passed = new Set(
+    [...(section.match(/\{%\s*render 'marquee',([\s\S]*?)%\}/)?.[1] ?? "").matchAll(/(\w+):/g)].map(
+      (m) => m[1]
+    )
+  );
+  const read_ = new Set([...snippet.matchAll(/\{\{\s*(\w+)/g)].map((m) => m[1]));
+  const locals = new Set(
+    [...snippet.matchAll(/\{%-?\s*(?:assign|capture|for)\s+(\w+)/g)].map((m) => m[1])
+  );
+
+  assert.ok(
+    passed.size && read_.size,
+    "read no args at all — the render or the snippet scan broke"
+  );
+  assert.deepEqual(
+    [...read_].filter((v) => !passed.has(v) && !locals.has(v) && v !== "forloop"),
+    []
+  );
 });

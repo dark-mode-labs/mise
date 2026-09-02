@@ -130,7 +130,17 @@
 {% capture slot_actions %}{% content_for 'block', type: '_header-actions', id: 'header-actions' %}{% endcapture %}
 {% capture slot_nav %}{% content_for 'block', type: '_header-menu', id: 'header-menu' %}{% endcapture %}
 {% capture slot_drawer_nav %}{% content_for 'block', type: '_header-menu', id: 'header-drawer-menu' %}{% endcapture %}
+{% capture slot_drawer_close %}{% content_for 'block', type: 'button', id: 'header-drawer-close' %}{% endcapture %}
+{% capture slot_drawer_note %}{% content_for 'block', type: 'text', id: 'header-drawer-note' %}{% endcapture %}
 
+{% assign toggle_text_color = blank %}
+{% if s.toggle_text_role == 'palette' and s.toggle_text_role_palette != blank %}
+  {% assign toggle_text_color = 'var(--palette-{{ s.toggle_text_role_palette }})' %}
+{% elsif s.toggle_text_role == 'custom' and s.toggle_text_role_custom != blank %}
+  {% assign toggle_text_color = s.toggle_text_role_custom %}
+{% elsif s.toggle_text_role != blank and s.toggle_text_role != 'none' and s.toggle_text_role != 'primary' %}
+  {% assign toggle_text_color = 'var(--text-{{ s.toggle_text_role }})' %}
+{% endif %}
 {% assign toggle_border_value = blank %}
 {% if s.toggle_border_role == 'palette' and s.toggle_border_role_palette != blank %}
   {% assign toggle_border_value = 'var(--palette-{{ s.toggle_border_role_palette }})' %}
@@ -159,6 +169,9 @@
 {% if toggle_border_value != blank %}
   {% assign toggle_styles = toggle_styles | push: '--border: {{ toggle_border_value }}' %}
 {% endif %}
+{% if toggle_text_color != blank %}
+  {% assign toggle_styles = toggle_styles | push: 'color: {{ toggle_text_color }}' %}
+{% endif %}
 {% assign toggle_style_str = toggle_styles | join: ';' %}
 
 {% capture hamburger_btn %}
@@ -184,7 +197,9 @@
   {{ context.attached_attributes }}
 >
   <div class='{{ bg_layer_class_str }}' style='{{ bar_style_str }}'>
-    <div class='width-{{ s.width }} header-grid limit-width {{ grid_pb }}'>
+    {% assign grid_track = '' %}
+    {% if s.nav_track == 'balanced' %}{% assign grid_track = 'nav-track-balanced' %}{% endif %}
+    <div class='width-{{ s.width }} header-grid limit-width {{ grid_pb }} {{ grid_track }}'>
       <div class='flex items-center justify-start gap-4'>
         {% if s.mobile_layout != 'logo_left' %}{{ hamburger_btn }}{% endif %}
 
@@ -306,10 +321,31 @@
               | append: ' border-{{ s.cart_border_role }}'
             %}
           {% endif %}
+          {% assign cart_has_padding = false %}
+          {% unless s.cart_padding_top == blank or s.cart_padding_top == 'none' -%}
+            {%- assign cart_has_padding = true -%}
+          {%- endunless %}
+          {% unless s.cart_padding_bottom == blank or s.cart_padding_bottom == 'none' -%}
+            {%- assign cart_has_padding = true -%}
+          {%- endunless %}
+          {% unless s.cart_padding_left == blank or s.cart_padding_left == 'none' -%}
+            {%- assign cart_has_padding = true -%}
+          {%- endunless %}
+          {% unless s.cart_padding_right == blank or s.cart_padding_right == 'none' -%}
+            {%- assign cart_has_padding = true -%}
+          {%- endunless %}
           {% if s.cart_shape == 'circle' or cart_bg_color != blank or cart_border_color != blank %}
             {% assign cart_btn_class = cart_btn_class | append: ' rounded-full' %}
+          {% elsif cart_has_padding %}
+            {% assign cart_btn_class = cart_btn_class | append: ' hover:opacity-70' %}
           {% else %}
             {% assign cart_btn_class = cart_btn_class | append: ' p-2 hover:opacity-70' %}
+          {% endif %}
+          {% if cart_has_padding %}
+            {% assign cart_btn_class = cart_btn_class
+              | append: ' pt-{{ s.cart_padding_top }} pb-{{ s.cart_padding_bottom }}'
+              | append: ' pl-{{ s.cart_padding_left }} pr-{{ s.cart_padding_right }}'
+            %}
           {% endif %}
           <a
             data-action='open-cart'
@@ -354,8 +390,7 @@
     {% assign actions_in_drawer = slot_actions %}
     {% if s.mobile_actions == 'bar' %}{% assign actions_in_drawer = blank %}{% endif %}
     {% if s.show_mobile_menu != false and s.show_nav != false %}
-      {% assign drawer_surface = s.drawer_surface_id %}
-      {% if drawer_surface == blank %}{% assign drawer_surface = s.surface_id | default: 'default' %}{% endif %}
+      {% assign drawer_surface = s.drawer_surface_id | default: s.surface_id %}
       {% assign drawer_bg_value = '' %}
       {% if s.drawer_bg_role == 'palette' and s.drawer_bg_role_palette != blank %}
         {% assign drawer_bg_value = 'var(--palette-{{ s.drawer_bg_role_palette }})' %}
@@ -364,17 +399,27 @@
       {% elsif s.drawer_bg_role == 'custom' and s.drawer_bg_role_custom != blank %}
         {% assign drawer_bg_value = s.drawer_bg_role_custom %}
       {% endif %}
-      {% render 'header-drawer',
+      {% capture drawer_html %}{% render 'header-drawer',
         nav_html: slot_drawer_nav,
         drawer_surface_id: drawer_surface,
         drawer_bg_role: s.drawer_bg_role,
         drawer_bg_value: drawer_bg_value,
         drawer_alpha_pct: s.drawer_backdrop_alpha,
+        drawer_width: s.drawer_width,
+        drawer_effect: s.drawer_effect,
+        close_html: slot_drawer_close,
+        note_html: slot_drawer_note,
+        drawer_pad_top: s.drawer_padding_top,
+        drawer_pad_right: s.drawer_padding_right,
+        drawer_pad_bottom: s.drawer_padding_bottom,
+        drawer_pad_left: s.drawer_padding_left,
         nav_mode: s.mobile_nav_mode,
         actions_html: actions_in_drawer
-      %}
+      %}{% endcapture %}
+      {% if s.mobile_nav_mode == 'panel' %}{{ drawer_html }}{% endif %}
     {% endif %}
   </div>
+  {% unless s.mobile_nav_mode == 'panel' %}{{ drawer_html }}{% endunless %}
 </header>
 
 {% if needs_spacer %}
@@ -439,6 +484,24 @@
       ],
       "default": "left",
       "info": "Desktop only.",
+      "conditional": "setting.desktop_layout == 'logo_left'"
+    },
+    {
+      "type": "select",
+      "id": "nav_track",
+      "label": "Nav track",
+      "options": [
+        {
+          "value": "shared",
+          "label": "Share free space"
+        },
+        {
+          "value": "balanced",
+          "label": "Balance sides"
+        }
+      ],
+      "default": "shared",
+      "info": "Balanced puts the middle group on the page centre whatever the sides weigh. Desktop only.",
       "conditional": "setting.desktop_layout == 'logo_left'"
     },
     {
@@ -586,6 +649,38 @@
           "info": "8px"
         }
       ]
+    },
+    {
+      "type": "select",
+      "id": "toggle_text_role",
+      "label": "Menu Button Icon Color",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "Inherit" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
+      ],
+      "conditional": "setting.show_mobile_menu == true",
+      "subtype": "text_role"
+    },
+    {
+      "type": "palette",
+      "id": "toggle_text_role_palette",
+      "label": "Menu Button Icon Palette",
+      "conditional": "setting.show_mobile_menu == true and setting.toggle_text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "toggle_text_role_custom",
+      "label": "Menu Button Icon Color",
+      "conditional": "setting.show_mobile_menu == true and setting.toggle_text_role == 'custom'"
     },
     {
       "type": "select",
@@ -952,6 +1047,34 @@
           "label": "Circle"
         }
       ],
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "space",
+      "id": "cart_padding_top",
+      "label": "Cart Padding Top",
+      "default": "none",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "space",
+      "id": "cart_padding_bottom",
+      "label": "Cart Padding Bottom",
+      "default": "none",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "space",
+      "id": "cart_padding_left",
+      "label": "Cart Padding Left",
+      "default": "none",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "space",
+      "id": "cart_padding_right",
+      "label": "Cart Padding Right",
+      "default": "none",
       "conditional": "setting.show_cart == true"
     },
     {
@@ -1516,6 +1639,40 @@
       "step": 5,
       "default": 50,
       "unit": "%"
+    },
+    {
+      "type": "width",
+      "id": "drawer_width",
+      "label": "Drawer Width",
+      "info": "Blank keeps the default side-panel width; `fill` makes the panel full-bleed."
+    },
+    {
+      "type": "effect",
+      "id": "drawer_effect",
+      "label": "Drawer Effects",
+      "default": [],
+      "info": "Effects applied to the drawer panel; several compose."
+    },
+    {
+      "type": "space",
+      "id": "drawer_padding_top",
+      "label": "Drawer Padding Top",
+      "info": "Blank keeps the panel's default inner boxes."
+    },
+    {
+      "type": "space",
+      "id": "drawer_padding_right",
+      "label": "Drawer Padding Right"
+    },
+    {
+      "type": "space",
+      "id": "drawer_padding_bottom",
+      "label": "Drawer Padding Bottom"
+    },
+    {
+      "type": "space",
+      "id": "drawer_padding_left",
+      "label": "Drawer Padding Left"
     }
   ],
   "presets": [
@@ -1615,6 +1772,20 @@
             },
             "link_align": "stretch"
           }
+        },
+        "header-drawer-close": {
+          "type": "button",
+          "name": "Header Drawer Close",
+          "static": true,
+          "settings": {
+            "trigger": "action",
+            "action": "close"
+          }
+        },
+        "header-drawer-note": {
+          "type": "text",
+          "name": "Header Drawer Note",
+          "static": true
         }
       },
       "settings": {

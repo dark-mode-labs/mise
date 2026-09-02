@@ -37,7 +37,7 @@
   {%- assign wrapper_classes = wrapper_classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
 
-{% assign wrapper_classes = wrapper_classes | push: 'block width-{{ s.width }} limit-width' %}
+{% assign wrapper_classes = wrapper_classes | push: 'flex width-{{ s.width }} limit-width' %}
 
 {% if s.height and s.height != 'auto' %}
   {% assign wrapper_classes = wrapper_classes | push: 'height-{{ s.height }}' %}

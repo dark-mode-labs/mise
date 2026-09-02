@@ -5,6 +5,11 @@
     drawer_bg_role     role enum (body / palette / custom / gradient / …)
     drawer_bg_value    resolved CSS value for palette/custom/gradient (else blank)
     drawer_alpha_pct   0–100 backdrop opacity (drawer only)
+    drawer_width       width tier for the panel (blank keeps the default side-panel width)
+    drawer_effect      effect tier ids applied to the panel (blur, shadow, transition, …)
+    close_html         rendered `button` block for the close control (blank uses the default icon)
+    note_html          rendered `text` block closing the panel (blank uses the shop-name line)
+    drawer_pad_*       per-side space tier for the panel's own inset (blank keeps the default boxes)
     nav_mode           `drawer` (slides over) or `panel` (drops in flow)
     actions_html       rendered HTML of `_header-actions` (or blank)
 {% endcomment %}
@@ -14,12 +19,56 @@
 
 {% assign panel_classes = 'drawer-panel surface-{{ drawer_surface_id }}' %}
 {% if bg_class != blank %}{% assign panel_classes = '{{ panel_classes }} {{ bg_class }}' %}{% endif %}
+{% if drawer_width != blank %}
+  {% assign panel_classes = '{{ panel_classes }} width-{{ drawer_width }}' %}
+{% endif %}
+{% for ef_id in drawer_effect %}
+  {% assign panel_classes = '{{ panel_classes }} ef-{{ ef_id }}' %}
+{% endfor %}
 
 {% assign panel_styles = blank %}
 {% if drawer_bg_value != blank %}
   {% assign panel_styles = panel_styles | push: 'background: {{ drawer_bg_value }}' %}
 {% endif %}
 {% assign panel_style_str = panel_styles | join: ';' %}
+
+{% comment %}A stated inset rides the PANEL; a blank side renders `pt-`, which matches nothing.{% endcomment %}
+{% assign has_pad = false %}
+{% if drawer_pad_top != blank %}
+  {% assign has_pad = true %}
+  {% assign panel_classes = '{{ panel_classes }} pt-{{ drawer_pad_top }}' %}
+{% endif %}
+{% if drawer_pad_right != blank %}
+  {% assign has_pad = true %}
+  {% assign panel_classes = '{{ panel_classes }} pr-{{ drawer_pad_right }}' %}
+{% endif %}
+{% if drawer_pad_bottom != blank %}
+  {% assign has_pad = true %}
+  {% assign panel_classes = '{{ panel_classes }} pb-{{ drawer_pad_bottom }}' %}
+{% endif %}
+{% if drawer_pad_left != blank %}
+  {% assign has_pad = true %}
+  {% assign panel_classes = '{{ panel_classes }} pl-{{ drawer_pad_left }}' %}
+{% endif %}
+
+{% comment %}Two questions: who spends the inset, and whether the source owns that region.{% endcomment %}
+{% assign close_row = 'flex items-center justify-end' %}
+{% assign nav_box = 'flex-1 overflow-y-auto' %}
+{% if has_pad %}
+  {% assign close_row = '{{ close_row }} shrink-0' %}
+  {% assign note_box = 'shrink-0' %}
+{% else %}
+  {% assign close_row = '{{ close_row }} px-6 h-16' %}
+  {% assign note_box = 'p-6' %}
+  {% assign nav_box = 'flex-1 overflow-y-auto py-6 px-6' %}
+{% endif %}
+{% if nav_mode == 'panel' %}{% assign nav_box = 'w-full' %}{% endif %}
+{% if close_html == blank %}
+  {% assign close_row = '{{ close_row }} border-b border-current/10' %}
+{% endif %}
+{% if note_html == blank %}
+  {% assign note_box = '{{ note_box }} border-t border-current/10' %}
+{% endif %}
 
 {% assign shell_classes = 'header-drawer' %}
 {% if nav_mode == 'panel' %}{% assign shell_classes = 'header-drawer is-panel' %}{% endif %}
@@ -32,14 +81,16 @@
   <div class='drawer-backdrop' data-action='close'></div>
   <div class='{{ panel_classes }}' style='{{ panel_style_str }}'>
     {% if nav_mode != 'panel' %}
-      <div class='flex items-center justify-end px-6 h-16 border-b border-current/10'>
-        <button type='button' class='p-2 -mr-2 hover:opacity-70' data-action='close' aria-label='Close Menu'>
-          {% render 'icon', name: 'close', class: 'w-6 h-6' %}
-        </button>
+      <div class='{{ close_row }}'>
+        {% if close_html != blank %}
+          {{ close_html }}
+        {% else %}
+          <button type='button' class='p-2 -mr-2 hover:opacity-70' data-action='close' aria-label='Close Menu'>
+            {% render 'icon', name: 'close', class: 'w-6 h-6' %}
+          </button>
+        {% endif %}
       </div>
     {% endif %}
-    {% assign nav_box = 'flex-1 overflow-y-auto py-6 px-6' %}
-    {% if nav_mode == 'panel' %}{% assign nav_box = 'w-full' %}{% endif %}
     <div class='{{ nav_box }}'>{{ nav_html }}</div>
     {% if actions_html != blank %}
       <div class='drawer-actions p-6 border-t border-current/10'>
@@ -47,13 +98,17 @@
       </div>
     {% endif %}
     {% if nav_mode != 'panel' %}
-      <div class='p-6 border-t border-current/10'>
-        {%
-          render 'typography',
-          text: shop.name | append: ' © ' | append: 'now' | date: '%Y',
-          type_style: 'caption',
-          class: 'opacity-60 text-center'
-        %}
+      <div class='{{ note_box }}'>
+        {% if note_html != blank %}
+          {{ note_html }}
+        {% else %}
+          {%
+            render 'typography',
+            text: shop.name | append: ' © ' | append: 'now' | date: '%Y',
+            type_style: 'caption',
+            class: 'opacity-60 text-center'
+          %}
+        {% endif %}
       </div>
     {% endif %}
   </div>

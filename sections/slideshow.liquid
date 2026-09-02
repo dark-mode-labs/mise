@@ -21,13 +21,16 @@
 {% assign style_str = styles | join: ';' %}
 
 <section
-  class='section-slideshow surface-{{ s.surface_id }} height-{{ s.height }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
+  class='section-slideshow slideshow-layout surface-{{ s.surface_id }} height-{{ s.height }} pt-{{ s.padding_top }} pb-{{ s.padding_bottom }} pl-{{ s.padding_left }} pr-{{ s.padding_right }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
   style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
-  <div class='width-{{ s.width_bg }} limit-width {{ bg_class }} h-full' style='{{ bg_layer_style_str }}'>
+  <div
+    class='width-{{ s.width_bg }} limit-width {{ bg_class }} flex flex-col flex-auto'
+    style='{{ bg_layer_style_str }}'
+  >
     <div
-      class='relative width-{{ s.width }} limit-width  group select-none h-full'
+      class='relative width-{{ s.width }} limit-width group select-none flex flex-col flex-auto'
       data-behavior='slideshow'
       data-autoplay='{{ s.autoplay }}'
       data-speed='{{ s.autoplay_speed }}'
@@ -38,7 +41,7 @@
         --slide-gap: {{ s.slide_gap }}rem;
       '
     >
-      <div class='slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-[var(--slide-gap)]'>
+      <div class='slideshow-track flex flex-auto overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-[var(--slide-gap)]'>
         {% content_for 'blocks' %}
       </div>
 
@@ -113,6 +116,30 @@
       "step": 0.125,
       "default": 0,
       "unit": "rem"
+    },
+    {
+      "type": "space",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_left",
+      "label": "Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "none"
     },
     {
       "type": "space",

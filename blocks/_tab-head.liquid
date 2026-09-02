@@ -186,6 +186,9 @@
   data-tab-group='{{ tab_group }}'
   data-action='tab-switch'
   data-tab-id='{{ s.tab_id }}'
+  {%- if s.default_tab_id != blank %}
+    aria-selected='{% if s.tab_id == s.default_tab_id %}true{% else %}false{% endif %}'
+  {%- endif %}
   role='tab'
 >
   {% assign inner_classes = 'relative z-10' %}
@@ -220,6 +223,12 @@
       "type": "text",
       "id": "tab_group",
       "label": "Tab Group"
+    },
+    {
+      "type": "text",
+      "id": "default_tab_id",
+      "label": "Default Tab Identifier",
+      "info": "The tab that starts selected; blank means the first. A click overrides it."
     },
     {
       "type": "data_source",

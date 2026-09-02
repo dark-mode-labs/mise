@@ -5,25 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================================================================
   bootstrapBehaviorsIn(document);
 
-  new MutationObserver((mutations) => {
-    for (const m of mutations) {
-      for (const node of m.addedNodes) {
-        if (node.nodeType !== 1) continue;
-        bootstrapBehaviorsIn(node);
-      }
-    }
-  }).observe(document.documentElement, { childList: true, subtree: true });
-
   // =========================================================================
   // 2. INTERSECTION OBSERVER FOR VISUAL ANIMATIONS ONLY
   // =========================================================================
-  const animatedElements = [...document.querySelectorAll('[class^="ef-"], [class*=" ef-"]')].filter(
-    (el) => {
-      const cs = getComputedStyle(el);
-      return cs.animationName === "none" && cs.opacity === "0";
-    }
-  );
-
   const observerOptions = {
     threshold: 0.1,
     rootMargin: "0px 0px -50px 0px",
@@ -43,7 +27,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }, observerOptions);
 
-  animatedElements.forEach((el) => observer.observe(el));
+  const EFFECT_SELECTOR = '[class^="ef-"], [class*=" ef-"]';
+
+  // Armed per inserted subtree, not once per document: an effect nobody observes stays at opacity 0.
+  function armEffectsIn(root) {
+    const found = [];
+    if (root.nodeType === 1 && root.matches?.(EFFECT_SELECTOR)) found.push(root);
+    found.push(...(root.querySelectorAll?.(EFFECT_SELECTOR) || []));
+
+    found.forEach((el) => {
+      const cs = getComputedStyle(el);
+      if (cs.animationName === "none" && cs.opacity === "0") observer.observe(el);
+    });
+  }
+
+  armEffectsIn(document);
+
+  new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      for (const node of m.addedNodes) {
+        if (node.nodeType !== 1) continue;
+        bootstrapBehaviorsIn(node);
+        armEffectsIn(node);
+      }
+    }
+  }).observe(document.documentElement, { childList: true, subtree: true });
 });
 
 // =========================================================================

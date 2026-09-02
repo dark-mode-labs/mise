@@ -1,5 +1,5 @@
 {% assign s = block.settings %}
-{% assign styles = 'display: none; --dot-active-scale: 1' %}
+{% assign styles = blank | push: 'display: none' | push: '--dot-active-scale: 1' %}
 
 {% assign dc = blank %}
 {% if s.dot_role == 'palette' and s.dot_role_palette != blank -%}
@@ -17,7 +17,7 @@
   -%}
   {%- assign dc = 'var(--{{ slot }})' %}
 {% endif %}
-{% if dc != blank %}{% assign styles = '{{ styles }}; --dot-color: {{ dc }}' %}{% endif %}
+{% if dc != blank %}{% assign styles = styles | push: '--dot-color: {{ dc }}' %}{% endif %}
 
 {% assign dm = blank %}
 {% if s.dot_muted_role == 'palette' and s.dot_muted_role_palette != blank -%}
@@ -35,19 +35,27 @@
   -%}
   {%- assign dm = 'var(--{{ slot }})' %}
 {% endif %}
-{% if dm != blank %}{% assign styles = '{{ styles }}; --dot-muted-color: {{ dm }}; --dot-muted-opacity: 1' %}{% endif %}
+{% if dm != blank %}
+  {%- assign styles = styles | push: '--dot-muted-color: {{ dm }}' | push: '--dot-muted-opacity: 1' -%}
+{% endif %}
 
 {% if s.dot_size != blank and s.dot_size != 'none' -%}
-  {%- assign styles = '{{ styles }}; --dot-size: var(--space-{{ s.dot_size }})' -%}
+  {%- assign styles = styles | push: '--dot-size: var(--space-{{ s.dot_size }})' -%}
 {%- endif %}
 
-{% assign classes = 'slideshow-dots flex items-center' %}
-{% if s.dot_gap != blank and s.dot_gap != 'none' %}{% assign classes = '{{ classes }} gap-{{ s.dot_gap }}' %}{% endif %}
+{% if s.dot_active_width != blank and s.dot_active_width != 'none' -%}
+  {%- assign styles = styles | push: '--dot-active-width: var(--space-{{ s.dot_active_width }})' -%}
+{%- endif %}
+
+{% assign classes = blank | push: 'slideshow-dots flex items-center' %}
+{% if s.dot_gap != blank and s.dot_gap != 'none' -%}
+  {%- assign classes = classes | push: 'gap-{{ s.dot_gap }}' -%}
+{%- endif %}
 
 <div
-  class='{{ classes }}'
+  class='{{ classes | join: " " }}'
   data-dot-style='{{ s.dot_style }}'
-  style='{{ styles }}'
+  style='{{ styles | join: "; " }}'
   {{ context.attached_attributes }}
 ></div>
 {% schema %}
@@ -69,6 +77,12 @@
       "type": "space",
       "id": "dot_size",
       "label": "Dot Size"
+    },
+    {
+      "type": "space",
+      "id": "dot_active_width",
+      "label": "Active Dot Width",
+      "info": "Widens the current dot into a pill. Unset keeps it the same size as the rest."
     },
     {
       "type": "space",

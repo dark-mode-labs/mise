@@ -4,7 +4,8 @@
 {% if s.border_radius_override %}
   {% assign radius_class = 'rounded-custom' %}
 {% endif %}
-{% assign classes = 'group-block group cursor-pointer flex flex-row items-center relative isolate transition-all width-fill'
+{% assign classes = 'group-block group cursor-pointer flex direction-row relative isolate transition-all width-fill'
+  | push: 'vertical-{{ s.vertical_align }}'
   | push: radius_class
   | push: 'text-align-{{ s.text_align }}'
   | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
@@ -14,6 +15,10 @@
   | push: 'gap-{{ s.gap }}'
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
+
+{% for ef_id in s.effect %}
+  {% assign classes = classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
 
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
@@ -188,6 +193,34 @@
     {
       "type": "header",
       "content": "General Styles"
+    },
+    {
+      "type": "select",
+      "id": "vertical_align",
+      "label": "Vertical Alignment",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top / Start"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "baseline",
+          "label": "Baseline"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ],
+      "default": "middle"
     },
     {
       "type": "select",
@@ -623,6 +656,13 @@
       "type": "header",
       "content": "Overrides",
       "conditional": "true"
+    },
+    {
+      "type": "effect",
+      "id": "effect",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied to this card; several compose."
     },
     {
       "type": "checkbox",

@@ -34,8 +34,22 @@ test("a `vertical-*` class always ships its `direction-row` companion", () => {
   for (const [where, classes] of Object.entries(classSources())) {
     assert.match(classes, /direction-row/, `${where} has no direction-row companion`);
   }
+  // Every arm names the container it aligns; unqualified it would match any box carrying the class.
   const css = readFileSync(join(root, "assets/css/theme.css"), "utf8");
-  assert.match(css, /\.direction-row\.vertical-stretch \{\s*align-items: stretch;/);
+  const arms = [...css.matchAll(/^\s*([^\n{]*\.vertical-[a-z]+[^\n{]*)\{/gm)].map((m) => m[1]);
+  assert.ok(arms.length, "no vertical-* rules at all");
+  for (const arm of arms) {
+    for (const selector of arm
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean)) {
+      assert.match(
+        selector,
+        /^\S+\.vertical-[a-z]+$/,
+        `\`${selector}\` aligns any box carrying the class, not one it qualifies`
+      );
+    }
+  }
 });
 
 test("the link radius is a setting, and both states claim it", () => {
@@ -70,17 +84,12 @@ test("a bag with no declared paint is never swapped in", () => {
   assert.match(swap[1], /has_active_state and/, "the swap does not check for a declared state");
 });
 
-test("the last link ends flush whichever bag it renders with", () => {
-  // Stripping before the swap left a current LAST link carrying a divider its siblings' rule removes.
-  const body = src.slice(src.indexOf("{% for link in s.nav.links %}"));
-  const swapAt = body.indexOf("assign this_link_class = active_class_str");
-  const stripAt = body.indexOf("replace: 'group-border-custom-bottom'");
-  assert.ok(swapAt > 0 && stripAt > 0, "swap or strip is gone");
-  assert.ok(stripAt > swapAt, "the divider is stripped before the active bag is chosen");
-  assert.match(
-    body.slice(stripAt - 200, stripAt + 80),
-    /this_link_class \| replace/,
-    "the strip rewrites the literal resting bag rather than the chosen one"
+test("one CSS edge never carries two meanings on a nav link", () => {
+  // A divider and a current-page underline are the same edge, so removing one removes the other.
+  assert.doesNotMatch(
+    src,
+    /replace: 'group-border-custom-bottom'/,
+    "the last link's divider is string-replaced away, which also strips a current-page underline"
   );
 });
 
@@ -105,4 +114,18 @@ test("a role that paints a colour is never also pushed as a class", () => {
     assert.ok(guard.includes(`s.${role} != 'custom'`), `${role} may be pushed as bg-custom`);
     assert.ok(guard.includes(`s.${role} != 'palette'`), `${role} may be pushed as bg-palette`);
   }
+});
+
+test("an inline colour ships the class that reads it", () => {
+  // `text-color-class` emits nothing for custom/palette by design; `--text` alone paints nothing.
+  assert.match(
+    src,
+    /elsif s\.text_role_active == 'custom' or s\.text_role_active == 'palette'[\s\S]{0,200}?push: 'text-primary'/,
+    "an inline active colour has nothing on the link to read it"
+  );
+  assert.doesNotMatch(
+    src,
+    /push: 'color: \{\{ s\.text_role_active_custom \}\}'/,
+    "the colour is written twice, as a variable and again as a property"
+  );
 });
