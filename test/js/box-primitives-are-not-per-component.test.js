@@ -94,3 +94,104 @@ test("no component carries a second min-width setting beside the scale's", () =>
     assert.equal(ids(f).has("shrink_content"), false, `${f} duplicates the scale's floor`);
   }
 });
+
+test("a floor tier states its minimum at every breakpoint it declares", () => {
+  // A floor stated only at the base renders as a width above every breakpoint it declares.
+  const src = read("snippets/theme_variables.liquid");
+  const arms = [...src.matchAll(/\{%\s*if c\[1\]\.settings\.floor\s*%\}([\s\S]*?)\{%\s*els/g)].map(
+    (m) => m[1]
+  );
+  assert.equal(arms.length, 2, "a floor is stated once for the base and once per breakpoint");
+  assert.match(arms[1], /@media \(min-width:/, "the by-bp floor is not scoped to its breakpoint");
+  for (const arm of arms) {
+    assert.match(arm, /min-width:/);
+    assert.doesNotMatch(arm, /--limit-width|(^|[^-])\bwidth:/, "a floor must not also cap or lock");
+  }
+});
+
+test("a rail aligns its own label from a property, not a rule about rails", () => {
+  // Where a rail sits its own label is the source's statement, not a default every rail inherits.
+  const schema = JSON.parse(
+    read("blocks/tab-group.liquid").match(/\{%\s*schema\s*%\}([\s\S]*?)\{%\s*endschema\s*%\}/)[1]
+  );
+  const find = (o, id) => {
+    if (Array.isArray(o)) return o.map((x) => find(x, id)).find(Boolean);
+    if (o && typeof o === "object") {
+      if (o.id === id) return o;
+      return Object.values(o)
+        .map((x) => find(x, id))
+        .find(Boolean);
+    }
+  };
+  const field = find(schema.settings, "chip_strip_vertical_align");
+  assert.ok(field, "the strip cannot state where its label sits");
+  assert.equal(
+    field.subtype,
+    "vertical_align",
+    "a prefixed id needs its subtype to reach the editor"
+  );
+  assert.deepEqual(
+    field.options.map((o) => o.value),
+    ["top", "middle", "bottom", "baseline", "stretch"],
+    "the strip invents a second alignment vocabulary"
+  );
+  assert.match(
+    read("blocks/tab-group.liquid"),
+    /'vertical-\{\{ s\.chip_strip_vertical_align \}\}'/,
+    "the strip pushes its own class instead of the shared one"
+  );
+});
+
+test("a prefixed field with a generic type names the subtype it renders by", () => {
+  // A specific `type` resolves on its own; a bare `select` needs the subtype to find its control.
+  const src = read("blocks/tab-group.liquid");
+  const schema = JSON.parse(src.match(/\{%\s*schema\s*%\}([\s\S]*?)\{%\s*endschema\s*%\}/)[1]);
+  const field = (function find(o) {
+    if (Array.isArray(o)) return o.map(find).find(Boolean);
+    if (o && typeof o === "object") {
+      if (o.id === "chip_strip_vertical_align") return o;
+      return Object.values(o).map(find).find(Boolean);
+    }
+  })(schema.settings);
+  assert.equal(field.type, "select", "the field stopped being a generic select");
+  assert.equal(
+    field.subtype,
+    "vertical_align",
+    "a generic select needs its subtype to render right"
+  );
+});
+
+test("the button's wrapper stretches it without stating a height", () => {
+  // The wrapper carries margins and width; the button IS its content, so `align-items` stretches it.
+  const src = read("blocks/button.liquid");
+  assert.match(
+    src,
+    /push: 'flex width-\{\{ s\.width \}\} limit-width'/,
+    "the wrapper is not a flex box"
+  );
+  const unconditional = src.match(/\{%\s*assign inner_classes_height = '([^']*)'\s*%\}\s*\{%\s*if/);
+  assert.equal(unconditional, null, "the inner states a height before any height is asked for");
+});
+
+test("a floor survives the rule that lets a grown item shrink", () => {
+  // The two-class shrink rule outranks a one-class floor tier and cancels it.
+  const css = read("assets/css/theme.css");
+  const rule = css.match(/\.group-block\.flex-1([^{]*)\{\s*min-width: 0;/);
+  assert.ok(rule, "the shrink rule is gone; a floor tier may now be fighting something else");
+  assert.match(rule[1], /:not\(\[class\*="width-minw-"\]\)/, "the shrink rule cancels every floor");
+});
+
+test("the chip strip renders the effects it declares", () => {
+  // Declaring the field without the loop is silence: a sticky bar's backdrop blur never reached it.
+  const src = read("blocks/tab-group.liquid");
+  assert.match(
+    src,
+    /\{%\s*for ef_id in s\.chip_strip_effect\s*%\}/,
+    "the strip declares effects it never applies"
+  );
+  assert.match(
+    src,
+    /chip_strip_classes \| push: 'ef-\{\{ ef_id \}\}'/,
+    "the strip pushes a malformed ef- class"
+  );
+});

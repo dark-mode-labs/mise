@@ -43,13 +43,21 @@
   {% endfor %}
 {% endif %}
 
+{% assign chip_strip_align = '' %}
+{% if s.chip_strip_vertical_align != blank %}
+  {% assign chip_strip_align = 'vertical-{{ s.chip_strip_vertical_align }}' %}
+{% endif %}
 {% assign chip_strip_classes = 'chip-strip chip-strip-{{ s.chip_position }} chip-strip-{{ s.chip_layout }}'
+  | push: chip_strip_align
   | push: 'pt-{{ s.chip_strip_padding_top }} pb-{{ s.chip_strip_padding_bottom }}'
   | push: 'pl-{{ s.chip_strip_padding_left }} pr-{{ s.chip_strip_padding_right }}'
   | push: chip_strip_bg_class
   | push: chip_strip_surface_class
   | push_if: 'chip-strip-sticky', s.sticky_chips
 %}
+{% for ef_id in s.chip_strip_effect %}
+  {% assign chip_strip_classes = chip_strip_classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
 {% if s.chip_strip_border_radius > 0 %}
   {% assign chip_strip_classes = chip_strip_classes | push: 'rounded-custom' %}
 {% endif %}
@@ -340,6 +348,40 @@
       "id": "chip_strip_padding_right",
       "label": "Chip Strip Horizontal Padding",
       "default": "md"
+    },
+    {
+      "type": "effect",
+      "id": "chip_strip_effect",
+      "label": "Chip Strip Effect",
+      "default": []
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_vertical_align",
+      "subtype": "vertical_align",
+      "label": "Chip Strip Alignment",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top / Start"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "baseline",
+          "label": "Baseline"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ]
     },
     {
       "type": "space",

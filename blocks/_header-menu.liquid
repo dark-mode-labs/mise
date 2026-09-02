@@ -140,6 +140,8 @@
 {%- capture active_text_class -%}{%- render 'text-color-class', color_role: s.text_role_active -%}{%- endcapture -%}
 {% if active_text_class != blank %}
   {% assign active_classes = active_classes | push: active_text_class %}
+{% elsif s.text_role_active == 'custom' or s.text_role_active == 'palette' %}
+  {% assign active_classes = active_classes | push: 'text-primary' %}
 {% endif %}
 {% assign active_class_str = active_classes | join: ' ' %}
 
@@ -172,8 +174,6 @@
   {% assign has_active_state = true %}
 {% endif %}
 
-{% assign last_link = s.nav.links | size | minus: 1 %}
-
 <nav
   class='{{ block_classes }}'
   style='{{ block_styles }}'
@@ -187,10 +187,6 @@
       {% if has_active_state and link.link_id != blank and link.link_id == page.uuid %}
         {% assign this_link_class = active_class_str %}
         {% assign this_link_style = active_style_str %}
-      {% endif %}
-      {%- comment -%}Stripped after the bag is chosen, so the last link ends flush in either state.{%- endcomment -%}
-      {% if forloop.index0 == last_link %}
-        {% assign this_link_class = this_link_class | replace: 'group-border-custom-bottom', '' %}
       {% endif %}
       <li class='group flex direction-row vertical-{{ s.link_align }} relative'>
         <a

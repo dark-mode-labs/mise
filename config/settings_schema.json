@@ -491,6 +491,13 @@
           "subtype": "bp_overrides"
         },
         {
+          "type": "checkbox",
+          "id": "floor",
+          "label": "Behaves as a floor (min-width)",
+          "info": "When on, the tier sets a minimum width and the element can grow wider. When off (default), it caps or locks the width.",
+          "default": false
+        },
+        {
           "type": "select",
           "id": "visibility",
           "label": "Visibility",

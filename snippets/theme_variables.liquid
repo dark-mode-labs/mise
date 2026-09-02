@@ -304,7 +304,9 @@ flex: 0 0 calc(75% - (var(--children-gap, 0px) * 3) / 4); }
         {% endif %}
       {% endfor %}
     {% endif %}
-    {% if cv == '0' %}
+    {% if c[1].settings.floor %}
+      .width-{{ tier_id }} { min-width: {{ cv }}; }
+    {% elsif cv == '0' %}
       {% assign restore_mw = blank %}
       {% for arm in arms %}
         {% assign pair = arm | split: '|' %}
@@ -330,7 +332,9 @@ flex: 0 0 calc(75% - (var(--children-gap, 0px) * 3) / 4); }
       {% assign pair = arm | split: '|' %}
       {% assign bp_mw = pair[0] %}
       {% assign bp_val = pair[1] %}
-      {% if bp_val == '0' %}
+      {% if c[1].settings.floor %}
+        @media (min-width: {{ bp_mw }}rem) { .width-{{ tier_id }} { min-width: {{ bp_val }}; } }
+      {% elsif bp_val == '0' %}
         {% assign next_arm = arms[forloop.index] %}
         {% assign next_mw = next_arm | split: '|' | first %}
         {% if next_mw %}

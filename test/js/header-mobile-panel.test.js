@@ -33,19 +33,6 @@ test("every header action control refuses to shrink", () => {
   );
 });
 
-test("the divider skips the last link, so the strip ends flush", () => {
-  const src = read("blocks/_header-menu.liquid");
-  const guard = src.match(/\{%\s*if forloop\.index0 == last_link\s*%\}([\s\S]*?)\{%\s*endif\s*%\}/);
-
-  assert.ok(guard, "the per-link divider is not guarded against the last link");
-  assert.match(
-    guard[1],
-    /replace: 'group-border-custom-bottom'/,
-    "the last link keeps the divider class it should be stripped of"
-  );
-  assert.match(src, /assign last_link = s\.nav\.links \| size \| minus: 1/);
-});
-
 test("a panel drops the drawer's own chrome", () => {
   const src = read("snippets/header-drawer.liquid");
   const guarded = [
