@@ -103,8 +103,12 @@
   }
 
   .drawer-panel {
-    @apply relative w-[85%] max-w-md h-full flex flex-col shadow-2xl pointer-events-auto overflow-hidden;
+    @apply relative h-full flex flex-col shadow-2xl pointer-events-auto overflow-hidden;
     color: var(--text, currentColor);
+  }
+
+  .drawer-panel:not([class*="width-"]) {
+    @apply w-[85%] max-w-md;
   }
 
   .drawer-backdrop {

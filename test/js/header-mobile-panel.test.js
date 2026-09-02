@@ -135,3 +135,79 @@ test("nothing in the bar asserts spacing the source did not ask for", () => {
     "an actions group with no children still consumes a gap"
   );
 });
+
+// A blank arg interpolated into a class renders the PREFIX alone (`pt-`), which matches no rule and
+// reads as "no padding" — so a source stating one side would silently lose the others' meaning.
+test("the drawer pushes a padding side only when that side is stated", () => {
+  const src = read("snippets/header-drawer.liquid");
+  for (const side of ["top", "right", "bottom", "left"]) {
+    const short = side[0] === "b" ? "pb" : `p${side[0]}`;
+    const push = new RegExp(`${short}-\\{\\{ drawer_pad_${side} \\}\\}`);
+    assert.match(src, push, `the panel never pushes its ${side} inset`);
+    const guarded = [
+      ...src.matchAll(/\{%\s*if drawer_pad_(\w+) != blank\s*%\}([\s\S]*?)\{%\s*endif\s*%\}/g),
+    ]
+      .filter((m) => m[1] === side)
+      .map((m) => m[2])
+      .join("\n");
+    assert.match(guarded, push, `${short}- is pushed outside its own != blank guard`);
+  }
+});
+
+// Snippets are atomic — no `| default:` backfill — so an arg the section forgets renders as a
+// half-written class, not as a fallback.
+test("the header section hands the drawer every arg the drawer reads", () => {
+  const snippet = read("snippets/header-drawer.liquid");
+  const section = read("sections/header.liquid");
+  const passed = new Set(
+    [
+      ...(section.match(/\{%\s*render 'header-drawer',([\s\S]*?)%\}/)?.[1] ?? "").matchAll(
+        /(\w+):/g
+      ),
+    ].map((m) => m[1])
+  );
+  const reads = new Set([...snippet.matchAll(/\{\{\s*(\w+)/g)].map((m) => m[1]));
+  for (const m of snippet.matchAll(/\{%\s*(?:if|unless|elsif)\s+(\w+)/g)) reads.add(m[1]);
+  for (const m of snippet.matchAll(/\{%\s*for \w+ in (\w+)/g)) reads.add(m[1]);
+  const locals = new Set(
+    [...snippet.matchAll(/\{%-?\s*(?:assign|capture|for)\s+(\w+)/g)].map((m) => m[1])
+  );
+
+  assert.ok(passed.size && reads.size, "read no args at all — the render or the scan broke");
+  assert.deepEqual(
+    [...reads].filter((v) => !passed.has(v) && !locals.has(v) && v !== "forloop" && v !== "shop"),
+    []
+  );
+});
+
+// An element with `backdrop-filter` is a BACKDROP ROOT for its descendants, so a panel nested inside
+// the frosted bar blurs nothing while still computing `blur(8px)` — invisible to any style read. An
+// overlay must therefore render OUTSIDE the bar layer; a panel stays inside it, dropping in flow.
+test("an overlay drawer renders outside the frosted bar, a panel inside it", () => {
+  const src = read("sections/header.liquid");
+  const bar = src.indexOf("{{ bg_layer_class_str }}");
+  assert.ok(bar > 0, "the bar layer is gone from the header");
+  const headerClose = src.lastIndexOf("</header>");
+  const barClose = src.lastIndexOf("</div>", headerClose);
+  assert.ok(bar < barClose && barClose < headerClose, "could not locate the bar's own close");
+
+  const insideBar = src.slice(bar, barClose);
+  const outsideBar = src.slice(barClose, headerClose);
+
+  // The panel arm drops in flow, so it belongs to the bar; the overlay arm must escape it.
+  assert.match(
+    insideBar,
+    /\{%\s*if s\.mobile_nav_mode == 'panel'\s*%\}\s*\{\{ drawer_html \}\}/,
+    "panel mode must render in flow inside the bar"
+  );
+  assert.match(
+    outsideBar,
+    /\{%\s*unless s\.mobile_nav_mode == 'panel'\s*%\}\s*\{\{ drawer_html \}\}/,
+    "an overlay rendered inside the bar inherits its backdrop root and cannot blur"
+  );
+  assert.doesNotMatch(
+    insideBar,
+    /\{%\s*unless s\.mobile_nav_mode == 'panel'\s*%\}\s*\{\{ drawer_html \}\}/,
+    "the overlay arm is still inside the bar layer"
+  );
+});
