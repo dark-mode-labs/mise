@@ -18,17 +18,27 @@
   {% assign bg_class = 'bg-' | append: bg_role_safe %}
 {% endif %}
 
+{% assign styles = blank %}
+{%- capture border_class_str -%}{%- render 'box-border-class',
+  mode: s.border_mode, role: s.border_role, size_tier: s.border_size,
+  custom_left: s.border_custom_left, custom_right: s.border_custom_right,
+  custom_top: s.border_custom_top, custom_bottom: s.border_custom_bottom -%}{%- endcapture -%}
+{%- capture border_style_str -%}{%- render 'box-border-style',
+  mode: s.border_mode, role: s.border_role, palette_token: s.border_role_palette,
+  gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
+  style: s.border_style, size_tier: s.border_size, size_custom: s.border_size_custom -%}{%- endcapture -%}
+{% if border_style_str != blank %}{% assign styles = styles | push: border_style_str %}{% endif %}
+
 {% assign bg_layer_classes = 'section-layout limit-width'
   | push: bg_class
   | push: 'width-{{ s.width_bg }}'
   | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
   | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
   | push: 'height-{{ s.height }}'
+  | push: border_class_str
 %}
 {% assign bg_layer_class_str = bg_layer_classes | join: ' ' %}
 {% assign content_layer_class_str = 'section-content limit-width width-' | append: s.width %}
-
-{% assign styles = blank %}
 
 {% if bg_color_value != blank %}
   {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
@@ -320,6 +330,113 @@
       "id": "bg_role_gradient",
       "label": "Background Gradient",
       "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "header",
+      "content": "Border"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "full", "label": "Full" },
+        { "value": "custom", "label": "Custom" }
+      ]
+    },
+    {
+      "type": "select",
+      "subtype": "border_role",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "subtype": "border_size",
+      "id": "border_size",
+      "label": "Border Size",
+      "default": "xxs",
+      "options": [
+        { "value": "xxs", "label": "XXS", "info": "1px" },
+        { "value": "xs", "label": "XS", "info": "2px" },
+        { "value": "sm", "label": "SM", "info": "4px" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "range",
+      "id": "border_size_custom",
+      "label": "Custom Border Width",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 1,
+      "unit": "px",
+      "conditional": "setting.border_size == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
     }
   ],
   "blocks": [

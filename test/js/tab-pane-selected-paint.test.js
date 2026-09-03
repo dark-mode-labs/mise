@@ -34,11 +34,15 @@ for (const [block, controller] of [
   });
 }
 
-test("a pane rebinds the border colour and paints no border of its own", () => {
+test("a pane rebinds ONLY the base border var, and paints no border of its own", () => {
   const src = body("blocks/_tab-content.liquid");
 
   assert.match(src, /--border:/);
-  assert.match(src, /--border-emphasis:/);
+  assert.doesNotMatch(
+    src,
+    /--border-emphasis:/,
+    "the pane rebinds the emphasis slot again — descendants reading it get the selected colour"
+  );
   assert.equal(src.match(/group-border-|--border-width|border-style/g), null);
 });
 

@@ -6,10 +6,22 @@ export default class TabContent {
 
     this._baseClass = this.el.className || "";
     this._baseStyle = this.el.style.cssText || "";
+    this._serverExpanded = this.el.getAttribute("aria-expanded") === "true";
 
     this.handleGlobalSwitch = this.handleGlobalSwitch.bind(this);
 
     this.init();
+  }
+
+  siblingNamedADefault() {
+    const parent = this.el.parentElement;
+    if (!parent) return false;
+    return Array.from(parent.children).some(
+      (sib) =>
+        sib.classList.contains("tab-content") &&
+        sib.getAttribute("data-tab-group") === this.groupId &&
+        sib.getAttribute("aria-expanded") === "true"
+    );
   }
 
   init() {
@@ -22,18 +34,16 @@ export default class TabContent {
     if (myHead) {
       shouldBeActive = myHead.hasAttribute("aria-selected")
         ? myHead.getAttribute("aria-selected") === "true"
-        : document.querySelector(`[data-behavior="tab-head"][data-tab-group="${this.groupId}"]`) ===
-          myHead;
+        : this.siblingNamedADefault()
+          ? this._serverExpanded
+          : document.querySelector(
+              `[data-behavior="tab-head"][data-tab-group="${this.groupId}"]`
+            ) === myHead;
     } else {
       const familyMembers = document.querySelectorAll(
         `.tab-content[data-tab-group="${this.groupId}"]`
       );
-      const explicitActive = this.el.getAttribute("aria-expanded") === "true";
-      const anySiblingActive = Array.from(familyMembers).some(
-        (content) => content.getAttribute("aria-expanded") === "true"
-      );
-      const isFirst = familyMembers[0] === this.el;
-      shouldBeActive = explicitActive || (!anySiblingActive && isFirst);
+      shouldBeActive = familyMembers[0] === this.el;
     }
 
     this.setState(shouldBeActive);
