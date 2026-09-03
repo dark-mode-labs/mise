@@ -23,6 +23,11 @@ function harness({ expandedIndex, heads = true, paneCount = 3 }) {
       style: { cssText: "" },
       classList: { contains: (c) => cls.split(" ").includes(c) },
       parentElement: null,
+      // Disjoint panes: none contains another. The nested case builds its own containment below.
+      contains(other) {
+        return other === this || (this._holds || []).includes(other);
+      },
+      _holds: [],
       getAttribute: (k) => (k in store ? store[k] : null),
       setAttribute: (k, v) => {
         store[k] = String(v);
@@ -123,6 +128,8 @@ test("a nested group's outer default does not silence the inner panes", async ()
   // re-clicked. The question is only ever about a pane's own siblings.
   const outer = harness({ expandedIndex: 0, paneCount: 2 });
   const inner = harness({ expandedIndex: -1, paneCount: 3 });
+  // The nesting itself: containment is what tells the two depths apart.
+  outer.panes[0]._holds = inner.panes;
   const all = [...outer.panes, ...inner.panes];
   const doc = {
     querySelector: (sel) => outer.doc.querySelector(sel),
@@ -137,4 +144,23 @@ test("a nested group's outer default does not silence the inner panes", async ()
     "no inner pane is active — the outer level's default answered for a group it does not belong to, " +
       "so the nested content renders blank until re-clicked"
   );
+});
+
+test("a group with NO heads honours the server's pane, not the first one", async () => {
+  // Headless: every other case here supplies heads, which is why this one went unseen.
+  const { panes, doc } = harness({ expandedIndex: 2, heads: false });
+  const TabContent = await loadTabContent(doc);
+  panes.forEach((p) => new TabContent(p));
+  assert.deepEqual(
+    panes.map((p) => p.getAttribute("aria-expanded")),
+    ["false", "false", "true"],
+    "the server named pane 3 and no head disagrees, so pane 3 must stay the selected one"
+  );
+});
+
+test("a headless group with no server default still falls back to the first", async () => {
+  const { panes, doc } = harness({ expandedIndex: -1, heads: false });
+  const TabContent = await loadTabContent(doc);
+  panes.forEach((p) => new TabContent(p));
+  assert.equal(panes[0].getAttribute("aria-expanded"), "true");
 });
