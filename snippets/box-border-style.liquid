@@ -10,12 +10,13 @@
     gradient_token — border_role_gradient token name
     custom_color   — border_role_custom raw value
     style          — border_style
-    size           — border_size tier id; 'custom' takes its width from `size_custom`
+    size_tier      — border_size tier id; 'custom' takes its width from `size_custom`.
     size_custom    — px width, honoured only when size is 'custom'
 {%- endcomment -%}
 {%- unless mode == 'none' -%}
-  {%- assign decls = '--border-style: {{ style }}' -%}
-  {%- if size == 'custom' -%}
+  {%- assign decls = blank -%}
+  {%- assign decls = decls | push: '--border-style: {{ style }}' -%}
+  {%- if size_tier == 'custom' -%}
     {%- assign decls = decls | push: '--border-width: {{ size_custom }}px' -%}
   {%- endif -%}
   {%- if role == 'palette' and palette_token != blank -%}

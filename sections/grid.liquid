@@ -45,13 +45,13 @@
 {% endif %}
 
 {%- capture border_class_str -%}{%- render 'box-border-class',
-  mode: s.border_mode, role: s.border_role, size: s.border_size,
+  mode: s.border_mode, role: s.border_role, size_tier: s.border_size,
   custom_left: s.border_custom_left, custom_right: s.border_custom_right,
   custom_top: s.border_custom_top, custom_bottom: s.border_custom_bottom -%}{%- endcapture -%}
 {%- capture border_style_str -%}{%- render 'box-border-style',
   mode: s.border_mode, role: s.border_role, palette_token: s.border_role_palette,
   gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
-  style: s.border_style, size: s.border_size, size_custom: s.border_size_custom -%}{%- endcapture -%}
+  style: s.border_style, size_tier: s.border_size, size_custom: s.border_size_custom -%}{%- endcapture -%}
 {% if border_style_str != blank %}{% assign bg_layer_style = bg_layer_style | push: border_style_str %}{% endif %}
 
 {% assign bg_layer_style_str = bg_layer_style | join: ';' %}

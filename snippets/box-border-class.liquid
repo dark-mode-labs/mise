@@ -8,12 +8,13 @@
     role         — border_role. A SLOT role emits `border-<role>`, which reads that slot's
                    variable; 'palette' / 'custom' resolve to a value the style half writes, and
                    'gradient' needs `border-gradient` because border-color cannot take one.
-    size         — border_size tier id
+    size_tier    — border_size tier id.
     custom_left / custom_right / custom_top / custom_bottom
                  — which edges draw, honoured only when mode is 'custom'
 {%- endcomment -%}
 {%- unless mode == 'none' -%}
-  {%- assign classes = 'group-border-{{ mode }}' | push: 'group-border-size-{{ size }}' -%}
+  {%- assign classes = blank -%}
+  {%- assign classes = classes | push: 'group-border-{{ mode }}' | push: 'group-border-size-{{ size_tier }}' -%}
   {%- if role and role != 'none' and role != 'custom' and role != 'palette' and role != 'gradient' -%}
     {%- assign classes = classes | push: 'border-{{ role }}' -%}
   {%- endif -%}
