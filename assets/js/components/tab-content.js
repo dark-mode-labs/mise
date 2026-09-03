@@ -13,15 +13,14 @@ export default class TabContent {
     this.init();
   }
 
-  siblingNamedADefault() {
-    const parent = this.el.parentElement;
-    if (!parent) return false;
-    return Array.from(parent.children).some(
-      (sib) =>
-        sib.classList.contains("tab-content") &&
-        sib.getAttribute("data-tab-group") === this.groupId &&
-        sib.getAttribute("aria-expanded") === "true"
-    );
+  family() {
+    return Array.from(
+      document.querySelectorAll(`.tab-content[data-tab-group="${this.groupId}"]`)
+    ).filter((p) => p === this.el || !(p.contains(this.el) || this.el.contains(p)));
+  }
+
+  familyNamedADefault(family = this.family()) {
+    return family.some((p) => p.getAttribute("aria-expanded") === "true");
   }
 
   init() {
@@ -34,16 +33,15 @@ export default class TabContent {
     if (myHead) {
       shouldBeActive = myHead.hasAttribute("aria-selected")
         ? myHead.getAttribute("aria-selected") === "true"
-        : this.siblingNamedADefault()
+        : this.familyNamedADefault()
           ? this._serverExpanded
           : document.querySelector(
               `[data-behavior="tab-head"][data-tab-group="${this.groupId}"]`
             ) === myHead;
     } else {
-      const familyMembers = document.querySelectorAll(
-        `.tab-content[data-tab-group="${this.groupId}"]`
-      );
-      shouldBeActive = familyMembers[0] === this.el;
+      const family = this.family();
+      shouldBeActive =
+        this._serverExpanded || (!this.familyNamedADefault(family) && family[0] === this.el);
     }
 
     this.setState(shouldBeActive);
