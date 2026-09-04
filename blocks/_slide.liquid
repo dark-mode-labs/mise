@@ -1,13 +1,9 @@
 {% assign s = block.settings %}
 
-{% assign bg_color_value = blank %}
-{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
-  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
-{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
-  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
-{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign bg_color_value = s.bg_role_custom %}
-{% endif %}
+{%- capture bg_color_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.bg_role,
+      palette: s.bg_role_palette, custom: s.bg_role_custom, gradient: s.bg_role_gradient -%}
+{%- endcapture -%}
 {% assign classes = 'slide-block w-[var(--slide-width)] md:w-[var(--slide-width-md)] flex-shrink-0 snap-start relative overflow-hidden flex flex-col' %}
 
 {% if s.bg_role

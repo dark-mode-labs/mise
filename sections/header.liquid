@@ -1,22 +1,16 @@
 {% assign s = section.settings %}
 
-{% assign bg_color_value = blank %}
-{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
-  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
-{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
-  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
-{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign bg_color_value = s.bg_role_custom %}
-{% endif %}
+{%- capture bg_color_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.bg_role,
+      palette: s.bg_role_palette, custom: s.bg_role_custom, gradient: s.bg_role_gradient -%}
+{%- endcapture -%}
 
-{% assign text_override_value = blank %}
-{% if s.text_role == 'palette' and s.text_role_palette != blank %}
-  {% assign text_override_value = 'var(--palette-{{ s.text_role_palette }})' %}
-{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
-  {% assign text_override_value = s.text_role_custom %}
-{% elsif s.text_role != blank and s.text_role != 'primary' and s.text_role != 'inherit' %}
-  {% assign text_override_value = 'var(--text-{{ s.text_role }})' %}
-{% endif %}
+{%- capture text_override_value -%}
+  {%- if s.text_role != 'primary' -%}
+    {%- render 'role-color-value', kind: 'text', role: s.text_role,
+      palette: s.text_role_palette, custom: s.text_role_custom, slots: true -%}
+  {%- endif -%}
+{%- endcapture -%}
 
 {% assign is_overlay = false %}
 {% if s.header_overlay_mode == 'overlay' or s.header_overlay_mode == 'transparent' %}
@@ -72,12 +66,10 @@
   | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
 %}
 
-{% assign border_color_value = blank %}
-{% if s.border_role == 'palette' and s.border_role_palette != blank %}
-  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
-{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
-  {% assign border_color_value = s.border_role_custom %}
-{% endif %}
+{%- capture border_color_value -%}
+  {%- render 'role-color-value', kind: 'border', role: s.border_role,
+      palette: s.border_role_palette, custom: s.border_role_custom -%}
+{%- endcapture -%}
 
 {% unless s.border_mode == 'none' or s.border_mode == blank %}
   {% assign bg_layer_classes = bg_layer_classes
@@ -133,20 +125,16 @@
 {% capture slot_drawer_close %}{% content_for 'block', type: 'button', id: 'header-drawer-close' %}{% endcapture %}
 {% capture slot_drawer_note %}{% content_for 'block', type: 'text', id: 'header-drawer-note' %}{% endcapture %}
 
-{% assign toggle_text_color = blank %}
-{% if s.toggle_text_role == 'palette' and s.toggle_text_role_palette != blank %}
-  {% assign toggle_text_color = 'var(--palette-{{ s.toggle_text_role_palette }})' %}
-{% elsif s.toggle_text_role == 'custom' and s.toggle_text_role_custom != blank %}
-  {% assign toggle_text_color = s.toggle_text_role_custom %}
-{% elsif s.toggle_text_role != blank and s.toggle_text_role != 'none' and s.toggle_text_role != 'primary' %}
-  {% assign toggle_text_color = 'var(--text-{{ s.toggle_text_role }})' %}
-{% endif %}
-{% assign toggle_border_value = blank %}
-{% if s.toggle_border_role == 'palette' and s.toggle_border_role_palette != blank %}
-  {% assign toggle_border_value = 'var(--palette-{{ s.toggle_border_role_palette }})' %}
-{% elsif s.toggle_border_role == 'custom' and s.toggle_border_role_custom != blank %}
-  {% assign toggle_border_value = s.toggle_border_role_custom %}
-{% endif %}
+{%- capture toggle_text_color -%}
+  {%- if s.toggle_text_role != 'primary' -%}
+    {%- render 'role-color-value', kind: 'text', role: s.toggle_text_role,
+      palette: s.toggle_text_role_palette, custom: s.toggle_text_role_custom, slots: true -%}
+  {%- endif -%}
+{%- endcapture -%}
+{%- capture toggle_border_value -%}
+  {%- render 'role-color-value', kind: 'border', role: s.toggle_border_role,
+      palette: s.toggle_border_role_palette, custom: s.toggle_border_role_custom -%}
+{%- endcapture -%}
 {% assign toggle_classes = 'header-mobile-toggle hover:opacity-70 inline-flex items-center justify-center shrink-0' %}
 {% if s.toggle_shape == 'circle' %}
   {% assign toggle_classes = '{{ toggle_classes }} rounded-full' %}
@@ -244,43 +232,30 @@
         {% endif %}
 
         {% if s.show_cart %}
-          {% assign cart_bg_color = blank %}
-          {% if s.cart_bg_role == 'palette' and s.cart_bg_role_palette != blank %}
-            {% assign cart_bg_color = 'var(--palette-{{ s.cart_bg_role_palette }})' %}
-          {% elsif s.cart_bg_role == 'custom' and s.cart_bg_role_custom != blank %}
-            {% assign cart_bg_color = s.cart_bg_role_custom %}
-          {% endif %}
-          {% assign cart_text_color = blank %}
-          {% if s.cart_text_role == 'palette' and s.cart_text_role_palette != blank %}
-            {% assign cart_text_color = 'var(--palette-{{ s.cart_text_role_palette }})' %}
-          {% elsif s.cart_text_role == 'custom' and s.cart_text_role_custom != blank %}
-            {% assign cart_text_color = s.cart_text_role_custom %}
-          {% elsif s.cart_text_role != blank and s.cart_text_role != 'inherit' and s.cart_text_role != 'primary' %}
-            {% assign cart_text_color = 'var(--text-{{ s.cart_text_role }})' %}
-          {% endif %}
-          {% assign cart_border_color = blank %}
-          {% if s.cart_border_role == 'palette' and s.cart_border_role_palette != blank %}
-            {% assign cart_border_color = 'var(--palette-{{ s.cart_border_role_palette }})' %}
-          {% elsif s.cart_border_role == 'custom' and s.cart_border_role_custom != blank %}
-            {% assign cart_border_color = s.cart_border_role_custom %}
-          {% endif %}
-          {% assign badge_bg_color = blank %}
-          {% if s.cart_badge_bg_role == 'palette' and s.cart_badge_bg_role_palette != blank %}
-            {% assign badge_bg_color = 'var(--palette-{{ s.cart_badge_bg_role_palette }})' %}
-          {% elsif s.cart_badge_bg_role == 'custom' and s.cart_badge_bg_role_custom != blank %}
-            {% assign badge_bg_color = s.cart_badge_bg_role_custom %}
-          {% endif %}
-          {% assign badge_text_color = blank %}
-          {% if s.cart_badge_text_role == 'palette' and s.cart_badge_text_role_palette != blank %}
-            {% assign badge_text_color = 'var(--palette-{{ s.cart_badge_text_role_palette }})' %}
-          {% elsif s.cart_badge_text_role == 'custom' and s.cart_badge_text_role_custom != blank %}
-            {% assign badge_text_color = s.cart_badge_text_role_custom %}
-          {% elsif s.cart_badge_text_role != blank
-            and s.cart_badge_text_role != 'inherit'
-            and s.cart_badge_text_role != 'primary'
-          %}
-            {% assign badge_text_color = 'var(--text-{{ s.cart_badge_text_role }})' %}
-          {% endif %}
+          {%- capture cart_bg_color -%}
+            {%- render 'role-color-value', kind: 'bg', role: s.cart_bg_role,
+                palette: s.cart_bg_role_palette, custom: s.cart_bg_role_custom -%}
+          {%- endcapture -%}
+          {%- capture cart_text_color -%}
+            {%- if s.cart_text_role != 'primary' -%}
+              {%- render 'role-color-value', kind: 'text', role: s.cart_text_role,
+                palette: s.cart_text_role_palette, custom: s.cart_text_role_custom, slots: true -%}
+            {%- endif -%}
+          {%- endcapture -%}
+          {%- capture cart_border_color -%}
+            {%- render 'role-color-value', kind: 'border', role: s.cart_border_role,
+                palette: s.cart_border_role_palette, custom: s.cart_border_role_custom -%}
+          {%- endcapture -%}
+          {%- capture badge_bg_color -%}
+            {%- render 'role-color-value', kind: 'bg', role: s.cart_badge_bg_role,
+                palette: s.cart_badge_bg_role_palette, custom: s.cart_badge_bg_role_custom -%}
+          {%- endcapture -%}
+          {%- capture badge_text_color -%}
+            {%- if s.cart_badge_text_role != 'primary' -%}
+              {%- render 'role-color-value', kind: 'text', role: s.cart_badge_text_role,
+                palette: s.cart_badge_text_role_palette, custom: s.cart_badge_text_role_custom, slots: true -%}
+            {%- endif -%}
+          {%- endcapture -%}
           {% assign cart_button_styles = blank %}
           {% if s.cart_size > 0 %}
             {% assign cart_button_styles = cart_button_styles
@@ -391,14 +366,11 @@
     {% if s.mobile_actions == 'bar' %}{% assign actions_in_drawer = blank %}{% endif %}
     {% if s.show_mobile_menu != false and s.show_nav != false %}
       {% assign drawer_surface = s.drawer_surface_id | default: s.surface_id %}
-      {% assign drawer_bg_value = '' %}
-      {% if s.drawer_bg_role == 'palette' and s.drawer_bg_role_palette != blank %}
-        {% assign drawer_bg_value = 'var(--palette-{{ s.drawer_bg_role_palette }})' %}
-      {% elsif s.drawer_bg_role == 'gradient' and s.drawer_bg_role_gradient != blank %}
-        {% assign drawer_bg_value = 'var(--gradient-{{ s.drawer_bg_role_gradient }})' %}
-      {% elsif s.drawer_bg_role == 'custom' and s.drawer_bg_role_custom != blank %}
-        {% assign drawer_bg_value = s.drawer_bg_role_custom %}
-      {% endif %}
+      {%- capture drawer_bg_value -%}
+        {%- render 'role-color-value', kind: 'bg', role: s.drawer_bg_role,
+            palette: s.drawer_bg_role_palette, custom: s.drawer_bg_role_custom,
+            gradient: s.drawer_bg_role_gradient -%}
+      {%- endcapture -%}
       {% capture drawer_html %}{% render 'header-drawer',
         nav_html: slot_drawer_nav,
         drawer_surface_id: drawer_surface,

@@ -46,19 +46,17 @@ test("a pane rebinds ONLY the base border var, and paints no border of its own",
   assert.equal(src.match(/group-border-|--border-width|border-style/g), null);
 });
 
-test("a pane's selected border resolves every arm of its own enum", () => {
-  // An arm the body never compares against silently emits nothing for that half of the picker.
+test("a pane's selected border is resolved as a border, by the one resolver", () => {
+  // Its own kind, or it reads the wrong variable family. That every arm of the picker then answers
+  // is `role-colour-has-one-resolver`'s, repo-wide.
   const src = body("blocks/_tab-content.liquid");
-  const field = schema("blocks/_tab-content.liquid").settings.find(
-    (s) => s.id === "active_border_role"
-  );
-  const arms = field.options.map((o) => o.value).filter((v) => v !== "none");
+  const arms = schema("blocks/_tab-content.liquid")
+    .settings.find((s) => s.id === "active_border_role")
+    .options.map((o) => o.value)
+    .filter((v) => v !== "none");
 
   assert.ok(arms.length, "the picker offers no colour at all — the schema read has broken");
-  assert.deepEqual(
-    arms.filter((v) => !src.includes(`s.active_border_role == '${v}'`)),
-    []
-  );
+  assert.match(src, /render 'role-color-value', kind: 'border', role: s\.active_border_role\b/);
 });
 
 test("a pane's selected effect rides the bag that only the selected state carries", () => {

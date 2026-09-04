@@ -1,18 +1,14 @@
 {% assign s = block.settings %}
 
-{% assign active_border_value = blank %}
-{% if s.active_border_role == 'palette' and s.active_border_role_palette != blank %}
-  {% assign active_border_value = 'var(--palette-{{ s.active_border_role_palette }})' %}
-{% elsif s.active_border_role == 'custom' and s.active_border_role_custom != blank %}
-  {% assign active_border_value = s.active_border_role_custom %}
-{% endif %}
+{%- capture active_border_value -%}
+  {%- render 'role-color-value', kind: 'border', role: s.active_border_role,
+      palette: s.active_border_role_palette, custom: s.active_border_role_custom -%}
+{%- endcapture -%}
 
-{% assign resting_border_value = blank %}
-{% if s.border_role == 'palette' and s.border_role_palette != blank %}
-  {% assign resting_border_value = 'var(--palette-{{ s.border_role_palette }})' %}
-{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
-  {% assign resting_border_value = s.border_role_custom %}
-{% endif %}
+{%- capture resting_border_value -%}
+  {%- render 'role-color-value', kind: 'border', role: s.border_role,
+      palette: s.border_role_palette, custom: s.border_role_custom -%}
+{%- endcapture -%}
 
 {% assign active_state_classes = '' %}
 {% assign active_state_styles = '' %}

@@ -1,40 +1,18 @@
 {% assign s = block.settings %}
 {% assign styles = blank | push: 'display: none' | push: '--dot-active-scale: 1' %}
 
-{% assign dc = blank %}
-{% if s.dot_role == 'palette' and s.dot_role_palette != blank -%}
-  {%- assign dc = 'var(--palette-{{ s.dot_role_palette }})' %}
-{% elsif s.dot_role == 'custom' and s.dot_role_custom != blank -%}
-  {%- assign dc = s.dot_role_custom %}
-{% elsif s.dot_role == 'gradient' and s.dot_role_gradient != blank -%}
-  {%- assign dc = 'var(--gradient-{{ s.dot_role_gradient }})' %}
-{% elsif s.dot_role != blank and s.dot_role != 'none' -%}
-  {%- assign slot = s.dot_role
-    | replace: 'body', 'background'
-    | replace: 'accent', 'accent-bg'
-    | replace: 'button', 'button-bg'
-    | replace: 'control', 'control-bg'
-  -%}
-  {%- assign dc = 'var(--{{ slot }})' %}
-{% endif %}
+{%- capture dc -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.dot_role, slots: true,
+      palette: s.dot_role_palette, custom: s.dot_role_custom,
+      gradient: s.dot_role_gradient -%}
+{%- endcapture -%}
 {% if dc != blank %}{% assign styles = styles | push: '--dot-color: {{ dc }}' %}{% endif %}
 
-{% assign dm = blank %}
-{% if s.dot_muted_role == 'palette' and s.dot_muted_role_palette != blank -%}
-  {%- assign dm = 'var(--palette-{{ s.dot_muted_role_palette }})' %}
-{% elsif s.dot_muted_role == 'custom' and s.dot_muted_role_custom != blank -%}
-  {%- assign dm = s.dot_muted_role_custom %}
-{% elsif s.dot_muted_role == 'gradient' and s.dot_muted_role_gradient != blank -%}
-  {%- assign dm = 'var(--gradient-{{ s.dot_muted_role_gradient }})' %}
-{% elsif s.dot_muted_role != blank and s.dot_muted_role != 'none' -%}
-  {%- assign slot = s.dot_muted_role
-    | replace: 'body', 'background'
-    | replace: 'accent', 'accent-bg'
-    | replace: 'button', 'button-bg'
-    | replace: 'control', 'control-bg'
-  -%}
-  {%- assign dm = 'var(--{{ slot }})' %}
-{% endif %}
+{%- capture dm -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.dot_muted_role, slots: true,
+      palette: s.dot_muted_role_palette, custom: s.dot_muted_role_custom,
+      gradient: s.dot_muted_role_gradient -%}
+{%- endcapture -%}
 {% if dm != blank %}
   {%- assign styles = styles | push: '--dot-muted-color: {{ dm }}' | push: '--dot-muted-opacity: 1' -%}
 {% endif %}

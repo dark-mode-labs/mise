@@ -53,76 +53,18 @@
     {% if ef.scale != blank %}--anim-scale-from: {{ ef.scale }};{% endif %}
     {% if ef.reveal %}opacity: 0;{% endif %}
     }
-    {% case ef.text_role %}
-      {% when 'primary' -%}
-        {%- assign text_var = '--text' %}
-      {% when 'secondary' -%}
-        {%- assign text_var = '--text-secondary' %}
-      {% when 'subtle' -%}
-        {%- assign text_var = '--text-subtle' %}
-      {% when 'emphasis' -%}
-        {%- assign text_var = '--text-emphasis' %}
-      {% when 'on-accent' -%}
-        {%- assign text_var = '--text-on-accent' %}
-      {% when 'on-button' -%}
-        {%- assign text_var = '--text-on-button' %}
-      {% when 'on-control' -%}
-        {%- assign text_var = '--text-on-control' %}
-      {% else -%}
-        {%- assign text_var = blank %}
-    {% endcase %}
-    {% case ef.bg_role %}
-      {% when 'body' -%}
-        {%- assign bg_var = '--background' %}
-      {% when 'body-alt' -%}
-        {%- assign bg_var = '--background-alt' %}
-      {% when 'surface' -%}
-        {%- assign bg_var = '--surface' %}
-      {% when 'surface-alt' -%}
-        {%- assign bg_var = '--surface-alt' %}
-      {% when 'accent' -%}
-        {%- assign bg_var = '--accent-bg' %}
-      {% when 'button' -%}
-        {%- assign bg_var = '--button-bg' %}
-      {% when 'control' -%}
-        {%- assign bg_var = '--control-bg' %}
-      {% else -%}
-        {%- assign bg_var = blank %}
-    {% endcase %}
-    {% case ef.border_role %}
-      {% when 'default' -%}
-        {%- assign border_var = '--border' %}
-      {% when 'emphasis' -%}
-        {%- assign border_var = '--border-emphasis' %}
-      {% else -%}
-        {%- assign border_var = blank %}
-    {% endcase %}
     {%- capture hover_text_value -%}
-      {%- if ef.text_role == 'palette' and ef.text_role_palette != blank -%}
-        var(--palette-{{ ef.text_role_palette }})
-      {%- elsif ef.text_role == 'custom' and ef.text_role_custom != blank -%}
-        {{ ef.text_role_custom }}
-      {%- elsif text_var != blank -%}
-        var({{ text_var }}, currentColor)
-      {%- endif -%}
+      {%- render 'role-color-value', kind: 'text', role: ef.text_role, slots: true,
+          palette: ef.text_role_palette, custom: ef.text_role_custom, fallback: 'currentColor' -%}
     {%- endcapture -%}
     {%- capture hover_bg_value -%}
-      {%- if ef.bg_role == 'palette' and ef.bg_role_palette != blank -%}
-        var(--palette-{{ ef.bg_role_palette }})
-      {%- elsif ef.bg_role == 'custom' and ef.bg_role_custom != blank -%}
-        {{ ef.bg_role_custom }}
-      {%- elsif bg_var != blank -%}
-        var({{ bg_var }})
-      {%- endif -%}
+      {%- render 'role-color-value', kind: 'bg', role: ef.bg_role, slots: true,
+          palette: ef.bg_role_palette, custom: ef.bg_role_custom -%}
     {%- endcapture -%}
     {%- capture hover_border_value -%}
-      {%- if ef.border_role == 'palette' and ef.border_role_palette != blank -%}
-        var(--palette-{{ ef.border_role_palette }})
-      {%- elsif ef.border_role == 'custom' and ef.border_role_custom != blank -%}
-        {{ ef.border_role_custom }}
-      {%- elsif border_var != blank -%}
-        var({{ border_var }}, transparent)
-      {%- endif -%}
+      {%- render 'role-color-value', kind: 'border', role: ef.border_role, slots: true,
+          palette: ef.border_role_palette, custom: ef.border_role_custom,
+          fallback: 'transparent' -%}
     {%- endcapture -%}
     {% capture rest %}
       {% if ef.scale != blank %}scale: {{ ef.scale }};{% endif %}

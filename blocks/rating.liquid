@@ -7,23 +7,15 @@
 {% if pct > 100 %}{% assign pct = 100 %}{% endif %}
 {% if pct < 0 %}{% assign pct = 0 %}{% endif %}
 
-{% assign star_fill = blank %}
-{% if s.fill_role == 'palette' and s.fill_role_palette != blank %}
-  {% assign star_fill = 'var(--palette-{{ s.fill_role_palette }})' %}
-{% elsif s.fill_role == 'gradient' and s.fill_role_gradient != blank %}
-  {% assign star_fill = 'var(--gradient-{{ s.fill_role_gradient }})' %}
-{% elsif s.fill_role == 'custom' and s.fill_role_custom != blank %}
-  {% assign star_fill = s.fill_role_custom %}
-{% endif %}
+{%- capture star_fill -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.fill_role,
+      palette: s.fill_role_palette, custom: s.fill_role_custom, gradient: s.fill_role_gradient -%}
+{%- endcapture -%}
 
-{% assign star_track = blank %}
-{% if s.track_role == 'palette' and s.track_role_palette != blank %}
-  {% assign star_track = 'var(--palette-{{ s.track_role_palette }})' %}
-{% elsif s.track_role == 'gradient' and s.track_role_gradient != blank %}
-  {% assign star_track = 'var(--gradient-{{ s.track_role_gradient }})' %}
-{% elsif s.track_role == 'custom' and s.track_role_custom != blank %}
-  {% assign star_track = s.track_role_custom %}
-{% endif %}
+{%- capture star_track -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.track_role,
+      palette: s.track_role_palette, custom: s.track_role_custom, gradient: s.track_role_gradient -%}
+{%- endcapture -%}
 
 {% assign classes = 'rating-block inline-flex items-center'
   | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'

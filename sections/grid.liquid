@@ -1,21 +1,13 @@
 {% assign s = section.settings %}
 
-{% assign bg_color_value = blank %}
-{% if s.bg_role == 'palette' and s.bg_role_palette != blank %}
-  {% assign bg_color_value = 'var(--palette-{{ s.bg_role_palette }})' %}
-{% elsif s.bg_role == 'gradient' and s.bg_role_gradient != blank %}
-  {% assign bg_color_value = 'var(--gradient-{{ s.bg_role_gradient }})' %}
-{% elsif s.bg_role == 'custom' and s.bg_role_custom != blank %}
-  {% assign bg_color_value = s.bg_role_custom %}
-{% endif %}
-{% assign overlay_color_value = blank %}
-{% if s.overlay_role == 'palette' and s.overlay_role_palette != blank %}
-  {% assign overlay_color_value = 'var(--palette-{{ s.overlay_role_palette }})' %}
-{% elsif s.overlay_role == 'gradient' and s.overlay_role_gradient != blank %}
-  {% assign overlay_color_value = 'var(--gradient-{{ s.overlay_role_gradient }})' %}
-{% elsif s.overlay_role == 'custom' and s.overlay_role_custom != blank %}
-  {% assign overlay_color_value = s.overlay_role_custom %}
-{% endif %}
+{%- capture bg_color_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.bg_role,
+      palette: s.bg_role_palette, custom: s.bg_role_custom, gradient: s.bg_role_gradient -%}
+{%- endcapture -%}
+{%- capture overlay_color_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.overlay_role,
+      palette: s.overlay_role_palette, custom: s.overlay_role_custom, gradient: s.overlay_role_gradient -%}
+{%- endcapture -%}
 
 {% assign container_classes = 'grid-layout-overlay limit-width'
   | push: 'width-{{ s.width }}'
