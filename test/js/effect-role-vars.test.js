@@ -27,7 +27,8 @@ function classMap(prefix, property) {
 function emissionMap(kind) {
   const arm = resolver.match(new RegExp(`slots and kind == '${kind}'[\\s\\S]*?\\{%-?\\s*endcase`));
   assert.ok(arm, `the resolver has no ${kind} arm`);
-  const re = /\{%-?\s*when\s*'([a-z0-9-]+)'\s*-?%\}var\((--[a-z0-9-]+)/g;
+  // prettier reflows a long arm onto its own line, so the terms are matched, not the layout.
+  const re = /\{%-?\s*when\s*'([a-z0-9-]+)'\s*-?%\}\s*var\((--[a-z0-9-]+)/g;
   return new Map([...arm[0].matchAll(re)].map((m) => [m[1], m[2]]));
 }
 
