@@ -4,12 +4,14 @@
 // cart and toggle already carry, without which a narrow bar wrapped a CTA's label onto two lines.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (p) => readFileSync(join(root, p), "utf8");
+const schema = (p) =>
+  JSON.parse(read(p).match(/\{%\s*schema\s*%\}([\s\S]*?)\{%\s*endschema\s*%\}/)[1]);
 
 test("every header action control refuses to shrink", () => {
   const header = read("sections/header.liquid");
@@ -74,23 +76,60 @@ test("the trigger toggles, and only an overlaying drawer locks the page", () => 
   assert.match(src, /const overlays = !drawer\.classList\.contains\("is-panel"\)/);
 });
 
-// A role field offers slot roles, a palette token and a raw colour. Palette and custom resolve to a
-// CSS value; a slot role resolves through its own variable and so must reach the element as a class
-// (border) or a `var(--text-…)` (text). Moving the drawer render dropped the text one, leaving six of
-// nine enum values painting nothing — invisible while the transpiler only ever emits `custom`.
-test("every header role field handles its slot roles, not just palette and custom", () => {
+// A role field offers slot roles, a palette token and a raw colour, and all three must reach the
+// element — moving the drawer render once dropped the slot arm, leaving six of nine enum values
+// painting nothing, invisible while the transpiler only ever emitted `custom`. The resolution now
+// lives in `role-color-value`, so what this guards is that every field REACHES it, with the slot
+// arms asked for wherever the field paints through a custom property.
+test("every header role field is resolved by the one resolver", () => {
   const src = read("sections/header.liquid");
-  const roles = [...src.matchAll(/s\.(\w*text_role|\w*border_role) == 'palette'/g)].map(
-    (m) => m[1]
-  );
+  const fields = [...src.matchAll(/role:\s*s\.(\w+_role)\b/g)].map((m) => m[1]);
 
-  assert.ok(roles.length >= 5, `only found ${roles.length} role resolutions to check`);
-  for (const role of new Set(roles)) {
-    // Liquid wraps long conditions across lines, so the terms are matched, not their layout.
-    const slotArm = role.endsWith("text_role")
-      ? new RegExp(`s\\.${role} != 'primary'`)
-      : new RegExp(`s\\.${role} != 'custom'[\\s\\S]{0,80}s\\.${role} != 'palette'`);
-    assert.match(src, slotArm, `${role} resolves palette/custom but drops its slot roles`);
+  assert.ok(fields.length >= 5, `only found ${fields.length} role fields reaching the resolver`);
+  for (const field of new Set(fields)) {
+    const call = src.match(new RegExp(`role:\\s*s\\.${field}\\b[\\s\\S]{0,220}?-%\\}`));
+    assert.ok(call, `${field} names no resolver call`);
+    const kind = field.includes("text") ? "text" : field.includes("border") ? "border" : "bg";
+    assert.match(
+      src,
+      new RegExp(`kind: '${kind}',\\s*role: s\\.${field}\\b`),
+      `${field} is passed as the wrong kind, so it would read the wrong variable family`
+    );
+  }
+});
+
+test("every header role field answers its slot arms one of the two ways", () => {
+  // A slot role reaches an element as a `bg-*` / `text-*` / `border-*` CLASS, or as a value from the
+  // resolver's opt-in slot arms. Neither, and most of that field's picker paints nothing. The field
+  // list and its arms are the schema's own, and the class half is looked for in this section and the
+  // snippets it renders — the drawer takes the raw role across that boundary and pushes the class there.
+  const src = read("sections/header.liquid");
+  const rendered = [...src.matchAll(/render '([\w-]+)'/g)].map((m) => `snippets/${m[1]}.liquid`);
+  const scope =
+    src +
+    rendered
+      .filter((f) => existsSync(join(root, f)))
+      .map(read)
+      .join("");
+  const byId = new Map(schema("sections/header.liquid").settings.map((f) => [f.id, f]));
+  const valueOnly = new Set(["none", "inherit", "palette", "custom", "gradient"]);
+
+  const sites = [...src.matchAll(/render 'role-color-value',([\s\S]*?)-%\}/g)];
+  assert.ok(sites.length >= 9, `only found ${sites.length} role fields reaching the resolver`);
+
+  for (const [, args] of sites) {
+    const field = args.match(/role:\s*s\.(\w+)/)[1];
+    const kind = args.match(/kind:\s*'(\w+)'/)[1];
+    const arms = (byId.get(field)?.options ?? [])
+      .map((o) => o.value)
+      .filter((v) => !valueOnly.has(v));
+    if (!arms.length) continue;
+
+    const asClass = new RegExp(`\\b${kind}-\\{\\{\\s*(?:s\\.)?${field}\\s*\\}\\}`);
+    assert.ok(
+      args.includes("slots: true") || asClass.test(scope),
+      `${field} offers ${arms.length} slot roles that reach the element neither as a class nor as a value`
+    );
   }
 });
 

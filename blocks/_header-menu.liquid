@@ -32,24 +32,20 @@
 
 {% assign block_classes = nav_classes | join: ' ' %}
 
-{% assign text_color_value = blank %}
-{% if s.text_role == 'palette' and s.text_role_palette != blank %}
-  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
-{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
-  {% assign text_color_value = s.text_role_custom %}
-{% elsif s.text_role != blank and s.text_role != 'inherit' and s.text_role != 'primary' %}
-  {% assign text_color_value = 'var(--text-{{ s.text_role }})' %}
-{% endif %}
+{%- capture text_color_value -%}
+  {%- if s.text_role != 'primary' -%}
+    {%- render 'role-color-value', kind: 'text', role: s.text_role, slots: true,
+        palette: s.text_role_palette, custom: s.text_role_custom -%}
+  {%- endif -%}
+{%- endcapture -%}
 {% assign styles = blank %}
 {% if text_color_value != blank %}
   {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
 {% endif %}
-{% assign border_color_value = blank %}
-{% if s.border_role == 'palette' and s.border_role_palette != blank %}
-  {% assign border_color_value = 'var(--palette-{{ s.border_role_palette }})' %}
-{% elsif s.border_role == 'custom' and s.border_role_custom != blank %}
-  {% assign border_color_value = s.border_role_custom %}
-{% endif %}
+{%- capture border_color_value -%}
+  {%- render 'role-color-value', kind: 'border', role: s.border_role,
+      palette: s.border_role_palette, custom: s.border_role_custom -%}
+{%- endcapture -%}
 {% unless s.border_mode == 'none' or s.border_mode == blank %}
   {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
   {% if s.border_size == 'custom' %}
@@ -97,12 +93,10 @@
 {% endif %}
 {% assign link_class_str = link_classes | join: ' ' %}
 
-{% assign link_border_value = blank %}
-{% if s.link_border_role == 'palette' and s.link_border_role_palette != blank %}
-  {% assign link_border_value = 'var(--palette-{{ s.link_border_role_palette }})' %}
-{% elsif s.link_border_role == 'custom' and s.link_border_role_custom != blank %}
-  {% assign link_border_value = s.link_border_role_custom %}
-{% endif %}
+{%- capture link_border_value -%}
+  {%- render 'role-color-value', kind: 'border', role: s.link_border_role,
+      palette: s.link_border_role_palette, custom: s.link_border_role_custom -%}
+{%- endcapture -%}
 {% assign link_styles = blank %}
 {% if link_border_value != blank %}
   {% assign link_styles = link_styles | push: '--border-style:solid' | push: '--border: {{ link_border_value }}' %}
@@ -146,25 +140,28 @@
 {% assign active_class_str = active_classes | join: ' ' %}
 
 {% assign active_styles = blank %}
-{% if s.text_role_active == 'palette' and s.text_role_active_palette != blank %}
-  {% assign active_styles = active_styles | push: '--text: var(--palette-{{ s.text_role_active_palette }})' %}
-{% elsif s.text_role_active == 'custom' and s.text_role_active_custom != blank %}
-  {% assign active_styles = active_styles | push: '--text: {{ s.text_role_active_custom }}' %}
+{%- capture active_text_value -%}
+  {%- render 'role-color-value', kind: 'text', role: s.text_role_active,
+      palette: s.text_role_active_palette, custom: s.text_role_active_custom -%}
+{%- endcapture -%}
+{% if active_text_value != blank %}
+  {% assign active_styles = active_styles | push: '--text: {{ active_text_value }}' %}
 {% endif %}
-{% if s.bg_role_active == 'palette' and s.bg_role_active_palette != blank %}
-  {% assign active_styles = active_styles | push: 'background: var(--palette-{{ s.bg_role_active_palette }})' %}
-{% elsif s.bg_role_active == 'custom' and s.bg_role_active_custom != blank %}
-  {% assign active_styles = active_styles | push: 'background: {{ s.bg_role_active_custom }}' %}
+{%- capture active_bg_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.bg_role_active,
+      palette: s.bg_role_active_palette, custom: s.bg_role_active_custom -%}
+{%- endcapture -%}
+{% if active_bg_value != blank %}
+  {% assign active_styles = active_styles | push: 'background: {{ active_bg_value }}' %}
 {% endif %}
-{% if s.link_border_role_active == 'palette' and s.link_border_role_active_palette != blank %}
+{%- capture active_border_value -%}
+  {%- render 'role-color-value', kind: 'border', role: s.link_border_role_active,
+      palette: s.link_border_role_active_palette, custom: s.link_border_role_active_custom -%}
+{%- endcapture -%}
+{% if active_border_value != blank %}
   {% assign active_styles = active_styles
     | push: '--border-style:solid'
-    | push: '--border: var(--palette-{{ s.link_border_role_active_palette }})'
-  %}
-{% elsif s.link_border_role_active == 'custom' and s.link_border_role_active_custom != blank %}
-  {% assign active_styles = active_styles
-    | push: '--border-style:solid'
-    | push: '--border: {{ s.link_border_role_active_custom }}'
+    | push: '--border: {{ active_border_value }}'
   %}
 {% endif %}
 {% assign active_style_str = active_styles | join: ';' %}

@@ -25,12 +25,10 @@
 {% assign wrapper_class_str = wrapper_classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
-{% assign text_color_value = blank %}
-{% if s.text_role == 'palette' and s.text_role_palette != blank %}
-  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
-{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
-  {% assign text_color_value = s.text_role_custom %}
-{% endif %}
+{%- capture text_color_value -%}
+  {%- render 'role-color-value', kind: 'text', role: s.text_role,
+      palette: s.text_role_palette, custom: s.text_role_custom -%}
+{%- endcapture -%}
 {% assign styles = blank %}
 
 {% if text_color_value != blank %}

@@ -19,12 +19,12 @@
   {%- if size_tier == 'custom' -%}
     {%- assign decls = decls | push: '--border-width: {{ size_custom }}px' -%}
   {%- endif -%}
-  {%- if role == 'palette' and palette_token != blank -%}
-    {%- assign decls = decls | push: '--border: var(--palette-{{ palette_token }})' -%}
-  {%- elsif role == 'gradient' and gradient_token != blank -%}
-    {%- assign decls = decls | push: '--border: var(--gradient-{{ gradient_token }})' -%}
-  {%- elsif role == 'custom' and custom_color != blank -%}
-    {%- assign decls = decls | push: '--border: {{ custom_color }}' -%}
+  {%- capture border_value -%}
+    {%- render 'role-color-value', kind: 'border', role: role, palette: palette_token,
+        custom: custom_color, gradient: gradient_token -%}
+  {%- endcapture -%}
+  {%- if border_value != blank -%}
+    {%- assign decls = decls | push: '--border: {{ border_value }}' -%}
   {%- endif -%}
   {{- decls | join: ';' -}}
 {%- endunless -%}

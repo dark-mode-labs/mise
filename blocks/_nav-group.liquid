@@ -10,14 +10,12 @@
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
-{% assign text_color_value = blank %}
-{% if s.text_role == 'palette' and s.text_role_palette != blank %}
-  {% assign text_color_value = 'var(--palette-{{ s.text_role_palette }})' %}
-{% elsif s.text_role == 'custom' and s.text_role_custom != blank %}
-  {% assign text_color_value = s.text_role_custom %}
-{% elsif s.text_role != blank and s.text_role != 'inherit' and s.text_role != 'primary' %}
-  {% assign text_color_value = 'var(--text-{{ s.text_role }})' %}
-{% endif %}
+{%- capture text_color_value -%}
+  {%- if s.text_role != 'primary' -%}
+    {%- render 'role-color-value', kind: 'text', role: s.text_role,
+      palette: s.text_role_palette, custom: s.text_role_custom, slots: true -%}
+  {%- endif -%}
+{%- endcapture -%}
 {% assign styles = blank %}
 
 {% if text_color_value != blank %}
