@@ -1,0 +1,653 @@
+{% assign s = section.settings %}
+
+{%- capture bg_color_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.bg_role,
+      palette: s.bg_role_palette, custom: s.bg_role_custom, gradient: s.bg_role_gradient -%}
+{%- endcapture -%}
+{%- capture overlay_color_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.overlay_role,
+      palette: s.overlay_role_palette, custom: s.overlay_role_custom, gradient: s.overlay_role_gradient -%}
+{%- endcapture -%}
+
+{% assign container_classes = 'grid-layout-overlay limit-width'
+  | push: 'width-{{ s.width }}'
+  | push: 'height-{{ s.height }}'
+  | push_if: 'overflow-hidden', s.overflow_hidden
+%}
+{% assign content_overlay_classes = 'grid-content-overlay'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
+%}
+{% assign content_overlay_class_str = content_overlay_classes | join: ' ' %}
+
+{% assign spacing_styles = blank %}
+
+{% assign container_class_str = container_classes | join: ' ' %}
+{% assign spacing_style_str = spacing_styles | join: ';' %}
+
+{% assign bg_class = 'bg-{{ s.bg_role }}' %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign bg_layer_style = blank %}
+{% if bg_color_value != blank %}
+  {% assign bg_layer_style = bg_layer_style | push: 'background: {{ bg_color_value }}' %}
+{% endif %}
+{% if s.bg_image != blank %}
+  {% assign bg_layer_style = bg_layer_style | push: 'clip: rect(0, auto, auto, 0)' %}
+{% endif %}
+
+{%- capture border_class_str -%}{%- render 'box-border-class',
+  mode: s.border_mode, role: s.border_role, size_tier: s.border_size,
+  custom_left: s.border_custom_left, custom_right: s.border_custom_right,
+  custom_top: s.border_custom_top, custom_bottom: s.border_custom_bottom -%}{%- endcapture -%}
+{%- capture border_style_str -%}{%- render 'box-border-style',
+  mode: s.border_mode, role: s.border_role, palette_token: s.border_role_palette,
+  gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
+  style: s.border_style, size_tier: s.border_size, size_custom: s.border_size_custom -%}{%- endcapture -%}
+{% if border_style_str != blank %}{% assign bg_layer_style = bg_layer_style | push: border_style_str %}{% endif %}
+
+{% assign bg_layer_style_str = bg_layer_style | join: ';' %}
+
+{% assign styles = blank %}
+{% assign style_str = styles | join: ';' %}
+
+{% assign has_overlay = false %}
+{% if s.overlay_role and s.overlay_role != 'none' %}{% assign has_overlay = true %}{% endif %}
+{% if overlay_color_value != blank %}{% assign has_overlay = true %}{% endif %}
+
+{% assign has_bg_layer = false %}
+{% if s.bg_image != blank or has_overlay or bg_color_value != blank %}{% assign has_bg_layer = true %}{% endif %}
+{% if bg_class != '' and bg_role_safe != 'none' %}{% assign has_bg_layer = true %}{% endif %}
+{% unless s.border_mode == 'none' %}{% assign has_bg_layer = true %}{% endunless %}
+
+{% assign flex_classes = 'flex flex-wrap' %}
+{% for ef_id in s.effect %}
+  {% assign flex_classes = flex_classes | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
+{% if s.content_align != blank %}
+  {% assign flex_classes = flex_classes | push: 'justify-content-{{ s.content_align }}' %}
+{% endif %}
+
+{% assign flex_styles = blank %}
+{% if s.card_padding == 'custom' %}
+  {% assign flex_styles = flex_styles | push: 'row-gap: {{ s.card_padding_custom }}rem' %}
+{% else %}
+  {% assign flex_styles = flex_styles | push: 'row-gap: var(--space-{{ s.card_padding }})' %}
+{% endif %}
+
+{% assign flex_class_str = flex_classes | join: ' ' %}
+{% assign flex_style_str = flex_styles | join: ';' %}
+
+<section
+  class='section-flex surface-{{ s.surface_id }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
+  style='{{ style_str }}'
+  {{ context.attached_attributes }}
+>
+  {% if has_bg_layer %}
+    <div
+      class='grid-media-overlay width-{{ s.width_bg }} limit-width overflow-hidden {{ bg_class }} {{ border_class_str }}'
+      style='{{ bg_layer_style_str }}'
+    >
+      <div class='grid-media-inner'>
+        {% if s.bg_image != blank %}
+          {% render 'media',
+            src: s.bg_image,
+            src_mobile: s.bg_image_mobile,
+            fit: 'cover',
+            loading: 'lazy',
+            curtain_reveal_parallax: s.enable_curtain_parallax
+          %}
+        {% endif %}
+
+        {% render 'bg-overlay',
+          role: s.overlay_role,
+          alpha: s.overlay_alpha,
+          palette_token: s.overlay_role_palette,
+          custom_color: s.overlay_role_custom,
+          gradient_token: s.overlay_role_gradient
+        %}
+      </div>
+    </div>
+  {% endif %}
+
+  <div
+    class='{{ container_class_str }}'
+  >
+    <div class='{{ content_overlay_class_str }}' style='{{ spacing_style_str }}'>
+      <div
+        class='{{ flex_class_str }}'
+        style='{{ flex_style_str }}'
+      >
+        {% content_for 'blocks' %}
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Flex Container",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "overflow_hidden",
+      "label": "Clip overflow",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "select",
+      "id": "overlay_role",
+      "label": "Overlay",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "overlay_role_palette",
+      "label": "Overlay Palette Token",
+      "default": "brand",
+      "conditional": "setting.overlay_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "overlay_role_custom",
+      "label": "Raw Overlay",
+      "conditional": "setting.overlay_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "overlay_role_gradient",
+      "label": "Overlay Gradient",
+      "conditional": "setting.overlay_role == 'gradient'"
+    },
+    {
+      "type": "range",
+      "id": "overlay_alpha",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "conditional": "setting.overlay_role != 'none' and setting.overlay_role != 'custom'"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image_mobile",
+      "label": "Mobile Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_curtain_parallax",
+      "label": "Curtain Reveal Parallax",
+      "conditional": "setting.bg_image != blank"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Horizontal Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        }
+      ]
+    },
+    {
+      "type": "width",
+      "id": "width_bg",
+      "label": "Background Width",
+      "default": "fill"
+    },
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Content Width",
+      "default": "fill"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "height",
+      "id": "height",
+      "label": "Section Height",
+      "default": "auto"
+    },
+    {
+      "type": "space",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_left",
+      "label": "Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
+    },
+    {
+      "type": "effect",
+      "id": "effect",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied to this element; several compose."
+    },
+    {
+      "type": "header",
+      "content": "Theme"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "Gap & Cards"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_cards_global",
+      "label": "Enable Cards for All Columns",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "card_padding",
+      "label": "Gap / Card Padding",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "xs",
+          "label": "Extra Small"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "none",
+      "conditional": "setting.enable_cards_global == true"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_custom",
+      "label": "Custom Gap",
+      "min": 0,
+      "max": 6,
+      "step": 0.25,
+      "default": 1.5,
+      "unit": "rem",
+      "conditional": "setting.enable_cards_global == true and setting.card_padding == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "Border"
+    },
+    {
+      "type": "select",
+      "id": "border_mode",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "full", "label": "Full" },
+        { "value": "custom", "label": "Custom" }
+      ]
+    },
+    {
+      "type": "select",
+      "subtype": "border_role",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "default", "label": "Default" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "select",
+      "subtype": "border_size",
+      "id": "border_size",
+      "label": "Border Size",
+      "default": "xxs",
+      "options": [
+        { "value": "xxs", "label": "XXS", "info": "1px" },
+        { "value": "xs", "label": "XS", "info": "2px" },
+        { "value": "sm", "label": "SM", "info": "4px" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "conditional": "setting.border_mode != 'none'"
+    },
+    {
+      "type": "range",
+      "id": "border_size_custom",
+      "label": "Custom Border Width",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 1,
+      "unit": "px",
+      "conditional": "setting.border_size == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_left",
+      "label": "Border Left",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_right",
+      "label": "Border Right",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_top",
+      "label": "Border Top",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_custom_bottom",
+      "label": "Border Bottom",
+      "default": false,
+      "conditional": "setting.border_mode == 'custom'"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "group"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Multi-Column",
+      "settings": {},
+      "blocks": {
+        "group": {
+          "type": "group",
+          "blocks": {
+            "grp_1": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Sourcing"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            },
+            "grp_2": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Prep"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            },
+            "grp_3": {
+              "type": "group",
+              "blocks": {
+                "title": {
+                  "type": "text",
+                  "settings": {
+                    "content": "Plating"
+                  }
+                }
+              },
+              "block_order": ["title"],
+              "settings": {}
+            }
+          },
+          "block_order": ["grp_1", "grp_2", "grp_3"],
+          "settings": {
+            "content_align": "center",
+            "direction": "row"
+          }
+        }
+      },
+      "block_order": ["group"]
+    }
+  ]
+}
+{% endschema %}
