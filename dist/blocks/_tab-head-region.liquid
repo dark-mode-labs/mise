@@ -1,0 +1,11 @@
+<div class='tab-head-region' {{ context.attached_attributes }}>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Tab Head Region",
+  "settings": [],
+  "blocks": [{ "type": "_tab-head" }, { "type": "@theme" }]
+}
+{% endschema %}
