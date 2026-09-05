@@ -18,58 +18,6 @@
       ]
     },
     {
-      "name": "Social Media",
-      "id": "social_media",
-      "settings": [
-        {
-          "type": "header",
-          "content": "Accounts"
-        },
-        {
-          "type": "text",
-          "id": "instagram_link",
-          "label": "Instagram",
-          "info": "https://instagram.com/@yourhandle"
-        },
-        {
-          "type": "text",
-          "id": "facebook_link",
-          "label": "Facebook",
-          "info": "https://facebook.com/yourpage"
-        },
-        {
-          "type": "text",
-          "id": "tiktok_link",
-          "label": "TikTok",
-          "info": "https://tiktok.com/@yourhandle"
-        },
-        {
-          "type": "text",
-          "id": "twitter_link",
-          "label": "X (Twitter)",
-          "info": "https://x.com/@yourhandle"
-        },
-        {
-          "type": "text",
-          "id": "yelp_link",
-          "label": "Yelp",
-          "info": "https://yelp.com/biz/your-biz"
-        },
-        {
-          "type": "text",
-          "id": "linkedin_link",
-          "label": "LinkedIn",
-          "info": "https://linkedin.com/company/your-company"
-        },
-        {
-          "type": "text",
-          "id": "youtube_link",
-          "label": "YouTube",
-          "info": "https://youtube.com/@yourhandle"
-        }
-      ]
-    },
-    {
       "name": "Brand Palette",
       "type": "group",
       "id": "palette",

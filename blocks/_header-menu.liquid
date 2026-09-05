@@ -137,6 +137,13 @@
 {% elsif s.text_role_active == 'custom' or s.text_role_active == 'palette' %}
   {% assign active_classes = active_classes | push: 'text-primary' %}
 {% endif %}
+{%- capture active_bg_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.bg_role_active,
+      palette: s.bg_role_active_palette, custom: s.bg_role_active_custom -%}
+{%- endcapture -%}
+{% if active_bg_value != blank %}
+  {% assign active_classes = active_classes | push: 'block-bg' %}
+{% endif %}
 {% assign active_class_str = active_classes | join: ' ' %}
 
 {% assign active_styles = blank %}
@@ -147,12 +154,8 @@
 {% if active_text_value != blank %}
   {% assign active_styles = active_styles | push: '--text: {{ active_text_value }}' %}
 {% endif %}
-{%- capture active_bg_value -%}
-  {%- render 'role-color-value', kind: 'bg', role: s.bg_role_active,
-      palette: s.bg_role_active_palette, custom: s.bg_role_active_custom -%}
-{%- endcapture -%}
 {% if active_bg_value != blank %}
-  {% assign active_styles = active_styles | push: 'background: {{ active_bg_value }}' %}
+  {% assign active_styles = active_styles | push: '--block-bg: {{ active_bg_value }}' %}
 {% endif %}
 {%- capture active_border_value -%}
   {%- render 'role-color-value', kind: 'border', role: s.link_border_role_active,

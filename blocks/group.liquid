@@ -89,12 +89,15 @@
   {% assign classes = classes | push: 'relative' %}
 {% endif %}
 
-{% assign block_classes = classes | join: ' ' %}
-
 {%- capture bg_color_value -%}
   {%- render 'role-color-value', kind: 'bg', role: s.bg_role, palette: s.bg_role_palette,
       custom: s.bg_role_custom, gradient: s.bg_role_gradient -%}
 {%- endcapture -%}
+{% if bg_color_value != blank %}
+  {% assign classes = classes | push: 'block-bg' %}
+{% endif %}
+
+{% assign block_classes = classes | join: ' ' %}
 {% assign styles = blank %}
 
 {% if s.layout_mode == 'grid' %}
@@ -125,7 +128,7 @@
   {% assign styles = styles | push: '--aspect-ratio-custom: {{ s.aspect_ratio_custom }}' %}
 {% endif %}
 {% if bg_color_value != blank %}
-  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+  {% assign styles = styles | push: '--block-bg: {{ bg_color_value }}' %}
 {% endif %}
 {% comment %} Finalize Style Output {% endcomment %}
 {% assign block_styles = styles | join: ';' %}

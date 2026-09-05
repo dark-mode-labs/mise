@@ -62,7 +62,8 @@
   {% assign chip_strip_styles = chip_strip_styles | push: '--radius-custom: {{ s.chip_strip_border_radius }}px' %}
 {% endif %}
 {% if chip_strip_bg_value != blank %}
-  {% assign chip_strip_styles = chip_strip_styles | push: 'background: {{ chip_strip_bg_value }}' %}
+  {% assign chip_strip_styles = chip_strip_styles | push: '--block-bg: {{ chip_strip_bg_value }}' %}
+  {% assign chip_strip_classes = chip_strip_classes | push: 'block-bg' %}
 {% endif %}
 {% if s.chip_strip_gap != blank and s.chip_strip_gap != 'none' %}
   {% assign chip_strip_styles = chip_strip_styles | push: '--chip-strip-gap: var(--space-{{ s.chip_strip_gap }})' %}

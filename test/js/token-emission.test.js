@@ -21,6 +21,30 @@ test("a tier rule never resets a property back to the user-agent default", () =>
   assert.equal(src.includes("revert"), false);
 });
 
+test("only an animation tier publishes the variables its keyframes read", () => {
+  // A tier states `distance`/`scale` whether or not it animates, so the schema DEFAULTS reach a
+  // static or hover tier's rule. Two effect classes on one element are equal specificity, so the
+  // later rule wins and a held shadow silently reset a rise's travel and scale to mise's defaults.
+  const keyframeVars = ["--anim-dist", "--anim-scale", "--anim-scale-from"];
+  const declared = keyframeVars.filter((v) => src.includes(`${v}:`));
+  assert.deepEqual(declared, keyframeVars, "a keyframe variable stopped being emitted at all");
+
+  for (const v of keyframeVars) {
+    const before = src.slice(0, src.indexOf(`${v}:`));
+    const gateAt = before.lastIndexOf("{% if ef.type");
+    assert.notEqual(gateAt, -1, `${v} is emitted without asking the tier's type`);
+
+    // Still OPEN at the declaration, counted rather than assumed: the gate wraps inner conditions.
+    const seg = before.slice(gateAt);
+    const opens = (seg.match(/\{%-?\s*if\b/g) || []).length;
+    const closes = (seg.match(/\{%-?\s*endif\b/g) || []).length;
+    assert.ok(
+      opens > closes,
+      `${v} sits after the type gate closed — a static or hover tier will overwrite an animation tier's`
+    );
+  }
+});
+
 test("a hover tier transitions named properties, never `all`", () => {
   // `all` also animates a geometry change the element makes for its own reasons — a tab head
   // swapping state classes resizes by its border width, and `all` turns that into a visible wiggle.
