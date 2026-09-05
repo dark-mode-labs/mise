@@ -4,7 +4,7 @@
 // rebuilds `className` from base + the active OR inactive bag, so only those two toggle.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -76,10 +76,44 @@ test("a tab head's state background is class-consumed, never inline", () => {
   }
 });
 
-test("the state background variable and the class that reads it are pushed together", () => {
-  const src = read("blocks/_tab-head.liquid");
+// The element a bag paints, so a style bag and its class bag can be recognised as the same one.
+const element = (bag) => bag.replace(/_?(styles?|classes|class_str|style_str)$/, "") || "main";
 
-  assert.equal((src.match(/--tab-bg:/g) || []).length, (src.match(/'tab-head-bg'/g) || []).length);
+function pushesInto(src, fragment) {
+  const re = new RegExp(
+    `assign\\s+(\\w+)\\s*=\\s*\\1\\s*\\|\\s*push(?:_if)?:\\s*'${fragment}`,
+    "g"
+  );
+  return new Set([...src.matchAll(re)].map((m) => element(m[1])));
+}
+
+test("an element carrying an effect class never paints its background inline", () => {
+  // An inline declaration beats every class rule, so a hover tier's `background` could never win —
+  // the tier transitions a property it cannot set. A painted LAYER that takes no effect tier is
+  // free to declare it inline, which is why the pairing is what the test asks about.
+  const files = ["blocks", "sections", "snippets"].flatMap((dir) =>
+    readdirSync(join(root, dir))
+      .filter((f) => f.endsWith(".liquid"))
+      .map((f) => join(dir, f))
+  );
+
+  for (const file of files) {
+    const src = read(file).split("{% schema %}")[0];
+    const effected = pushesInto(src, "ef-");
+
+    for (const el of pushesInto(src, "background:")) {
+      assert.equal(
+        effected.has(el),
+        false,
+        `${file} paints '${el}' inline while an effect class rides it — push --block-bg and block-bg`
+      );
+    }
+    assert.equal(
+      (src.match(/--block-bg\s*:/g) || []).length > 0,
+      /push:\s*'block-bg'/.test(src),
+      `${file} pushes --block-bg without the class that reads it, or the reverse`
+    );
+  }
 });
 
 test("nothing paints a background layer above the tab head's own", () => {

@@ -42,15 +42,21 @@
     .gap-{{ s[0] }} { gap: var(--space-{{ s[0] }}); } .direction-row.gap-{{ s[0] }}, .direction-responsive.gap-
     {{- s[0] }}
     { --children-gap: var(--space-{{ s[0] }}); }
+    {% if s[1].settings.value contains '%' %}
+      .absolute[class*='anchor-top'].mt-{{ s[0] }} { margin-top: 0; top: var(--space-{{ s[0] }}); }
+      .absolute[class*='anchor-bottom'].mb-{{ s[0] }} { margin-bottom: 0; bottom: var(--space-{{ s[0] }}); }
+    {% endif %}
   {% endunless %}
 {% endfor %}
 {% for a in effect_scale %}
   {% assign ef = a[1].settings %}
   {% unless ef.structural %}
     .ef-{{ a[0] }} {
-    {% if ef.distance != blank %}--anim-dist: {{ ef.distance }};{% endif %}
-    {% if ef.scale_to != blank %}--anim-scale: {{ ef.scale_to }};{% endif %}
-    {% if ef.scale != blank %}--anim-scale-from: {{ ef.scale }};{% endif %}
+    {% if ef.type != 'static' and ef.type != 'hover' %}
+      {% if ef.distance != blank %}--anim-dist: {{ ef.distance }};{% endif %}
+      {% if ef.scale_to != blank %}--anim-scale: {{ ef.scale_to }};{% endif %}
+      {% if ef.scale != blank %}--anim-scale-from: {{ ef.scale }};{% endif %}
+    {% endif %}
     {% if ef.reveal %}opacity: 0;{% endif %}
     }
     {%- capture hover_text_value -%}

@@ -84,8 +84,8 @@
 
 {% if s.enable_overlay_inactive %}
   {% if overlay_color_inactive_value != blank -%}
-    {%- assign inactive_state_styles = inactive_state_styles | push: '--tab-bg:{{ overlay_color_inactive_value }}' -%}
-    {%- assign inactive_state_classes = inactive_state_classes | push: 'tab-head-bg' -%}
+    {%- assign inactive_state_styles = inactive_state_styles | push: '--block-bg:{{ overlay_color_inactive_value }}' -%}
+    {%- assign inactive_state_classes = inactive_state_classes | push: 'block-bg' | push: 'tab-head-bg' -%}
   {%- elsif s.overlay_role_inactive and s.overlay_role_inactive != 'none' -%}
     {%- assign inactive_state_classes = inactive_state_classes | push: 'bg-{{ s.overlay_role_inactive }}' -%}
   {%- endif %}
@@ -126,8 +126,8 @@
 
 {% if s.enable_overlay %}
   {% if overlay_color_value != blank -%}
-    {%- assign active_state_styles = active_state_styles | push: '--tab-bg:{{ overlay_color_value }}' -%}
-    {%- assign active_state_classes = active_state_classes | push: 'tab-head-bg' -%}
+    {%- assign active_state_styles = active_state_styles | push: '--block-bg:{{ overlay_color_value }}' -%}
+    {%- assign active_state_classes = active_state_classes | push: 'block-bg' | push: 'tab-head-bg' -%}
   {%- elsif s.overlay_role and s.overlay_role != 'none' -%}
     {%- assign active_state_classes = active_state_classes | push: 'bg-{{ s.overlay_role }}' -%}
   {%- endif %}

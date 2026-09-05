@@ -57,12 +57,15 @@
   {% endif %}
 {% endunless %}
 
-{% assign block_classes = classes | join: ' ' %}
-
 {%- capture bg_color_value -%}
   {%- render 'role-color-value', kind: 'bg', role: s.bg_role,
       palette: s.bg_role_palette, custom: s.bg_role_custom, gradient: s.bg_role_gradient -%}
 {%- endcapture -%}
+{% if bg_color_value != blank %}
+  {% assign classes = classes | push: 'block-bg' %}
+{% endif %}
+{% assign block_classes = classes | join: ' ' %}
+
 {%- capture border_color_value -%}
   {%- render 'role-color-value', kind: 'border', role: s.border_role,
       palette: s.border_role_palette, custom: s.border_role_custom, gradient: s.border_role_gradient -%}
@@ -85,7 +88,7 @@
 {% endunless %}
 
 {% if bg_color_value != blank %}
-  {% assign styles = styles | push: 'background: {{ bg_color_value }}' %}
+  {% assign styles = styles | push: '--block-bg: {{ bg_color_value }}' %}
 {% endif %}
 {% if s.opacity < 100 %}
   {% assign styles = styles | push: 'opacity: {{ s.opacity | divided_by: 100.0 }}' %}

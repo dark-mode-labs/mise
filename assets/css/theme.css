@@ -235,8 +235,11 @@
     pointer-events: auto;
   }
 
+  .block-bg {
+    background: var(--block-bg);
+  }
+
   .tab-head-bg {
-    background: var(--tab-bg);
     transition: background 200ms;
   }
 
