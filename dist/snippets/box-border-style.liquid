@@ -1,0 +1,30 @@
+{%- comment -%}
+  box-border-style — the custom properties a border mode asks for, semicolon-joined. The value half
+  of `box-border-class`; a caller needs both, and appends this to the same element's own style list.
+
+  Emits NOTHING when mode is 'none'. Inputs:
+    mode           — border_mode: 'none' | 'full' | 'custom'
+    role           — border_role; only 'palette' / 'gradient' / 'custom' resolve to a value here,
+                     because a slot role reaches the element as a class instead.
+    palette_token  — border_role_palette token name
+    gradient_token — border_role_gradient token name
+    custom_color   — border_role_custom raw value
+    style          — border_style
+    size_tier      — border_size tier id; 'custom' takes its width from `size_custom`.
+    size_custom    — px width, honoured only when size is 'custom'
+{%- endcomment -%}
+{%- unless mode == 'none' -%}
+  {%- assign decls = blank -%}
+  {%- assign decls = decls | push: '--border-style: {{ style }}' -%}
+  {%- if size_tier == 'custom' -%}
+    {%- assign decls = decls | push: '--border-width: {{ size_custom }}px' -%}
+  {%- endif -%}
+  {%- capture border_value -%}
+    {%- render 'role-color-value', kind: 'border', role: role, palette: palette_token,
+        custom: custom_color, gradient: gradient_token -%}
+  {%- endcapture -%}
+  {%- if border_value != blank -%}
+    {%- assign decls = decls | push: '--border: {{ border_value }}' -%}
+  {%- endif -%}
+  {{- decls | join: ';' -}}
+{%- endunless -%}
