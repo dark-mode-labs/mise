@@ -1,3 +1,19 @@
+const SERVER_EXPANDED = new WeakMap();
+
+function serverExpanded(el) {
+  if (!SERVER_EXPANDED.has(el)) {
+    for (const pane of document.querySelectorAll(".tab-content")) {
+      if (!SERVER_EXPANDED.has(pane)) {
+        SERVER_EXPANDED.set(pane, pane.getAttribute("aria-expanded") === "true");
+      }
+    }
+    if (!SERVER_EXPANDED.has(el)) {
+      SERVER_EXPANDED.set(el, el.getAttribute("aria-expanded") === "true");
+    }
+  }
+  return SERVER_EXPANDED.get(el) === true;
+}
+
 export default class TabContent {
   constructor(el) {
     this.el = el;
@@ -6,7 +22,7 @@ export default class TabContent {
 
     this._baseClass = this.el.className || "";
     this._baseStyle = this.el.style.cssText || "";
-    this._serverExpanded = this.el.getAttribute("aria-expanded") === "true";
+    this._serverExpanded = serverExpanded(this.el);
 
     this.handleGlobalSwitch = this.handleGlobalSwitch.bind(this);
 
@@ -20,7 +36,7 @@ export default class TabContent {
   }
 
   familyNamedADefault(family = this.family()) {
-    return family.some((p) => p.getAttribute("aria-expanded") === "true");
+    return family.some((p) => serverExpanded(p));
   }
 
   init() {

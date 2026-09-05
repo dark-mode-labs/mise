@@ -164,3 +164,22 @@ test("a headless group with no server default still falls back to the first", as
   panes.forEach((p) => new TabContent(p));
   assert.equal(panes[0].getAttribute("aria-expanded"), "true");
 });
+
+test("two panes sharing one tab id both open, whatever order they mount in", async () => {
+  for (const order of [
+    [0, 1],
+    [1, 0],
+  ]) {
+    const { panes, doc } = harness({ expandedIndex: -1, paneCount: 2 });
+    panes[1].setAttribute("data-tab-id", "t0");
+    const TabContent = await loadTabContent(doc);
+    order.forEach((i) => new TabContent(panes[i]));
+
+    assert.deepEqual(
+      panes.map((p) => p.getAttribute("aria-expanded")),
+      ["true", "true"],
+      `mounted ${order.join(" then ")}: one copy of the tab is open and the other is not, so half ` +
+        `the tab's content is invisible until something re-activates it`
+    );
+  }
+});
