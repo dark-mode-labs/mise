@@ -22,7 +22,7 @@ function schema(file) {
 
 const field = (file, id) => (schema(file).settings ?? []).find((f) => f.id === id);
 
-test("both rails can say how the change moves, and how long it takes", () => {
+test("a rail says how the change MOVES, and leaves how long it takes to the effect axis", () => {
   for (const file of RAILS) {
     const style = field(file, "transition_style");
     assert.ok(style, `${file} cannot say whether it slides or fades`);
@@ -118,8 +118,17 @@ test("nothing dissolves IN on load — the first slide is up before the rail is 
   // leaves EVERY slide at 0 — the hero rendered as its own overlay and nothing else.
   assert.match(
     css,
-    /\.slideshow-track-fade:not\(:has\(\.is-active\)\) > \*:first-child[\s\S]{0,240}?opacity:\s*1/,
+    /\.slideshow-track-fade:not\(:has\([^)]*\.is-active[^)]*\)\)[\s\S]{0,300}?opacity:\s*1/,
     "no slide is raised when the behaviour raises none, so the hero can render blank"
+  );
+  // `.is-active` is the DOTS' class too, and a carousel may hold a dots row or a tab group — so the
+  // question is only ever about the slides, never about anything they contain.
+  const fallback = css.match(/\.slideshow-track-fade:not\(:has\(([^)]*)\)\)/);
+  assert.ok(fallback, "no fallback rule at all");
+  assert.match(
+    fallback[1],
+    /^>\s*\.is-active/,
+    "the fallback asks whether ANY descendant is active, so an active dot or tab head suppresses it"
   );
   assert.doesNotMatch(
     css,
@@ -147,9 +156,14 @@ test("a fade rail reads its position from the index, never from a scroll it does
   const js = read("assets/js/components/slideshow.js");
 
   assert.match(js, /this\.fade\s*=\s*[^\n]*slideshow-track-fade/, "fade mode is never detected");
+  const body = (name) => {
+    const at = js.indexOf(`${name}() {`);
+    assert.ok(at > 0, `slideshow.js has no ${name}()`);
+    return js.slice(at, js.indexOf("\n  }", at));
+  };
   assert.match(
-    js,
-    /getCurrentIndex\(\)\s*\{\s*\n\s*if \(this\.fade\) return this\.index;/,
+    body("getCurrentIndex"),
+    /if \(this\.fade\) return this\.index;/,
     "the index is not the position in fade mode — scrollLeft is always 0, so every slide reads as 0"
   );
   assert.match(

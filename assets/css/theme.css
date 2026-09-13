@@ -276,9 +276,11 @@
     pointer-events: none;
   }
 
-  [data-behavior="slideshow"] .slideshow-track-fade:not(:has(.is-active)) > *:first-child,
   [data-behavior="slideshow"]
-    .slideshow-track-fade:not(:has(.is-active))
+    .slideshow-track-fade:not(:has(> .is-active, > .contents > .is-active))
+    > *:first-child,
+  [data-behavior="slideshow"]
+    .slideshow-track-fade:not(:has(> .is-active, > .contents > .is-active))
     > .contents
     > *:first-child {
     opacity: 1;

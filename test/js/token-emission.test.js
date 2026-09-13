@@ -45,6 +45,55 @@ test("only an animation tier publishes the variables its keyframes read", () => 
   }
 });
 
+test("a tier's timing is published as variables, and a timing tier paints nothing", () => {
+  // A DESCENDANT is the only thing that can read a tier's timing — the fade rail's slides do — and
+  // `transition-*` does not inherit, so the duration and curve have to leave the shorthand.
+  for (const v of ["--ef-duration", "--ef-timing"]) {
+    assert.ok(
+      src.includes(`${v}:`),
+      `${v} is not published, so nothing below the tier can read it`
+    );
+    const before = src.slice(0, src.indexOf(`${v}:`));
+    const gateAt = before.lastIndexOf("{% if ef.type");
+    const seg = gateAt === -1 ? "" : before.slice(gateAt);
+    const opens = (seg.match(/\{%-?\s*if\b/g) || []).length;
+    const closes = (seg.match(/\{%-?\s*endif\b/g) || []).length;
+    // Exactly one condition may still be open at the declaration — its own `!= blank`. A second
+    // means a TYPE gate still wraps it, and a hover or timing tier names a duration too.
+    assert.equal(
+      opens - closes,
+      1,
+      `${v} is gated on the tier's type, so only an animation would publish it`
+    );
+  }
+
+  // The timing arm draws no rule of its own: it names a duration, and holds nothing to paint.
+  const at = src.indexOf("{% if ef.type == 'timing' %}");
+  assert.notEqual(at, -1, "no tier type states a bare timing, so a fade has nowhere to read one");
+  const arm = src.slice(at, src.indexOf("{% elsif", at));
+  assert.doesNotMatch(arm, /\.ef-/, "a timing tier paints a rule, and it has nothing to paint");
+  assert.doesNotMatch(arm, /animation:/, "a timing tier runs keyframes");
+});
+
+test("a chip strip that states NO gap renders none, not the strip's own default", () => {
+  // A structural tier publishes no `--space-*` — that is what `structural` means — so a `var()`
+  // naming one resolves to nothing and the CONSUMER's default wins. `.chip-strip` defaults to
+  // 0.5rem, so a rail stating `gap: none` drew 8px between chips the source butts together.
+  const tabGroup = readFileSync(join(root, "blocks/tab-group.liquid"), "utf8");
+  const decl = tabGroup.match(/--chip-strip-gap:\s*var\(--space-\{\{[^)]*\)/);
+  assert.ok(decl, "the chip strip no longer states a gap at all");
+  assert.match(
+    decl[0],
+    /,\s*0\)$/,
+    "the gap names a tier without saying what a STRUCTURAL one means, so `none` renders 0.5rem"
+  );
+  assert.doesNotMatch(
+    tabGroup.slice(0, tabGroup.indexOf(decl[0])).split("{% if").pop(),
+    /!=\s*'none'/,
+    "`none` is skipped rather than emitted as zero"
+  );
+});
+
 test("a hover tier transitions named properties, never `all`", () => {
   // `all` also animates a geometry change the element makes for its own reasons — a tab head
   // swapping state classes resizes by its border width, and `all` turns that into a visible wiggle.
