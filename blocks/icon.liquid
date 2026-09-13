@@ -1,12 +1,17 @@
 {% assign s = block.settings %}
 
-{% comment %} --- Wrapper Classes --- {% endcomment %}
-{% assign classes = 'icon icon-size inline-flex items-center justify-center flex-shrink-0'
+{% assign classes = 'icon inline-flex items-center justify-center flex-shrink-0'
   | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
   | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
   | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
   | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
 %}
+{% if s.icon_size > 0 -%}
+  {%- assign classes = classes | push: 'icon-size' -%}
+{%- endif %}
+{% if s.width != blank -%}
+  {%- assign classes = classes | push: 'limit-width width-{{ s.width }}' -%}
+{%- endif %}
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
@@ -25,7 +30,9 @@
 {%- endcapture -%}
 {% assign styles = blank %}
 
-{% assign styles = styles | push: '--icon-size: {{ s.icon_size }}rem' %}
+{% if s.icon_size > 0 %}
+  {% assign styles = styles | push: '--icon-size: {{ s.icon_size }}rem' %}
+{% endif %}
 
 {% if text_color_value != blank %}
   {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
@@ -44,6 +51,11 @@
 {
   "name": "Icon",
   "settings": [
+    {
+      "type": "width",
+      "id": "width",
+      "label": "Width"
+    },
     {
       "type": "select",
       "id": "align_self",
@@ -82,7 +94,8 @@
       "type": "range",
       "id": "icon_size",
       "label": "Icon Size",
-      "min": 0.5,
+      "info": "0 leaves a graphic at its own size; any other value makes it a square of that side.",
+      "min": 0,
       "max": 8,
       "step": 0.25,
       "default": 1.5,

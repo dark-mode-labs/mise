@@ -195,3 +195,30 @@ test("the chip strip renders the effects it declares", () => {
     "the strip pushes a malformed ef- class"
   );
 });
+
+test("every position a box offers is one it renders, anchor included", () => {
+  // A schema option the template ignores renders as the default, silently. `fixed` was added for a
+  // control the page reveals by scroll, and its `inset` conditional had to widen with it — left
+  // behind, conformance strips the anchor and the box lands top-left.
+  const src = read("blocks/group.liquid");
+  const position = (schema("blocks/group.liquid").settings ?? []).find((f) => f.id === "position");
+  assert.ok(position, "group states no position");
+
+  const rendered = src.slice(0, src.indexOf("{% schema %}"));
+  for (const { value } of position.options ?? []) {
+    if (value === "relative") continue; // the else arm
+    assert.ok(
+      rendered.includes(`s.position == '${value}'`),
+      `group offers \`${value}\` and never renders it`
+    );
+  }
+
+  const inset = (schema("blocks/group.liquid").settings ?? []).find((f) => f.id === "inset");
+  for (const { value } of position.options ?? []) {
+    if (value === "relative") continue;
+    assert.ok(
+      (inset.conditional ?? "").includes(`'${value}'`),
+      `\`${value}\` is positioned but its anchor is conditioned away, so conformance strips it`
+    );
+  }
+});

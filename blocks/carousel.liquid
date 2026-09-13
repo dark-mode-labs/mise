@@ -125,6 +125,12 @@
 
 {% assign wrapper_classes = wrapper_classes | join: ' ' %}
 
+{% if s.transition_style == 'fade' %}
+  {% assign track_classes = 'slideshow-track slideshow-track-fade h-full' %}
+{% else %}
+  {% assign track_classes = 'slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-{{ s.gap }}' %}
+{% endif %}
+
 <div
   class='{{ block_classes }}'
   style='{{ block_styles }}'
@@ -175,7 +181,7 @@
       gradient_token: s.overlay_role_gradient,
       behind: true
     %}
-    <div class='slideshow-track flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide cursor-grab active:cursor-grabbing gap-{{ s.gap }}'>
+    <div class='{{ track_classes }}'>
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -385,6 +391,23 @@
       "max": 10,
       "default": 5,
       "conditional": "setting.autoplay == true"
+    },
+    {
+      "type": "select",
+      "id": "transition_style",
+      "label": "Transition",
+      "default": "slide",
+      "info": "Slide moves the rail; fade stacks the slides and dissolves between them.",
+      "options": [
+        {
+          "value": "slide",
+          "label": "Slide"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        }
+      ]
     },
     {
       "type": "width",

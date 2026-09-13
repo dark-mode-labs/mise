@@ -32,6 +32,9 @@
 {% assign inactive_state_styles = '' %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
+{% if s.height != blank and s.height != 'auto' %}
+  {% assign classes = classes | push: 'height-{{ s.height }}' %}
+{% endif %}
 {% if s.width != blank %}
   {% assign classes = classes | push: 'width-{{ s.width }}' %}
 {% endif %}
@@ -936,6 +939,12 @@
       "type": "width",
       "id": "width",
       "label": "Width"
+    },
+    {
+      "type": "height",
+      "id": "height",
+      "label": "Height",
+      "default": "auto"
     },
     {
       "type": "space",

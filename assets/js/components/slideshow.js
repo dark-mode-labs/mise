@@ -23,6 +23,9 @@ export default class Slideshow {
       this.el.querySelector(".slideshow-counter-wrapper span") ||
       this.el.querySelector(".slideshow-counter-wrapper");
 
+    this.fade = !!this.track && this.track.classList.contains("slideshow-track-fade");
+    this.index = 0;
+
     this.infinite = this.el.dataset.infinite === "true";
     this.autoplayEnabled = this.el.dataset.autoplay === "true";
     this.speed = (parseInt(this.el.dataset.speed) || 5) * 1000;
@@ -39,6 +42,7 @@ export default class Slideshow {
   }
 
   getCols() {
+    if (this.fade) return 1;
     const slides = this.getSlides();
     if (!slides.length) return 1;
     const slideW = slides[0].getBoundingClientRect().width;
@@ -62,6 +66,7 @@ export default class Slideshow {
   }
 
   getCurrentIndex() {
+    if (this.fade) return this.index;
     const scrollPos = this.track.scrollLeft;
     const slides = this.getSlides();
     let closestIndex = 0;
@@ -119,6 +124,8 @@ export default class Slideshow {
       });
     });
 
+    if (this.fade) this.scrollToIndex(0);
+
     this.track.addEventListener("scroll", () => {
       if (!this.scrollTicking) {
         window.requestAnimationFrame(() => {
@@ -145,7 +152,7 @@ export default class Slideshow {
       true
     );
 
-    this.initDragPhysics();
+    if (!this.fade) this.initDragPhysics();
 
     if (this.autoplayEnabled) {
       this.startAutoplay();
@@ -207,7 +214,9 @@ export default class Slideshow {
     const maxScroll = this.track.scrollWidth - this.track.clientWidth;
 
     let currentPageIndex;
-    if (this.track.scrollLeft <= 10) {
+    if (this.fade) {
+      currentPageIndex = getCurrentPageFromIndex(index, cols);
+    } else if (this.track.scrollLeft <= 10) {
       currentPageIndex = 0;
     } else if (this.track.scrollLeft >= maxScroll - 10) {
       currentPageIndex = totalPages - 1;
@@ -220,8 +229,8 @@ export default class Slideshow {
     this.dots.forEach((dot, i) => dot.classList.toggle("is-active", i === currentPageIndex));
 
     if (!this.infinite) {
-      const atStart = this.track.scrollLeft <= 5;
-      const atEnd = this.track.scrollLeft >= maxScroll - 5;
+      const atStart = this.fade ? index <= 0 : this.track.scrollLeft <= 5;
+      const atEnd = this.fade ? index >= total - 1 : this.track.scrollLeft >= maxScroll - 5;
       if (this.prevBtn) this.prevBtn.disabled = atStart;
       if (this.nextBtn) this.nextBtn.disabled = atEnd;
       (this.extPrev || []).forEach((b) => this.setControlDisabled(b, atStart));
@@ -234,12 +243,12 @@ export default class Slideshow {
     }
   }
 
-  next() {
+  next({ auto = false } = {}) {
     const total = this.getSlides().length;
     const target = getNextSlideIndex(this.getCurrentIndex(), this.getCols(), total, this.infinite);
     if (target === null) return;
     this.scrollToIndex(target);
-    this.stopAutoplay();
+    if (!auto) this.stopAutoplay();
   }
 
   prev() {
@@ -255,6 +264,13 @@ export default class Slideshow {
     const slide = slides[index];
     if (!slide) return;
 
+    if (this.fade) {
+      this.index = index;
+      slides.forEach((s, i) => s.classList.toggle("is-active", i === index));
+      this.updateUI(index, slides.length);
+      return;
+    }
+
     const targetLeft = slide.offsetLeft - this.track.offsetLeft;
     this.track.scrollTo({ left: targetLeft, behavior: "smooth" });
   }
@@ -265,7 +281,7 @@ export default class Slideshow {
     const totalPages = Math.ceil(this.getSlides().length / cols);
     if (totalPages <= 1) return;
 
-    this.interval = setInterval(() => this.next(), this.speed);
+    this.interval = setInterval(() => this.next({ auto: true }), this.speed);
   }
 
   stopAutoplay() {

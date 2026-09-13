@@ -83,8 +83,8 @@
 {% endif %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
-{% if s.position == 'absolute' %}
-  {% assign classes = classes | push: 'absolute' | push: 'anchor-{{ s.inset }}' %}
+{% if s.position == 'absolute' or s.position == 'fixed' %}
+  {% assign classes = classes | push: '{{ s.position }}' | push: 'anchor-{{ s.inset }}' %}
 {% else %}
   {% assign classes = classes | push: 'relative' %}
 {% endif %}
@@ -424,6 +424,10 @@
         {
           "value": "absolute",
           "label": "Absolute"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed"
         }
       ],
       "default": "relative"
@@ -491,7 +495,7 @@
         }
       ],
       "default": "top-left",
-      "conditional": "setting.position == 'absolute'"
+      "conditional": "setting.position == 'absolute' or setting.position == 'fixed'"
     },
     {
       "type": "header",
