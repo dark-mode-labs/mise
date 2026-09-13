@@ -572,6 +572,10 @@
             {
               "value": "hover",
               "label": "Hover"
+            },
+            {
+              "value": "timing",
+              "label": "Timing only"
             }
           ]
         },

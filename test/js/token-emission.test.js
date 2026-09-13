@@ -68,9 +68,12 @@ test("every field the hover applies is a field it transitions", () => {
       src.indexOf("{% endcapture %}", src.indexOf("{% capture rest %}"))
     )
   );
-  const transitioned = fields(
-    src.slice(src.indexOf("{% assign moved ="), src.indexOf("{% if ef.type == 'static' %}"))
-  );
+  // The list ends where the TYPE branching begins — matched by shape, so adding a type does not
+  // silently widen the slice and drag the animation branch's fields in with it.
+  const movedAt = src.indexOf("{% assign moved =");
+  const branchAt = src.slice(movedAt).search(/\{%\s*if ef\.type ==/);
+  assert.ok(branchAt > 0, "the `moved` list is not followed by the type branching");
+  const transitioned = fields(src.slice(movedAt, movedAt + branchAt));
 
   assert.deepEqual([...applied].sort(), [...transitioned].sort());
 });
