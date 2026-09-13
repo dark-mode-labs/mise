@@ -39,6 +39,9 @@
 {% if s.chip_strip_vertical_align != blank %}
   {% assign chip_strip_align = 'vertical-{{ s.chip_strip_vertical_align }}' %}
 {% endif %}
+{% if s.chip_strip_content_align != blank %}
+  {% assign chip_strip_align = chip_strip_align | push: 'content-{{ s.chip_strip_content_align }}' %}
+{% endif %}
 {% assign chip_strip_classes = 'chip-strip chip-strip-{{ s.chip_position }} chip-strip-{{ s.chip_layout }}'
   | push: chip_strip_align
   | push: 'pt-{{ s.chip_strip_padding_top }} pb-{{ s.chip_strip_padding_bottom }}'
@@ -65,8 +68,9 @@
   {% assign chip_strip_styles = chip_strip_styles | push: '--block-bg: {{ chip_strip_bg_value }}' %}
   {% assign chip_strip_classes = chip_strip_classes | push: 'block-bg' %}
 {% endif %}
-{% if s.chip_strip_gap != blank and s.chip_strip_gap != 'none' %}
-  {% assign chip_strip_styles = chip_strip_styles | push: '--chip-strip-gap: var(--space-{{ s.chip_strip_gap }})' %}
+{% comment %} A structural tier publishes no variable, and `none` is zero — not the strip's default. {% endcomment %}
+{% if s.chip_strip_gap != blank %}
+  {% assign chip_strip_styles = chip_strip_styles | push: '--chip-strip-gap: var(--space-{{ s.chip_strip_gap }}, 0)' %}
 {% endif %}
 
 {% unless s.chip_strip_border_mode == blank or s.chip_strip_border_mode == 'none' %}
@@ -344,6 +348,18 @@
       "id": "chip_strip_effect",
       "label": "Chip Strip Effect",
       "default": []
+    },
+    {
+      "type": "select",
+      "id": "chip_strip_content_align",
+      "subtype": "content_align",
+      "label": "Chip Strip Distribution",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "between", "label": "Space Between" }
+      ]
     },
     {
       "type": "select",

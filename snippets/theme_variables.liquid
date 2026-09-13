@@ -43,8 +43,10 @@
     {{- s[0] }}
     { --children-gap: var(--space-{{ s[0] }}); }
     {% if s[1].settings.value contains '%' %}
-      .absolute[class*='anchor-top'].mt-{{ s[0] }} { margin-top: 0; top: var(--space-{{ s[0] }}); }
-      .absolute[class*='anchor-bottom'].mb-{{ s[0] }} { margin-bottom: 0; bottom: var(--space-{{ s[0] }}); }
+      .absolute[class*='anchor-top'].mt-{{ s[0] }}, .absolute[class*='anchor-cover'].mt-{{ s[0] }} { margin-top: 0; top:
+      var(--space-{{ s[0] }}); } .absolute[class*='anchor-bottom'].mb-{{ s[0] }}, .absolute[class*='anchor-cover'].mb-
+      {{- s[0] }}
+      { margin-bottom: 0; bottom: var(--space-{{ s[0] }}); }
     {% endif %}
   {% endunless %}
 {% endfor %}

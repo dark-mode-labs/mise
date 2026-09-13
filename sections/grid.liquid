@@ -67,11 +67,14 @@
 {% if s.content_align != blank %}
   {% assign flex_classes = flex_classes | push: 'justify-content-{{ s.content_align }}' %}
 {% endif %}
+{% if s.gap != blank %}
+  {% assign flex_classes = flex_classes | push: 'gap-{{ s.gap }}' %}
+{% endif %}
 
 {% assign flex_styles = blank %}
 {% if s.card_padding == 'custom' %}
   {% assign flex_styles = flex_styles | push: 'row-gap: {{ s.card_padding_custom }}rem' %}
-{% else %}
+{% elsif s.card_padding != blank and s.card_padding != 'none' %}
   {% assign flex_styles = flex_styles | push: 'row-gap: var(--space-{{ s.card_padding }})' %}
 {% endif %}
 
@@ -313,6 +316,12 @@
     {
       "type": "header",
       "content": "Layout"
+    },
+    {
+      "type": "space",
+      "id": "gap",
+      "label": "Gap",
+      "default": "none"
     },
     {
       "type": "select",

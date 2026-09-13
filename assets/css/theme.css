@@ -540,7 +540,7 @@
     gap: 0;
   }
 
-  .icon svg {
+  .icon-size svg {
     @apply w-full h-full;
   }
 
@@ -910,18 +910,22 @@
     align-items: stretch;
   }
 
+  .chip-strip.content-left,
   .direction-row.content-left {
     justify-content: flex-start;
   }
 
+  .chip-strip.content-center,
   .direction-row.content-center {
     justify-content: center;
   }
 
+  .chip-strip.content-right,
   .direction-row.content-right {
     justify-content: flex-end;
   }
 
+  .chip-strip.content-between,
   .direction-row.content-between {
     justify-content: space-between;
   }

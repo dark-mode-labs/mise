@@ -234,12 +234,12 @@ export default class Slideshow {
     }
   }
 
-  next() {
+  next({ auto = false } = {}) {
     const total = this.getSlides().length;
     const target = getNextSlideIndex(this.getCurrentIndex(), this.getCols(), total, this.infinite);
     if (target === null) return;
     this.scrollToIndex(target);
-    this.stopAutoplay();
+    if (!auto) this.stopAutoplay();
   }
 
   prev() {
@@ -265,7 +265,7 @@ export default class Slideshow {
     const totalPages = Math.ceil(this.getSlides().length / cols);
     if (totalPages <= 1) return;
 
-    this.interval = setInterval(() => this.next(), this.speed);
+    this.interval = setInterval(() => this.next({ auto: true }), this.speed);
   }
 
   stopAutoplay() {
