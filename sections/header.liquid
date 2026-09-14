@@ -309,7 +309,7 @@
           {% unless s.cart_padding_right == blank or s.cart_padding_right == 'none' -%}
             {%- assign cart_has_padding = true -%}
           {%- endunless %}
-          {% if s.cart_shape == 'circle' or cart_bg_color != blank or cart_border_color != blank %}
+          {% if s.cart_shape == 'circle' %}
             {% assign cart_btn_class = cart_btn_class | append: ' rounded-full' %}
           {% elsif cart_has_padding %}
             {% assign cart_btn_class = cart_btn_class | append: ' hover:opacity-70' %}
