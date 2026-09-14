@@ -1342,10 +1342,10 @@
 
   .cart-count-badge {
     position: absolute;
-    top: -0.125rem;
-    right: -0.125rem;
-    min-width: var(--space-sm);
-    height: var(--space-sm);
+    top: calc(-1 * var(--cart-badge-offset, 0.125rem));
+    right: calc(-1 * var(--cart-badge-offset, 0.125rem));
+    min-width: var(--cart-badge-size, var(--space-sm));
+    height: var(--cart-badge-size, var(--space-sm));
     padding-inline: var(--space-xxs);
     background: var(--accent-bg);
     color: var(--text-on-accent);
