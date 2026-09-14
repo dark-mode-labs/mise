@@ -340,6 +340,12 @@
             {% if badge_text_color != blank %}
               {% assign badge_styles = badge_styles | push: 'color: {{ badge_text_color }}' %}
             {% endif %}
+            {% if s.cart_badge_offset > 0 %}
+              {% assign badge_styles = badge_styles | push: '--cart-badge-offset: {{ s.cart_badge_offset }}rem' %}
+            {% endif %}
+            {% if s.cart_badge_size > 0 %}
+              {% assign badge_styles = badge_styles | push: '--cart-badge-size: {{ s.cart_badge_size }}rem' %}
+            {% endif %}
             <span
               class='cart-count-badge'
               data-cart-badge
@@ -1242,6 +1248,28 @@
       "label": "Cart Shadow Color",
       "default": "rgba(0,0,0,0.45)",
       "conditional": "setting.show_cart == true and setting.cart_shadow == true and setting.cart_shadow_color_override == true"
+    },
+    {
+      "type": "range",
+      "id": "cart_badge_size",
+      "label": "Badge size",
+      "default": 0,
+      "min": 0,
+      "max": 3,
+      "step": 0.0625,
+      "unit": "rem",
+      "conditional": "setting.show_cart == true"
+    },
+    {
+      "type": "range",
+      "id": "cart_badge_offset",
+      "label": "Badge overhang",
+      "default": 0,
+      "min": 0,
+      "max": 2,
+      "step": 0.0625,
+      "unit": "rem",
+      "conditional": "setting.show_cart == true"
     },
     {
       "type": "select",
