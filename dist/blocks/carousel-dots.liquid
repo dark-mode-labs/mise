@@ -1,0 +1,148 @@
+{% assign s = block.settings %}
+{% assign styles = blank | push: 'display: none' | push: '--dot-active-scale: 1' %}
+
+{%- capture dc -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.dot_role, slots: true,
+      palette: s.dot_role_palette, custom: s.dot_role_custom,
+      gradient: s.dot_role_gradient -%}
+{%- endcapture -%}
+{% if dc != blank %}{% assign styles = styles | push: '--dot-color: {{ dc }}' %}{% endif %}
+
+{%- capture dm -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.dot_muted_role, slots: true,
+      palette: s.dot_muted_role_palette, custom: s.dot_muted_role_custom,
+      gradient: s.dot_muted_role_gradient -%}
+{%- endcapture -%}
+{% if dm != blank %}
+  {%- assign styles = styles | push: '--dot-muted-color: {{ dm }}' | push: '--dot-muted-opacity: 1' -%}
+{% endif %}
+
+{% if s.dot_size != blank and s.dot_size != 'none' -%}
+  {%- assign styles = styles | push: '--dot-size: var(--space-{{ s.dot_size }})' -%}
+{%- endif %}
+
+{% if s.dot_active_width != blank and s.dot_active_width != 'none' -%}
+  {%- assign styles = styles | push: '--dot-active-width: var(--space-{{ s.dot_active_width }})' -%}
+{%- endif %}
+
+{% assign classes = blank | push: 'slideshow-dots flex items-center' %}
+{% if s.dot_gap != blank and s.dot_gap != 'none' -%}
+  {%- assign classes = classes | push: 'gap-{{ s.dot_gap }}' -%}
+{%- endif %}
+
+<div
+  class='{{ classes | join: " " }}'
+  data-dot-style='{{ s.dot_style }}'
+  style='{{ styles | join: "; " }}'
+  {{ context.attached_attributes }}
+></div>
+{% schema %}
+{
+  "name": "Carousel Dots",
+  "settings": [
+    {
+      "type": "select",
+      "id": "dot_style",
+      "label": "Pagination Style",
+      "default": "dots",
+      "options": [
+        { "value": "dots", "label": "Dots" },
+        { "value": "bars", "label": "Bars" },
+        { "value": "numbers", "label": "Numbers" }
+      ]
+    },
+    {
+      "type": "space",
+      "id": "dot_size",
+      "label": "Dot Size"
+    },
+    {
+      "type": "space",
+      "id": "dot_active_width",
+      "label": "Active Dot Width",
+      "info": "Widens the current dot into a pill. Unset keeps it the same size as the rest."
+    },
+    {
+      "type": "space",
+      "id": "dot_gap",
+      "label": "Dot Gap"
+    },
+    {
+      "type": "select",
+      "id": "dot_role",
+      "label": "Active Dot Color",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "dot_role_palette",
+      "label": "Active Palette Token",
+      "default": "brand",
+      "conditional": "setting.dot_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "dot_role_custom",
+      "label": "Raw Active Color",
+      "conditional": "setting.dot_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "dot_role_gradient",
+      "label": "Active Gradient",
+      "conditional": "setting.dot_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "dot_muted_role",
+      "label": "Muted Dot Color",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "body", "label": "Body" },
+        { "value": "body-alt", "label": "Body (alt)" },
+        { "value": "surface", "label": "Surface" },
+        { "value": "surface-alt", "label": "Surface (alt)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "button", "label": "Button" },
+        { "value": "control", "label": "Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" },
+        { "value": "gradient", "label": "Gradient" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "dot_muted_role_palette",
+      "label": "Muted Palette Token",
+      "default": "brand",
+      "conditional": "setting.dot_muted_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "dot_muted_role_custom",
+      "label": "Raw Muted Color",
+      "conditional": "setting.dot_muted_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "dot_muted_role_gradient",
+      "label": "Muted Gradient",
+      "conditional": "setting.dot_muted_role == 'gradient'"
+    }
+  ]
+}
+{% endschema %}

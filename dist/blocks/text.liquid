@@ -1,0 +1,390 @@
+{% assign s = block.settings %}
+
+{% assign wrapper_classes = ''
+  | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
+  | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
+%}
+{% if s.type_style != blank and s.type_style != 'custom' %}
+  {% assign wrapper_classes = wrapper_classes | push: 'ts-{{ s.type_style }}' %}
+{% endif %}
+{% if s.align_self != blank and s.align_self != 'auto' -%}
+  {%- assign wrapper_classes = wrapper_classes | push: 'self-{{ s.align_self }}' -%}
+{%- endif %}
+{% if s.text_align != blank %}
+  {% assign wrapper_classes = wrapper_classes | push: 'text-align-{{ s.text_align }}' %}
+{% endif %}
+
+{% if s.numeric == 'tabular' %}
+  {% assign wrapper_classes = wrapper_classes | push: 'tabular-nums min-w-[3ch]' %}
+{% endif %}
+
+{% if s.surface_override %}
+  {% assign wrapper_classes = wrapper_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
+
+{% assign wrapper_class_str = wrapper_classes | join: ' ' %}
+
+{% comment %} --- Styles Array Building --- {% endcomment %}
+{%- capture text_color_value -%}
+  {%- render 'role-color-value', kind: 'text', role: s.text_role,
+      palette: s.text_role_palette, custom: s.text_role_custom -%}
+{%- endcapture -%}
+{% assign styles = blank %}
+
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
+{% assign wrapper_style_str = styles | join: ';' %}
+
+{% comment %} --- Typography Utilities --- {% endcomment %}
+{% assign utilities = blank | push_if: 'italic', s.italic | push_if: 'hyphens-auto', s.enable_hyphens %}
+
+{% case s.text_wrap %}
+  {% when 'nowrap' -%}
+    {%- assign utilities = utilities | push: 'whitespace-nowrap' %}
+  {% when 'balance' -%}
+    {%- assign utilities = utilities | push: 'text-balance' %}
+{% endcase %}
+
+{% case s.overflow_behavior %}
+  {% when 'hidden' -%}
+    {%- assign utilities = utilities | push: 'overflow-hidden' %}
+  {% when 'ellipsis' -%}
+    {%- assign utilities = utilities | push: 'truncate' %}
+{% endcase %}
+
+{% for ef_id in s.effect %}
+  {% assign utilities = utilities | push: 'ef-{{ ef_id }}' %}
+{% endfor %}
+
+{% assign utility_classes = utilities | join: ' ' %}
+
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}
+  {% comment %} Both routes paint via `var(--text)` (set inline above). {% endcomment %}
+  {% assign color_role = 'primary' %}
+{% endif %}
+{% comment %} --- Component Render --- {% endcomment %}
+<div
+  class='{{ wrapper_class_str }}'
+  style='{{ wrapper_style_str }}'
+  {{ context.attached_attributes }}
+>
+  {% render 'typography',
+    text: s.content,
+    tag: s.tag,
+    type_style: s.type_style,
+    class: utility_classes,
+    color_role: color_role
+  %}
+</div>
+{% schema %}
+{
+  "name": "Text",
+  "settings": [
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "start",
+          "label": "Top / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ]
+    },
+    {
+      "type": "textarea",
+      "id": "content",
+      "label": "Content",
+      "default": "Locally sourced ingredients."
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "default": "body"
+    },
+    {
+      "type": "select",
+      "id": "tag",
+      "label": "HTML Tag",
+      "default": "div",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "p",
+          "label": "Paragraph"
+        },
+        {
+          "value": "div",
+          "label": "Div"
+        },
+        {
+          "value": "span",
+          "label": "Span"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "",
+          "label": "Inherit"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "numeric",
+      "label": "Number Style",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "tabular",
+          "label": "Tabular"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "italic",
+      "label": "Italic",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hyphens",
+      "label": "Hyphenate",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout & Style"
+    },
+    {
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "wrap",
+      "options": [
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "No Wrap"
+        },
+        {
+          "value": "balance",
+          "label": "Balance"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "overflow_behavior",
+      "label": "Overflow",
+      "default": "visible",
+      "options": [
+        {
+          "value": "visible",
+          "label": "Visible"
+        },
+        {
+          "value": "hidden",
+          "label": "Hidden (Clip)"
+        },
+        {
+          "value": "ellipsis",
+          "label": "Ellipsis (Truncate)"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "default": "primary",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "effect",
+      "id": "effect",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied to this element; several compose."
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "true"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    }
+  ]
+}
+{% endschema %}
