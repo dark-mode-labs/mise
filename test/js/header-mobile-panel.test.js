@@ -17,8 +17,9 @@ test("every header action control refuses to shrink", () => {
   const header = read("sections/header.liquid");
 
   for (const [what, anchor] of [
-    ["toggle", /assign toggle_classes = '([^']*)'/],
-    ["cart", /assign cart_btn_class = '([^']*)'/],
+    // The floor rides the wrapper the BAR draws, which is also what decides the control is shown.
+    ["toggle", /class='(header-mobile-toggle[^']*)'/],
+    ["cart", /class='(header-cart[^']*)'/],
   ]) {
     assert.match(
       header.match(anchor)[1],
@@ -115,7 +116,8 @@ test("every header role field answers its slot arms one of the two ways", () => 
   const valueOnly = new Set(["none", "inherit", "palette", "custom", "gradient"]);
 
   const sites = [...src.matchAll(/render 'role-color-value',([\s\S]*?)-%\}/g)];
-  assert.ok(sites.length >= 9, `only found ${sites.length} role fields reaching the resolver`);
+  // The cart's five moved onto its own block when the control stopped being header fields.
+  assert.ok(sites.length >= 4, `only found ${sites.length} role fields reaching the resolver`);
 
   for (const [, args] of sites) {
     const field = args.match(/role:\s*s\.(\w+)/)[1];

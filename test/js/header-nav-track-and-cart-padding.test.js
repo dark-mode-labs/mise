@@ -37,37 +37,3 @@ test("the balanced nav track is a setting, a class and a rule that agree", () =>
     "the class the template emits paints no balanced track"
   );
 });
-
-test("cart padding reaches the button only when a side is set", () => {
-  const header = read("sections/header.liquid");
-
-  const settings = JSON.parse(
-    header.match(/\{%\s*schema\s*%\}([\s\S]*?)\{%\s*endschema\s*%\}/)[1]
-  ).settings;
-
-  for (const side of ["top", "bottom", "left", "right"]) {
-    const field = settings.find((f) => f.id === `cart_padding_${side}`);
-    assert.ok(field, `no cart_padding_${side}`);
-    assert.equal(field.default, "none", "an unset side must not paint over the `p-2` default");
-  }
-  // Every side must gate the flag, or a cart padded on one axis alone renders unpadded. Matched
-  // across whitespace: `npm run build` reformats liquid, so anything line-anchored is a false red.
-  for (const side of ["top", "bottom", "left", "right"]) {
-    assert.match(
-      header,
-      new RegExp(`s\\.cart_padding_${side} == 'none'[\\s\\S]{0,60}?cart_has_padding = true`),
-      `cart_padding_${side} does not set the flag`
-    );
-  }
-  assert.match(
-    header,
-    /if cart_has_padding[\s\S]*?pt-\{\{ s\.cart_padding_top \}\}/,
-    "the padding classes are not gated on the flag"
-  );
-  // The default path is what every store without cart padding renders; it must survive untouched.
-  assert.match(
-    header,
-    /\{% else %\}\s*\{% assign cart_btn_class = cart_btn_class \| append: ' p-2 hover:opacity-70' %\}/,
-    "the unpadded cart lost its p-2 default"
-  );
-});

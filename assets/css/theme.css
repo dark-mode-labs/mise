@@ -1346,16 +1346,12 @@
     right: calc(-1 * var(--cart-badge-offset, 0.125rem));
     min-width: var(--cart-badge-size, var(--space-sm));
     height: var(--cart-badge-size, var(--space-sm));
-    padding-inline: var(--space-xxs);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: var(--accent-bg);
     color: var(--text-on-accent);
-    border: 1px solid var(--surface);
     border-radius: 9999px;
-    font-family: var(--font-body);
-    font-size: 0.625rem;
-    line-height: var(--space-sm);
-    font-weight: 500;
-    text-align: center;
     transition:
       transform 200ms ease-out,
       opacity 200ms ease-out;
