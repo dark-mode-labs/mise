@@ -23,6 +23,8 @@ const rule = () => {
 };
 
 // Properties the cart-badge BLOCK states from the source. Declared here, the source loses.
+// `position`/`top`/`right` are among them: lena draws its chip INLINE in the row, and a rule
+// that pins every chip to the corner overrules that.
 const BLOCK_OWNED = [
   "font-family",
   "font-size",
@@ -32,6 +34,9 @@ const BLOCK_OWNED = [
   "border-style",
   "border-color",
   "padding-inline",
+  "position",
+  "top",
+  "right",
   "padding-left",
   "padding-right",
   "text-align",
@@ -58,11 +63,11 @@ test("the badge rule declares nothing the block states from source", () => {
 test("the badge rule still owns the chip's own structure", () => {
   const body = rule();
 
-  for (const prop of ["position", "top", "right", "min-width", "height", "transition"]) {
+  for (const prop of ["min-width", "height", "transition"]) {
     assert.match(
       body,
       new RegExp(`(^|[;{\\s])${prop}\\s*:`),
-      `${prop} is what makes this a corner count chip; without it the block has no anchor`
+      `${prop} is the chip's own size and motion; without it the block has nothing to sit in`
     );
   }
   // A chip CENTRES its digit. Left to line-height it only looks centred while that equals the height.
