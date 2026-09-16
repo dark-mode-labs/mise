@@ -252,3 +252,23 @@ test("an overlay drawer renders outside the frosted bar, a panel inside it", () 
     "the overlay arm is still inside the bar layer"
   );
 });
+
+test("every visibility gate the header declares actually wraps a region", () => {
+  // `show_cart` was retired when the cart became a block, so the platform's chrome-free header —
+  // `global-group` sets all five false — could no longer strip it, and the cart rendered on
+  // checkout. A gate the schema offers and the template never reads is a lever wired to nothing.
+  const src = read("sections/header.liquid");
+  const body = src.split(/\{%\s*schema\s*%\}/)[0];
+  const gates = schema("sections/header.liquid")
+    .settings.map((x) => x.id)
+    .filter((id) => typeof id === "string" && id.startsWith("show_"));
+
+  assert.ok(gates.length >= 5, `expected the five region gates, found ${gates}`);
+  for (const id of gates) {
+    assert.match(
+      body,
+      new RegExp(`\\{%\\s*if\\s+s\\.${id}\\b`),
+      `${id} is offered as a setting but no region is gated on it`
+    );
+  }
+});

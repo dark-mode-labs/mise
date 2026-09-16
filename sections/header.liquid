@@ -182,10 +182,12 @@
           </a>
         {% endif %}
 
-        <span class='header-cart shrink-0'>
-          {% content_for 'block', type: 'group', id: 'header-cart' %}
-          <span class='sr-only' data-cart-aria aria-live='polite'>{{ 'cart.aria_label_empty' | t }}</span>
-        </span>
+        {% if s.show_cart %}
+          <span class='header-cart shrink-0'>
+            {% content_for 'block', type: 'group', id: 'header-cart' %}
+            <span class='sr-only' data-cart-aria aria-live='polite'>{{ 'cart.aria_label_empty' | t }}</span>
+          </span>
+        {% endif %}
 
         {% if s.mobile_layout == 'logo_left' %}{{ slot_toggle }}{% endif %}
       </div>
@@ -669,9 +671,11 @@
       "default": false
     },
     {
-      "type": "header",
-      "content": "Cart Style",
-      "conditional": "setting.show_cart == true"
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart",
+      "info": "Renders the cart control. Disable for headers that cannot order \u2014 e.g. checkout, order confirmation.",
+      "default": true
     },
     {
       "type": "header",
