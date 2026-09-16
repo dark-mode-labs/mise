@@ -254,9 +254,7 @@ test("an overlay drawer renders outside the frosted bar, a panel inside it", () 
 });
 
 test("every visibility gate the header declares actually wraps a region", () => {
-  // `show_cart` was retired when the cart became a block, so the platform's chrome-free header —
-  // `global-group` sets all five false — could no longer strip it, and the cart rendered on
-  // checkout. A gate the schema offers and the template never reads is a lever wired to nothing.
+  // A gate the schema offers and the template never reads is a lever wired to nothing.
   const src = read("sections/header.liquid");
   const body = src.split(/\{%\s*schema\s*%\}/)[0];
   const gates = schema("sections/header.liquid")
