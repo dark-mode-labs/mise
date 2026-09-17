@@ -1,9 +1,5 @@
 {% assign s = block.settings %}
 
-{%- capture border_color_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.border_role,
-      palette: s.border_role_palette, custom: s.border_role_custom, gradient: s.border_role_gradient -%}
-{%- endcapture -%}
 {%- capture overlay_color_value -%}
   {%- render 'role-color-value', kind: 'bg', role: s.overlay_role,
       palette: s.overlay_role_palette, custom: s.overlay_role_custom, gradient: s.overlay_role_gradient -%}
@@ -19,10 +15,6 @@
 {%- capture text_color_inactive_value -%}
   {%- render 'role-color-value', kind: 'text', role: s.text_role_inactive,
       palette: s.text_role_inactive_palette, custom: s.text_role_inactive_custom, gradient: s.text_role_inactive_gradient -%}
-{%- endcapture -%}
-{%- capture border_color_inactive_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.border_role_inactive,
-      palette: s.border_role_inactive_palette, custom: s.border_role_inactive_custom, gradient: s.border_role_inactive_gradient -%}
 {%- endcapture -%}
 {% assign classes = '' %}
 {% assign styles = '' %}
@@ -65,20 +57,16 @@
     {% assign classes = classes | push: 'content-{{ s.content_align }}' %}
   {% endif %}
 {% endif %}
-{% if border_color_value != blank %}
-  {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
-{% elsif s.border_role != blank and s.border_role != 'none' %}
-  {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
-{% endif %}
 {%- capture border_inactive_class_str -%}{%- render 'box-border-edges', role: s.border_role_inactive,
   top: s.border_top_inactive, right: s.border_right_inactive,
   bottom: s.border_bottom_inactive, left: s.border_left_inactive -%}{%- endcapture -%}
 {% if border_inactive_class_str != blank %}
   {% assign inactive_state_classes = inactive_state_classes | push: border_inactive_class_str %}
-  {% if border_color_inactive_value != blank %}
-    {% assign inactive_state_styles = inactive_state_styles | push: '--border:{{ border_color_inactive_value }}' %}
-  {% endif %}
-  {% assign inactive_state_styles = inactive_state_styles | push: '--border-style:{{ s.border_style_inactive }}' %}
+  {%- capture border_inactive_style_str -%}{%- render 'box-border-style',
+    role: s.border_role_inactive, palette_token: s.border_role_inactive_palette,
+    gradient_token: s.border_role_inactive_gradient, custom_color: s.border_role_inactive_custom,
+    style: s.border_style_inactive -%}{%- endcapture -%}
+  {% assign inactive_state_styles = inactive_state_styles | push: border_inactive_style_str %}
 {% endif %}
 
 {% if s.enable_overlay_inactive %}
@@ -108,7 +96,11 @@
   top: s.border_top, right: s.border_right, bottom: s.border_bottom, left: s.border_left -%}{%- endcapture -%}
 {% if border_class_str != blank %}
   {% assign active_state_classes = active_state_classes | push: border_class_str %}
-  {% assign active_state_styles = active_state_styles | push: '--border-style:{{ s.border_style }}' %}
+  {%- capture border_style_str -%}{%- render 'box-border-style',
+    role: s.border_role, palette_token: s.border_role_palette,
+    gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
+    style: s.border_style -%}{%- endcapture -%}
+  {% assign active_state_styles = active_state_styles | push: border_style_str %}
 {% endif %}
 
 {% if s.enable_overlay %}

@@ -91,9 +91,16 @@ test("every header role field is resolved by the one resolver", () => {
     const call = src.match(new RegExp(`role:\\s*s\\.${field}\\b[\\s\\S]{0,220}?-%\\}`));
     assert.ok(call, `${field} names no resolver call`);
     const kind = field.includes("text") ? "text" : field.includes("border") ? "border" : "bg";
-    assert.match(
-      src,
-      new RegExp(`kind: '${kind}',\\s*role: s\\.${field}\\b`),
+    // A field handed to a snippet is resolved THERE, so the kind is that snippet's to state.
+    const delegated = [...src.matchAll(/render '([\w-]+)',([\s\S]{0,220}?)-%\}/g)].some(
+      ([, snippet, args]) =>
+        snippet !== "role-color-value" &&
+        new RegExp(`role:\\s*s\\.${field}\\b`).test(args) &&
+        existsSync(join(root, `snippets/${snippet}.liquid`)) &&
+        new RegExp(`kind: '${kind}'`).test(read(`snippets/${snippet}.liquid`))
+    );
+    assert.ok(
+      delegated || new RegExp(`kind: '${kind}',\\s*role: s\\.${field}\\b`).test(src),
       `${field} is passed as the wrong kind, so it would read the wrong variable family`
     );
   }
@@ -115,11 +122,18 @@ test("every header role field answers its slot arms one of the two ways", () => 
   const byId = new Map(schema("sections/header.liquid").settings.map((f) => [f.id, f]));
   const valueOnly = new Set(["none", "inherit", "palette", "custom", "gradient"]);
 
-  const sites = [...src.matchAll(/render 'role-color-value',([\s\S]*?)-%\}/g)];
+  // Direct calls, plus the border half's front end — its args are the resolver's under other names.
+  const sites = [
+    ...[...src.matchAll(/render 'role-color-value',([\s\S]*?)-%\}/g)].map(([, a]) => a),
+    ...[...src.matchAll(/render 'box-border-style',([\s\S]*?)-%\}/g)].map(
+      ([, a]) =>
+        `kind: 'border', ${a.replace(/palette_token:/, "palette:").replace(/custom_color:/, "custom:")}`
+    ),
+  ];
   // The cart's five moved onto its own block when the control stopped being header fields.
   assert.ok(sites.length >= 4, `only found ${sites.length} role fields reaching the resolver`);
 
-  for (const [, args] of sites) {
+  for (const args of sites) {
     const field = args.match(/role:\s*s\.(\w+)/)[1];
     const kind = args.match(/kind:\s*'(\w+)'/)[1];
     const arms = (byId.get(field)?.options ?? [])

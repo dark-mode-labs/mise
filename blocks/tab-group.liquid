@@ -5,11 +5,6 @@
       palette: s.chip_strip_bg_role_palette, custom: s.chip_strip_bg_role_custom, gradient: s.chip_strip_bg_role_gradient -%}
 {%- endcapture -%}
 
-{%- capture chip_strip_border_color_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.chip_strip_border_role,
-      palette: s.chip_strip_border_role_palette, custom: s.chip_strip_border_role_custom, gradient: s.chip_strip_border_role_gradient -%}
-{%- endcapture -%}
-
 {% assign chip_strip_bg_class = '' %}
 {% if chip_strip_bg_value == blank and s.chip_strip_bg_role != blank and s.chip_strip_bg_role != 'none' %}
   {% assign chip_strip_bg_class = 'bg-' | append: s.chip_strip_bg_role %}
@@ -78,12 +73,11 @@
   bottom: s.chip_strip_border_bottom, left: s.chip_strip_border_left -%}{%- endcapture -%}
 {% if chip_strip_border_class_str != blank %}
   {% assign chip_strip_classes = chip_strip_classes | push: chip_strip_border_class_str %}
-  {% if chip_strip_border_color_value != blank %}
-    {% assign chip_strip_styles = chip_strip_styles | push: '--border: {{ chip_strip_border_color_value }}' %}
-  {% elsif s.chip_strip_border_role != blank and s.chip_strip_border_role != 'none' %}
-    {% assign chip_strip_classes = chip_strip_classes | push: 'border-{{ s.chip_strip_border_role }}' %}
-  {% endif %}
-  {% assign chip_strip_styles = chip_strip_styles | push: '--border-style:solid' %}
+  {%- capture chip_strip_border_style_str -%}{%- render 'box-border-style',
+    role: s.chip_strip_border_role, palette_token: s.chip_strip_border_role_palette,
+    gradient_token: s.chip_strip_border_role_gradient, custom_color: s.chip_strip_border_role_custom,
+    style: 'solid' -%}{%- endcapture -%}
+  {% assign chip_strip_styles = chip_strip_styles | push: chip_strip_border_style_str %}
 {% endif %}
 
 <div

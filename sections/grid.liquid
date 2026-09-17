@@ -515,6 +515,10 @@
         {
           "value": "custom",
           "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
         }
       ]
     },
@@ -524,6 +528,12 @@
       "label": "Border Palette Token",
       "default": "brand",
       "conditional": "setting.border_role == 'palette'"
+    },
+    {
+      "type": "gradient",
+      "id": "border_role_gradient",
+      "label": "Border Gradient",
+      "conditional": "setting.border_role == 'gradient'"
     },
     {
       "type": "color",

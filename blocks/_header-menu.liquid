@@ -26,15 +26,11 @@
 {% if text_color_value != blank %}
   {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
 {% endif %}
-{%- capture border_color_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.border_role,
-      palette: s.border_role_palette, custom: s.border_role_custom -%}
-{%- endcapture -%}
 {% if border_class_str != blank %}
-  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
-  {% if border_color_value != blank %}
-    {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
-  {% endif %}
+  {%- capture border_style_str -%}{%- render 'box-border-style',
+    role: s.border_role, palette_token: s.border_role_palette,
+    custom_color: s.border_role_custom, style: s.border_style -%}{%- endcapture -%}
+  {% assign styles = styles | push: border_style_str %}
 {% endif %}
 {% assign styles = styles | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override %}
 {% assign block_styles = styles | join: ';' %}
@@ -71,13 +67,12 @@
 {% endif %}
 {% assign link_class_str = link_classes | join: ' ' %}
 
-{%- capture link_border_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.link_border_role,
-      palette: s.link_border_role_palette, custom: s.link_border_role_custom -%}
-{%- endcapture -%}
 {% assign link_styles = blank %}
-{% if link_border_value != blank %}
-  {% assign link_styles = link_styles | push: '--border-style:solid' | push: '--border: {{ link_border_value }}' %}
+{% if link_border_class_str != blank %}
+  {%- capture link_border_style_str -%}{%- render 'box-border-style',
+    role: s.link_border_role, palette_token: s.link_border_role_palette,
+    custom_color: s.link_border_role_custom, style: 'solid' -%}{%- endcapture -%}
+  {% assign link_styles = link_styles | push: link_border_style_str %}
 {% endif %}
 {% assign link_style_str = link_styles | join: ';' %}
 
@@ -132,15 +127,11 @@
 {% if active_bg_value != blank %}
   {% assign active_styles = active_styles | push: '--block-bg: {{ active_bg_value }}' %}
 {% endif %}
-{%- capture active_border_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.link_border_role_active,
-      palette: s.link_border_role_active_palette, custom: s.link_border_role_active_custom -%}
-{%- endcapture -%}
-{% if active_border_value != blank %}
-  {% assign active_styles = active_styles
-    | push: '--border-style:solid'
-    | push: '--border: {{ active_border_value }}'
-  %}
+{% if active_border_class_str != blank %}
+  {%- capture active_border_style_str -%}{%- render 'box-border-style',
+    role: s.link_border_role_active, palette_token: s.link_border_role_active_palette,
+    custom_color: s.link_border_role_active_custom, style: 'solid' -%}{%- endcapture -%}
+  {% assign active_styles = active_styles | push: active_border_style_str %}
 {% endif %}
 {% assign active_style_str = active_styles | join: ';' %}
 {%- comment -%}No declared paint means no state: swapping an unfilled bag in strips the link.{%- endcomment -%}

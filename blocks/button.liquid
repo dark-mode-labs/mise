@@ -8,10 +8,6 @@
   {%- render 'role-color-value', kind: 'bg', role: s.bg_role,
       palette: s.bg_role_palette, custom: s.bg_role_custom, gradient: s.bg_role_gradient -%}
 {%- endcapture -%}
-{%- capture border_color_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.border_role,
-      palette: s.border_role_palette, custom: s.border_role_custom, gradient: s.border_role_gradient -%}
-{%- endcapture -%}
 
 {% assign radius_class = 'rounded-global' %}
 {% if s.border_radius_override %}
@@ -111,10 +107,11 @@
 {% assign styles = blank %}
 
 {% if border_class_str != blank %}
-  {% assign styles = styles | push: '--border-style: {{ s.border_style }}' %}
-  {% if border_color_value != blank -%}
-    {%- assign styles = styles | push: '--border: {{ border_color_value }}' -%}
-  {%- endif %}
+  {%- capture border_style_str -%}{%- render 'box-border-style',
+    role: s.border_role, palette_token: s.border_role_palette,
+    gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
+    style: s.border_style -%}{%- endcapture -%}
+  {% assign styles = styles | push: border_style_str %}
 {% endif %}
 
 {% assign styles = styles | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override %}

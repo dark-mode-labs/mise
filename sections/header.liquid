@@ -66,11 +66,6 @@
   | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
 %}
 
-{%- capture border_color_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.border_role,
-      palette: s.border_role_palette, custom: s.border_role_custom -%}
-{%- endcapture -%}
-
 {%- capture border_class_str -%}{%- render 'box-border-edges', role: s.border_role,
   top: s.border_top, right: s.border_right, bottom: s.border_bottom, left: s.border_left -%}{%- endcapture -%}
 {% if border_class_str != blank %}
@@ -96,10 +91,11 @@
   {% assign bar_styles = bar_styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
 {% if border_class_str != blank %}
-  {% assign bar_styles = bar_styles | push: '--border-style: {{ s.border_style }}' %}
-  {% if border_color_value != blank -%}
-    {%- assign bar_styles = bar_styles | push: '--border: {{ border_color_value }}' -%}
-  {%- endif %}
+  {%- capture border_style_str -%}{%- render 'box-border-style',
+    role: s.border_role, palette_token: s.border_role_palette,
+    gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
+    style: s.border_style -%}{%- endcapture -%}
+  {% assign bar_styles = bar_styles | push: border_style_str %}
 {% endif %}
 {% assign bar_style_str = bar_styles | join: ';' %}
 

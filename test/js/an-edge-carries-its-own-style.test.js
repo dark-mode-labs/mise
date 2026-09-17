@@ -37,13 +37,19 @@ test("every component that draws edges also writes --border-style", () => {
   assert.deepEqual(silent, [], "these draw edges whose style nothing sets, so they draw nothing");
 });
 
-test("a component writes --border-style once per edge render, so each state has its own", () => {
-  for (const [path, src] of drawsEdges) {
-    if (src.includes(`render '${STYLE_SNIPPET}'`)) continue;
-    const renders = src.match(new RegExp(`render '${EDGE_SNIPPET}'`, "g")).length;
-    const decls = src.match(/--border-style/g).length;
+test("the two halves are rendered in pairs, so every state carries its own", () => {
+  // Two states render the pair twice; one style half would let the second inherit the first's.
+  const count = (src, snippet) => (src.match(new RegExp(`render '${snippet}'`, "g")) || []).length;
 
-    assert.equal(decls, renders, `${path}: ${renders} edge renders but ${decls} --border-style`);
+  for (const [path, src] of drawsEdges) {
+    const edges = count(src, EDGE_SNIPPET);
+    const inline = (src.match(/push: '--border-style/g) || []).length;
+
+    assert.equal(
+      count(src, STYLE_SNIPPET) + inline,
+      edges,
+      `${path}: ${edges} edge renders against ${count(src, STYLE_SNIPPET) + inline} style halves`
+    );
   }
 });
 
@@ -60,11 +66,25 @@ test("the value half always states the style, because the edge classes have no f
 });
 
 test("an edge class reads --border-style, so theme_variables must emit both halves per tier", () => {
-  const src = readFileSync(join(root, "snippets", "theme_variables.liquid"), "utf8");
-  for (const edge of ["bt", "bb", "bl", "br"]) {
-    const rule = src.match(new RegExp(`\\.${edge}-\\{\\{[^}]*\\}\\}[^\\n]*`));
-    assert.ok(rule, `no .${edge}- rule emitted`);
-    assert.match(rule[0], /border-\w+-width: var\(--space-/, `.${edge}- states no width`);
-    assert.match(rule[0], /border-\w+-style: var\(--border-style\)/, `.${edge}- states no style`);
+  // Read as the ENGINE reads it: line layout is not the contract, `{{-` joins across a newline.
+  const rendered = readFileSync(join(root, "snippets", "theme_variables.liquid"), "utf8")
+    .replace(/\s*\{\{-/g, "{{")
+    .replace(/-\}\}\s*/g, "}}")
+    .replace(/\s+/g, " ");
+
+  for (const [edge, side] of [
+    ["bt", "top"],
+    ["bb", "bottom"],
+    ["bl", "left"],
+    ["br", "right"],
+  ]) {
+    const tier = "{{ s[0] }}";
+    const width = `border-${side}-width: var(--space-${tier});`;
+    const style = `border-${side}-style: var(--border-style);`;
+
+    assert.ok(
+      rendered.includes(`.${edge}-${tier} { ${width} ${style} }`),
+      `.${edge}- must emit exactly \`${width} ${style}\` — a width with no style draws nothing`
+    );
   }
 });
