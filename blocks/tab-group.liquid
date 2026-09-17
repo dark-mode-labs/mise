@@ -5,11 +5,6 @@
       palette: s.chip_strip_bg_role_palette, custom: s.chip_strip_bg_role_custom, gradient: s.chip_strip_bg_role_gradient -%}
 {%- endcapture -%}
 
-{%- capture chip_strip_border_color_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.chip_strip_border_role,
-      palette: s.chip_strip_border_role_palette, custom: s.chip_strip_border_role_custom, gradient: s.chip_strip_border_role_gradient -%}
-{%- endcapture -%}
-
 {% assign chip_strip_bg_class = '' %}
 {% if chip_strip_bg_value == blank and s.chip_strip_bg_role != blank and s.chip_strip_bg_role != 'none' %}
   {% assign chip_strip_bg_class = 'bg-' | append: s.chip_strip_bg_role %}
@@ -73,26 +68,17 @@
   {% assign chip_strip_styles = chip_strip_styles | push: '--chip-strip-gap: var(--space-{{ s.chip_strip_gap }}, 0)' %}
 {% endif %}
 
-{% unless s.chip_strip_border_mode == blank or s.chip_strip_border_mode == 'none' %}
-  {% assign chip_strip_classes = chip_strip_classes
-    | push: 'group-border-{{ s.chip_strip_border_mode }}'
-    | push: 'group-border-size-{{ s.chip_strip_border_size }}'
-  %}
-  {% if chip_strip_border_color_value != blank %}
-    {% assign chip_strip_styles = chip_strip_styles | push: '--border: {{ chip_strip_border_color_value }}' %}
-  {% elsif s.chip_strip_border_role != blank and s.chip_strip_border_role != 'none' %}
-    {% assign chip_strip_classes = chip_strip_classes | push: 'border-{{ s.chip_strip_border_role }}' %}
-  {% endif %}
-  {% if s.chip_strip_border_mode == 'custom' %}
-    {% assign chip_strip_classes = chip_strip_classes
-      | push_if: 'group-border-custom-left', s.chip_strip_border_custom_left
-      | push_if: 'group-border-custom-right', s.chip_strip_border_custom_right
-      | push_if: 'group-border-custom-top', s.chip_strip_border_custom_top
-      | push_if: 'group-border-custom-bottom', s.chip_strip_border_custom_bottom
-    %}
-  {% endif %}
-  {% assign chip_strip_styles = chip_strip_styles | push: '--border-style:solid' %}
-{% endunless %}
+{%- capture chip_strip_border_class_str -%}{%- render 'box-border-edges', role: s.chip_strip_border_role,
+  top: s.chip_strip_border_top, right: s.chip_strip_border_right,
+  bottom: s.chip_strip_border_bottom, left: s.chip_strip_border_left -%}{%- endcapture -%}
+{% if chip_strip_border_class_str != blank %}
+  {% assign chip_strip_classes = chip_strip_classes | push: chip_strip_border_class_str %}
+  {%- capture chip_strip_border_style_str -%}{%- render 'box-border-style',
+    role: s.chip_strip_border_role, palette_token: s.chip_strip_border_role_palette,
+    gradient_token: s.chip_strip_border_role_gradient, custom_color: s.chip_strip_border_role_custom,
+    style: 'solid' -%}{%- endcapture -%}
+  {% assign chip_strip_styles = chip_strip_styles | push: chip_strip_border_style_str %}
+{% endif %}
 
 <div
   class='{{ content_layer_classes | join: ' ' }}'
@@ -481,60 +467,6 @@
     },
     {
       "type": "select",
-      "id": "chip_strip_border_mode",
-      "label": "Chip Strip Border",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "custom",
-          "label": "Custom"
-        },
-        {
-          "value": "full",
-          "label": "Full"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "chip_strip_border_size",
-      "label": "Chip Strip Border Size",
-      "default": "xxs",
-      "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "Small",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "Medium",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "Large",
-          "info": "8px"
-        }
-      ],
-      "conditional": "setting.chip_strip_border_mode != 'none'"
-    },
-    {
-      "type": "select",
       "id": "chip_strip_border_role",
       "label": "Chip Strip Border Color",
       "default": "default",
@@ -563,55 +495,50 @@
           "value": "gradient",
           "label": "Gradient"
         }
-      ],
-      "conditional": "setting.chip_strip_border_mode != 'none'"
+      ]
     },
     {
       "type": "palette",
       "id": "chip_strip_border_role_palette",
       "label": "Chip Strip Border Palette Token",
       "default": "brand",
-      "conditional": "setting.chip_strip_border_role == 'palette' and setting.chip_strip_border_mode != 'none'"
+      "conditional": "setting.chip_strip_border_role == 'palette'"
     },
     {
       "type": "color",
       "id": "chip_strip_border_role_custom",
       "label": "Raw Chip Strip Border",
-      "conditional": "setting.chip_strip_border_role == 'custom' and setting.chip_strip_border_mode != 'none'"
+      "conditional": "setting.chip_strip_border_role == 'custom'"
     },
     {
       "type": "gradient",
       "id": "chip_strip_border_role_gradient",
       "label": "Chip Strip Border Gradient",
-      "conditional": "setting.chip_strip_border_role == 'gradient' and setting.chip_strip_border_mode != 'none'"
+      "conditional": "setting.chip_strip_border_role == 'gradient'"
     },
     {
-      "type": "checkbox",
-      "id": "chip_strip_border_custom_left",
-      "label": "Border Left",
-      "default": false,
-      "conditional": "setting.chip_strip_border_mode == 'custom'"
+      "type": "space",
+      "id": "chip_strip_border_left",
+      "label": "Chip Strip Left Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "id": "chip_strip_border_custom_right",
-      "label": "Border Right",
-      "default": false,
-      "conditional": "setting.chip_strip_border_mode == 'custom'"
+      "type": "space",
+      "id": "chip_strip_border_right",
+      "label": "Chip Strip Right Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "id": "chip_strip_border_custom_top",
-      "label": "Border Top",
-      "default": false,
-      "conditional": "setting.chip_strip_border_mode == 'custom'"
+      "type": "space",
+      "id": "chip_strip_border_top",
+      "label": "Chip Strip Top Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "id": "chip_strip_border_custom_bottom",
-      "label": "Border Bottom",
-      "default": true,
-      "conditional": "setting.chip_strip_border_mode == 'custom'"
+      "type": "space",
+      "id": "chip_strip_border_bottom",
+      "label": "Chip Strip Bottom Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     }
   ],
   "blocks": [],

@@ -1071,56 +1071,6 @@
     align-items: stretch;
   }
 
-  .group-border-size-xxs {
-    --border-width: 1px;
-  }
-
-  .group-border-size-xs {
-    --border-width: 2px;
-  }
-
-  .group-border-size-sm {
-    --border-width: 4px;
-  }
-
-  .group-border-size-md {
-    --border-width: 6px;
-  }
-
-  .group-border-size-lg {
-    --border-width: 8px;
-  }
-
-  .group-border-custom-left {
-    border-left-style: var(--border-style);
-    border-left-width: var(--border-width);
-    border-left-color: var(--border);
-  }
-
-  .group-border-custom-right {
-    border-right-style: var(--border-style);
-    border-right-width: var(--border-width);
-    border-right-color: var(--border);
-  }
-
-  .group-border-custom-top {
-    border-top-style: var(--border-style);
-    border-top-width: var(--border-width);
-    border-top-color: var(--border);
-  }
-
-  .group-border-custom-bottom {
-    border-bottom-style: var(--border-style);
-    border-bottom-width: var(--border-width);
-    border-bottom-color: var(--border);
-  }
-
-  .group-border-full {
-    border-style: var(--border-style);
-    border-width: var(--border-width);
-    border-color: var(--border);
-  }
-
   .border-gradient {
     border-style: solid;
     border-image-source: var(--border);
@@ -1341,21 +1291,14 @@
   }
 
   .cart-count-badge {
-    position: absolute;
-    top: calc(-1 * var(--cart-badge-offset, 0.125rem));
-    right: calc(-1 * var(--cart-badge-offset, 0.125rem));
     min-width: var(--cart-badge-size, var(--space-sm));
     height: var(--cart-badge-size, var(--space-sm));
-    padding-inline: var(--space-xxs);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: var(--accent-bg);
     color: var(--text-on-accent);
-    border: 1px solid var(--surface);
     border-radius: 9999px;
-    font-family: var(--font-body);
-    font-size: 0.625rem;
-    line-height: var(--space-sm);
-    font-weight: 500;
-    text-align: center;
     transition:
       transform 200ms ease-out,
       opacity 200ms ease-out;

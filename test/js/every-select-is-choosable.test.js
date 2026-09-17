@@ -52,7 +52,7 @@ test("a select always offers something to select", () => {
 // A colour or size field must reach the SAME control its base does — the role/palette/swatch picker,
 // not a bare dropdown. `subtype` is what routes it there, and the pickers key their companion
 // settings on the field's own id, so `drawer_bg_role` edits `drawer_bg_role_custom`.
-const CONCERNS = ["text_role", "bg_role", "border_role", "border_size"];
+const CONCERNS = ["text_role", "bg_role", "border_role"];
 
 const variantOf = (id) =>
   CONCERNS.find((c) => id !== c && new RegExp(`^(\\w+_)?${c}(_active|_inactive)?$`).test(id));
@@ -94,9 +94,7 @@ test("a state twin offers exactly what the state it overrides offers", () => {
 // `custom` / `palette` / `gradient` are not values in themselves — each names a COMPANION field that
 // carries the actual colour or width. Offering one with no companion gives an author a dead choice;
 // `cart_border_size` and `toggle_border_size` both did, from copying a base field's options wholesale.
-// `border_mode`'s `custom` is the exception: it selects per-side flags, not a `<id>_custom` value.
 // A state twin names its companion `<base>_custom_<state>`, not `<id>_custom`, so both are accepted.
-const selectsSides = (id) => /(^|_)border_mode(_\w+)?$/.test(id);
 const companionNames = (id, v) => {
   const m = id.match(/^(.*)_(active|inactive)$/);
   return m ? [`${id}_${v}`, `${m[1]}_${v}_${m[2]}`] : [`${id}_${v}`];
@@ -107,7 +105,7 @@ test("every option that names a companion field has one", () => {
   for (const [file, fields] of schemas()) {
     const ids = new Set(fields.map((f) => f.id));
     for (const f of fields) {
-      if (f.type !== "select" || selectsSides(f.id)) continue;
+      if (f.type !== "select") continue;
       for (const v of ["palette", "custom", "gradient"]) {
         if (!(f.options || []).some((o) => o.value === v)) continue;
         const names = companionNames(f.id, v);

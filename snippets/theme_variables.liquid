@@ -39,7 +39,12 @@
     .pl-{{ s[0] }} { padding-left: var(--space-{{ s[0] }}); } .pr-{{ s[0] }} { padding-right: var(--space-{{ s[0] }}); }
     .mt-{{ s[0] }} { margin-top: var(--space-{{ s[0] }}); } .mb-{{ s[0] }} { margin-bottom: var(--space-{{ s[0] }}); }
     .ml-{{ s[0] }} { margin-left: var(--space-{{ s[0] }}); } .mr-{{ s[0] }} { margin-right: var(--space-{{ s[0] }}); }
-    .gap-{{ s[0] }} { gap: var(--space-{{ s[0] }}); } .direction-row.gap-{{ s[0] }}, .direction-responsive.gap-
+    .bt-{{ s[0] }} { border-top-width: var(--space-{{ s[0] }}); border-top-style: var(--border-style); } .bb-
+    {{- s[0] }}
+    { border-bottom-width: var(--space-{{ s[0] }}); border-bottom-style: var(--border-style); } .bl-{{ s[0] }} {
+    border-left-width: var(--space-{{ s[0] }}); border-left-style: var(--border-style); } .br-{{ s[0] }} {
+    border-right-width: var(--space-{{ s[0] }}); border-right-style: var(--border-style); } .gap-{{ s[0] }} { gap:
+    var(--space-{{ s[0] }}); } .direction-row.gap-{{ s[0] }}, .direction-responsive.gap-
     {{- s[0] }}
     { --children-gap: var(--space-{{ s[0] }}); }
     {% if s[1].settings.value contains '%' %}

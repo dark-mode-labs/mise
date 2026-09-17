@@ -85,7 +85,17 @@ test("a call passes every arg the field's own picker can produce", () => {
             .map((f) => [f.id, f])
         : []
     );
-    return [...src.matchAll(/render 'role-color-value',([\s\S]*?)-%\}/g)].flatMap(([, args]) => {
+    // `box-border-style` forwards the same three arms, so one dropped there is dropped as silently.
+    const calls = [
+      ...[...src.matchAll(/render 'role-color-value',([\s\S]*?)-%\}/g)].map(([, a]) => a),
+      ...[...src.matchAll(/render 'box-border-style',([\s\S]*?)-%\}/g)].map(([, a]) =>
+        a
+          .replace(/palette_token:/, "palette:")
+          .replace(/custom_color:/, "custom:")
+          .replace(/gradient_token:/, "gradient:")
+      ),
+    ];
+    return calls.flatMap((args) => {
       const field = args.match(/role:\s*s\.(\w+)/)?.[1];
       const picker = field && byId.get(field);
       return picker?.options ? [{ file, field, args, picker }] : [];

@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (p) => readFileSync(join(root, p), "utf8");
 
-// The bag each `| push: 'ef-…'` / `| push: 'group-border-…'` line assigns into.
+// The bag each `| push: 'ef-…'` / `| push: border_class_str` line assigns into.
 function bagsPushing(src, fragment) {
   const re = /\{%\s*assign\s+(\w+)\s*=\s*\1\b([\s\S]*?)%\}/g;
   return new Set([...src.matchAll(re)].filter((m) => m[2].includes(fragment)).map((m) => m[1]));
@@ -21,7 +21,7 @@ test("a button paints its border and its effect on the same element", () => {
   const src = read("blocks/button.liquid");
 
   assert.deepEqual([...bagsPushing(src, "ef-{{ ef_id }}")], ["inner_classes"]);
-  assert.deepEqual([...bagsPushing(src, "group-border-{{ s.border_mode }}")], ["inner_classes"]);
+  assert.deepEqual([...bagsPushing(src, "border_class_str")], ["inner_classes"]);
 });
 
 test("a button's text colour rides the effect element, and the label inherits it", () => {

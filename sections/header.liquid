@@ -66,28 +66,11 @@
   | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
 %}
 
-{%- capture border_color_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.border_role,
-      palette: s.border_role_palette, custom: s.border_role_custom -%}
-{%- endcapture -%}
-
-{% unless s.border_mode == 'none' or s.border_mode == blank %}
-  {% assign bg_layer_classes = bg_layer_classes
-    | push: 'group-border-{{ s.border_mode }}'
-    | push: 'group-border-size-{{ s.border_size }}'
-  %}
-  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' %}
-    {% assign bg_layer_classes = bg_layer_classes | push: 'border-{{ s.border_role }}' %}
-  {% endif %}
-  {% if s.border_mode == 'custom' %}
-    {% assign bg_layer_classes = bg_layer_classes
-      | push_if: 'group-border-custom-left', s.border_custom_left
-      | push_if: 'group-border-custom-right', s.border_custom_right
-      | push_if: 'group-border-custom-top', s.border_custom_top
-      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
-    %}
-  {% endif %}
-{% endunless %}
+{%- capture border_class_str -%}{%- render 'box-border-edges', role: s.border_role,
+  top: s.border_top, right: s.border_right, bottom: s.border_bottom, left: s.border_left -%}{%- endcapture -%}
+{% if border_class_str != blank %}
+  {% assign bg_layer_classes = bg_layer_classes | push: border_class_str %}
+{% endif %}
 {% if s.backdrop_blur == 'base' %}
   {% assign bg_layer_classes = bg_layer_classes | push: 'backdrop-blur' %}
 {% elsif s.backdrop_blur and s.backdrop_blur != 'none' %}
@@ -107,15 +90,13 @@
 {% if bg_color_value != blank %}
   {% assign bar_styles = bar_styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
-{% unless s.border_mode == 'none' or s.border_mode == blank %}
-  {% assign bar_styles = bar_styles | push: '--border-style: {{ s.border_style }}' %}
-  {% if s.border_size == 'custom' %}
-    {% assign bar_styles = bar_styles | push: '--border-width: {{ s.border_size_custom }}px' %}
-  {% endif %}
-  {% if border_color_value != blank -%}
-    {%- assign bar_styles = bar_styles | push: '--border: {{ border_color_value }}' -%}
-  {%- endif %}
-{% endunless %}
+{% if border_class_str != blank %}
+  {%- capture border_style_str -%}{%- render 'box-border-style',
+    role: s.border_role, palette_token: s.border_role_palette,
+    gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
+    style: s.border_style -%}{%- endcapture -%}
+  {% assign bar_styles = bar_styles | push: border_style_str %}
+{% endif %}
 {% assign bar_style_str = bar_styles | join: ';' %}
 
 {% capture slot_logo %}{% content_for 'block', type: 'group', id: 'header-logo' %}{% endcapture %}
@@ -125,56 +106,7 @@
 {% capture slot_drawer_close %}{% content_for 'block', type: 'button', id: 'header-drawer-close' %}{% endcapture %}
 {% capture slot_drawer_note %}{% content_for 'block', type: 'text', id: 'header-drawer-note' %}{% endcapture %}
 
-{%- capture toggle_text_color -%}
-  {%- if s.toggle_text_role != 'primary' -%}
-    {%- render 'role-color-value', kind: 'text', role: s.toggle_text_role,
-      palette: s.toggle_text_role_palette, custom: s.toggle_text_role_custom, slots: true -%}
-  {%- endif -%}
-{%- endcapture -%}
-{%- capture toggle_border_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.toggle_border_role,
-      palette: s.toggle_border_role_palette, custom: s.toggle_border_role_custom -%}
-{%- endcapture -%}
-{% assign toggle_classes = 'header-mobile-toggle hover:opacity-70 inline-flex items-center justify-center shrink-0' %}
-{% if s.toggle_shape == 'circle' %}
-  {% assign toggle_classes = '{{ toggle_classes }} rounded-full' %}
-{% endif %}
-{% if s.toggle_border_role != blank and s.toggle_border_role != 'none' %}
-  {% assign toggle_classes = '{{ toggle_classes }} group-border-full group-border-size-{{ s.toggle_border_size }}' %}
-  {% if s.toggle_border_role != 'custom' and s.toggle_border_role != 'palette' %}
-    {% assign toggle_classes = '{{ toggle_classes }} border-{{ s.toggle_border_role }}' %}
-  {% endif %}
-{% endif %}
-{% assign toggle_styles = blank %}
-{% if s.toggle_size > 0 %}
-  {% assign toggle_styles = toggle_styles
-    | push: 'width: {{ s.toggle_size }}rem'
-    | push: 'height: {{ s.toggle_size }}rem'
-  %}
-{% else %}
-  {% assign toggle_classes = '{{ toggle_classes }} p-2' %}
-{% endif %}
-{% if toggle_border_value != blank %}
-  {% assign toggle_styles = toggle_styles | push: '--border: {{ toggle_border_value }}' %}
-{% endif %}
-{% if toggle_text_color != blank %}
-  {% assign toggle_styles = toggle_styles | push: 'color: {{ toggle_text_color }}' %}
-{% endif %}
-{% assign toggle_style_str = toggle_styles | join: ';' %}
-
-{% capture hamburger_btn %}
-  {% if s.show_mobile_menu %}
-    <button
-      type='button'
-      class='{{ toggle_classes }}'
-      style='{{ toggle_style_str }}'
-      data-action='toggle-drawer'
-      aria-label='Menu'
-    >
-      {% render 'icon', name: 'menu', class: 'w-6 h-6' %}
-    </button>
-  {% endif %}
-{% endcapture %}
+{% capture slot_toggle %}{% if s.show_mobile_menu %}<span class='header-mobile-toggle shrink-0'>{% content_for 'block', type: 'group', id: 'header-toggle' %}</span>{% endif %}{% endcapture %}
 
 <header
   class='{{ header_class_str }}'
@@ -189,7 +121,7 @@
     {% if s.nav_track == 'balanced' %}{% assign grid_track = 'nav-track-balanced' %}{% endif %}
     <div class='width-{{ s.width }} header-grid limit-width {{ grid_pb }} {{ grid_track }}'>
       <div class='flex items-center justify-start gap-4'>
-        {% if s.mobile_layout != 'logo_left' %}{{ hamburger_btn }}{% endif %}
+        {% if s.mobile_layout != 'logo_left' %}{{ slot_toggle }}{% endif %}
 
         {% if s.desktop_layout == 'logo_left' %}
           <div class='flex-shrink-0 hidden header-logo-desktop'>{{ slot_logo }}</div>
@@ -232,140 +164,13 @@
         {% endif %}
 
         {% if s.show_cart %}
-          {%- capture cart_bg_color -%}
-            {%- render 'role-color-value', kind: 'bg', role: s.cart_bg_role,
-                palette: s.cart_bg_role_palette, custom: s.cart_bg_role_custom -%}
-          {%- endcapture -%}
-          {%- capture cart_text_color -%}
-            {%- if s.cart_text_role != 'primary' -%}
-              {%- render 'role-color-value', kind: 'text', role: s.cart_text_role,
-                palette: s.cart_text_role_palette, custom: s.cart_text_role_custom, slots: true -%}
-            {%- endif -%}
-          {%- endcapture -%}
-          {%- capture cart_border_color -%}
-            {%- render 'role-color-value', kind: 'border', role: s.cart_border_role,
-                palette: s.cart_border_role_palette, custom: s.cart_border_role_custom -%}
-          {%- endcapture -%}
-          {%- capture badge_bg_color -%}
-            {%- render 'role-color-value', kind: 'bg', role: s.cart_badge_bg_role,
-                palette: s.cart_badge_bg_role_palette, custom: s.cart_badge_bg_role_custom -%}
-          {%- endcapture -%}
-          {%- capture badge_text_color -%}
-            {%- if s.cart_badge_text_role != 'primary' -%}
-              {%- render 'role-color-value', kind: 'text', role: s.cart_badge_text_role,
-                palette: s.cart_badge_text_role_palette, custom: s.cart_badge_text_role_custom, slots: true -%}
-            {%- endif -%}
-          {%- endcapture -%}
-          {% assign cart_button_styles = blank %}
-          {% if s.cart_size > 0 %}
-            {% assign cart_button_styles = cart_button_styles
-              | push: 'width: {{ s.cart_size }}rem'
-              | push: 'height: {{ s.cart_size }}rem'
-            %}
-          {% endif %}
-          {% if cart_bg_color != blank %}
-            {% assign cart_button_styles = cart_button_styles | push: 'background: {{ cart_bg_color }}' %}
-          {% endif %}
-          {% if cart_text_color != blank %}
-            {% assign cart_button_styles = cart_button_styles | push: 'color: {{ cart_text_color }}' %}
-          {% endif %}
-          {% if s.cart_shadow_color_override and s.cart_shadow_color != blank %}
-            {% assign cart_button_styles = cart_button_styles | push: '--shadow: {{ s.cart_shadow_color }}' %}
-          {% endif %}
-          {% if cart_border_color != blank %}
-            {% assign cart_button_styles = cart_button_styles
-              | push: '--border: {{ cart_border_color }}'
-              | push: '--border-style: solid'
-            %}
-          {% endif %}
-          {% assign cart_btn_class = 'header-cart-btn relative hover:opacity-90 inline-flex items-center justify-center shrink-0' %}
-          {% if s.cart_shadow %}
-            {% assign cart_btn_class = cart_btn_class | append: ' shadow-lg' %}
-          {% endif %}
-          {% if cart_border_color != blank %}
-            {% assign cart_btn_class = cart_btn_class
-              | append: ' group-border-full group-border-size-{{ s.cart_border_size }}'
-            %}
-          {% elsif s.cart_border_role != blank
-            and s.cart_border_role != 'none'
-            and s.cart_border_role != 'custom'
-            and s.cart_border_role != 'palette'
-          %}
-            {% assign cart_btn_class = cart_btn_class
-              | append: ' group-border-full group-border-size-{{ s.cart_border_size }}'
-              | append: ' border-{{ s.cart_border_role }}'
-            %}
-          {% endif %}
-          {% assign cart_has_padding = false %}
-          {% unless s.cart_padding_top == blank or s.cart_padding_top == 'none' -%}
-            {%- assign cart_has_padding = true -%}
-          {%- endunless %}
-          {% unless s.cart_padding_bottom == blank or s.cart_padding_bottom == 'none' -%}
-            {%- assign cart_has_padding = true -%}
-          {%- endunless %}
-          {% unless s.cart_padding_left == blank or s.cart_padding_left == 'none' -%}
-            {%- assign cart_has_padding = true -%}
-          {%- endunless %}
-          {% unless s.cart_padding_right == blank or s.cart_padding_right == 'none' -%}
-            {%- assign cart_has_padding = true -%}
-          {%- endunless %}
-          {% if s.cart_shape == 'circle' %}
-            {% assign cart_btn_class = cart_btn_class | append: ' rounded-full' %}
-          {% elsif cart_has_padding %}
-            {% assign cart_btn_class = cart_btn_class | append: ' hover:opacity-70' %}
-          {% else %}
-            {% assign cart_btn_class = cart_btn_class | append: ' p-2 hover:opacity-70' %}
-          {% endif %}
-          {% if cart_has_padding %}
-            {% assign cart_btn_class = cart_btn_class
-              | append: ' pt-{{ s.cart_padding_top }} pb-{{ s.cart_padding_bottom }}'
-              | append: ' pl-{{ s.cart_padding_left }} pr-{{ s.cart_padding_right }}'
-            %}
-          {% endif %}
-          <a
-            data-action='open-cart'
-            class='{{ cart_btn_class }}'
-            style='{{ cart_button_styles | join: ";" }}'
-          >
+          <span class='header-cart shrink-0'>
+            {% content_for 'block', type: 'group', id: 'header-cart' %}
             <span class='sr-only' data-cart-aria aria-live='polite'>{{ 'cart.aria_label_empty' | t }}</span>
-            {% if s.cart_icon_svg != blank %}
-              {{ s.cart_icon_svg }}
-            {% else %}
-              {% render 'icon', name: 'bag', class: 'w-6 h-6' %}
-            {% endif %}
-            {% assign badge_styles = blank %}
-            {% if badge_bg_color != blank %}
-              {% assign badge_styles = badge_styles | push: 'background: {{ badge_bg_color }}' %}
-            {% endif %}
-            {% if badge_text_color != blank %}
-              {% assign badge_styles = badge_styles | push: 'color: {{ badge_text_color }}' %}
-            {% endif %}
-            {% if s.cart_badge_offset > 0 %}
-              {% assign badge_styles = badge_styles | push: '--cart-badge-offset: {{ s.cart_badge_offset }}rem' %}
-            {% endif %}
-            {% if s.cart_badge_size > 0 %}
-              {% assign badge_styles = badge_styles | push: '--cart-badge-size: {{ s.cart_badge_size }}rem' %}
-            {% endif %}
-            <span
-              class='cart-count-badge'
-              data-cart-badge
-              data-empty
-              style='{{ badge_styles | join: ";" }}'
-              data-aria-empty='{{ 'cart.aria_label_empty' | t }}'
-              data-aria-one='{{ 'cart.aria_label_one' | t }}'
-              data-aria-other='{{ 'cart.aria_label_other' | t }}'
-              ><span data-cart-count>
-                {%- if request.cart_count > 99 -%}
-                  99+
-                {%- elsif request.cart_count > 0 -%}
-                  {{- request.cart_count -}}
-                {%- endif -%}
-              </span></span
-            >
-          </a>
+          </span>
         {% endif %}
 
-        {% if s.mobile_layout == 'logo_left' %}{{ hamburger_btn }}{% endif %}
+        {% if s.mobile_layout == 'logo_left' %}{{ slot_toggle }}{% endif %}
       </div>
     </div>
     {% assign actions_in_drawer = slot_actions %}
@@ -528,140 +333,6 @@
     },
     {
       "type": "select",
-      "id": "toggle_shape",
-      "label": "Menu Button Shape",
-      "default": "icon",
-      "options": [
-        {
-          "value": "icon",
-          "label": "Icon only"
-        },
-        {
-          "value": "circle",
-          "label": "Circle"
-        }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "toggle_size",
-      "label": "Menu Button Size",
-      "min": 0,
-      "max": 5,
-      "step": 0.125,
-      "unit": "rem",
-      "default": 0,
-      "info": "0 = default icon-only sizing."
-    },
-    {
-      "type": "select",
-      "subtype": "border_role",
-      "id": "toggle_border_role",
-      "label": "Menu Button Border",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "default",
-          "label": "Default"
-        },
-        {
-          "value": "emphasis",
-          "label": "Emphasis"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        }
-      ]
-    },
-    {
-      "type": "palette",
-      "id": "toggle_border_role_palette",
-      "label": "Menu Button Border Token",
-      "conditional": "setting.toggle_border_role == 'palette'"
-    },
-    {
-      "type": "color",
-      "id": "toggle_border_role_custom",
-      "label": "Menu Button Border Color",
-      "conditional": "setting.toggle_border_role == 'custom'"
-    },
-    {
-      "type": "select",
-      "subtype": "border_size",
-      "id": "toggle_border_size",
-      "label": "Menu Button Border Width",
-      "default": "xxs",
-      "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "SM",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "MD",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "LG",
-          "info": "8px"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "toggle_text_role",
-      "label": "Menu Button Icon Color",
-      "default": "none",
-      "options": [
-        { "value": "none", "label": "Inherit" },
-        { "value": "primary", "label": "Primary" },
-        { "value": "secondary", "label": "Secondary" },
-        { "value": "subtle", "label": "Subtle" },
-        { "value": "emphasis", "label": "Emphasis" },
-        { "value": "on-accent", "label": "On Accent" },
-        { "value": "on-button", "label": "On Button" },
-        { "value": "on-control", "label": "On Control" },
-        { "value": "palette", "label": "Base Palette" },
-        { "value": "custom", "label": "Raw Color" }
-      ],
-      "conditional": "setting.show_mobile_menu == true",
-      "subtype": "text_role"
-    },
-    {
-      "type": "palette",
-      "id": "toggle_text_role_palette",
-      "label": "Menu Button Icon Palette",
-      "conditional": "setting.show_mobile_menu == true and setting.toggle_text_role == 'palette'"
-    },
-    {
-      "type": "color",
-      "id": "toggle_text_role_custom",
-      "label": "Menu Button Icon Color",
-      "conditional": "setting.show_mobile_menu == true and setting.toggle_text_role == 'custom'"
-    },
-    {
-      "type": "select",
       "id": "mobile_nav_mode",
       "label": "Mobile Nav Style",
       "info": "Drawer slides over the page; panel drops in flow below the bar.",
@@ -742,26 +413,6 @@
     },
     {
       "type": "select",
-      "id": "border_mode",
-      "label": "Border",
-      "default": "none",
-      "options": [
-        {
-          "value": "custom",
-          "label": "Custom"
-        },
-        {
-          "value": "full",
-          "label": "Full"
-        },
-        {
-          "value": "none",
-          "label": "None"
-        }
-      ]
-    },
-    {
-      "type": "select",
       "id": "border_role",
       "label": "Border Color",
       "default": "default",
@@ -786,21 +437,20 @@
           "value": "custom",
           "label": "Raw Color"
         }
-      ],
-      "conditional": "setting.border_mode != 'none'"
+      ]
     },
     {
       "type": "palette",
       "id": "border_role_palette",
       "label": "Border Palette Token",
       "default": "brand",
-      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+      "conditional": "setting.border_role == 'palette'"
     },
     {
       "type": "color",
       "id": "border_role_custom",
       "label": "Raw Border",
-      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+      "conditional": "setting.border_role == 'custom'"
     },
     {
       "type": "select",
@@ -824,86 +474,31 @@
           "value": "double",
           "label": "Double"
         }
-      ],
-      "conditional": "setting.border_mode != 'none'"
+      ]
     },
     {
-      "type": "select",
-      "id": "border_size",
-      "label": "Border Size",
-      "default": "xxs",
-      "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "SM",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "MD",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "LG",
-          "info": "8px"
-        },
-        {
-          "value": "custom",
-          "label": "Custom",
-          "info": "Exact px width"
-        }
-      ],
-      "conditional": "setting.border_mode != 'none'"
+      "type": "space",
+      "id": "border_left",
+      "label": "Left Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "range",
-      "id": "border_size_custom",
-      "label": "Custom Border Width",
-      "min": 0,
-      "max": 12,
-      "step": 0.5,
-      "default": 1,
-      "unit": "px",
-      "conditional": "setting.border_size == 'custom'"
+      "type": "space",
+      "id": "border_right",
+      "label": "Right Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "id": "border_custom_left",
-      "label": "Border Left",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
+      "type": "space",
+      "id": "border_top",
+      "label": "Top Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "id": "border_custom_right",
-      "label": "Border Right",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_top",
-      "label": "Border Top",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_bottom",
-      "label": "Border Bottom",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
+      "type": "space",
+      "id": "border_bottom",
+      "label": "Bottom Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
       "type": "header",
@@ -957,7 +552,7 @@
       "type": "checkbox",
       "id": "show_nav",
       "label": "Show Navigation",
-      "info": "Renders the desktop nav (and the drawer's nav links). Disable for minimal headers — e.g. checkout, order confirmation.",
+      "info": "Renders the desktop nav (and the drawer's nav links). Disable for minimal headers \u2014 e.g. checkout, order confirmation.",
       "default": true
     },
     {
@@ -984,388 +579,8 @@
       "type": "checkbox",
       "id": "show_cart",
       "label": "Show Cart",
+      "info": "Renders the cart control. Disable for headers that cannot order \u2014 e.g. checkout, order confirmation.",
       "default": true
-    },
-    {
-      "type": "header",
-      "content": "Cart Style",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "textarea",
-      "id": "cart_icon_svg",
-      "label": "Cart Icon (custom SVG)",
-      "info": "Paste raw SVG. Falls back to default bag icon if empty.",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "range",
-      "id": "cart_size",
-      "label": "Cart Button Size",
-      "min": 0,
-      "max": 5,
-      "step": 0.125,
-      "unit": "rem",
-      "default": 0,
-      "info": "0 = default icon-only sizing.",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "select",
-      "id": "cart_shape",
-      "label": "Cart Button Shape",
-      "default": "icon",
-      "options": [
-        {
-          "value": "icon",
-          "label": "Icon Only"
-        },
-        {
-          "value": "circle",
-          "label": "Circle"
-        }
-      ],
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "space",
-      "id": "cart_padding_top",
-      "label": "Cart Padding Top",
-      "default": "none",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "space",
-      "id": "cart_padding_bottom",
-      "label": "Cart Padding Bottom",
-      "default": "none",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "space",
-      "id": "cart_padding_left",
-      "label": "Cart Padding Left",
-      "default": "none",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "space",
-      "id": "cart_padding_right",
-      "label": "Cart Padding Right",
-      "default": "none",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "select",
-      "id": "cart_bg_role",
-      "label": "Cart Button BG",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "palette",
-          "label": "Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw"
-        }
-      ],
-      "conditional": "setting.show_cart == true",
-      "subtype": "bg_role"
-    },
-    {
-      "type": "palette",
-      "id": "cart_bg_role_palette",
-      "label": "Cart BG Palette",
-      "conditional": "setting.show_cart == true and setting.cart_bg_role == 'palette'"
-    },
-    {
-      "type": "color",
-      "id": "cart_bg_role_custom",
-      "label": "Cart BG Color",
-      "conditional": "setting.show_cart == true and setting.cart_bg_role == 'custom'"
-    },
-    {
-      "type": "select",
-      "id": "cart_border_role",
-      "label": "Cart Button Border",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "default",
-          "label": "Default"
-        },
-        {
-          "value": "emphasis",
-          "label": "Emphasis"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        }
-      ],
-      "conditional": "setting.show_cart == true",
-      "subtype": "border_role"
-    },
-    {
-      "type": "palette",
-      "id": "cart_border_role_palette",
-      "label": "Cart Border Palette",
-      "conditional": "setting.show_cart == true and setting.cart_border_role == 'palette'"
-    },
-    {
-      "type": "color",
-      "id": "cart_border_role_custom",
-      "label": "Cart Border Color",
-      "conditional": "setting.show_cart == true and setting.cart_border_role == 'custom'"
-    },
-    {
-      "type": "select",
-      "id": "cart_border_size",
-      "label": "Cart Border Width",
-      "default": "xxs",
-      "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "SM",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "MD",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "LG",
-          "info": "8px"
-        }
-      ],
-      "conditional": "setting.show_cart == true and setting.cart_border_role != 'none'",
-      "subtype": "border_size"
-    },
-    {
-      "type": "select",
-      "id": "cart_text_role",
-      "label": "Cart Icon Color",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "Inherit"
-        },
-        {
-          "value": "primary",
-          "label": "Primary"
-        },
-        {
-          "value": "secondary",
-          "label": "Secondary"
-        },
-        {
-          "value": "subtle",
-          "label": "Subtle"
-        },
-        {
-          "value": "emphasis",
-          "label": "Emphasis"
-        },
-        {
-          "value": "on-accent",
-          "label": "On Accent"
-        },
-        {
-          "value": "on-button",
-          "label": "On Button"
-        },
-        {
-          "value": "on-control",
-          "label": "On Control"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        }
-      ],
-      "conditional": "setting.show_cart == true",
-      "subtype": "text_role"
-    },
-    {
-      "type": "palette",
-      "id": "cart_text_role_palette",
-      "label": "Cart Icon Palette",
-      "conditional": "setting.show_cart == true and setting.cart_text_role == 'palette'"
-    },
-    {
-      "type": "color",
-      "id": "cart_text_role_custom",
-      "label": "Cart Icon Color",
-      "conditional": "setting.show_cart == true and setting.cart_text_role == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "cart_shadow",
-      "label": "Cart Button Shadow",
-      "default": false,
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "checkbox",
-      "id": "cart_shadow_color_override",
-      "label": "Override Cart Shadow Color",
-      "default": false,
-      "conditional": "setting.show_cart == true and setting.cart_shadow == true"
-    },
-    {
-      "type": "color",
-      "id": "cart_shadow_color",
-      "label": "Cart Shadow Color",
-      "default": "rgba(0,0,0,0.45)",
-      "conditional": "setting.show_cart == true and setting.cart_shadow == true and setting.cart_shadow_color_override == true"
-    },
-    {
-      "type": "range",
-      "id": "cart_badge_size",
-      "label": "Badge size",
-      "default": 0,
-      "min": 0,
-      "max": 3,
-      "step": 0.0625,
-      "unit": "rem",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "range",
-      "id": "cart_badge_offset",
-      "label": "Badge overhang",
-      "default": 0,
-      "min": 0,
-      "max": 2,
-      "step": 0.0625,
-      "unit": "rem",
-      "conditional": "setting.show_cart == true"
-    },
-    {
-      "type": "select",
-      "id": "cart_badge_bg_role",
-      "label": "Badge BG",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "Default"
-        },
-        {
-          "value": "palette",
-          "label": "Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw"
-        }
-      ],
-      "conditional": "setting.show_cart == true",
-      "subtype": "bg_role"
-    },
-    {
-      "type": "palette",
-      "id": "cart_badge_bg_role_palette",
-      "label": "Badge BG Palette",
-      "conditional": "setting.show_cart == true and setting.cart_badge_bg_role == 'palette'"
-    },
-    {
-      "type": "color",
-      "id": "cart_badge_bg_role_custom",
-      "label": "Badge BG Color",
-      "conditional": "setting.show_cart == true and setting.cart_badge_bg_role == 'custom'"
-    },
-    {
-      "type": "select",
-      "id": "cart_badge_text_role",
-      "label": "Badge Text",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "Inherit"
-        },
-        {
-          "value": "primary",
-          "label": "Primary"
-        },
-        {
-          "value": "secondary",
-          "label": "Secondary"
-        },
-        {
-          "value": "subtle",
-          "label": "Subtle"
-        },
-        {
-          "value": "emphasis",
-          "label": "Emphasis"
-        },
-        {
-          "value": "on-accent",
-          "label": "On Accent"
-        },
-        {
-          "value": "on-button",
-          "label": "On Button"
-        },
-        {
-          "value": "on-control",
-          "label": "On Control"
-        },
-        {
-          "value": "palette",
-          "label": "Base Palette"
-        },
-        {
-          "value": "custom",
-          "label": "Raw Color"
-        }
-      ],
-      "conditional": "setting.show_cart == true",
-      "subtype": "text_role"
-    },
-    {
-      "type": "palette",
-      "id": "cart_badge_text_role_palette",
-      "label": "Badge Text Palette",
-      "conditional": "setting.show_cart == true and setting.cart_badge_text_role == 'palette'"
-    },
-    {
-      "type": "color",
-      "id": "cart_badge_text_role_custom",
-      "label": "Badge Text Color",
-      "conditional": "setting.show_cart == true and setting.cart_badge_text_role == 'custom'"
     },
     {
       "type": "header",
@@ -1786,13 +1001,65 @@
           "type": "text",
           "name": "Header Drawer Note",
           "static": true
+        },
+        "header-toggle": {
+          "type": "group",
+          "name": "Header Menu Toggle",
+          "static": true,
+          "settings": {
+            "trigger": "action",
+            "action": "toggle-drawer",
+            "width": "fit",
+            "content_align": "center",
+            "vertical_align": "middle",
+            "padding_top": "xs",
+            "padding_bottom": "xs",
+            "padding_left": "xs",
+            "padding_right": "xs"
+          },
+          "blocks": ["header-toggle-icon"]
+        },
+        "header-toggle-icon": {
+          "type": "icon",
+          "name": "Header Menu Icon",
+          "static": true,
+          "settings": {
+            "svg": "<svg fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 6h16M4 12h16M4 18h16'/></svg>",
+            "icon_size": 1.5
+          }
+        },
+        "header-cart": {
+          "type": "group",
+          "name": "Header Cart",
+          "static": true,
+          "settings": {
+            "trigger": "action",
+            "action": "open-cart",
+            "width": "fit",
+            "content_align": "center",
+            "vertical_align": "middle",
+            "position": "relative",
+            "padding_top": "xs",
+            "padding_bottom": "xs",
+            "padding_left": "xs",
+            "padding_right": "xs"
+          },
+          "blocks": ["header-cart-icon"]
+        },
+        "header-cart-icon": {
+          "type": "icon",
+          "name": "Header Cart Icon",
+          "static": true,
+          "settings": {
+            "svg": "<svg fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'/></svg>",
+            "icon_size": 1.5
+          }
         }
       },
       "settings": {
         "header_overlay_mode": "none",
         "show_mobile_menu": true,
-        "show_search": false,
-        "show_cart": false
+        "show_search": false
       }
     }
   ]

@@ -1,9 +1,5 @@
 {% assign s = block.settings %}
 
-{%- capture border_color_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.border_role,
-      palette: s.border_role_palette, custom: s.border_role_custom, gradient: s.border_role_gradient -%}
-{%- endcapture -%}
 {%- capture overlay_color_value -%}
   {%- render 'role-color-value', kind: 'bg', role: s.overlay_role,
       palette: s.overlay_role_palette, custom: s.overlay_role_custom, gradient: s.overlay_role_gradient -%}
@@ -19,10 +15,6 @@
 {%- capture text_color_inactive_value -%}
   {%- render 'role-color-value', kind: 'text', role: s.text_role_inactive,
       palette: s.text_role_inactive_palette, custom: s.text_role_inactive_custom, gradient: s.text_role_inactive_gradient -%}
-{%- endcapture -%}
-{%- capture border_color_inactive_value -%}
-  {%- render 'role-color-value', kind: 'border', role: s.border_role_inactive,
-      palette: s.border_role_inactive_palette, custom: s.border_role_inactive_custom, gradient: s.border_role_inactive_gradient -%}
 {%- endcapture -%}
 {% assign classes = '' %}
 {% assign styles = '' %}
@@ -56,34 +48,26 @@
 {% else %}
   {% assign classes = classes | push: 'rounded-global' %}
 {% endif %}
-{% if border_color_value != blank %}
-  {% assign styles = styles | push: '--border: {{ border_color_value }}' %}
-{% elsif s.border_role != blank and s.border_role != 'none' %}
-  {% assign classes = classes | push: 'border-{{ s.border_role }}' %}
+{% if s.vertical_align != blank or s.content_align != blank %}
+  {% assign classes = classes | push: 'flex' | push: 'direction-row' %}
+  {% if s.vertical_align != blank %}
+    {% assign classes = classes | push: 'vertical-{{ s.vertical_align }}' %}
+  {% endif %}
+  {% if s.content_align != blank %}
+    {% assign classes = classes | push: 'content-{{ s.content_align }}' %}
+  {% endif %}
 {% endif %}
-{% unless s.border_mode_inactive == 'none' %}
-  {% assign inactive_state_classes = inactive_state_classes
-    | push: 'group-border-{{ s.border_mode_inactive }}'
-    | push: 'group-border-size-{{ s.border_size_inactive }}'
-  %}
-  {% if border_color_inactive_value != blank %}
-    {% assign inactive_state_styles = inactive_state_styles | push: '--border:{{ border_color_inactive_value }}' %}
-  {% endif %}
-  {% assign inactive_state_styles = inactive_state_styles | push: '--border-style:{{ s.border_style_inactive }}' %}
-  {% if s.border_size_inactive == 'custom' %}
-    {% assign inactive_state_styles = inactive_state_styles
-      | push: '--border-width:{{ s.border_size_custom_inactive }}px'
-    %}
-  {% endif %}
-  {% if s.border_mode_inactive == 'custom' %}
-    {% assign inactive_state_classes = inactive_state_classes
-      | push_if: 'group-border-custom-left', s.border_custom_left_inactive
-      | push_if: 'group-border-custom-right', s.border_custom_right_inactive
-      | push_if: 'group-border-custom-top', s.border_custom_top_inactive
-      | push_if: 'group-border-custom-bottom', s.border_custom_bottom_inactive
-    %}
-  {% endif %}
-{% endunless %}
+{%- capture border_inactive_class_str -%}{%- render 'box-border-edges', role: s.border_role_inactive,
+  top: s.border_top_inactive, right: s.border_right_inactive,
+  bottom: s.border_bottom_inactive, left: s.border_left_inactive -%}{%- endcapture -%}
+{% if border_inactive_class_str != blank %}
+  {% assign inactive_state_classes = inactive_state_classes | push: border_inactive_class_str %}
+  {%- capture border_inactive_style_str -%}{%- render 'box-border-style',
+    role: s.border_role_inactive, palette_token: s.border_role_inactive_palette,
+    gradient_token: s.border_role_inactive_gradient, custom_color: s.border_role_inactive_custom,
+    style: s.border_style_inactive -%}{%- endcapture -%}
+  {% assign inactive_state_styles = inactive_state_styles | push: border_inactive_style_str %}
+{% endif %}
 
 {% if s.enable_overlay_inactive %}
   {% if overlay_color_inactive_value != blank -%}
@@ -108,24 +92,16 @@
   {% endif %}
 {% endif %}
 
-{% unless s.border_mode == 'none' %}
-  {% assign active_state_classes = active_state_classes
-    | push: 'group-border-{{ s.border_mode }}'
-    | push: 'group-border-size-{{ s.border_size }}'
-  %}
-  {% assign active_state_styles = active_state_styles | push: '--border-style:{{ s.border_style }}' %}
-  {% if s.border_size == 'custom' %}
-    {% assign active_state_styles = active_state_styles | push: '--border-width:{{ s.border_size_custom }}px' %}
-  {% endif %}
-  {% if s.border_mode == 'custom' %}
-    {% assign active_state_classes = active_state_classes
-      | push_if: 'group-border-custom-left', s.border_custom_left
-      | push_if: 'group-border-custom-right', s.border_custom_right
-      | push_if: 'group-border-custom-top', s.border_custom_top
-      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
-    %}
-  {% endif %}
-{% endunless %}
+{%- capture border_class_str -%}{%- render 'box-border-edges', role: s.border_role,
+  top: s.border_top, right: s.border_right, bottom: s.border_bottom, left: s.border_left -%}{%- endcapture -%}
+{% if border_class_str != blank %}
+  {% assign active_state_classes = active_state_classes | push: border_class_str %}
+  {%- capture border_style_str -%}{%- render 'box-border-style',
+    role: s.border_role, palette_token: s.border_role_palette,
+    gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
+    style: s.border_style -%}{%- endcapture -%}
+  {% assign active_state_styles = active_state_styles | push: border_style_str %}
+{% endif %}
 
 {% if s.enable_overlay %}
   {% if overlay_color_value != blank -%}
@@ -171,15 +147,6 @@
   role='tab'
 >
   {% assign inner_classes = 'relative z-10' %}
-  {% if s.vertical_align != blank or s.content_align != blank %}
-    {% assign inner_classes = inner_classes | push: 'flex' | push: 'direction-row' %}
-    {% if s.vertical_align != blank -%}
-      {%- assign inner_classes = inner_classes | push: 'vertical-{{ s.vertical_align }}' -%}
-    {%- endif %}
-    {% if s.content_align != blank -%}
-      {%- assign inner_classes = inner_classes | push: 'content-{{ s.content_align }}' -%}
-    {%- endif %}
-  {% endif %}
   <div class='{{ inner_classes | join: ' ' }}'>
     {% content_for 'blocks' %}
   </div>
@@ -220,26 +187,6 @@
     },
     {
       "type": "select",
-      "id": "border_mode",
-      "label": "Border",
-      "default": "none",
-      "options": [
-        {
-          "value": "custom",
-          "label": "Custom"
-        },
-        {
-          "value": "full",
-          "label": "Full"
-        },
-        {
-          "value": "none",
-          "label": "None"
-        }
-      ]
-    },
-    {
-      "type": "select",
       "id": "border_role",
       "label": "Border Color",
       "default": "default",
@@ -268,21 +215,20 @@
           "value": "gradient",
           "label": "Gradient"
         }
-      ],
-      "conditional": "setting.border_mode != 'none'"
+      ]
     },
     {
       "type": "palette",
       "id": "border_role_palette",
       "label": "Border Palette Token",
       "default": "brand",
-      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+      "conditional": "setting.border_role == 'palette'"
     },
     {
       "type": "color",
       "id": "border_role_custom",
       "label": "Raw Border",
-      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+      "conditional": "setting.border_role == 'custom'"
     },
     {
       "type": "gradient",
@@ -321,7 +267,6 @@
           "label": "Gradient"
         }
       ],
-      "conditional": "setting.border_mode_inactive != 'none'",
       "subtype": "border_role"
     },
     {
@@ -329,13 +274,13 @@
       "id": "border_role_inactive_palette",
       "label": "Inactive Border Palette Token",
       "default": "brand",
-      "conditional": "setting.border_role_inactive == 'palette' and setting.border_mode_inactive != 'none'"
+      "conditional": "setting.border_role_inactive == 'palette'"
     },
     {
       "type": "color",
       "id": "border_role_inactive_custom",
       "label": "Inactive Raw Border",
-      "conditional": "setting.border_role_inactive == 'custom' and setting.border_mode_inactive != 'none'"
+      "conditional": "setting.border_role_inactive == 'custom'"
     },
     {
       "type": "gradient",
@@ -366,84 +311,6 @@
           "label": "Double"
         }
       ]
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_left",
-      "label": "Border Left",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_right",
-      "label": "Border Right",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_top",
-      "label": "Border Top",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_bottom",
-      "label": "Border Bottom",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "select",
-      "id": "border_size",
-      "label": "Border Size",
-      "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "Small",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "Medium",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "Large",
-          "info": "8px"
-        },
-        {
-          "value": "custom",
-          "label": "Custom",
-          "info": "Exact px width"
-        }
-      ],
-      "default": "md",
-      "conditional": "setting.border_mode != 'none'"
-    },
-    {
-      "type": "range",
-      "id": "border_size_custom",
-      "label": "Custom Border Width",
-      "min": 0,
-      "max": 12,
-      "step": 0.5,
-      "default": 1,
-      "unit": "px",
-      "conditional": "setting.border_size == 'custom'"
     },
     {
       "type": "checkbox",
@@ -609,27 +476,6 @@
     },
     {
       "type": "select",
-      "subtype": "border_mode",
-      "id": "border_mode_inactive",
-      "label": "Border",
-      "default": "none",
-      "options": [
-        {
-          "value": "custom",
-          "label": "Custom"
-        },
-        {
-          "value": "full",
-          "label": "Full"
-        },
-        {
-          "value": "none",
-          "label": "None"
-        }
-      ]
-    },
-    {
-      "type": "select",
       "subtype": "border_style",
       "id": "border_style_inactive",
       "label": "Border Style",
@@ -654,88 +500,52 @@
       ]
     },
     {
-      "type": "checkbox",
-      "subtype": "border_custom_left",
-      "id": "border_custom_left_inactive",
-      "label": "Border Left",
-      "default": false,
-      "conditional": "setting.border_mode_inactive == 'custom'"
+      "type": "space",
+      "id": "border_left_inactive",
+      "label": "Left Border Width (Inactive)",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "subtype": "border_custom_right",
-      "id": "border_custom_right_inactive",
-      "label": "Border Right",
-      "default": false,
-      "conditional": "setting.border_mode_inactive == 'custom'"
+      "type": "space",
+      "id": "border_right_inactive",
+      "label": "Right Border Width (Inactive)",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "subtype": "border_custom_top",
-      "id": "border_custom_top_inactive",
-      "label": "Border Top",
-      "default": false,
-      "conditional": "setting.border_mode_inactive == 'custom'"
+      "type": "space",
+      "id": "border_top_inactive",
+      "label": "Top Border Width (Inactive)",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "subtype": "border_custom_bottom",
-      "id": "border_custom_bottom_inactive",
-      "label": "Border Bottom",
-      "default": false,
-      "conditional": "setting.border_mode_inactive == 'custom'"
+      "type": "space",
+      "id": "border_bottom_inactive",
+      "label": "Bottom Border Width (Inactive)",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "select",
-      "subtype": "border_size",
-      "id": "border_size_inactive",
-      "label": "Border Size",
-      "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "Small",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "Medium",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "Large",
-          "info": "8px"
-        },
-        {
-          "value": "custom",
-          "label": "Custom",
-          "info": "Exact px width"
-        }
-      ],
-      "default": "md",
-      "conditional": "setting.border_mode_inactive != 'none'"
+      "type": "space",
+      "id": "border_top",
+      "label": "Top Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "range",
-      "subtype": "border_size_custom",
-      "id": "border_size_custom_inactive",
-      "label": "Custom Border Width",
-      "min": 0,
-      "max": 12,
-      "step": 0.5,
-      "default": 1,
-      "unit": "px",
-      "conditional": "setting.border_size_inactive == 'custom'"
+      "type": "space",
+      "id": "border_right",
+      "label": "Right Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "border_bottom",
+      "label": "Bottom Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "border_left",
+      "label": "Left Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
       "type": "checkbox",

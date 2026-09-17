@@ -17,8 +17,9 @@ test("every header action control refuses to shrink", () => {
   const header = read("sections/header.liquid");
 
   for (const [what, anchor] of [
-    ["toggle", /assign toggle_classes = '([^']*)'/],
-    ["cart", /assign cart_btn_class = '([^']*)'/],
+    // The floor rides the wrapper the BAR draws, which is also what decides the control is shown.
+    ["toggle", /class='(header-mobile-toggle[^']*)'/],
+    ["cart", /class='(header-cart[^']*)'/],
   ]) {
     assert.match(
       header.match(anchor)[1],
@@ -90,9 +91,16 @@ test("every header role field is resolved by the one resolver", () => {
     const call = src.match(new RegExp(`role:\\s*s\\.${field}\\b[\\s\\S]{0,220}?-%\\}`));
     assert.ok(call, `${field} names no resolver call`);
     const kind = field.includes("text") ? "text" : field.includes("border") ? "border" : "bg";
-    assert.match(
-      src,
-      new RegExp(`kind: '${kind}',\\s*role: s\\.${field}\\b`),
+    // A field handed to a snippet is resolved THERE, so the kind is that snippet's to state.
+    const delegated = [...src.matchAll(/render '([\w-]+)',([\s\S]{0,220}?)-%\}/g)].some(
+      ([, snippet, args]) =>
+        snippet !== "role-color-value" &&
+        new RegExp(`role:\\s*s\\.${field}\\b`).test(args) &&
+        existsSync(join(root, `snippets/${snippet}.liquid`)) &&
+        new RegExp(`kind: '${kind}'`).test(read(`snippets/${snippet}.liquid`))
+    );
+    assert.ok(
+      delegated || new RegExp(`kind: '${kind}',\\s*role: s\\.${field}\\b`).test(src),
       `${field} is passed as the wrong kind, so it would read the wrong variable family`
     );
   }
@@ -114,10 +122,18 @@ test("every header role field answers its slot arms one of the two ways", () => 
   const byId = new Map(schema("sections/header.liquid").settings.map((f) => [f.id, f]));
   const valueOnly = new Set(["none", "inherit", "palette", "custom", "gradient"]);
 
-  const sites = [...src.matchAll(/render 'role-color-value',([\s\S]*?)-%\}/g)];
-  assert.ok(sites.length >= 9, `only found ${sites.length} role fields reaching the resolver`);
+  // Direct calls, plus the border half's front end — its args are the resolver's under other names.
+  const sites = [
+    ...[...src.matchAll(/render 'role-color-value',([\s\S]*?)-%\}/g)].map(([, a]) => a),
+    ...[...src.matchAll(/render 'box-border-style',([\s\S]*?)-%\}/g)].map(
+      ([, a]) =>
+        `kind: 'border', ${a.replace(/palette_token:/, "palette:").replace(/custom_color:/, "custom:")}`
+    ),
+  ];
+  // The cart's five moved onto its own block when the control stopped being header fields.
+  assert.ok(sites.length >= 4, `only found ${sites.length} role fields reaching the resolver`);
 
-  for (const [, args] of sites) {
+  for (const args of sites) {
     const field = args.match(/role:\s*s\.(\w+)/)[1];
     const kind = args.match(/kind:\s*'(\w+)'/)[1];
     const arms = (byId.get(field)?.options ?? [])
@@ -126,8 +142,22 @@ test("every header role field answers its slot arms one of the two ways", () => 
     if (!arms.length) continue;
 
     const asClass = new RegExp(`\\b${kind}-\\{\\{\\s*(?:s\\.)?${field}\\s*\\}\\}`);
+    // A field handed to a snippet is pushed under that snippet's OWN parameter name, so the class
+    // is spelled `<kind>-{{ role }}` there — both halves must hold, or the field reaches nothing.
+    let viaSnippet = false;
+    for (const call of src.matchAll(/render '([\w-]+)',([\s\S]{0,220}?)-%\}/g)) {
+      if (call[1] === "role-color-value") continue; // the VALUE half, not a class
+      if (!new RegExp(`role:\\s*s\\.${field}\\b`).test(call[2])) continue;
+      const body = existsSync(join(root, `snippets/${call[1]}.liquid`))
+        ? read(`snippets/${call[1]}.liquid`)
+        : "";
+      if (new RegExp(`\\b${kind}-\\{\\{\\s*role\\s*\\}\\}`).test(body)) {
+        viaSnippet = true;
+        break;
+      }
+    }
     assert.ok(
-      args.includes("slots: true") || asClass.test(scope),
+      args.includes("slots: true") || asClass.test(scope) || viaSnippet,
       `${field} offers ${arms.length} slot roles that reach the element neither as a class nor as a value`
     );
   }
@@ -249,4 +279,22 @@ test("an overlay drawer renders outside the frosted bar, a panel inside it", () 
     /\{%\s*unless s\.mobile_nav_mode == 'panel'\s*%\}\s*\{\{ drawer_html \}\}/,
     "the overlay arm is still inside the bar layer"
   );
+});
+
+test("every visibility gate the header declares actually wraps a region", () => {
+  // A gate the schema offers and the template never reads is a lever wired to nothing.
+  const src = read("sections/header.liquid");
+  const body = src.split(/\{%\s*schema\s*%\}/)[0];
+  const gates = schema("sections/header.liquid")
+    .settings.map((x) => x.id)
+    .filter((id) => typeof id === "string" && id.startsWith("show_"));
+
+  assert.ok(gates.length >= 5, `expected the five region gates, found ${gates}`);
+  for (const id of gates) {
+    assert.match(
+      body,
+      new RegExp(`\\{%\\s*if\\s+s\\.${id}\\b`),
+      `${id} is offered as a setting but no region is gated on it`
+    );
+  }
 });

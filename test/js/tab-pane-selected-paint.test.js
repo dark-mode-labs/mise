@@ -43,7 +43,8 @@ test("a pane rebinds ONLY the base border var, and paints no border of its own",
     /--border-emphasis:/,
     "the pane rebinds the emphasis slot again — descendants reading it get the selected colour"
   );
-  assert.equal(src.match(/group-border-|--border-width|border-style/g), null);
+  // Every way a component can draw one: the edge pair, an edge class, or the style/width it needs.
+  assert.equal(src.match(/box-border-(edges|style)|--border-(width|style)|b[trbl]-\{\{/g), null);
 });
 
 test("a pane's selected border is resolved as a border, by the one resolver", () => {
