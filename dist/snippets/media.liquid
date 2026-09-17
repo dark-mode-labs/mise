@@ -1,0 +1,105 @@
+{% assign fit_mode = fit | default: 'cover' %}
+{% assign load_mode = loading | default: 'lazy' %}
+{% assign show_controls = controls | default: false %}
+{% assign can_autoplay = autoplay | default: false %}
+{% assign anim_class = '' %}
+
+{% for ef_id in effect %}
+  {% assign anim_class = anim_class | append: ' ef-{{ ef_id }}' %}
+{% endfor %}
+
+{% if curtain_reveal_parallax %}
+  {% assign anim_class = anim_class | append: ' ' | append: 'fixed inset-0' %}
+{% endif %}
+
+{% assign bp_keys = settings.breakpoint_scale | keys %}
+{% assign bp_vals = settings.breakpoint_scale | values %}
+{% assign bp_vals_sorted = bp_vals | sort: 'settings.max_width' %}
+{% assign sorted_bp_ids = blank %}
+{% for v in bp_vals_sorted %}
+  {% for i in (0..bp_vals.size) %}
+    {% if bp_vals[i].settings.max_width == v.settings.max_width %}
+      {% assign sorted_bp_ids = sorted_bp_ids | push: bp_keys[i] %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% assign bp_px_list = blank %}
+{% for bp_id in sorted_bp_ids %}
+  {% assign bp_px = settings.breakpoint_scale[bp_id].settings.max_width | times: 16 %}
+  {% assign bp_px_list = bp_px_list | push: bp_px %}
+{% endfor %}
+{% assign widest_px = bp_px_list | last %}
+
+<div
+  class='media-wrapper overflow-hidden relative group aspect-{{ ratio | default: 'auto' }}'
+  style='--object-fit: {{ fit_mode }}{% if position != blank %}; --object-position: {{ position }}{% endif %}{% if ratio == 'custom' and ratio_custom != blank %}; --aspect-ratio-custom: {{ ratio_custom }}{% endif %}'
+>
+  {% if video != blank %}
+    <video
+      muted
+      loop
+      playsinline
+      {% if can_autoplay %}
+        autoplay
+      {% endif %}
+      {% if show_controls %}
+        controls
+      {% endif %}
+      class='{% unless show_controls %}pointer-events-none{% endunless %} {{ anim_class }}'
+      {% if src %}
+        poster='{{ src | image_url: width: widest_px }}'
+      {% endif %}
+    >
+      <source src='{{ video | image_url: width: 800 }}' type='video/mp4'>
+    </video>
+
+  {% elsif src != blank %}
+    {% assign sizes_attr = '100vw' %}
+    {% assign width_max = settings.container_scale[width_tier].settings.max_width %}
+    {% if width_max contains 'rem' %}
+      {% assign width_px = width_max | remove: 'rem' | times: 16 %}
+      {% assign sizes_attr = '(max-width: {{ width_px }}px) 100vw, {{ width_px }}px' %}
+    {% endif %}
+    {% capture srcset_desktop %}
+      {%- for bp_px in bp_px_list -%}
+        {{ src | image_url: width: bp_px }} {{ bp_px }}w,
+      {%- endfor -%}
+      {%- assign retina_px = widest_px | times: 2 -%}
+      {%- if retina_px > 3200 -%}{%- assign retina_px = 3200 -%}{%- endif -%}
+      {{ src | image_url: width: retina_px }} {{ retina_px }}w
+    {% endcapture %}
+    {% assign mobile_bp = 768 %}
+    <picture>
+      {% if src_mobile != blank %}
+        {% capture srcset_mobile %}
+          {%- for bp_px in bp_px_list -%}
+            {%- if bp_px < mobile_bp -%}
+              {{ src_mobile | image_url: width: bp_px }} {{ bp_px }}w,
+            {%- endif -%}
+          {%- endfor -%}
+          {%- assign mobile_cap = mobile_bp | times: 2 -%}
+          {{ src_mobile | image_url: width: mobile_cap }} {{ mobile_cap }}w
+        {% endcapture %}
+        <source media='(max-width: {{ mobile_bp | minus: 1 }}px)' srcset='{{ srcset_mobile }}' sizes='{{ sizes_attr }}'>
+      {% endif %}
+      <img
+        src='{{ src | image_url: width: widest_px }}'
+        srcset='{{ srcset_desktop }}'
+        sizes='{{ sizes_attr }}'
+        alt='{{ src.alt | escape }}'
+        loading='{{ load_mode }}'
+        class='{{ anim_class }}'
+      >
+    </picture>
+
+  {% else %}
+    {% if placeholder != blank %}
+      {%
+        render 'placeholder',
+        name: placeholder | default: 'scene-1',
+        class: 'object-cover'
+      %}
+    {% endif %}
+  {% endif %}
+</div>
