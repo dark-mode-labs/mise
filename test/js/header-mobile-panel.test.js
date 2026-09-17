@@ -128,8 +128,22 @@ test("every header role field answers its slot arms one of the two ways", () => 
     if (!arms.length) continue;
 
     const asClass = new RegExp(`\\b${kind}-\\{\\{\\s*(?:s\\.)?${field}\\s*\\}\\}`);
+    // A field handed to a snippet is pushed under that snippet's OWN parameter name, so the class
+    // is spelled `<kind>-{{ role }}` there — both halves must hold, or the field reaches nothing.
+    let viaSnippet = false;
+    for (const call of src.matchAll(/render '([\w-]+)',([\s\S]{0,220}?)-%\}/g)) {
+      if (call[1] === "role-color-value") continue; // the VALUE half, not a class
+      if (!new RegExp(`role:\\s*s\\.${field}\\b`).test(call[2])) continue;
+      const body = existsSync(join(root, `snippets/${call[1]}.liquid`))
+        ? read(`snippets/${call[1]}.liquid`)
+        : "";
+      if (new RegExp(`\\b${kind}-\\{\\{\\s*role\\s*\\}\\}`).test(body)) {
+        viaSnippet = true;
+        break;
+      }
+    }
     assert.ok(
-      args.includes("slots: true") || asClass.test(scope),
+      args.includes("slots: true") || asClass.test(scope) || viaSnippet,
       `${field} offers ${arms.length} slot roles that reach the element neither as a class nor as a value`
     );
   }

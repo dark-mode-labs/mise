@@ -63,10 +63,8 @@
   {% endif %}
 {% endif %}
 
-{%- capture border_class_str -%}{%- render 'box-border-class',
-  mode: s.border_mode, role: s.border_role, size_tier: s.border_size,
-  custom_left: s.border_custom_left, custom_right: s.border_custom_right,
-  custom_top: s.border_custom_top, custom_bottom: s.border_custom_bottom -%}{%- endcapture -%}
+{%- capture border_class_str -%}{%- render 'box-border-edges', role: s.border_role,
+  top: s.border_top, right: s.border_right, bottom: s.border_bottom, left: s.border_left -%}{%- endcapture -%}
 {% if border_class_str != blank %}
   {% assign classes = classes | push: border_class_str %}
 {% endif %}
@@ -111,11 +109,11 @@
   {% endif %}
 {% endif %}
 
-{%- capture border_style_str -%}{%- render 'box-border-style',
-  mode: s.border_mode, role: s.border_role, palette_token: s.border_role_palette,
-  gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
-  style: s.border_style, size_tier: s.border_size, size_custom: s.border_size_custom -%}{%- endcapture -%}
-{% if border_style_str != blank %}
+{% if border_class_str != blank %}
+  {%- capture border_style_str -%}{%- render 'box-border-style',
+    role: s.border_role, palette_token: s.border_role_palette,
+    gradient_token: s.border_role_gradient, custom_color: s.border_role_custom,
+    style: s.border_style -%}{%- endcapture -%}
   {% assign styles = styles | push: border_style_str %}
 {% endif %}
 
@@ -253,6 +251,30 @@
       "info": "e.g. `1.5fr 1fr`, `120px 1fr 380px`, `repeat(3, 1fr)`",
       "default": "1fr",
       "conditional": "setting.layout_mode == 'grid'"
+    },
+    {
+      "type": "space",
+      "id": "border_left",
+      "label": "Left Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "border_right",
+      "label": "Right Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "border_top",
+      "label": "Top Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "border_bottom",
+      "label": "Bottom Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
       "type": "grid_template_column_bp",
@@ -860,26 +882,6 @@
     },
     {
       "type": "select",
-      "id": "border_mode",
-      "label": "Border",
-      "default": "none",
-      "options": [
-        {
-          "value": "custom",
-          "label": "Custom"
-        },
-        {
-          "value": "full",
-          "label": "Full"
-        },
-        {
-          "value": "none",
-          "label": "None"
-        }
-      ]
-    },
-    {
-      "type": "select",
       "id": "border_role",
       "label": "Border Color",
       "default": "default",
@@ -908,21 +910,20 @@
           "value": "gradient",
           "label": "Gradient"
         }
-      ],
-      "conditional": "setting.border_mode != 'none'"
+      ]
     },
     {
       "type": "palette",
       "id": "border_role_palette",
       "label": "Border Palette Token",
       "default": "brand",
-      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+      "conditional": "setting.border_role == 'palette'"
     },
     {
       "type": "color",
       "id": "border_role_custom",
       "label": "Raw Border",
-      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+      "conditional": "setting.border_role == 'custom'"
     },
     {
       "type": "gradient",
@@ -953,84 +954,6 @@
           "label": "Double"
         }
       ]
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_left",
-      "label": "Border Left",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_right",
-      "label": "Border Right",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_top",
-      "label": "Border Top",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_bottom",
-      "label": "Border Bottom",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "select",
-      "id": "border_size",
-      "label": "Border Size",
-      "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "Small",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "Medium",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "Large",
-          "info": "8px"
-        },
-        {
-          "value": "custom",
-          "label": "Custom",
-          "info": "Exact px width"
-        }
-      ],
-      "default": "md",
-      "conditional": "setting.border_mode != 'none'"
-    },
-    {
-      "type": "range",
-      "id": "border_size_custom",
-      "label": "Custom Border Width",
-      "min": 0,
-      "max": 12,
-      "step": 0.5,
-      "default": 1,
-      "unit": "px",
-      "conditional": "setting.border_size == 'custom'"
     },
     {
       "type": "header",

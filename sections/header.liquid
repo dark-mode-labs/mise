@@ -71,23 +71,11 @@
       palette: s.border_role_palette, custom: s.border_role_custom -%}
 {%- endcapture -%}
 
-{% unless s.border_mode == 'none' or s.border_mode == blank %}
-  {% assign bg_layer_classes = bg_layer_classes
-    | push: 'group-border-{{ s.border_mode }}'
-    | push: 'group-border-size-{{ s.border_size }}'
-  %}
-  {% if s.border_role and s.border_role != 'none' and s.border_role != 'custom' and s.border_role != 'palette' %}
-    {% assign bg_layer_classes = bg_layer_classes | push: 'border-{{ s.border_role }}' %}
-  {% endif %}
-  {% if s.border_mode == 'custom' %}
-    {% assign bg_layer_classes = bg_layer_classes
-      | push_if: 'group-border-custom-left', s.border_custom_left
-      | push_if: 'group-border-custom-right', s.border_custom_right
-      | push_if: 'group-border-custom-top', s.border_custom_top
-      | push_if: 'group-border-custom-bottom', s.border_custom_bottom
-    %}
-  {% endif %}
-{% endunless %}
+{%- capture border_class_str -%}{%- render 'box-border-edges', role: s.border_role,
+  top: s.border_top, right: s.border_right, bottom: s.border_bottom, left: s.border_left -%}{%- endcapture -%}
+{% if border_class_str != blank %}
+  {% assign bg_layer_classes = bg_layer_classes | push: border_class_str %}
+{% endif %}
 {% if s.backdrop_blur == 'base' %}
   {% assign bg_layer_classes = bg_layer_classes | push: 'backdrop-blur' %}
 {% elsif s.backdrop_blur and s.backdrop_blur != 'none' %}
@@ -107,15 +95,12 @@
 {% if bg_color_value != blank %}
   {% assign bar_styles = bar_styles | push: 'background: {{ bg_color_value }}' %}
 {% endif %}
-{% unless s.border_mode == 'none' or s.border_mode == blank %}
+{% if border_class_str != blank %}
   {% assign bar_styles = bar_styles | push: '--border-style: {{ s.border_style }}' %}
-  {% if s.border_size == 'custom' %}
-    {% assign bar_styles = bar_styles | push: '--border-width: {{ s.border_size_custom }}px' %}
-  {% endif %}
   {% if border_color_value != blank -%}
     {%- assign bar_styles = bar_styles | push: '--border: {{ border_color_value }}' -%}
   {%- endif %}
-{% endunless %}
+{% endif %}
 {% assign bar_style_str = bar_styles | join: ';' %}
 
 {% capture slot_logo %}{% content_for 'block', type: 'group', id: 'header-logo' %}{% endcapture %}
@@ -432,26 +417,6 @@
     },
     {
       "type": "select",
-      "id": "border_mode",
-      "label": "Border",
-      "default": "none",
-      "options": [
-        {
-          "value": "custom",
-          "label": "Custom"
-        },
-        {
-          "value": "full",
-          "label": "Full"
-        },
-        {
-          "value": "none",
-          "label": "None"
-        }
-      ]
-    },
-    {
-      "type": "select",
       "id": "border_role",
       "label": "Border Color",
       "default": "default",
@@ -476,21 +441,20 @@
           "value": "custom",
           "label": "Raw Color"
         }
-      ],
-      "conditional": "setting.border_mode != 'none'"
+      ]
     },
     {
       "type": "palette",
       "id": "border_role_palette",
       "label": "Border Palette Token",
       "default": "brand",
-      "conditional": "setting.border_role == 'palette' and setting.border_mode != 'none'"
+      "conditional": "setting.border_role == 'palette'"
     },
     {
       "type": "color",
       "id": "border_role_custom",
       "label": "Raw Border",
-      "conditional": "setting.border_role == 'custom' and setting.border_mode != 'none'"
+      "conditional": "setting.border_role == 'custom'"
     },
     {
       "type": "select",
@@ -514,86 +478,31 @@
           "value": "double",
           "label": "Double"
         }
-      ],
-      "conditional": "setting.border_mode != 'none'"
+      ]
     },
     {
-      "type": "select",
-      "id": "border_size",
-      "label": "Border Size",
-      "default": "xxs",
-      "options": [
-        {
-          "value": "xxs",
-          "label": "XXS",
-          "info": "1px"
-        },
-        {
-          "value": "xs",
-          "label": "XS",
-          "info": "2px"
-        },
-        {
-          "value": "sm",
-          "label": "SM",
-          "info": "4px"
-        },
-        {
-          "value": "md",
-          "label": "MD",
-          "info": "6px"
-        },
-        {
-          "value": "lg",
-          "label": "LG",
-          "info": "8px"
-        },
-        {
-          "value": "custom",
-          "label": "Custom",
-          "info": "Exact px width"
-        }
-      ],
-      "conditional": "setting.border_mode != 'none'"
+      "type": "space",
+      "id": "border_left",
+      "label": "Left Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "range",
-      "id": "border_size_custom",
-      "label": "Custom Border Width",
-      "min": 0,
-      "max": 12,
-      "step": 0.5,
-      "default": 1,
-      "unit": "px",
-      "conditional": "setting.border_size == 'custom'"
+      "type": "space",
+      "id": "border_right",
+      "label": "Right Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "id": "border_custom_left",
-      "label": "Border Left",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
+      "type": "space",
+      "id": "border_top",
+      "label": "Top Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
-      "type": "checkbox",
-      "id": "border_custom_right",
-      "label": "Border Right",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_top",
-      "label": "Border Top",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_custom_bottom",
-      "label": "Border Bottom",
-      "default": false,
-      "conditional": "setting.border_mode == 'custom'"
+      "type": "space",
+      "id": "border_bottom",
+      "label": "Bottom Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
     },
     {
       "type": "header",

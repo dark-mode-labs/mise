@@ -3,7 +3,7 @@
 // current-page label above its siblings wherever that link is taller — an underline does exactly that.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -88,7 +88,7 @@ test("one CSS edge never carries two meanings on a nav link", () => {
   // A divider and a current-page underline are the same edge, so removing one removes the other.
   assert.doesNotMatch(
     src,
-    /replace: 'group-border-custom-bottom'/,
+    /replace: 'b[trbl]-/,
     "the last link's divider is string-replaced away, which also strips a current-page underline"
   );
 });
@@ -97,12 +97,28 @@ test("a role that paints a colour is never also pushed as a class", () => {
   // `custom` and `palette` resolve to a VALUE the caller paints inline; only a slot role names a
   // class. Without the guard the current link carried a literal `bg-custom`, matching no rule at all.
   const pushes = [...src.matchAll(/push: '(?:bg|border)-\{\{ s\.(\w+) \}\}'/g)].map((m) => m[1]);
+  // A role handed to a snippet is pushed under that snippet's OWN parameter name, so its guard
+  // lives there — the field still reaches a class, and the rule still has to hold at the push.
+  const delegated = [...src.matchAll(/render '([\w-]+)',[\s\S]{0,220}?role:\s*s\.(\w+_role\w*)/g)]
+    .map((m) => [m[2], `snippets/${m[1]}.liquid`, join(root, `snippets/${m[1]}.liquid`)])
+    .filter(
+      ([, , path]) =>
+        existsSync(path) && /push: '(?:bg|border)-\{\{ role \}\}'/.test(readFileSync(path, "utf8"))
+    );
 
   assert.deepEqual(
-    [...new Set(pushes)].sort(),
+    [...new Set([...pushes, ...delegated.map(([field]) => field)])].sort(),
     ["bg_role_active", "border_role", "link_border_role", "link_border_role_active"],
     "the set of role fields pushed as a class changed — re-check each one's guard"
   );
+  for (const [field, file] of delegated) {
+    const snip = readFileSync(join(root, file), "utf8");
+    const at = snip.indexOf("push: 'border-{{ role }}'");
+    assert.ok(at > 0, `${file} no longer pushes a role class, so ${field} reaches no class`);
+    const guard = snip.slice(0, at);
+    assert.ok(guard.includes("role != 'custom'"), `${field} may be pushed as border-custom`);
+    assert.ok(guard.includes("role != 'palette'"), `${field} may be pushed as border-palette`);
+  }
   for (const role of new Set(pushes)) {
     // The guard may sit on the same `if` as the blank/none test or on its own; only the terms matter.
     const before = src.slice(

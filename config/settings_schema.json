@@ -1691,6 +1691,20 @@
             "visibility": "curated"
           }
         },
+        "hairline": {
+          "settings": {
+            "title": "Hairline",
+            "value": "0.0625rem",
+            "visibility": "curated"
+          }
+        },
+        "thin": {
+          "settings": {
+            "title": "Thin",
+            "value": "0.125rem",
+            "visibility": "curated"
+          }
+        },
         "xs": {
           "settings": {
             "title": "XS",

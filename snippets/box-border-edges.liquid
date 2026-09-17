@@ -1,0 +1,49 @@
+{%- comment -%}
+  box-border-edges — the classes a border asks for: one `bt-/bb-/bl-/br-` per edge that draws, plus
+  the role class colouring them. `box-border-style` is the value half and a caller needs both.
+
+  An edge's WIDTH is a space tier, so `theme_variables` emits its class beside `pt-`/`mt-`/`gap-`
+  and `value_by_bp` makes the edge responsive with no axis of its own. Colour and style stay shared
+  across edges (`--border` / `--border-style`); across 1,002 bordered elements no source names two
+  edges apart, so a per-edge colour would buy nothing.
+
+  Emits NOTHING where no edge states a width — the edges ARE the border, so there is no mode beside
+  them, and a caller gates its style half on this being blank.
+
+  Inputs:
+    top / right / bottom / left — a space tier id per edge, blank where that edge draws nothing
+    role — border_role. A SLOT role emits `border-<role>`, which reads that slot's variable;
+           'palette' / 'custom' / 'none' read `--border`, which the style half writes for the first
+           two and leaves unset for the third; 'gradient' needs `border-gradient` because
+           border-color cannot take one. Passing NO role is the opt-out for a caller painting the
+           colour through a custom property of its own — it emits no colour class at all.
+{%- endcomment -%}
+{%- assign edge_classes = blank -%}
+{%- assign has_edge = false -%}
+{%- if top != blank and top != 'none' -%}
+  {%- assign edge_classes = edge_classes | push: 'bt-{{ top }}' -%}
+  {%- assign has_edge = true -%}
+{%- endif -%}
+{%- if bottom != blank and bottom != 'none' -%}
+  {%- assign edge_classes = edge_classes | push: 'bb-{{ bottom }}' -%}
+  {%- assign has_edge = true -%}
+{%- endif -%}
+{%- if left != blank and left != 'none' -%}
+  {%- assign edge_classes = edge_classes | push: 'bl-{{ left }}' -%}
+  {%- assign has_edge = true -%}
+{%- endif -%}
+{%- if right != blank and right != 'none' -%}
+  {%- assign edge_classes = edge_classes | push: 'br-{{ right }}' -%}
+  {%- assign has_edge = true -%}
+{%- endif -%}
+{%- if has_edge -%}
+  {%- if role == 'gradient' -%}
+    {%- assign edge_classes = edge_classes | push: 'border-gradient' -%}
+  {%- elsif role == 'none' or role == 'custom' or role == 'palette' -%}
+    {%- comment -%}All three paint through `--border`, which `.border-default` reads as transparent when unset.{%- endcomment -%}
+    {%- assign edge_classes = edge_classes | push: 'border-default' -%}
+  {%- elsif role != blank and role != 'none' and role != 'custom' and role != 'palette' -%}
+    {%- assign edge_classes = edge_classes | push: 'border-{{ role }}' -%}
+  {%- endif -%}
+  {{- edge_classes | join: ' ' -}}
+{%- endif -%}
