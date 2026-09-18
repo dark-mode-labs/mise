@@ -17,13 +17,10 @@
 {% if s.bg_role and s.bg_role != 'none' %}{% assign render_section = true %}{% endif %}
 {% if s.image != blank %}{% assign render_section = true %}{% endif %}
 
-{% assign styles = blank %}
-{% assign style_str = styles | join: ';' %}
-
 {% if render_section %}
   <section
     class='fixed inset-0 -z-50 pointer-events-none surface-{{ s.surface_id | default: 'default' }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-    style='{{ style_str }}'
+    data-behavior='page-canvas'
     {{ context.attached_attributes }}
   >
     {% render 'bg-overlay',
