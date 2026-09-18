@@ -1,0 +1,1 @@
+import"./chunk-I63RXT67.js";var o=class{constructor(n){let e=n.querySelector(":scope > div");if(!e)return;let{backgroundColor:t,backgroundImage:r}=getComputedStyle(e),c=document.documentElement.style;t!=="rgba(0, 0, 0, 0)"&&(c.backgroundColor=t),r!=="none"&&(c.backgroundImage=r)}};export{o as default};

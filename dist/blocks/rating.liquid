@@ -1,0 +1,275 @@
+{% assign s = block.settings %}
+
+{% assign rating = s.rating | default: 0 %}
+{% assign max_stars = s.max_stars | default: 5 %}
+
+{% assign pct = rating | times: 100 | divided_by: max_stars %}
+{% if pct > 100 %}{% assign pct = 100 %}{% endif %}
+{% if pct < 0 %}{% assign pct = 0 %}{% endif %}
+
+{%- capture star_fill -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.fill_role,
+      palette: s.fill_role_palette, custom: s.fill_role_custom, gradient: s.fill_role_gradient -%}
+{%- endcapture -%}
+
+{%- capture star_track -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.track_role,
+      palette: s.track_role_palette, custom: s.track_role_custom, gradient: s.track_role_gradient -%}
+{%- endcapture -%}
+
+{% assign classes = 'rating-block inline-flex items-center'
+  | push: 'mt-{{ s.margin_top }} mb-{{ s.margin_bottom }}'
+  | push: 'ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
+%}
+{% if s.align_self != blank and s.align_self != 'auto' %}
+  {% assign classes = classes | push: 'self-{{ s.align_self }}' %}
+{% endif %}
+{% assign block_classes = classes | join: ' ' %}
+
+{% assign styles = blank %}
+{% assign styles = styles | push: '--icon-size: {{ s.icon_size }}rem' %}
+{% if star_fill != blank %}{% assign styles = styles | push: '--star-fill: {{ star_fill }}' %}{% endif %}
+{% if star_track != blank %}{% assign styles = styles | push: '--star-track: {{ star_track }}' %}{% endif %}
+{% assign block_styles = styles | join: ';' %}
+
+<div
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
+  role='img'
+  aria-label='{{ rating }} out of {{ max_stars }} stars'
+  {{ context.attached_attributes }}
+>
+  <div class='rating-stars' style='--rating-pct: {{ pct }}%'>
+    <div class='rating-row rating-track gap-{{ s.gap }}' aria-hidden='true'>
+      {% for i in (1..max_stars) %}
+        <svg class='rating-star' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+          <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/>
+        </svg>
+      {% endfor %}
+    </div>
+    <div class='rating-row rating-fill gap-{{ s.gap }}' aria-hidden='true'>
+      {% for i in (1..max_stars) %}
+        <svg class='rating-star' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+          <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/>
+        </svg>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Rating",
+  "settings": [
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "Rating",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 5,
+      "info": "Bind to a data source field (e.g. the review's rating) for dynamic values."
+    },
+    {
+      "type": "range",
+      "id": "max_stars",
+      "label": "Out Of",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Star Size",
+      "min": 0.5,
+      "max": 4,
+      "step": 0.125,
+      "default": 1.25,
+      "unit": "rem"
+    },
+    {
+      "type": "space",
+      "id": "gap",
+      "label": "Star Spacing",
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Star Color"
+    },
+    {
+      "type": "select",
+      "id": "fill_role",
+      "label": "Filled Color",
+      "default": "custom",
+      "options": [
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "fill_role_palette",
+      "label": "Filled Palette Token",
+      "default": "brand",
+      "conditional": "setting.fill_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "fill_role_custom",
+      "label": "Filled Raw Color",
+      "default": "#F7B801",
+      "conditional": "setting.fill_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "fill_role_gradient",
+      "label": "Filled Gradient",
+      "conditional": "setting.fill_role == 'gradient'"
+    },
+    {
+      "type": "select",
+      "id": "track_role",
+      "label": "Empty Color",
+      "default": "custom",
+      "options": [
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "track_role_palette",
+      "label": "Empty Palette Token",
+      "default": "brand",
+      "conditional": "setting.track_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "track_role_custom",
+      "label": "Empty Raw Color",
+      "default": "rgba(0,0,0,0.12)",
+      "conditional": "setting.track_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "track_role_gradient",
+      "label": "Empty Gradient",
+      "conditional": "setting.track_role == 'gradient'"
+    },
+    {
+      "type": "header",
+      "content": "Padding/Margins"
+    },
+    {
+      "type": "space",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_left",
+      "label": "Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_left",
+      "label": "Margin Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "margin_right",
+      "label": "Margin Right",
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "align_self",
+      "label": "Align Self",
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "start",
+          "label": "Top / Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom / End"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rating",
+      "settings": {
+        "rating": 5,
+        "max_stars": 5
+      }
+    }
+  ]
+}
+{% endschema %}
