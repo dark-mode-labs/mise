@@ -45,9 +45,8 @@
   | push: 'section-align-v-{{ s.vertical_align }}'
   | push: 'section-align-text-{{ s.text_align }}'
 %}
-{% for ef_id in s.effect %}
-  {% assign inner_classes = inner_classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture effect_cls -%}{%- render 'effect-classes', ids: s.effect -%}{%- endcapture -%}
+{%- if effect_cls != blank -%}{%- assign inner_classes = inner_classes | push: effect_cls -%}{%- endif -%}
 {% assign inner_class_str = inner_classes | join: ' ' %}
 
 {% assign margin_styles = blank %}

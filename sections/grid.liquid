@@ -59,9 +59,8 @@
 {% if border_class_str != blank %}{% assign has_bg_layer = true %}{% endif %}
 
 {% assign flex_classes = 'flex flex-wrap' %}
-{% for ef_id in s.effect %}
-  {% assign flex_classes = flex_classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture effect_cls -%}{%- render 'effect-classes', ids: s.effect -%}{%- endcapture -%}
+{%- if effect_cls != blank -%}{%- assign flex_classes = flex_classes | push: effect_cls -%}{%- endif -%}
 {% if s.content_align != blank %}
   {% assign flex_classes = flex_classes | push: 'justify-content-{{ s.content_align }}' %}
 {% endif %}

@@ -53,9 +53,8 @@
     {%- assign utilities = utilities | push: 'truncate' %}
 {% endcase %}
 
-{% for ef_id in s.effect %}
-  {% assign utilities = utilities | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture effect_cls -%}{%- render 'effect-classes', ids: s.effect -%}{%- endcapture -%}
+{%- if effect_cls != blank -%}{%- assign utilities = utilities | push: effect_cls -%}{%- endif -%}
 
 {% assign utility_classes = utilities | join: ' ' %}
 

@@ -1,0 +1,22 @@
+{%- comment -%}
+  effect-classes — an effect list as `ef-<id>` classes, space-joined. THE one place a tier id becomes
+  a class, so a blank id cannot reach the page from any of them.
+
+  `push` already drops a blank input, and sixteen callers defeated it by building `'ef-{{ id }}'`
+  BEFORE deciding there was an id: a blank interpolates to the literal `ef-`, which is not blank, so
+  it was kept. That class matches no rule — `theme_variables` emits `.ef-<id>` per tier and never a
+  bare `.ef-` — and the editor cannot represent it either.
+
+  A blank element is how a per-item conditional says "no effect for this row": the list length is
+  fixed by the payload, so a `{% if %}` inside an element can only resolve to blank, never to nothing.
+
+  Inputs:
+    ids — the effect list (`s.effect`, `s.effect_inactive`, `s.link_effect`, …); may be blank.
+{%- endcomment -%}
+{%- assign effect_classes = blank -%}
+{%- for ef_id in ids -%}
+  {%- if ef_id != blank -%}
+    {%- assign effect_classes = effect_classes | push: 'ef-{{ ef_id }}' -%}
+  {%- endif -%}
+{%- endfor -%}
+{{- effect_classes | join: ' ' -}}

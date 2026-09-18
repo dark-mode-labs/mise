@@ -19,6 +19,18 @@ const emitted = (src) =>
 const consumed = (src) =>
   new Set([...src.matchAll(/"(data-tab-(?:in)?active-[\w-]+)"/g)].map((m) => m[1]));
 
+// The bag an effect list lands in. `effect-classes` is the one place a tier id becomes a class, so a
+// caller names its list, captures the result and pushes it — this reads that pair back.
+function effectBag(src, list) {
+  const re = new RegExp(
+    String.raw`capture\s+(\w+)[\s\S]{0,60}?render 'effect-classes', ids: ` +
+      list.replace(/\./g, String.raw`\.`) +
+      String.raw`\s*-?%\}[\s\S]{0,200}?assign\s+(\w+)\s*=\s*\2\s*\|\s*push:\s*\1\b`
+  );
+  const m = src.match(re);
+  return m && m[2];
+}
+
 for (const [block, controller] of [
   ["blocks/_tab-head.liquid", "assets/js/components/tab-head.js"],
   ["blocks/_tab-content.liquid", "assets/js/components/tab-content.js"],
@@ -62,9 +74,7 @@ test("a pane's selected border is resolved as a border, by the one resolver", ()
 
 test("a pane's selected effect rides the bag that only the selected state carries", () => {
   const src = body("blocks/_tab-content.liquid");
-  const bag = src.match(/\{%\s*assign\s+(\w+)\s*=\s*\1[^%]*push:\s*'ef-\{\{ ef_id \}\}'/);
-
-  assert.equal(bag[1], "active_state_classes");
+  assert.equal(effectBag(src, "s.active_effect"), "active_state_classes");
 });
 
 test("both halves of the pair let the render name which tab starts selected", () => {

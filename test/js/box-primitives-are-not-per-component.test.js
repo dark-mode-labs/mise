@@ -22,6 +22,18 @@ const ids = (file) => new Set((schema(file).settings ?? []).map((f) => f.id));
 // Every block whose root is a card — found by what it RENDERS, so a new card variant is covered.
 const CARDS = ["blocks/menu-card-compact.liquid", "blocks/menu-card-full.liquid"];
 
+// The bag an effect list lands in. `effect-classes` is the one place a tier id becomes a class, so a
+// caller names its list, captures the result and pushes it — this reads that pair back.
+function effectBag(src, list) {
+  const re = new RegExp(
+    String.raw`capture\s+(\w+)[\s\S]{0,60}?render 'effect-classes', ids: ` +
+      list.replace(/\./g, String.raw`\.`) +
+      String.raw`\s*-?%\}[\s\S]{0,200}?assign\s+(\w+)\s*=\s*\2\s*\|\s*push:\s*\1\b`
+  );
+  const m = src.match(re);
+  return m && m[2];
+}
+
 test("every menu card declares the effect field its box needs", () => {
   for (const file of CARDS) {
     assert.ok(ids(file).has("effect"), `${file} cannot express a hover`);
@@ -31,15 +43,9 @@ test("every menu card declares the effect field its box needs", () => {
 test("every menu card actually renders the effects it declares", () => {
   // Declaring the field without the loop is the same silence, one layer further on.
   for (const file of CARDS) {
-    assert.match(
-      read(file),
-      /\{%\s*for\s+ef_id\s+in\s+s\.effect\s*%\}/,
-      `${file} declares effects and never pushes an ef- class`
-    );
-    assert.match(
-      read(file),
-      /push:\s*'ef-\{\{\s*ef_id\s*\}\}'/,
-      `${file} pushes a malformed ef- class`
+    assert.ok(
+      effectBag(read(file), "s.effect"),
+      `${file} declares effects and never renders them onto a class bag`
     );
   }
 });
@@ -184,15 +190,10 @@ test("a floor survives the rule that lets a grown item shrink", () => {
 test("the chip strip renders the effects it declares", () => {
   // Declaring the field without the loop is silence: a sticky bar's backdrop blur never reached it.
   const src = read("blocks/tab-group.liquid");
-  assert.match(
-    src,
-    /\{%\s*for ef_id in s\.chip_strip_effect\s*%\}/,
+  assert.equal(
+    effectBag(src, "s.chip_strip_effect"),
+    "chip_strip_classes",
     "the strip declares effects it never applies"
-  );
-  assert.match(
-    src,
-    /chip_strip_classes \| push: 'ef-\{\{ ef_id \}\}'/,
-    "the strip pushes a malformed ef- class"
   );
 });
 

@@ -78,9 +78,10 @@
   {%- endif %}
 {% endif %}
 
-{% for ef_id in s.effect_inactive %}
-  {% assign inactive_state_classes = inactive_state_classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture inactive_effect_cls -%}{%- render 'effect-classes', ids: s.effect_inactive -%}{%- endcapture -%}
+{%- if inactive_effect_cls != blank -%}
+  {%- assign inactive_state_classes = inactive_state_classes | push: inactive_effect_cls -%}
+{%- endif -%}
 
 {% if text_color_inactive_value != blank %}
   {% assign inactive_state_classes = inactive_state_classes | push: 'text-primary' %}
@@ -112,9 +113,10 @@
   {%- endif %}
 {% endif %}
 
-{% for ef_id in s.effect %}
-  {% assign active_state_classes = active_state_classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture active_effect_cls -%}{%- render 'effect-classes', ids: s.effect -%}{%- endcapture -%}
+{%- if active_effect_cls != blank -%}
+  {%- assign active_state_classes = active_state_classes | push: active_effect_cls -%}
+{%- endif -%}
 
 {% if text_color_value != blank %}
   {% assign active_state_classes = active_state_classes | push: 'text-primary' %}

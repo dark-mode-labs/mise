@@ -45,9 +45,8 @@
   | push: chip_strip_surface_class
   | push_if: 'chip-strip-sticky', s.sticky_chips
 %}
-{% for ef_id in s.chip_strip_effect %}
-  {% assign chip_strip_classes = chip_strip_classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture effect_cls -%}{%- render 'effect-classes', ids: s.chip_strip_effect -%}{%- endcapture -%}
+{%- if effect_cls != blank -%}{%- assign chip_strip_classes = chip_strip_classes | push: effect_cls -%}{%- endif -%}
 {% if s.chip_strip_border_radius > 0 %}
   {% assign chip_strip_classes = chip_strip_classes | push: 'rounded-custom' %}
 {% endif %}
