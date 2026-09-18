@@ -36,6 +36,8 @@
     {% assign utilities = utilities | push: 'whitespace-nowrap' %}
   {% when 'balance' %}
     {% assign utilities = utilities | push: 'text-balance' %}
+  {% when 'pretty' %}
+    {% assign utilities = utilities | push: 'text-pretty' %}
 {% endcase %}
 
 {% assign utility_classes = utilities | join: ' ' %}
@@ -244,6 +246,10 @@
         {
           "value": "balance",
           "label": "Balance"
+        },
+        {
+          "value": "pretty",
+          "label": "Pretty"
         }
       ]
     },
