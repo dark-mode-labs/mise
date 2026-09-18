@@ -22,9 +22,8 @@
 {% if drawer_width != blank %}
   {% assign panel_classes = '{{ panel_classes }} width-{{ drawer_width }}' %}
 {% endif %}
-{% for ef_id in drawer_effect %}
-  {% assign panel_classes = '{{ panel_classes }} ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture effect_cls -%}{%- render 'effect-classes', ids: drawer_effect -%}{%- endcapture -%}
+{% if effect_cls != blank %}{% assign panel_classes = '{{ panel_classes }} {{ effect_cls }}' %}{% endif %}
 
 {% assign panel_styles = blank %}
 {% if drawer_bg_value != blank %}

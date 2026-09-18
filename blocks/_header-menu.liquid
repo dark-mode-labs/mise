@@ -47,6 +47,8 @@
     {% assign utilities = utilities | push: 'whitespace-nowrap' %}
   {% when 'balance' %}
     {% assign utilities = utilities | push: 'text-balance' %}
+  {% when 'pretty' %}
+    {% assign utilities = utilities | push: 'text-pretty' %}
 {% endcase %}
 
 {% assign utility_classes = utilities | join: ' ' %}
@@ -57,9 +59,8 @@
   | push: 'pt-{{ s.link_padding_top }} pb-{{ s.link_padding_bottom }}'
   | push: 'pl-{{ s.link_padding_left }} pr-{{ s.link_padding_right }}'
 %}
-{% for ef_id in s.link_effect %}
-  {% assign link_classes = link_classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture link_effect_cls -%}{%- render 'effect-classes', ids: s.link_effect -%}{%- endcapture -%}
+{%- if link_effect_cls != blank -%}{%- assign link_classes = link_classes | push: link_effect_cls -%}{%- endif -%}
 {%- capture link_border_class_str -%}{%- render 'box-border-edges',
   role: s.link_border_role, bottom: s.link_border_bottom -%}{%- endcapture -%}
 {% if link_border_class_str != blank %}
@@ -86,9 +87,10 @@
   | push: 'pt-{{ s.link_padding_top_active }} pb-{{ s.link_padding_bottom_active }}'
   | push: 'pl-{{ s.link_padding_left_active }} pr-{{ s.link_padding_right_active }}'
 %}
-{% for ef_id in s.link_effect %}
-  {% assign active_classes = active_classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture active_link_effect_cls -%}{%- render 'effect-classes', ids: s.link_effect -%}{%- endcapture -%}
+{%- if active_link_effect_cls != blank -%}
+  {%- assign active_classes = active_classes | push: active_link_effect_cls -%}
+{%- endif -%}
 {% if s.bg_role_active != blank
   and s.bg_role_active != 'none'
   and s.bg_role_active != 'custom'
@@ -653,6 +655,10 @@
         {
           "value": "balance",
           "label": "Balance"
+        },
+        {
+          "value": "pretty",
+          "label": "Pretty"
         }
       ]
     },

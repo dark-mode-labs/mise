@@ -17,10 +17,22 @@ function bagsPushing(src, fragment) {
   return new Set([...src.matchAll(re)].filter((m) => m[2].includes(fragment)).map((m) => m[1]));
 }
 
+// The bag an effect list lands in. `effect-classes` is the one place a tier id becomes a class, so a
+// caller names its list, captures the result and pushes it — this reads that pair back.
+function effectBag(src, list) {
+  const re = new RegExp(
+    String.raw`capture\s+(\w+)[\s\S]{0,60}?render 'effect-classes', ids: ` +
+      list.replace(/\./g, String.raw`\.`) +
+      String.raw`\s*-?%\}[\s\S]{0,200}?assign\s+(\w+)\s*=\s*\2\s*\|\s*push:\s*\1\b`
+  );
+  const m = src.match(re);
+  return m && m[2];
+}
+
 test("a button paints its border and its effect on the same element", () => {
   const src = read("blocks/button.liquid");
 
-  assert.deepEqual([...bagsPushing(src, "ef-{{ ef_id }}")], ["inner_classes"]);
+  assert.equal(effectBag(src, "s.effect"), "inner_classes");
   assert.deepEqual([...bagsPushing(src, "border_class_str")], ["inner_classes"]);
 });
 
@@ -46,15 +58,9 @@ test("a button's text colour rides the effect element, and the label inherits it
 
 test("a tab head's effects ride the bag of the state they belong to", () => {
   const src = read("blocks/_tab-head.liquid");
-  const active = src.match(/\{%\s*for ef_id in s\.effect\s*%\}[\s\S]*?\{%\s*endfor\s*%\}/)[0];
-  const inactive = src.match(
-    /\{%\s*for ef_id in s\.effect_inactive\s*%\}[\s\S]*?\{%\s*endfor\s*%\}/
-  )[0];
-
-  assert.match(active, /active_state_classes/);
-  assert.match(inactive, /inactive_state_classes/);
-  // The always-on bag would apply one state's hover in both.
-  assert.doesNotMatch(active + inactive, /=\s*classes\s*\|/);
+  // Naming the bag IS the rule: the always-on `classes` would apply one state's hover in both.
+  assert.equal(effectBag(src, "s.effect"), "active_state_classes");
+  assert.equal(effectBag(src, "s.effect_inactive"), "inactive_state_classes");
 });
 
 test("a tab head's state background is class-consumed, never inline", () => {

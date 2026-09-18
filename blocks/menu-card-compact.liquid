@@ -16,9 +16,8 @@
   | push_if: 'overflow-hidden', s.overflow_hidden
 %}
 
-{% for ef_id in s.effect %}
-  {% assign classes = classes | push: 'ef-{{ ef_id }}' %}
-{% endfor %}
+{%- capture effect_cls -%}{%- render 'effect-classes', ids: s.effect -%}{%- endcapture -%}
+{%- if effect_cls != blank -%}{%- assign classes = classes | push: effect_cls -%}{%- endif -%}
 
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
