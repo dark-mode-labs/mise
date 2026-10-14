@@ -51,12 +51,8 @@
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
-{% assign margin_styles = blank %}
-{% assign margin_style_str = margin_styles | join: ';' %}
-
 {% assign mq_size_class = 'text-size-{{ s.text_size }}' %}
 {% assign mq_uppercase = s.uppercase %}
-{% assign mq_item_style = blank %}
 {% if s.type_style != blank %}
   {% assign mq_size_class = 'ts-{{ s.type_style }}' %}
   {% assign mq_uppercase = false %}
@@ -64,7 +60,6 @@
 
 <section
   class='section-marquee surface-{{ s.surface_id }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-  style='{{ margin_style_str }}'
   {{ context.attached_attributes }}
 >
   <div
@@ -77,7 +72,6 @@
       item_gap: s.item_gap,
       direction: s.direction,
       size_class: mq_size_class,
-      item_style: mq_item_style,
       uppercase: mq_uppercase,
       separator: s.separator,
       separator_color: separator_color

@@ -17,6 +17,8 @@
 {%- endif %}
 
 {% assign classes = classes | push_if: "surface-{{ s.surface_id | default: 'default' }}", s.surface_override %}
+{%- capture frame_effect_cls -%}{%- render 'effect-classes', ids: s.frame_effect -%}{%- endcapture -%}
+{%- if frame_effect_cls != blank -%}{%- assign classes = classes | push: frame_effect_cls -%}{%- endif -%}
 {% assign block_classes = classes | join: ' ' %}
 
 {% comment %} --- Styles Array Building --- {% endcomment %}
@@ -224,7 +226,14 @@
       "id": "effect",
       "label": "Effects",
       "default": [],
-      "info": "Effects applied to this element; several compose."
+      "info": "Effects applied to the picture inside its frame; several compose."
+    },
+    {
+      "type": "effect",
+      "id": "frame_effect",
+      "label": "Frame effects",
+      "default": [],
+      "info": "Effects applied to the whole frame, so its corners and clip move with it."
     },
     {
       "type": "header",

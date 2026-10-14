@@ -12,8 +12,6 @@
   {% assign bg_class = 'bg-' | append: bg_role_safe %}
 {% endif %}
 
-{% assign margin_styles = blank %}
-
 {% assign bg_layer_styles = blank %}
 {% if bg_color_value != blank %}
   {% assign bg_layer_styles = bg_layer_styles | push: 'background: {{ bg_color_value }}' %}
@@ -29,7 +27,6 @@
 
 <section
   class='tabs-section surface-{{ surface_safe }} relative isolate mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-  style='{{ margin_styles | join: ';' }}'
   {{ context.attached_attributes }}
 >
   <div

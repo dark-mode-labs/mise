@@ -16,12 +16,8 @@
 {% endif %}
 {% assign style_str = styles | join: ';' %}
 
-{% assign margin_styles = blank %}
-{% assign margin_style_str = margin_styles | join: ';' %}
-
 <section
   class='section-divider mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-  style='{{ margin_style_str }}'
   {{ context.attached_attributes }}
 >
   <div

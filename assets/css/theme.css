@@ -551,6 +551,9 @@
       background 0.3s ease-in-out,
       box-shadow 0.3s,
       border-color 0.3s;
+  }
+
+  .header-section[data-sticky="on_scroll_up"] {
     will-change: transform, background;
   }
 
@@ -667,7 +670,7 @@
   .hero-layout-overlay[class*="height-"]:not(.height-auto):not(.height-full),
   .hero-layout-split-left[class*="height-"]:not(.height-auto):not(.height-full),
   .hero-layout-split-right[class*="height-"]:not(.height-auto):not(.height-full),
-  .grid-layout-overlay[class*="height-"]:not(.height-auto):not(.height-full),
+  .grid-bg-layer[class*="height-"]:not(.height-auto):not(.height-full),
   .slideshow-layout[class*="height-"]:not(.height-auto):not(.height-full),
   .section-layout[class*="height-"]:not(.height-auto):not(.height-full) {
     min-height: var(--tier-height, auto);
@@ -793,8 +796,12 @@
     @apply relative z-content w-full flex-auto flex flex-col;
   }
 
-  .grid-layout-overlay {
+  .grid-bg-layer {
     @apply relative flex flex-col;
+  }
+
+  .grid-layout-overlay {
+    @apply relative flex flex-col flex-auto;
   }
 
   .section-layout {

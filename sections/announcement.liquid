@@ -14,12 +14,8 @@
 {% endif %}
 {% assign bg_layer_style_str = bg_layer_style | join: ';' %}
 
-{% assign styles = blank %}
-{% assign style_str = styles | join: ';' %}
-
 <section
   class='section-announcement surface-{{ s.surface_id }} z-header-top ts-caption group select-none mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-  style='{{ style_str }}'
   data-behavior='slideshow'
   data-autoplay='{{ s.autoplay }}'
   data-speed='{{ s.autoplay_speed }}'
