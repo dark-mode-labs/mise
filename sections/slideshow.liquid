@@ -13,12 +13,8 @@
 {% endif %}
 {% assign bg_layer_style_str = bg_layer_style | join: ';' %}
 
-{% assign styles = blank %}
-{% assign style_str = styles | join: ';' %}
-
 <section
   class='section-slideshow slideshow-layout surface-{{ s.surface_id }} height-{{ s.height }} pt-{{ s.padding_top }} pb-{{ s.padding_bottom }} pl-{{ s.padding_left }} pr-{{ s.padding_right }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-  style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
   <div

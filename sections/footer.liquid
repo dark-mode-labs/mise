@@ -15,10 +15,6 @@
 
 {% assign container_class_str = container_classes | join: ' ' %}
 
-{% assign spacing_styles = blank %}
-
-{% assign spacing_style_str = spacing_styles | join: ';' %}
-
 {% assign bg_class = 'bg-{{ s.bg_role }}' %}
 {% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
 
@@ -35,12 +31,8 @@
 {% endif %}
 {% assign bg_layer_style_str = bg_layer_style | join: ';' %}
 
-{% assign styles = blank %}
-{% assign style_str = styles | join: ';' %}
-
 <footer
   class='section-footer surface-{{ s.surface_id }} text-primary relative isolate mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-  style='{{ style_str }}'
   {{ context.attached_attributes }}
 >
   <div
@@ -57,7 +49,6 @@
     %}
     <div
       class='{{ container_class_str }} relative'
-      style='{{ spacing_style_str }}'
     >
       <div class='flex flex-auto flex-col justify-content-{{ s.content_align }}'>
         {% content_for 'blocks' %}

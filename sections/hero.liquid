@@ -44,9 +44,6 @@
 {% assign layout_class_str = layout_classes | join: ' ' %}
 {% assign style_str = styles | join: ';' %}
 
-{% assign margin_styles = blank %}
-{% assign margin_style_str = margin_styles | join: ';' %}
-
 {% assign content_pipeline = content_classes
   | push: 'width-{{ s.width }}'
   | push: 'limit-width gap-6 transition-all'
@@ -61,7 +58,6 @@
 
 <section
   class='section-hero surface-{{ s.surface_id }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
-  style='{{ margin_style_str }}'
   {{ context.attached_attributes }}
 >
   <div
