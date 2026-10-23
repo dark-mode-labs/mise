@@ -95,17 +95,16 @@ export default class MenuSpy {
   }
 
   activateTrigger(tabId) {
-    const activeTrigger = this.nav.querySelector(
-      `[data-behavior="tab-head"][data-tab-id="${tabId}"]`
-    );
-    if (!activeTrigger) return;
+    const heads = [
+      ...this.nav.querySelectorAll(`[data-behavior="tab-head"][data-tab-id="${tabId}"]`),
+    ];
+    if (!heads.length) return;
 
-    // Center the active chip inside the strip when it overflows. Scrolling
-    // the strip directly (instead of scrollIntoView) keeps this purely on
-    // the chip-strip's own scroll axes — never moves page Y.
-    this._centerChipInStrip(activeTrigger);
+    const shown = heads.find((head) => head.getClientRects().length);
 
-    const groupId = activeTrigger.getAttribute("data-tab-group");
+    if (shown) this._centerChipInStrip(shown);
+
+    const groupId = heads[0].getAttribute("data-tab-group");
     if (groupId) {
       document.dispatchEvent(
         new CustomEvent("tab:activated", {
@@ -114,7 +113,7 @@ export default class MenuSpy {
       );
     } else {
       this.triggers.forEach((t) => t.classList.remove("is-active"));
-      activeTrigger.classList.add("is-active");
+      heads.forEach((head) => head.classList.add("is-active"));
     }
   }
 

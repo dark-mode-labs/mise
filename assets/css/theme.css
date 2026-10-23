@@ -148,10 +148,6 @@
   .header-section .header-grid > *:has(.header-actions) {
     min-width: min-content;
   }
-  .header-section .header-grid.nav-track-balanced {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    justify-content: normal;
-  }
 
   .header-section .header-nav {
     display: none;
@@ -197,6 +193,10 @@
   @media (min-width: 1024px) {
     .header-section:not([class*="bp-"]) .header-nav {
       display: flex;
+    }
+    .header-section:not([class*="bp-"]) .header-grid.nav-track-balanced {
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      justify-content: normal;
     }
     .header-section:not([class*="bp-"]) .header-mobile-toggle {
       display: none;
