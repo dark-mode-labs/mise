@@ -1,0 +1,15 @@
+<div {{ context.attached_attributes }}>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Footer Copyright",
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": []
+}
+{% endschema %}
