@@ -37,3 +37,24 @@ test("the balanced nav track is a setting, a class and a rule that agree", () =>
     "the class the template emits paints no balanced track"
   );
 });
+
+test("the balanced track holds only where the nav shows, never on a phone bar", () => {
+  const css = read("assets/css/theme.css");
+  const vars = read("snippets/theme_variables.liquid");
+  const desktop = css.match(/@media \(min-width: 1024px\) \{([\s\S]*?)\n  \}/)[1];
+  assert.match(
+    desktop,
+    /:not\(\[class\*="bp-"\]\) \.header-grid\.nav-track-balanced/,
+    "no desktop arm for a header without a breakpoint"
+  );
+  assert.equal(
+    css.split(".nav-track-balanced").length - 1,
+    1,
+    "an unscoped balanced rule caps the actions column at half a phone bar"
+  );
+  assert.match(
+    vars,
+    /@media \(min-width: \{\{ mw \}\}rem\)[^@]*\.header-section\.bp-\{\{ bp_id \}\} \.header-grid\.nav-track-balanced/,
+    "no arm for a header that states its own breakpoint"
+  );
+});

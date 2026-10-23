@@ -235,7 +235,8 @@ align-items: stretch; } .direction-responsive:not([class*="bp-"]).vertical-top {
   .header-mobile-toggle { display: none; } .header-section.bp-{{ bp_id }} .header-actions-children { display: contents;
   } .header-section.bp-{{ bp_id }} .header-logo-desktop { display: block; } .header-section.bp-
   {{- bp_id }}
-  .header-logo-mobile { display: none; } }
+  .header-logo-mobile { display: none; } .header-section.bp-{{ bp_id }} .header-grid.nav-track-balanced {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); justify-content: normal; } }
 {% endfor %}
 
 .width-fit { --limit-width: fit-content; width: fit-content; } .width-fill { --limit-width: 100%; width: 100%; }
