@@ -423,11 +423,15 @@
     aspect-ratio: var(--aspect-ratio-custom);
   }
 
-  .scrollbar-hide::-webkit-scrollbar {
+  .scrollbar-hide::-webkit-scrollbar,
+  .group-scroll-x::-webkit-scrollbar,
+  .group-scroll-y::-webkit-scrollbar {
     display: none;
   }
 
-  .scrollbar-hide {
+  .scrollbar-hide,
+  .group-scroll-x,
+  .group-scroll-y {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
@@ -436,16 +440,15 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     white-space: nowrap;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
   }
 
-  .group-scroll-x::-webkit-scrollbar {
-    display: none;
+  .group-scroll-y {
+    overflow-y: auto;
   }
 
   .group-scroll-x > *,
-  .group-scroll-x > [class] {
+  .group-scroll-x > [class],
+  .group-scroll-y > * {
     flex-shrink: 0;
   }
 

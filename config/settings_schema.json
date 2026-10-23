@@ -489,7 +489,7 @@
       "name": "Height Scale",
       "type": "group",
       "id": "height_scale",
-      "info": "Height tiers. `value` is any CSS length (rem, %, vh, ...). `floor` makes it a minimum height (the block can grow taller) instead of a fixed height. `floor_fill` additionally stretches the block to fill available height without shrinking below `value`. `value_by_bp` (optional) overrides `value` per breakpoint.",
+      "info": "Height tiers. `value` is any CSS length (rem, %, vh, ...). `floor` makes it a minimum height (the block can grow taller) instead of a fixed height. `floor_fill` additionally stretches the block to fill available height without shrinking below `value`. `cap` makes it a maximum height instead. `value_by_bp` (optional) overrides `value` per breakpoint.",
       "settings": [
         {
           "type": "text",
@@ -523,6 +523,13 @@
           "id": "floor_fill",
           "label": "Floor + flex stretch",
           "info": "Like `floor`, but also stretches the block to fill available height while never shrinking below `value`. Useful for hero or section blocks.",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "cap",
+          "label": "Behaves as a cap (max-height)",
+          "info": "When on, the tier sets a maximum height and the block is as tall as its content up to `value`.",
           "default": false
         },
         {

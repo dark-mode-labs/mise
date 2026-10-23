@@ -54,6 +54,7 @@
 {% if s.layout_mode != 'grid' %}
   {% assign classes = classes | push_if: 'flex-wrap', s.wrap_content %}
   {% assign classes = classes | push_if: 'group-scroll-x', s.scroll_x %}
+  {% assign classes = classes | push_if: 'group-scroll-y', s.scroll_y %}
 
   {% if s.grow_content %}
     {% assign classes = classes | push: 'flex-1' %}
@@ -322,6 +323,14 @@
       "label": "Horizontal Scroll",
       "default": false,
       "info": "Single non-wrapping row that scrolls horizontally (ticker / chip rail).",
+      "conditional": "setting.layout_mode == 'flex'"
+    },
+    {
+      "type": "checkbox",
+      "id": "scroll_y",
+      "label": "Vertical Scroll",
+      "default": false,
+      "info": "Scrolls its own content vertically and may shrink inside its column, so the rows beside it stay in view.",
       "conditional": "setting.layout_mode == 'flex'"
     },
     {
