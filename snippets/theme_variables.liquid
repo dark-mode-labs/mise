@@ -364,6 +364,8 @@ flex: 0 0 calc(75% - (var(--children-gap, 0px) * 3) / 4); }
       {% elsif h[1].settings.floor %}
         .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; min-height: {{ h[1].settings.value }}; height:
         auto; }
+      {% elsif h[1].settings.cap %}
+        .height-{{ h[0] }} { max-height: {{ h[1].settings.value }}; }
       {% else %}
         .height-{{ h[0] }} { --tier-height: {{ h[1].settings.value }}; height: {{ h[1].settings.value }}; }
       {% endif %}
@@ -378,6 +380,8 @@ flex: 0 0 calc(75% - (var(--children-gap, 0px) * 3) / 4); }
             {% elsif h[1].settings.floor %}
               @media (min-width: {{ bp_mw }}rem) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; min-height:
               {{ bp_val }}; } }
+            {% elsif h[1].settings.cap %}
+              @media (min-width: {{ bp_mw }}rem) { .height-{{ h[0] }} { max-height: {{ bp_val }}; } }
             {% else %}
               @media (min-width: {{ bp_mw }}rem) { .height-{{ h[0] }} { --tier-height: {{ bp_val }}; height:
               {{ bp_val }}; } }
