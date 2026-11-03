@@ -89,6 +89,7 @@
       {% if ef.opacity != blank %}opacity: {{ ef.opacity }};{% endif %}
       {% if ef.glow != blank %}box-shadow: {{ ef.glow }};{% endif %}
       {% if ef.backdrop_blur != blank %}backdrop-filter: blur({{ ef.backdrop_blur }});{% endif %}
+      {% if ef.drop_shadow != blank %}filter: drop-shadow({{ ef.drop_shadow }});{% endif %}
       {% if hover_text_value != blank %}color: {{ hover_text_value }};{% endif %}
       {% if hover_bg_value != blank %}background: {{ hover_bg_value }};{% endif %}
       {% if hover_border_value != blank %}border-color: {{ hover_border_value }};{% endif %}
@@ -101,6 +102,7 @@
     {% if ef.opacity != blank %}{% assign moved = moved | push: 'opacity' %}{% endif %}
     {% if ef.glow != blank %}{% assign moved = moved | push: 'box-shadow' %}{% endif %}
     {% if ef.backdrop_blur != blank %}{% assign moved = moved | push: 'backdrop-filter' %}{% endif %}
+    {% if ef.drop_shadow != blank %}{% assign moved = moved | push: 'filter' %}{% endif %}
     {% if hover_text_value != blank %}
       {% assign moved = moved | push: 'color' %}
     {% endif %}

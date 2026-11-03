@@ -812,6 +812,12 @@
           "info": "e.g. `0.25rem`."
         },
         {
+          "type": "text",
+          "id": "drop_shadow",
+          "label": "Drop Shadow",
+          "info": "One shadow traced around what the element paints, e.g. `0 0 10px rgba(\u2026)`."
+        },
+        {
           "type": "header",
           "content": "Colour"
         },
