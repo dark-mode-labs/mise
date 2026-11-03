@@ -15,6 +15,8 @@
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
+{%- capture effect_cls -%}{%- render 'effect-classes', ids: s.effect -%}{%- endcapture -%}
+{%- if effect_cls != blank -%}{%- assign classes = classes | push: effect_cls -%}{%- endif %}
 
 {%- capture color_class -%}{%- render 'text-color-class', color_role: s.text_role -%}{%- endcapture -%}
 {% if color_class == blank and s.text_role != 'inherit' and s.text_role != 'none' %}
@@ -217,6 +219,13 @@
       "id": "text_role_custom",
       "label": "Raw Text Color",
       "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "effect",
+      "id": "effect",
+      "label": "Effects",
+      "default": [],
+      "info": "Effects applied to this element; several compose."
     },
     {
       "type": "header",
