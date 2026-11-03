@@ -1,0 +1,149 @@
+{% assign s = block.settings %}
+
+{%- capture bg_color_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.bg_role,
+      palette: s.bg_role_palette, custom: s.bg_role_custom, gradient: s.bg_role_gradient -%}
+{%- endcapture -%}
+
+{% assign scheme_class = blank %}
+
+{% if s.surface_override %}
+  {% assign scheme_class = "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
+
+{% assign bg_role_safe = s.bg_role | default: 'body' %}
+{% assign bg_class = 'bg-' | append: bg_role_safe %}
+{% if bg_color_value != blank %}{% assign bg_class = '' %}{% endif %}
+
+{% assign inline_styles = blank %}
+{% if bg_color_value != blank %}
+  {% assign inline_styles = 'background: ' | append: bg_color_value %}
+{% endif %}
+
+<div
+  class='w-full flex-shrink-0 snap-center py-2.5 px-4 flex items-center justify-center {{ scheme_class }} text-primary {{ bg_class }}'
+  style='{{ inline_styles }}'
+  {{ context.attached_attributes }}
+>
+  {% if s.link != blank %}
+    <a href='{{ s.link }}' class='hover:opacity-70 transition-opacity flex items-center gap-2'>
+      {{ s.text }}
+      {% render 'icon', name: 'arrow-right', class: 'w-3 h-3' %}
+    </a>
+  {% else %}
+    <span>{{ s.text }}</span>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Message",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Welcome to our Restaurant"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "bg_role",
+      "label": "Background",
+      "default": "body",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body (alt)"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface (alt)"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_palette",
+      "label": "Background Palette Token",
+      "default": "brand",
+      "conditional": "setting.bg_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_custom",
+      "label": "Raw Background",
+      "conditional": "setting.bg_role == 'custom'"
+    },
+    {
+      "type": "gradient",
+      "id": "bg_role_gradient",
+      "label": "Background Gradient",
+      "conditional": "setting.bg_role == 'gradient'"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "true"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    }
+  ]
+}
+{% endschema %}

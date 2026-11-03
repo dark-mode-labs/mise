@@ -1,0 +1,70 @@
+{%- comment -%}
+  role-color-value — a `bg_role` / `border_role` / `text_role` enum value as a CSS colour VALUE, for
+  a block that paints through a custom property instead of mise's `bg-*` / `border-*` / `text-*`
+  utility classes. Blank when the role paints nothing.
+
+  The variable names are mise's own, and they do NOT follow the class names: `bg-surface` reads
+  `--surface`, not `--background-surface`. Keep this the only place that knows the mapping, and spell
+  every name out — building one from the role is how `--background-surface` got shipped.
+
+  Args: kind (bg | border | text), role, palette, custom, gradient, slots, fallback
+  `slots: true` also resolves a SLOT role to its variable — for a caller painting through a
+  custom property. Off by default: mise sends a slot out as a `bg-*` / `text-*` CLASS, and an
+  inline declaration would outrank the class rules that paint its states.
+  `gradient` is a value of the bg/border enums; text has none.
+  `fallback` rides inside the slot's own `var()`, for a rule that must still paint where the
+  surface leaves that slot empty.
+{%- endcomment -%}
+{%- if fallback != blank -%}
+  {%- assign fb = fallback | prepend: ', ' -%}
+{%- else -%}
+  {%- assign fb = '' -%}
+{%- endif -%}
+{%- if role == 'palette' and palette != blank -%}
+  var(--palette-{{ palette }})
+{%- elsif role == 'custom' and custom != blank -%}
+  {{ custom }}
+{%- elsif role == 'gradient' and gradient != blank -%}
+  var(--gradient-{{ gradient }})
+{%- elsif slots and kind == 'bg' -%}
+  {%- case role -%}
+    {%- when 'body' -%}
+      var(--background{{ fb }})
+    {%- when 'body-alt' -%}
+      var(--background-alt{{ fb }})
+    {%- when 'surface' -%}
+      var(--surface{{ fb }})
+    {%- when 'surface-alt' -%}
+      var(--surface-alt{{ fb }})
+    {%- when 'accent' -%}
+      var(--accent-bg{{ fb }})
+    {%- when 'button' -%}
+      var(--button-bg{{ fb }})
+    {%- when 'control' -%}
+      var(--control-bg{{ fb }})
+  {%- endcase -%}
+{%- elsif slots and kind == 'border' -%}
+  {%- case role -%}
+    {%- when 'default' -%}
+      var(--border{{ fb }})
+    {%- when 'emphasis' -%}
+      var(--border-emphasis{{ fb }})
+  {%- endcase -%}
+{%- elsif slots and kind == 'text' -%}
+  {%- case role -%}
+    {%- when 'primary' -%}
+      var(--text{{ fb }})
+    {%- when 'secondary' -%}
+      var(--text-secondary{{ fb }})
+    {%- when 'subtle' -%}
+      var(--text-subtle{{ fb }})
+    {%- when 'emphasis' -%}
+      var(--text-emphasis{{ fb }})
+    {%- when 'on-accent' -%}
+      var(--text-on-accent{{ fb }})
+    {%- when 'on-button' -%}
+      var(--text-on-button{{ fb }})
+    {%- when 'on-control' -%}
+      var(--text-on-control{{ fb }})
+  {%- endcase -%}
+{%- endif -%}
