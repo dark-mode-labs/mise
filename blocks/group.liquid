@@ -168,6 +168,20 @@
   >
     {{ content }}
   </a>
+{% elsif s.trigger == 'action' and s.accessible_name != blank %}
+  <button
+    type='button'
+    class='isolate group-control {{ block_classes }}'
+    style='{{ block_styles }}'
+    aria-label='{{ s.accessible_name | escape }}'
+    {{ context.attached_attributes }}
+    data-action='{{ s.action | escape }}'
+    {% if s.action_args != blank %}
+      data-action-args='{{ s.action_args | escape }}'
+    {% endif %}
+  >
+    {{ content }}
+  </button>
 {% else %}
   <div
     class='isolate {{ block_classes }}'
@@ -584,6 +598,13 @@
       "type": "text",
       "id": "action_args",
       "label": "Action Arguments",
+      "conditional": "setting.trigger == 'action'"
+    },
+    {
+      "type": "text",
+      "id": "accessible_name",
+      "label": "Button name",
+      "info": "Set when this group IS the control: it renders as a button with this name. Leave blank for a group that only holds controls.",
       "conditional": "setting.trigger == 'action'"
     },
     {

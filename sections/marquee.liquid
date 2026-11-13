@@ -60,6 +60,7 @@
 
 <section
   class='section-marquee surface-{{ s.surface_id }} mt-{{ s.margin_top }} mb-{{ s.margin_bottom }} ml-{{ s.margin_left }} mr-{{ s.margin_right }}'
+  data-behavior='marquee'
   {{ context.attached_attributes }}
 >
   <div
@@ -77,6 +78,7 @@
       separator_color: separator_color
     %}
   </div>
+  {% content_for 'blocks' %}
 </section>
 {% schema %}
 {
@@ -472,6 +474,14 @@
       "id": "bg_role_gradient",
       "label": "Background Gradient",
       "conditional": "setting.bg_role == 'gradient'"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "group"
+    },
+    {
+      "type": "button"
     }
   ],
   "presets": [
