@@ -14,7 +14,19 @@ test("a media mask rides the frame, so it moves with the frame's own effects", (
   const frameStyles = src.split("{% assign block_styles = styles | join")[0];
   assert.match(frameStyles, /'mask-image: \{\{ s\.mask_image \}\}'/);
   assert.match(frameStyles, /'-webkit-mask-image: \{\{ s\.mask_image \}\}'/);
-  assert.match(frameStyles, /when 'intersect' %\}\{% assign webkit_composite = 'source-in'/);
+  for (const [composite, webkit] of [
+    ["intersect", "source-in"],
+    ["subtract", "source-out"],
+    ["exclude", "xor"],
+  ]) {
+    assert.match(
+      frameStyles,
+      new RegExp(
+        `when '${composite}'\\s*-?%\\}\\s*\\{%-?\\s*assign webkit_composite = '${webkit}'`
+      ),
+      `${composite} must reach WebKit as ${webkit}`
+    );
+  }
   assert.match(src, /<div\s+class='\{\{ block_classes \}\}'\s+style='\{\{ block_styles \}\}'/);
 });
 
