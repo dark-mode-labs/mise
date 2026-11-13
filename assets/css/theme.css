@@ -453,7 +453,8 @@
   }
 
   .animate-marquee:hover,
-  .animate-marquee-reverse:hover {
+  .animate-marquee-reverse:hover,
+  .section-marquee[data-paused] .marquee-track {
     animation-play-state: paused;
   }
 
@@ -1466,6 +1467,11 @@
 }
 
 @layer base {
+  /* A group that IS a control keeps the alignment it inherits, not the button element's centring. */
+  .group-control {
+    text-align: inherit;
+  }
+
   html {
     box-sizing: border-box;
     scroll-padding-top: calc(var(--header-h, 0px) + var(--chip-strip-h, 0px));

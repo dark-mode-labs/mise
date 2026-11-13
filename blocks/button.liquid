@@ -145,6 +145,7 @@
 {% endcase %}
 
 {% if s.underline %}{%- assign utilities = utilities | push: 'underline' %}{% endif %}
+{% if s.text_align != blank %}{%- assign utilities = utilities | push: 'text-align-{{ s.text_align }}' %}{% endif %}
 
 {% assign utility_classes = utilities | join: ' ' %}
 
@@ -549,6 +550,31 @@
       "id": "height",
       "label": "Height",
       "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Label Line Alignment",
+      "info": "How the lines of a label that wraps align inside it.",
+      "options": [
+        {
+          "value": "",
+          "label": "Inherit"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": ""
     },
     {
       "type": "select",
