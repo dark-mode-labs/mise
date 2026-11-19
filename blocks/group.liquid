@@ -38,6 +38,18 @@
 
 {%- capture effect_cls -%}{%- render 'effect-classes', ids: s.effect -%}{%- endcapture -%}
 {%- if effect_cls != blank -%}{%- assign classes = classes | push: effect_cls -%}{%- endif -%}
+{%- assign text_value = '' -%}
+{%- if s.text_role != blank and s.text_role != 'inherit' -%}
+  {%- capture text_class -%}{%- render 'text-color-class', color_role: s.text_role -%}{%- endcapture -%}
+  {%- if s.text_role == 'custom' or s.text_role == 'palette' -%}
+    {%- capture text_value -%}
+      {%- render 'role-color-value', kind: 'text', role: s.text_role,
+          palette: s.text_role_palette, custom: s.text_role_custom -%}
+    {%- endcapture -%}
+    {%- if text_value != blank -%}{%- assign text_class = 'text-primary' -%}{%- endif -%}
+  {%- endif -%}
+  {%- if text_class != blank -%}{%- assign classes = classes | push: text_class -%}{%- endif -%}
+{%- endif -%}
 {% if s.align_self != blank and s.align_self != 'auto' -%}
   {%- assign classes = classes | push: 'self-{{ s.align_self }}' -%}
 {%- endif %}
@@ -127,6 +139,9 @@
 {% endif %}
 {% if bg_color_value != blank %}
   {% assign styles = styles | push: '--block-bg: {{ bg_color_value }}' %}
+{% endif %}
+{% if text_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_value }}' %}
 {% endif %}
 {% comment %} Finalize Style Output {% endcomment %}
 {% assign block_styles = styles | join: ';' %}
@@ -820,6 +835,39 @@
       "label": "Autoplay Video",
       "default": false,
       "conditional": "setting.video_url != blank"
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "subtype": "text_role",
+      "label": "Text Color Role",
+      "default": "inherit",
+      "info": "The color the words in this box inherit; a hover effect on the box then repaints them.",
+      "options": [
+        { "value": "inherit", "label": "Inherit" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "emphasis", "label": "Emphasis" },
+        { "value": "on-accent", "label": "On Accent" },
+        { "value": "on-button", "label": "On Button" },
+        { "value": "on-control", "label": "On Control" },
+        { "value": "palette", "label": "Base Palette" },
+        { "value": "custom", "label": "Raw Color" }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
     },
     {
       "type": "select",

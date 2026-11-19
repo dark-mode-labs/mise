@@ -37,11 +37,15 @@
 
 {% assign utility_classes = utilities | join: ' ' %}
 
-{% comment %} --- Font Family --- {% endcomment %}
-
-{% comment %} --- Component Render --- {% endcomment %}
 {% assign color_role = s.text_role %}
 {% if s.text_role == 'custom' or s.text_role == 'palette' %}{% assign color_role = 'primary' %}{% endif %}
+{%- capture link_color -%}{%- render 'text-color-class', color_role: color_role -%}{%- endcapture -%}
+{%- capture link_effect_cls -%}{%- render 'effect-classes', ids: s.link_effect -%}{%- endcapture -%}
+{%- if link_effect_cls != blank -%}
+  {%- assign link_class = 'block {{ link_color }} {{ link_effect_cls }}' -%}
+{%- else -%}
+  {%- assign link_class = 'block {{ link_color }} hover:opacity-70 transition-opacity' -%}
+{%- endif -%}
 <ul
   class='{{ block_classes }}'
   style='{{ block_styles }}'
@@ -51,13 +55,13 @@
     <li>
       <a
         href='{{ link.url }}'
-        class='hover:opacity-70 transition-opacity block'
+        class='{{ link_class }}'
       >
         {% render 'typography',
           text: link.title,
           type_style: s.type_style,
           class: utility_classes,
-          color_role: color_role
+          color_role: 'inherit'
         %}
       </a>
     </li>
@@ -179,6 +183,13 @@
       "id": "gap",
       "label": "Gap",
       "default": "xs"
+    },
+    {
+      "type": "effect",
+      "id": "link_effect",
+      "label": "Link Effects",
+      "default": [],
+      "info": "Effects applied to each link; several compose."
     },
     {
       "type": "header",
