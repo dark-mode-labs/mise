@@ -1,0 +1,31 @@
+{%- comment -%}
+  text-color-class — maps a `text_role` enum value to the corresponding
+  `text-<role>` utility class. Single source of truth for the mapping.
+
+  Emits NOTHING when the role doesn't bind a class on this element:
+    - `inherit` — let CSS color cascade from a colored ancestor.
+    - `none` — legacy alias for `inherit` (still used by _tab-head's
+      schema). Treated identically.
+    - `custom` / `palette` / `gradient` — the caller paints via an
+      inline `--text` override AND a separate `text-primary` class
+      (which reads `var(--text)`); this snippet doesn't emit that
+      class either, since the caller is responsible for both pieces.
+    - blank — same as inherit.
+
+  Callers should `{% capture %}` the output and fall back to
+  `text-primary` themselves when they need the inline-override route,
+  so the `inherit` case (no class at all) stays distinct from the
+  override case.
+
+  Args:
+    color_role — text_role enum value
+{%- endcomment -%}
+{%- if color_role != blank
+  and color_role != 'inherit'
+  and color_role != 'none'
+  and color_role != 'custom'
+  and color_role != 'palette'
+  and color_role != 'gradient'
+-%}
+  text-{{ color_role }}
+{%- endif -%}

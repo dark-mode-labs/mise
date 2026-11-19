@@ -1,0 +1,7 @@
+{%- assign effect_classes = blank -%}
+{%- for ef_id in ids -%}
+  {%- if ef_id != blank -%}
+    {%- assign effect_classes = effect_classes | push: 'ef-{{ ef_id }}' -%}
+  {%- endif -%}
+{%- endfor -%}
+{{- effect_classes | join: ' ' -}}
