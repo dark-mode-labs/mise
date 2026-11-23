@@ -692,34 +692,12 @@
       "default": "auto"
     },
     {
-      "type": "select",
+      "type": "breakpoint",
       "id": "direction_breakpoint",
       "label": "Direction breakpoint",
       "info": "This controls the viewport width at which the layout switches from column to row.",
       "default": "column",
-      "conditional": "setting.direction == 'responsive'",
-      "options": [
-        {
-          "value": "read",
-          "label": "Small (42rem)"
-        },
-        {
-          "value": "column",
-          "label": "Medium (48rem)"
-        },
-        {
-          "value": "broad",
-          "label": "Large (64rem)"
-        },
-        {
-          "value": "canvas",
-          "label": "XL (80rem)"
-        },
-        {
-          "value": "extra-wide",
-          "label": "2XL (96rem)"
-        }
-      ]
+      "conditional": "setting.direction == 'responsive'"
     },
     {
       "type": "select",
