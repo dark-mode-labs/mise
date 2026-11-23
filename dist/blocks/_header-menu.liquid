@@ -1,0 +1,752 @@
+{% assign s = block.settings %}
+
+{% assign nav_classes = 'header-nav'
+  | push: 'pt-{{ s.padding_top }} pb-{{ s.padding_bottom }}'
+  | push: 'pl-{{ s.padding_left }} pr-{{ s.padding_right }}'
+%}
+{%- capture border_class_str -%}{%- render 'box-border-edges', role: s.border_role,
+  top: s.border_top, right: s.border_right, bottom: s.border_bottom, left: s.border_left -%}{%- endcapture -%}
+{% if border_class_str != blank %}
+  {% assign nav_classes = nav_classes | push: border_class_str %}
+{% endif %}
+
+{% if s.surface_override %}
+  {% assign nav_classes = nav_classes | push: "surface-{{ s.surface_id | default: 'default' }}" %}
+{% endif %}
+
+{% assign block_classes = nav_classes | join: ' ' %}
+
+{%- capture text_color_value -%}
+  {%- if s.text_role != 'primary' -%}
+    {%- render 'role-color-value', kind: 'text', role: s.text_role, slots: true,
+        palette: s.text_role_palette, custom: s.text_role_custom -%}
+  {%- endif -%}
+{%- endcapture -%}
+{% assign styles = blank %}
+{% if text_color_value != blank %}
+  {% assign styles = styles | push: '--text: {{ text_color_value }}' %}
+{% endif %}
+{% if border_class_str != blank %}
+  {%- capture border_style_str -%}{%- render 'box-border-style',
+    role: s.border_role, palette_token: s.border_role_palette,
+    custom_color: s.border_role_custom, style: s.border_style -%}{%- endcapture -%}
+  {% assign styles = styles | push: border_style_str %}
+{% endif %}
+{% assign styles = styles | push_if: '--radius-custom: {{ s.border_radius }}px', s.border_radius_override %}
+{% assign block_styles = styles | join: ';' %}
+
+{% assign color_role = s.text_role %}
+{% if s.text_role == 'custom' or s.text_role == 'palette' %}
+  {% assign color_role = 'primary' %}
+{% endif %}
+
+{% assign utilities = blank %}
+
+{% case s.text_wrap %}
+  {% when 'nowrap' %}
+    {% assign utilities = utilities | push: 'whitespace-nowrap' %}
+  {% when 'balance' %}
+    {% assign utilities = utilities | push: 'text-balance' %}
+  {% when 'pretty' %}
+    {% assign utilities = utilities | push: 'text-pretty' %}
+{% endcase %}
+
+{% assign utility_classes = utilities | join: ' ' %}
+
+{% assign link_classes = 'flex direction-row'
+  | push: 'vertical-{{ s.link_align }}'
+  | push_if: 'rounded-custom', s.border_radius_override
+  | push: 'pt-{{ s.link_padding_top }} pb-{{ s.link_padding_bottom }}'
+  | push: 'pl-{{ s.link_padding_left }} pr-{{ s.link_padding_right }}'
+%}
+{%- capture link_effect_cls -%}{%- render 'effect-classes', ids: s.link_effect -%}{%- endcapture -%}
+{%- if link_effect_cls != blank -%}{%- assign link_classes = link_classes | push: link_effect_cls -%}{%- endif -%}
+{%- capture link_border_class_str -%}{%- render 'box-border-edges',
+  role: s.link_border_role, bottom: s.link_border_bottom -%}{%- endcapture -%}
+{% if link_border_class_str != blank %}
+  {% assign link_classes = link_classes | push: link_border_class_str %}
+{% endif %}
+{% assign link_class_str = link_classes | join: ' ' %}
+
+{% assign link_styles = blank %}
+{% if link_border_class_str != blank %}
+  {%- capture link_border_style_str -%}{%- render 'box-border-style',
+    role: s.link_border_role, palette_token: s.link_border_role_palette,
+    custom_color: s.link_border_role_custom, style: 'solid' -%}{%- endcapture -%}
+  {% assign link_styles = link_styles | push: link_border_style_str %}
+{% endif %}
+{% assign link_style_str = link_styles | join: ';' %}
+
+{% assign list_classes = 'flex direction-row' | push: 'vertical-{{ s.link_align }}' | push: 'gap-{{ s.gap }}' %}
+{% assign list_class_str = list_classes | join: ' ' %}
+
+{%- comment -%}Unlike `_tab-head`, the state is known at render, so one bag is chosen here.{%- endcomment -%}
+{% assign active_classes = 'flex direction-row'
+  | push: 'vertical-{{ s.link_align }}'
+  | push_if: 'rounded-custom', s.border_radius_override
+  | push: 'pt-{{ s.link_padding_top_active }} pb-{{ s.link_padding_bottom_active }}'
+  | push: 'pl-{{ s.link_padding_left_active }} pr-{{ s.link_padding_right_active }}'
+%}
+{%- capture active_link_effect_cls -%}{%- render 'effect-classes', ids: s.link_effect -%}{%- endcapture -%}
+{%- if active_link_effect_cls != blank -%}
+  {%- assign active_classes = active_classes | push: active_link_effect_cls -%}
+{%- endif -%}
+{% if s.bg_role_active != blank
+  and s.bg_role_active != 'none'
+  and s.bg_role_active != 'custom'
+  and s.bg_role_active != 'palette'
+%}
+  {% assign active_classes = active_classes | push: 'bg-{{ s.bg_role_active }}' %}
+{% endif %}
+{%- capture active_border_class_str -%}{%- render 'box-border-edges',
+  role: s.link_border_role_active, bottom: s.link_border_bottom_active -%}{%- endcapture -%}
+{% if active_border_class_str != blank %}
+  {% assign active_classes = active_classes | push: active_border_class_str %}
+{% endif %}
+{%- capture active_text_class -%}{%- render 'text-color-class', color_role: s.text_role_active -%}{%- endcapture -%}
+{% if active_text_class != blank %}
+  {% assign active_classes = active_classes | push: active_text_class %}
+{% elsif s.text_role_active == 'custom' or s.text_role_active == 'palette' %}
+  {% assign active_classes = active_classes | push: 'text-primary' %}
+{% endif %}
+{%- capture active_bg_value -%}
+  {%- render 'role-color-value', kind: 'bg', role: s.bg_role_active,
+      palette: s.bg_role_active_palette, custom: s.bg_role_active_custom -%}
+{%- endcapture -%}
+{% if active_bg_value != blank %}
+  {% assign active_classes = active_classes | push: 'block-bg' %}
+{% endif %}
+{% assign active_class_str = active_classes | join: ' ' %}
+
+{% assign active_styles = blank %}
+{%- capture active_text_value -%}
+  {%- render 'role-color-value', kind: 'text', role: s.text_role_active,
+      palette: s.text_role_active_palette, custom: s.text_role_active_custom -%}
+{%- endcapture -%}
+{% if active_text_value != blank %}
+  {% assign active_styles = active_styles | push: '--text: {{ active_text_value }}' %}
+{% endif %}
+{% if active_bg_value != blank %}
+  {% assign active_styles = active_styles | push: '--block-bg: {{ active_bg_value }}' %}
+{% endif %}
+{% if active_border_class_str != blank %}
+  {%- capture active_border_style_str -%}{%- render 'box-border-style',
+    role: s.link_border_role_active, palette_token: s.link_border_role_active_palette,
+    custom_color: s.link_border_role_active_custom, style: 'solid' -%}{%- endcapture -%}
+  {% assign active_styles = active_styles | push: active_border_style_str %}
+{% endif %}
+{% assign active_style_str = active_styles | join: ';' %}
+{%- comment -%}No declared paint means no state: swapping an unfilled bag in strips the link.{%- endcomment -%}
+{% assign has_active_state = false %}
+{% if s.text_role_active != blank or s.bg_role_active != blank or s.link_border_role_active != blank %}
+  {% assign has_active_state = true %}
+{% endif %}
+
+<nav
+  class='{{ block_classes }}'
+  style='{{ block_styles }}'
+  {{ context.attached_attributes }}
+>
+  <ul class='{{ list_class_str }}'>
+    {% for link in s.nav.links %}
+      {% assign this_link_class = link_class_str %}
+      {% assign this_link_style = link_style_str %}
+      {%- comment -%}A link with no id can never be the current page, so a blank one never matches.{%- endcomment -%}
+      {% if has_active_state and link.link_id != blank and link.link_id == page.uuid %}
+        {% assign this_link_class = active_class_str %}
+        {% assign this_link_style = active_style_str %}
+      {% endif %}
+      <li class='group flex direction-row vertical-{{ s.link_align }} relative'>
+        <a
+          href='{{ link.url }}'
+          class='{{ this_link_class }}'
+          style='{{ this_link_style }}'
+        >
+          {% render 'typography',
+            text: link.title,
+            type_style: s.type_style,
+            color_role: color_role,
+            class: utility_classes
+          %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+
+{% schema %}
+{
+  "name": "Header Nav",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "nav",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "space",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_left",
+      "label": "Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "padding_right",
+      "label": "Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "border_role",
+      "label": "Border Color",
+      "default": "default",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "border_role_palette",
+      "label": "Border Palette Token",
+      "default": "brand",
+      "conditional": "setting.border_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "border_role_custom",
+      "label": "Raw Border",
+      "conditional": "setting.border_role == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border Style",
+      "default": "solid",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        }
+      ]
+    },
+    {
+      "type": "space",
+      "id": "border_top",
+      "label": "Top Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "border_right",
+      "label": "Right Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "border_bottom",
+      "label": "Bottom Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "border_left",
+      "label": "Left Border Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "select",
+      "id": "link_align",
+      "label": "Link Vertical Align",
+      "info": "Cross-axis alignment of each link and of the strip.",
+      "default": "middle",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "baseline",
+          "label": "Baseline"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_override",
+      "label": "Override Border Radius",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Custom Border Radius",
+      "min": 0,
+      "max": 1000,
+      "default": 4,
+      "unit": "px",
+      "conditional": "setting.border_radius_override"
+    },
+    {
+      "type": "header",
+      "content": "Current Page"
+    },
+    {
+      "type": "select",
+      "id": "text_role_active",
+      "label": "Current Link Text",
+      "default": "inherit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit from Header"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ],
+      "subtype": "text_role"
+    },
+    {
+      "type": "palette",
+      "id": "text_role_active_palette",
+      "label": "Current Link Text Token",
+      "conditional": "setting.text_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_active_custom",
+      "label": "Current Link Text Color",
+      "conditional": "setting.text_role_active == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "bg_role_active",
+      "label": "Current Link Background",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "body-alt",
+          "label": "Body Alt"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        },
+        {
+          "value": "surface-alt",
+          "label": "Surface Alt"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "control",
+          "label": "Control"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "subtype": "bg_role"
+    },
+    {
+      "type": "palette",
+      "id": "bg_role_active_palette",
+      "label": "Current Link Background Token",
+      "conditional": "setting.bg_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "bg_role_active_custom",
+      "label": "Current Link Background Color",
+      "conditional": "setting.bg_role_active == 'custom'"
+    },
+    {
+      "type": "select",
+      "id": "link_border_role_active",
+      "label": "Current Link Rule",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "subtype": "border_role"
+    },
+    {
+      "type": "palette",
+      "id": "link_border_role_active_palette",
+      "label": "Current Link Rule Token",
+      "conditional": "setting.link_border_role_active == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "link_border_role_active_custom",
+      "label": "Current Link Rule Color",
+      "conditional": "setting.link_border_role_active == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "link_border_bottom_active",
+      "label": "Current Link Rule Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "link_padding_top_active",
+      "label": "Current Link Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_right_active",
+      "label": "Current Link Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_bottom_active",
+      "label": "Current Link Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_left_active",
+      "label": "Current Link Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "link_border_role",
+      "label": "Link Divider",
+      "default": "none",
+      "info": "A rule under every link but the last.",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "palette",
+          "label": "Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "subtype": "border_role"
+    },
+    {
+      "type": "palette",
+      "id": "link_border_role_palette",
+      "label": "Link Divider Token",
+      "conditional": "setting.link_border_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "link_border_role_custom",
+      "label": "Link Divider Color",
+      "conditional": "setting.link_border_role == 'custom'"
+    },
+    {
+      "type": "space",
+      "id": "link_border_bottom",
+      "label": "Link Divider Width",
+      "info": "A space tier: its value is this edge's width, 0 draws nothing, and its `value_by_bp` makes the edge responsive with no axis of its own."
+    },
+    {
+      "type": "space",
+      "id": "link_padding_top",
+      "label": "Link Padding Top",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_bottom",
+      "label": "Link Padding Bottom",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_left",
+      "label": "Link Padding Left",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "link_padding_right",
+      "label": "Link Padding Right",
+      "default": "none"
+    },
+    {
+      "type": "space",
+      "id": "gap",
+      "label": "Gap",
+      "default": "xs"
+    },
+    {
+      "type": "effect",
+      "id": "link_effect",
+      "label": "Link Effects",
+      "default": [],
+      "info": "Effects applied to each nav link; several compose."
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "type_style",
+      "id": "type_style",
+      "label": "Type Style",
+      "default": "nav"
+    },
+    {
+      "type": "select",
+      "id": "text_wrap",
+      "label": "Text Wrapping",
+      "default": "nowrap",
+      "options": [
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "No Wrap"
+        },
+        {
+          "value": "balance",
+          "label": "Balance"
+        },
+        {
+          "value": "pretty",
+          "label": "Pretty"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_role",
+      "label": "Text Color Role",
+      "info": "Defaults to inheriting the header section's text role.",
+      "default": "inherit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit from Header"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "emphasis",
+          "label": "Emphasis"
+        },
+        {
+          "value": "on-accent",
+          "label": "On Accent"
+        },
+        {
+          "value": "on-button",
+          "label": "On Button"
+        },
+        {
+          "value": "on-control",
+          "label": "On Control"
+        },
+        {
+          "value": "palette",
+          "label": "Base Palette"
+        },
+        {
+          "value": "custom",
+          "label": "Raw Color"
+        }
+      ]
+    },
+    {
+      "type": "palette",
+      "id": "text_role_palette",
+      "label": "Text Palette Token",
+      "default": "brand",
+      "conditional": "setting.text_role == 'palette'"
+    },
+    {
+      "type": "color",
+      "id": "text_role_custom",
+      "label": "Raw Text Color",
+      "conditional": "setting.text_role == 'custom'"
+    },
+    {
+      "type": "header",
+      "content": "General Style"
+    },
+    {
+      "type": "header",
+      "content": "Overrides",
+      "conditional": "true"
+    },
+    {
+      "type": "checkbox",
+      "id": "surface_override",
+      "label": "Override Color Scheme",
+      "default": false,
+      "conditional": "true"
+    },
+    {
+      "type": "surface",
+      "id": "surface_id",
+      "label": "Color Scheme",
+      "default": "default",
+      "conditional": "setting.surface_override == true"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,7 @@
+{
+  "cart": {
+    "aria_label_empty": "Cart",
+    "aria_label_one": "Cart, 1 item",
+    "aria_label_other": "Cart, {count} items"
+  }
+}
